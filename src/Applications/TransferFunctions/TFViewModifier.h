@@ -49,7 +49,7 @@ protected:
 	virtual void computeInput_() = 0;
 	virtual std::vector<int> computeZoomMoveIncrements_(const int moveX, const int moveY) = 0;
 
-	virtual bool loadSettings_(TFXmlReader::Ptr reader);
+	virtual bool loadSettings_(TF::XmlReaderInterface* reader);
 
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseReleaseEvent(QMouseEvent *e);

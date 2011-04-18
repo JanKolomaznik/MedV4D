@@ -21,8 +21,8 @@ public:
 	TFWorkCopy(TFFunctionInterface::Ptr function);
 	~TFWorkCopy();
 
-	void save(TFXmlWriter::Ptr writer);
-	bool load(TFXmlReader::Ptr reader, bool& sideError);
+	void save(TF::XmlWriterInterface* writer);
+	bool load(TF::XmlReaderInterface* reader, bool& sideError);
 	
 	//TFFunctionInterface::Const getFunctionMemento();	
 	TFFunctionInterface::Ptr getFunction();

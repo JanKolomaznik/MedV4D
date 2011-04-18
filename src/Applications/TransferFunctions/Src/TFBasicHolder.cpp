@@ -1,5 +1,7 @@
 #include <TFBasicHolder.h>
 
+#include <TFQtXmlWriter.h>
+
 namespace M4D{
 namespace GUI{
 
@@ -10,6 +12,7 @@ TFBasicHolder::TFBasicHolder(TFAbstractModifier::Ptr modifier,
 	holderDock_(NULL),
 	holderMain_(NULL),
 	ui_(new Ui::TFHolderUI),
+	writer_(new TF::QtXmlWriter),
 	modifier_(modifier),
 	index_(0),
 	name_(name),
@@ -19,6 +22,8 @@ TFBasicHolder::TFBasicHolder(TFAbstractModifier::Ptr modifier,
 TFBasicHolder::~TFBasicHolder(){
 
 	if(toolsDock_) toolsDock_->close();
+	delete writer_;
+	delete ui_;
 }
 
 void TFBasicHolder::setup(QMainWindow* mainWindow, const int index){
@@ -27,6 +32,7 @@ void TFBasicHolder::setup(QMainWindow* mainWindow, const int index){
 
 	ui_->setupUi(this);
 	ui_->nameEdit->setText(QString::fromStdString(name_));
+	if(attributes_.find(Composition) != attributes_.end()) ui_->saveButton->setEnabled(false);
 
 	holderMain_ = new QMainWindow(mainWindow);
 	holderMain_->setCentralWidget(this);
@@ -45,11 +51,11 @@ void TFBasicHolder::setup(QMainWindow* mainWindow, const int index){
 	QWidget* tools = modifier_->getTools();
 	if(tools)
 	{
-		toolsDock_ = new QDockWidget(this);	
+		toolsDock_ = new QDockWidget(this);
 		toolsDock_->setWidget(tools);
 		toolsDock_->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);	
 		toolsDock_->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);	
-		toolsDock_->setWindowTitle(QString::fromStdString(name_ + " Tools"));
+		toolsDock_->setWindowTitle(QString::fromStdString(name_ + ": Tools"));
 		holderMain_->addDockWidget(Qt::LeftDockWidgetArea, toolsDock_);	
 	}
 
@@ -73,52 +79,50 @@ void TFBasicHolder::save(){
 
 	if (fileName_.isEmpty()) return;
 
-	QFile file(fileName_);
-	if (!file.open(QFile::WriteOnly | QFile::Text))
+	
+	if (!writer_->begin(fileName_.toStdString()))
 	{
-		QMessageBox::warning(this,
-			QObject::tr("Transfer Functions"),
-			QObject::tr("Cannot write file %1:\n%2.")
-			.arg(fileName_)
-			.arg(file.errorString()));
+		QMessageBox errorMessage(QMessageBox::Critical,
+			"Error",
+			QString::fromStdString(writer_->errorMessage()),
+			QMessageBox::Ok
+		);
+		errorMessage.setDefaultButton(QMessageBox::Ok);
+		errorMessage.exec();
 		return;
 	}
-	
-	TFXmlWriter::Ptr writer(new TFXmlWriter(&file));
 
-	writer->writeDTD("TransferFunctionsFile");
+	writer_->writeDTD("TransferFunctionsFile");
 
-	writer->writeStartElement("Editor");
+	writer_->writeStartElement("Editor");
 
-		writer->writeAttribute("Name", name_);
-		writer->writeAttribute("Predefined",
+		writer_->writeAttribute("Name", name_);
+		writer_->writeAttribute("Predefined",
 			TF::convert<TF::Types::Predefined, std::string>(structure_.predefined));
-		writer->writeAttribute("Holder",
+		writer_->writeAttribute("Holder",
 			TF::convert<TF::Types::Holder, std::string>(structure_.holder));
-		writer->writeAttribute("Function",
+		writer_->writeAttribute("Function",
 			TF::convert<TF::Types::Function, std::string>(structure_.function));
-		writer->writeAttribute("Painter",
+		writer_->writeAttribute("Painter",
 			TF::convert<TF::Types::Painter, std::string>(structure_.painter));
-		writer->writeAttribute("Modifier",
+		writer_->writeAttribute("Modifier",
 			TF::convert<TF::Types::Modifier, std::string>(structure_.modifier));
 
-		saveData_(writer);
+		saveData_(writer_);
 
-	writer->finalizeDocument();
-
-	file.close();
+	writer_->end();
 
 	lastSave_ = modifier_->getTimeStamp();
 }
 	
-void TFBasicHolder::saveData_(TFXmlWriter::Ptr writer){
+void TFBasicHolder::saveData_(TF::XmlWriterInterface* writer){
 		
 	saveSettings_(writer);
 
 	modifier_->save(writer);
 }
 
-bool TFBasicHolder::loadData(TFXmlReader::Ptr reader, bool& sideError){	
+bool TFBasicHolder::loadData(TF::XmlReaderInterface* reader, bool& sideError){	
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading data:" << std::endl;
@@ -130,14 +134,14 @@ bool TFBasicHolder::loadData(TFXmlReader::Ptr reader, bool& sideError){
 	bool ok = modifier_->load(reader, error);
 	sideError = sideError || error;
 
-	fileName_ = reader->fileName();
+	fileName_ = QString::fromStdString(reader->fileName());
 	lastSave_ = modifier_->getTimeStamp();
 	return ok;
 }
 
-void TFBasicHolder::saveSettings_(TFXmlWriter::Ptr writer){}
+void TFBasicHolder::saveSettings_(TF::XmlWriterInterface* writer){}
 
-bool TFBasicHolder::loadSettings_(TFXmlReader::Ptr reader){
+bool TFBasicHolder::loadSettings_(TF::XmlReaderInterface* reader){
 	
 	return true;	
 }

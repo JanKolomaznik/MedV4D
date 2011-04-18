@@ -44,7 +44,10 @@ TFViewModifier::TFViewModifier(TFFunctionInterface::Ptr function, TFAbstractPain
 	setMouseTracking(true);
 }
 
-TFViewModifier::~TFViewModifier(){}
+TFViewModifier::~TFViewModifier(){
+
+	delete viewTools_;
+}
 
 void TFViewModifier::createTools_(){
 
@@ -93,7 +96,7 @@ void TFViewModifier::setHistogram(const TF::Histogram::Ptr histogram){
 	workCopy_->setHistogram(histogram);
 }
 	
-bool TFViewModifier::loadSettings_(TFXmlReader::Ptr reader){
+bool TFViewModifier::loadSettings_(TF::XmlReaderInterface* reader){
 
 	updateZoomTools_();
 	viewTools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());

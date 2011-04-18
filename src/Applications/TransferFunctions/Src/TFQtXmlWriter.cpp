@@ -1,4 +1,4 @@
-#include <TFXmlWriter.h>
+#include "TFQtXmlWriter.h"
 
 namespace M4D {
 namespace GUI {
@@ -7,30 +7,7 @@ namespace TF {
 QtXmlWriter::QtXmlWriter(){
 
 	error_ = true;
-	errorMsg_ = "No file assigned";
-}
-
-QtXmlWriter::QtXmlWriter(const std::string& file){
-
-	if (file.empty())
-	{
-		error_ = true;
-		errorMsg_ = "Empty file name";
-		return;
-	}
-	
-	qFile_.setFileName(QString::fromStdString(file));
-	if (!qFile_.open(QFile::WriteOnly | QFile::Text))
-	{
-		error_ = true;
-		errorMsg_ = "Cannot write file " + file + ":\n"
-			+ qFile_.errorString().toStdString() + ".";
-		return;
-	}
-
-	qWriter_.setDevice(&qFile_);
-	qWriter_.setAutoFormatting(true);
-	qWriter_.writeStartDocument();
+	errorMsg_ = "No file assigned.";
 }
 
 QtXmlWriter::~QtXmlWriter(){
@@ -43,7 +20,7 @@ bool QtXmlWriter::begin(const std::string& file){
 	if(file.empty())
 	{
 		error_ = true;
-		errorMsg_ = "Empty file name";
+		errorMsg_ = "Empty file name.";
 		return false;
 	}
 	
@@ -55,11 +32,19 @@ bool QtXmlWriter::begin(const std::string& file){
 			+ qFile_.errorString().toStdString() + ".";
 		return false;
 	}
+	fileName_ = file;
 
 	qWriter_.setDevice(&qFile_);
 	qWriter_.setAutoFormatting(true);
 	qWriter_.writeStartDocument();
 	return true;
+}
+
+void QtXmlWriter::end(){
+
+	if(error_) return;
+	qWriter_.writeEndDocument();
+	qFile_.close();
 }
 
 void QtXmlWriter::writeDTD(const std::string& attribute){
@@ -84,13 +69,6 @@ void QtXmlWriter::writeAttribute(const std::string& attribute, const std::string
 
 	if(error_) return;
 	qWriter_.writeAttribute(QString::fromStdString(attribute), QString::fromStdString(value));
-}
-
-void QtXmlWriter::end(){
-
-	if(error_) return;
-	qWriter_.writeEndDocument();
-	qFile_.close();
 }
 
 }	//namespace TF

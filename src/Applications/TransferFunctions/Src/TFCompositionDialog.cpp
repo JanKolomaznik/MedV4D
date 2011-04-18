@@ -19,7 +19,10 @@ TFCompositionDialog::TFCompositionDialog(TFPalette* palette):
 	ui_->scrollArea->setLayout(layout_);
 }
 
-TFCompositionDialog::~TFCompositionDialog(){}
+TFCompositionDialog::~TFCompositionDialog(){
+
+	delete ui_;
+}
 
 bool TFCompositionDialog::refreshSelection(){
 

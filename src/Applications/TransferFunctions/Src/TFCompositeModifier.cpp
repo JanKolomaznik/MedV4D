@@ -42,7 +42,10 @@ TFCompositeModifier::TFCompositeModifier(
 	changeChecker_.start();
 }
 
-TFCompositeModifier::~TFCompositeModifier(){}
+TFCompositeModifier::~TFCompositeModifier(){
+
+	delete compositeTools_;
+}
 
 void TFCompositeModifier::createTools_(){
 

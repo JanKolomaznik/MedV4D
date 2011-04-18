@@ -12,9 +12,6 @@
 #include <TFCommon.h>
 #include <TFHistogram.h>
 
-#include <TFXmlReader.h>
-#include <TFXmlWriter.h>
-
 #include <TFAbstractFunction.h>
 #include <TFAbstractModifier.h>
 #include <TFWorkCopy.h>
@@ -51,7 +48,7 @@ public:
 
 	virtual ~TFBasicHolder();
 
-	virtual bool loadData(TFXmlReader::Ptr reader, bool& sideError);
+	virtual bool loadData(TF::XmlReaderInterface* reader, bool& sideError);
 
 	virtual void setup(QMainWindow* mainWindow, const int index = -1);
 	virtual void setHistogram(TF::Histogram::Ptr histogram);
@@ -107,6 +104,8 @@ protected:
 	Ui::TFHolderUI* ui_;
 	QDockWidget* toolsDock_;
 
+	TF::XmlWriterInterface* writer_;
+
 	TF::Types::Structure structure_;
 
 	QString fileName_;
@@ -121,10 +120,10 @@ protected:
 
 	virtual void resizeEvent(QResizeEvent*);
 	
-	virtual void saveData_(TFXmlWriter::Ptr writer);
+	virtual void saveData_(TF::XmlWriterInterface* writer);
 
-	virtual void saveSettings_(TFXmlWriter::Ptr writer);
-	virtual bool loadSettings_(TFXmlReader::Ptr reader);
+	virtual void saveSettings_(TF::XmlWriterInterface* writer);
+	virtual bool loadSettings_(TF::XmlReaderInterface* reader);
 };
 
 } // namespace GUI

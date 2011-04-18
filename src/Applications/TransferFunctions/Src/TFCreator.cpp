@@ -1,5 +1,7 @@
 #include "TFCreator.h"
 
+#include <TFQtXmlReader.h>
+
 #include <TFPalette.h>
 
 #include <TFBasicHolder.h>
@@ -122,6 +124,7 @@ TFBasicHolder* TFCreator::createHolder_(){
 TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette):
 	QDialog(mainWindow),
 	ui_(new Ui::TFCreator),
+	reader_(new TF::QtXmlReader),
 	mainWindow_(mainWindow),
 	palette_(palette),
 	dataStructure_(std::vector<TF::Size>(1,TFAbstractFunction<1>::defaultDomain)),
@@ -156,7 +159,11 @@ TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette):
 	tfAssert(loadRadioConnected);
 }
 
-TFCreator::~TFCreator(){}
+TFCreator::~TFCreator(){
+
+	delete reader_;
+	delete ui_;
+}
 
 TFBasicHolder* TFCreator::createTransferFunction(){
 
@@ -179,44 +186,27 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow_,
-		QObject::tr("Open Transfer Function"),
+		"Open Transfer Function",
 		QDir::currentPath(),
 		QObject::tr("TF Files (*.tf *.xml)"));
 
-	QMessageBox errorMessage(QMessageBox::Critical,
-		QObject::tr("Error"),
-		QObject::tr("File %1 is empty").arg(fileName),
-		QMessageBox::Ok,
-		(QWidget*)mainWindow_);
+	QMessageBox errorMessage(QMessageBox::Critical, "Error", "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
 
-	if (fileName.isEmpty())
+	if(!reader_->begin(fileName.toStdString()))
 	{
+		errorMessage.setText(QString::fromStdString(reader_->errorMessage()));
 		errorMessage.exec();
 		return loaded;
 	}
 
-	QFile file(fileName);
-
-	if (!file.open(QFile::ReadOnly | QFile::Text))
-	{
-		errorMessage.setText(QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
-		errorMessage.exec();
-
-		file.close();
-		return loaded;
-	}
-
-	TFXmlReader::Ptr reader(new TFXmlReader(&file));
 	bool error;
-	loaded = load_(reader, error);
+	loaded = load_(reader_, error);
 
 	if(!loaded)
 	{ 
 		errorMessage.setText(QObject::tr("File %1 is corrupted").arg(fileName));
 		errorMessage.exec();
-
-		file.close();
 		return loaded;
 	}
 	else if(error)
@@ -226,8 +216,6 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 			QObject::tr("Error while reading additional data.\nSome settings are set to default."));
 	}
 
-	file.close();
-
 	#ifndef TF_NDEBUG
 		std::cout << "Loading finished." << std::endl;
 	#endif
@@ -235,7 +223,7 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 	return loaded;
 }
 
-TFBasicHolder* TFCreator::load_(TFXmlReader::Ptr reader, bool& sideError){
+TFBasicHolder* TFCreator::load_(TF::XmlReaderInterface* reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading editor..." << std::endl;

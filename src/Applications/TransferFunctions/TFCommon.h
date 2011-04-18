@@ -9,13 +9,18 @@
 
 #include <QtGui/QColor>
 
+#include <TFXmlWriterInterface.h>
+#include <TFXmlReaderInterface.h>
+
 #include "common/Common.h"
 
+#define TF_DIMENSION_1 1
 
 namespace M4D {
 namespace GUI {
-
 namespace TF{
+
+typedef unsigned long Size;
 
 template<typename From, typename To>
 static To convert(const From &s){
@@ -49,8 +54,6 @@ struct Point{
 };
 typedef Point<int, int> PaintingPoint;
 
-typedef unsigned long Size;
-
 struct AreaItem{
 	TF::Size begin;
 	TF::Size size;
@@ -64,8 +67,6 @@ struct AreaItem{
 		size(size){
 	}
 };
-
-#define TF_DIMENSION_1 1
 
 template<typename ValueType>
 void removeAllFromVector(typename std::vector<ValueType>& from, const ValueType& what){
@@ -107,7 +108,6 @@ inline void abort( const char * s, const char * f, int l)
 #endif
 
 }	//namespace TF
-
 }	//namespace GUI
 }	//namespace M4D
 

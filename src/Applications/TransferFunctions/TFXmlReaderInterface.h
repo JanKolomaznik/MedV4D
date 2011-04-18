@@ -19,7 +19,7 @@ public:
 
 	virtual bool readElement(const std::string& element) = 0;
 
-	virtual std::string readAttribute(const std::string& attribute, const std::string& value) = 0;
+	virtual std::string readAttribute(const std::string& attribute) = 0;
 
 	virtual void end() = 0;
 
@@ -45,32 +45,11 @@ protected:
 
 	std::string fileName_;
 	
-	XmlWriterInterface():
+	XmlReaderInterface():
 		error_(false),
 		errorMsg_(""),
 		fileName_(""){
 	}
-};
-
-class QtXmlReader: public XmlReaderInterface{
-
-public:
-
-	QtXmlReader();
-	~QtXmlReader();
-
-	bool begin(const std::string& file);
-	void end();
-
-	bool readElement(const std::string& element);
-	std::string readAttribute(const std::string& attribute);
-
-private:
-
-	QFile file_;
-	QXmlStreamReader qReader_;
-
-	bool fileError_;
 };
 
 }	//namespace TF

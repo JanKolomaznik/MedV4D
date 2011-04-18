@@ -5,19 +5,57 @@
 #include <QtCore/QString>
 #include <QtCore/QFile>
 
-#include <TFCommon.h>
-
 namespace M4D {
 namespace GUI {
+namespace TF {
 
-class TFXmlWriter{
+class XmlWriterInterface{
 
 public:
 
-	typedef boost::shared_ptr<TFXmlWriter> Ptr;
+	virtual ~XmlWriterInterface();
 
-	TFXmlWriter(QFile* file);
-	~TFXmlWriter();
+	virtual bool begin(const std::string& file);
+
+	virtual void writeDTD(const std::string& dtd);
+
+	virtual void writeStartElement(const std::string& element);
+	virtual void writeEndElement();
+
+	virtual void writeAttribute(const std::string& attribute, const std::string& value);
+
+	virtual void end();
+
+	bool error(){
+
+		return error_;
+	}
+
+	std::string errorMessage(){
+
+		return errorMsg_;
+	}
+
+protected:
+
+	bool error_;
+	std::string errorMsg_;
+	
+	XmlWriterInterface():
+		error_(false),
+		errorMsg_(""){
+	}
+};
+
+class QtXmlWriter: public XmlWriterInterface{
+
+public:
+
+	QtXmlWriter();
+	QtXmlWriter(const std::string& file);
+	~QtXmlWriter();
+
+	bool begin(const std::string& file);
 
 	void writeDTD(const std::string& dtd);
 
@@ -26,15 +64,16 @@ public:
 
 	void writeAttribute(const std::string& attribute, const std::string& value);
 
-	void finalizeDocument();
+	void end();
 
 private:
 
 	QXmlStreamWriter qWriter_;
-	TF::Size elementDepth_;
+	QFile qFile_;
 };
 
-} // namespace GUI
-} // namespace M4D
+}	//namespace TF
+}	//namespace GUI
+}	//namespace M4D
 
 #endif	//TF_XMLWRITER

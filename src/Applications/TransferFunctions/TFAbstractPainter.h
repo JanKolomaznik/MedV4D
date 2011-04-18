@@ -1,8 +1,6 @@
 #ifndef TF_ABSTRACT_PAINTER
 #define TF_ABSTRACT_PAINTER
 
-#include <TFXmlReader.h>
-#include <TFXmlWriter.h>
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
@@ -27,8 +25,8 @@ public:
 
 	virtual QPixmap getView(TFWorkCopy::Ptr workCopy) = 0;
 
-	virtual void save(TFXmlWriter::Ptr writer){}
-	virtual bool load(TFXmlReader::Ptr reader){
+	virtual void save(TF::XmlWriterInterface* writer){}
+	virtual bool load(TF::XmlReaderInterface* reader){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading painter..." << std::endl;

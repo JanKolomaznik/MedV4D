@@ -1,7 +1,8 @@
-#include <TFXmlReader.h>
+#include <TFQtXmlReader.h>
 
 namespace M4D {
 namespace GUI {
+namespace TF {
 
 QtXmlReader::QtXmlReader(){
 
@@ -10,7 +11,10 @@ QtXmlReader::QtXmlReader(){
 	errorMsg_ = "No file assigned.";
 }
 
-TFXmlReader::~TFXmlReader(){}
+QtXmlReader::~QtXmlReader(){
+
+	if(qFile_.isOpen()) qFile_.close();
+}
 
 bool QtXmlReader::begin(const std::string& file){
 
@@ -38,6 +42,12 @@ bool QtXmlReader::begin(const std::string& file){
 	return true;
 }
 
+void QtXmlReader::end(){
+
+	if(fileError_) return;
+	qFile_.close();
+}
+
 bool QtXmlReader::readElement(const std::string& element){
 
 	if(fileError_) return false;
@@ -52,7 +62,7 @@ bool QtXmlReader::readElement(const std::string& element){
 			return true;
 		}
 	}
-	if(qReader_.hasError)
+	if(qReader_.hasError())
 	{
 		error_ = true;
 		errorMsg_ = qReader_.errorString().toStdString();
@@ -60,7 +70,7 @@ bool QtXmlReader::readElement(const std::string& element){
 	return false;
 }
 
-std::string TFXmlReader::readAttribute(const std::string& attribute){
+std::string QtXmlReader::readAttribute(const std::string& attribute){
 
 	if(fileError_) return false;
 
@@ -76,10 +86,6 @@ std::string TFXmlReader::readAttribute(const std::string& attribute){
 	return value.toString().toStdString();
 }
 
-QString TFXmlReader::fileName(){
-
-	return fileName_;
-}
-
-} // namespace GUI
-} // namespace M4D
+}	//namespace TF
+}	//namespace GUI
+}	//namespace M4D

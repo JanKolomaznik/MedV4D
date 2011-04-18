@@ -1,9 +1,6 @@
 #ifndef TF_ABSTRACT_MODIFIER
 #define TF_ABSTRACT_MODIFIER
 
-#include <TFXmlReader.h>
-#include <TFXmlWriter.h>
-
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
@@ -63,14 +60,14 @@ public:
 		return stamp_;
 	}
 
-	virtual void save(TFXmlWriter::Ptr writer){
+	virtual void save(TF::XmlWriterInterface* writer){
 
 		saveSettings_(writer);
 		painter_->save(writer);
 		workCopy_->save(writer);
 	}
 
-	bool load(TFXmlReader::Ptr reader, bool& sideError){
+	bool load(TF::XmlReaderInterface* reader, bool& sideError){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading modifier..." << std::endl;
@@ -136,8 +133,8 @@ protected:
 	virtual void keyPressEvent(QKeyEvent *e){}
 	virtual void keyReleaseEvent(QKeyEvent *e){}
 
-	virtual void saveSettings_(TFXmlWriter::Ptr writer){}
-	virtual bool loadSettings_(TFXmlReader::Ptr reader){ return true; }
+	virtual void saveSettings_(TF::XmlWriterInterface* writer){}
+	virtual bool loadSettings_(TF::XmlReaderInterface* reader){ return true; }
 };
 
 } // namespace GUI

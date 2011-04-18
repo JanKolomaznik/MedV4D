@@ -1,8 +1,6 @@
 #ifndef TF_ABSTRACTFUNCTION
 #define TF_ABSTRACTFUNCTION
 
-#include <TFXmlReader.h>
-#include <TFXmlWriter.h>
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
@@ -39,8 +37,8 @@ public:
 	virtual void clear(const TF::Size dimension) = 0;
 	virtual void resize(const std::vector<TF::Size>& dataStructure) = 0;
 
-	virtual void save(TFXmlWriter::Ptr writer) = 0;
-	virtual bool load(TFXmlReader::Ptr reader, bool& sideError) = 0;
+	virtual void save(TF::XmlWriterInterface* writer) = 0;
+	virtual bool load(TF::XmlReaderInterface* reader, bool& sideError) = 0;
 
 protected:
 
@@ -192,7 +190,7 @@ public:
 		}
 	}
 	 
-	void save(TFXmlWriter::Ptr writer){
+	void save(TF::XmlWriterInterface* writer){
 
 		saveSettings_(writer);
 
@@ -227,7 +225,7 @@ public:
 		writer->writeEndElement();
 	}
 
-	bool load(TFXmlReader::Ptr reader, bool& sideError){
+	bool load(TF::XmlReaderInterface* reader, bool& sideError){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading function..." << std::endl;
@@ -335,10 +333,10 @@ protected:
 		}
 	}
 
-	virtual void saveSettings_(TFXmlWriter::Ptr writer){}
-	virtual bool loadSettings_(TFXmlReader::Ptr reader){ return true; }
+	virtual void saveSettings_(TF::XmlWriterInterface* writer){}
+	virtual bool loadSettings_(TF::XmlReaderInterface* reader){ return true; }
 
-	bool loadColor_(TFXmlReader::Ptr reader, TF::Color::MapPtr loaded, TF::Size index){
+	bool loadColor_(TF::XmlReaderInterface* reader, TF::Color::MapPtr loaded, TF::Size index){
 
 		bool ok = false;
 		if(reader->readElement("Color"))

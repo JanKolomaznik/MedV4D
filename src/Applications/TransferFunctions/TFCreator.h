@@ -75,6 +75,8 @@ private:
 	QRadioButton* customRadio_;
 	QRadioButton* loadRadio_;
 
+	TF::XmlReaderInterface* reader_;
+
 	State state_;
 	Mode mode_;
 
@@ -101,7 +103,7 @@ private:
 	void clearLayout_(bool deleteItems = true);
 
 	TFBasicHolder* loadTransferFunction_();
-	TFBasicHolder* load_(TFXmlReader::Ptr reader, bool& sideError);
+	TFBasicHolder* load_(TF::XmlReaderInterface* reader, bool& sideError);
 	TFBasicHolder* createHolder_();
 
 	template<TF::Size dim>

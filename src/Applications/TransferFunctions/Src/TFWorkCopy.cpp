@@ -33,7 +33,7 @@ void TFWorkCopy::setDataStructure(const std::vector<TF::Size>& dataStructure){
 
 //---save-&-load---
 
-void TFWorkCopy::save(TFXmlWriter::Ptr writer){
+void TFWorkCopy::save(TF::XmlWriterInterface* writer){
 
 	writer->writeStartElement("WorkCopy");
 			
@@ -53,7 +53,7 @@ void TFWorkCopy::save(TFXmlWriter::Ptr writer){
 
 	data_->save(writer);
 }
-bool TFWorkCopy::load(TFXmlReader::Ptr reader, bool& sideError){
+bool TFWorkCopy::load(TF::XmlReaderInterface* reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading work copy..." << std::endl;

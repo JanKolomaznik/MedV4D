@@ -21,7 +21,10 @@ TFPalette::TFPalette(QMainWindow* parent):
 	ui_->removeButton->setEnabled(false);
 }
 
-TFPalette::~TFPalette(){}
+TFPalette::~TFPalette(){
+
+	delete ui_;
+}
 
 void TFPalette::setupDefault(){
 	//default palette functions

@@ -25,7 +25,10 @@ TFPolygonModifier::TFPolygonModifier(
 	scrollModes_.push_back(ScrollZoom);
 }
 
-TFPolygonModifier::~TFPolygonModifier(){}
+TFPolygonModifier::~TFPolygonModifier(){
+
+	delete polygonTools_;
+}
 
 void TFPolygonModifier::createTools_(){
 

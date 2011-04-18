@@ -34,19 +34,3 @@ SET(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:
 	libcd.lib;
 	msvcrtd.lib)
 ENDIF(MSVC)
-
-IF(WIN32)
-#copy libs to project debug dir
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtCore4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtCore4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtCored4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtCored4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtGui4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtGui4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtGuid4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtGuid4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGL4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtOpenGL4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGLd4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtOpenGLd4.dll COPYONLY)
-ENDIF(WIN32)

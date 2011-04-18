@@ -27,7 +27,10 @@ TFSimpleModifier::TFSimpleModifier(
 	firstOnly_ = (names.size() < 3);
 }
 
-TFSimpleModifier::~TFSimpleModifier(){}
+TFSimpleModifier::~TFSimpleModifier(){
+
+	delete simpleTools_;
+}
 
 void TFSimpleModifier::createTools_(){
 
