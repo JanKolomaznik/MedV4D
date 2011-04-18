@@ -53,6 +53,7 @@ BasicSliceViewer::~BasicSliceViewer()
 void
 BasicSliceViewer::RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer )
 {
+	ASSERT( aSize.width() > 0 && aSize.height() > 0 );
 	ASSERT( aBuffer != NULL );
 
 	makeCurrent();
@@ -96,6 +97,8 @@ BasicSliceViewer::RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer )
 	
 	frameBuffer.Unbind();
 
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glPixelStorei( GL_PACK_ROW_LENGTH, aSize.width() );
 
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, frameBuffer.GetColorBuffer() ) );
 	GL_CHECKED_CALL( glGetTexImage(	
