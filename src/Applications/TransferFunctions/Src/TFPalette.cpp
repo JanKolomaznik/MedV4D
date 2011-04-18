@@ -56,6 +56,17 @@ void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure){
 	if(findNewActive) activeEditor_ = noFunctionAvailable;
 }
 
+void TFPalette::setPreview(const QImage& preview, const int index){
+
+	TF::Size editorIndex = activeEditor_;
+	if(index >= 0) editorIndex = index;
+
+	HolderMapIt editor = palette_.find(editorIndex);
+	if(editor == palette_.end()) return;
+
+	editor->second.button->setPreview(preview);
+}
+
 TFFunctionInterface::Const TFPalette::getTransferFunction(){
 
 	if(activeEditor_ == emptyPalette || activeEditor_ == noFunctionAvailable)

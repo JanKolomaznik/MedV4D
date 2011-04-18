@@ -159,6 +159,11 @@ void TFCompositeModifier::change_check(){
 void TFCompositeModifier::computeResultFunction_(){
 
 	TF::Size domain = function_->getDomain(TF_DIMENSION_1);
+	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
+	{
+		if((*it)->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
+	}	//check if dimension change is in process
+
 	for(TF::Size i = 0; i < domain; ++i)
 	{		
 		TF::Color result;
@@ -170,6 +175,7 @@ void TFCompositeModifier::computeResultFunction_(){
 		function_->setRGBfColor(TF_DIMENSION_1, i, result);
 	}
 	workCopy_->forceUpdate();
+	changed_ = true;
 	update();
 }
 

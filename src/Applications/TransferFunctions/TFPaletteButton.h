@@ -6,6 +6,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QAction>
 #include <QtGui/QPainter>
+#include <QtGui/QImage>
 
 namespace M4D {
 namespace GUI {
@@ -20,7 +21,7 @@ public:
 	~TFPaletteButton();
 
 	void setup();
-	void setPreview(const QPixmap& preview);
+	void setPreview(const QImage& preview);
 
 	void setActive(const bool active);
 	void setAvailable(const bool available);
@@ -37,7 +38,7 @@ protected:
 private:
 
 	TF::Size index_;
-	QPixmap preview_;
+	QImage preview_;
 	const TF::Size size_;
 	
 	bool active_;

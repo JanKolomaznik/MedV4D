@@ -42,6 +42,7 @@ public:
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 	void setHistogram(const TF::Histogram::Ptr histogram);
+	void setPreview(const QImage& preview, const int index = -1);
 
 	TF::Size getDomain(const TF::Size dimension);	
 	TF::Size getDimension();	

@@ -173,8 +173,8 @@ void TFViewModifier::wheelEvent(QWheelEvent *e){
 
 	if(altPressed_)
 	{
-		if(steps > 0) workCopy_->increaseHistogramLogBase(steps);
-		if(steps < 0) workCopy_->decreaseHistogramLogBase(-steps);
+		if(steps < 0) workCopy_->increaseHistogramLogBase(-steps);
+		if(steps > 0) workCopy_->decreaseHistogramLogBase(steps);
 		update();
 		return;
 	}

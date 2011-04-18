@@ -31,6 +31,9 @@ public:
 	bool refreshSelection();
 	Composition getComposition();
 
+	virtual void accept();
+	virtual void reject();
+
 //private slots:
 
 	//void on_toggleView_clicked();	//zapnuti/vypnuti nahledu

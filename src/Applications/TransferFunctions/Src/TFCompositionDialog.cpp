@@ -59,6 +59,30 @@ bool TFCompositionDialog::refreshSelection(){
 	return !allAvailableEditors_.empty();
 }
 
+void TFCompositionDialog::accept(){
+
+	indexesMemory_.clear();
+	for(TF::Size i = 0;	i < checkBoxes_.size();	++i)
+	{
+		if(checkBoxes_[i]->isChecked()) 
+		{
+			indexesMemory_.insert(allAvailableEditors_[i]->getIndex());
+		}
+	}
+	QDialog::accept();
+}
+
+void TFCompositionDialog::reject(){
+
+	bool wasChecked;
+	for(TF::Size i = 0;	i < checkBoxes_.size();	++i)
+	{
+		wasChecked = (indexesMemory_.find(allAvailableEditors_[i]->getIndex()) != indexesMemory_.end());
+		checkBoxes_[i]->setChecked(wasChecked);
+	}
+	QDialog::reject();
+}
+
 TFCompositionDialog::Composition TFCompositionDialog::getComposition(){
 
 	Composition result;
@@ -67,7 +91,6 @@ TFCompositionDialog::Composition TFCompositionDialog::getComposition(){
 		if(checkBoxes_[i]->isChecked()) 
 		{
 			result.push_back(allAvailableEditors_[i]);
-			indexesMemory_.insert(allAvailableEditors_[i]->getIndex());
 		}
 	}
 	return result;

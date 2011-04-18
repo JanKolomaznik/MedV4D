@@ -16,6 +16,7 @@ ViewerWindow::ViewerWindow():
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
+	mViewer->EnableJittering(false);
 	
 	//---TF Editor---
 

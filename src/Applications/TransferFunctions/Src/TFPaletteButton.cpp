@@ -19,7 +19,7 @@ void TFPaletteButton::setup(){
 	setMinimumSize(fixedSize);
 	setMaximumSize(fixedSize);
 
-	preview_ = QPixmap(fixedSize);
+	preview_ = QImage(fixedSize, QImage::Format_RGB16);
 	preview_.fill(Qt::black);
 
 	QPainter drawer(&preview_);
@@ -52,7 +52,7 @@ void TFPaletteButton::setup(){
 	drawer.drawLine(width(), 0, width(), height());
 }
 
-void TFPaletteButton::setPreview(const QPixmap& preview){
+void TFPaletteButton::setPreview(const QImage& preview){
 
 	preview_ = preview;
 }
@@ -73,7 +73,7 @@ void TFPaletteButton::paintEvent(QPaintEvent*){
 
 	QPainter drawer(this);
 
-	drawer.drawPixmap(rect(), preview_);
+	drawer.drawImage(rect(), preview_);
 
 	if(active_) drawer.drawPixmap(rect(), activePreview_);
 	else if(available_) drawer.drawPixmap(rect(), availablePreview_);
