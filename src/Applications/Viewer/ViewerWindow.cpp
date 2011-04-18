@@ -119,8 +119,8 @@ ViewerWindow::changeColorMapType( int aColorMap )
 void
 ViewerWindow::testSlot()
 {
-	/*QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
-	label->setPixmap( QPixmap::fromImage( image ) );*/
+	//QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
+	//label->setPixmap( QPixmap::fromImage( image ) );
 }
 
 

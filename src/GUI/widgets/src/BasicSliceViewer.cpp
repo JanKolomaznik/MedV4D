@@ -65,51 +65,53 @@ BasicSliceViewer::RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer )
 	glGetIntegerv( GL_VIEWPORT, viewportParams );*/
 	GL_CHECKED_CALL( glViewport( 0, 0, aSize.width(), aSize.height() ) );
 
-	FrameBufferObject frameBuffer;
-	float x = (float)aSize.width() / aSize.height();
+	//Block where framebuffer is allocated - must be deallocated bufore context deactivation
+	{
+		FrameBufferObject frameBuffer;
+		float x = (float)aSize.width() / aSize.height();
 
-	frameBuffer.Initialize( aSize.width(), aSize.height() );
-	frameBuffer.Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if( IsDataPrepared() ) {
-		switch ( mRendererType ) {
-		case rt3D: {
-				M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration config = mVolumeRenderConfig;
-				config.camera.SetAspectRatio( x );
-				mVolumeRenderer.Render( config );
+		frameBuffer.Initialize( aSize.width(), aSize.height() );
+		frameBuffer.Bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if( IsDataPrepared() ) {
+			switch ( mRendererType ) {
+			case rt3D: {
+					M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration config = mVolumeRenderConfig;
+					config.camera.SetAspectRatio( x );
+					mVolumeRenderer.Render( config );
+				}
+				break;
+			case rt2DAlignedSlices: {
+					M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration config = mSliceRenderConfig;
+					config.viewConfig = GetOptimalViewConfiguration(
+						VectorPurgeDimension( _regionRealMin, mSliceRenderConfig.plane ), 
+						VectorPurgeDimension( _regionRealMax, mSliceRenderConfig.plane ),
+						Vector< uint32, 2 >( (uint32)aSize.width(), (uint32)aSize.height() ), 
+						ztFIT );
+					//config.camera.SetAspectRatio( x );
+					mSliceRenderer.Render( config );
+				}
+				break;
+			default:
+				ASSERT( false );
 			}
-			break;
-		case rt2DAlignedSlices: {
-				M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration config = mSliceRenderConfig;
-				config.viewConfig = GetOptimalViewConfiguration(
-					VectorPurgeDimension( _regionRealMin, mSliceRenderConfig.plane ), 
-					VectorPurgeDimension( _regionRealMax, mSliceRenderConfig.plane ),
-					Vector< uint32, 2 >( (uint32)aSize.width(), (uint32)aSize.height() ), 
-					ztFIT );
-				//config.camera.SetAspectRatio( x );
-				mSliceRenderer.Render( config );
-			}
-			break;
-		default:
-			ASSERT( false );
 		}
+		
+		frameBuffer.Unbind();
+
+		glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+		glPixelStorei( GL_PACK_ROW_LENGTH, aSize.width() );
+
+		GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, frameBuffer.GetColorBuffer() ) );
+		GL_CHECKED_CALL( glGetTexImage(	
+					GL_TEXTURE_2D, 
+					0, 
+					GL_RGB, 
+					GL_UNSIGNED_BYTE, 
+					(void*)aBuffer
+					) );
+		GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, 0 ) );
 	}
-	
-	frameBuffer.Unbind();
-
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glPixelStorei( GL_PACK_ROW_LENGTH, aSize.width() );
-
-	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, frameBuffer.GetColorBuffer() ) );
-	GL_CHECKED_CALL( glGetTexImage(	
-				GL_TEXTURE_2D, 
-				0, 
-				GL_RGB, 
-				GL_UNSIGNED_BYTE, 
-				(void*)aBuffer
-				) );
-	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, 0 ) );
-
 	GL_CHECKED_CALL( glPopAttrib() );
 	//Vector2u size = frameBuffer.GetSize();
 	//SaveTextureToImageFile( size[0], size[1], frameBuffer.GetColorBuffer(), "output.png", true );
