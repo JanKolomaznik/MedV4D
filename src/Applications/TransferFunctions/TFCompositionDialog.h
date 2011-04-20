@@ -8,6 +8,7 @@
 #include <QtGui/QCheckBox>
 
 #include <TFCommon.h>
+#include <TFPaletteButton.h>
 
 #include <ui_TFCompositionDialog.h>
 
@@ -23,34 +24,45 @@ class TFCompositionDialog: public QDialog{
 
 public:
 
-	typedef std::vector<TFBasicHolder*> Composition;
+	typedef std::set<TF::Size> Selection;
 
-	TFCompositionDialog(TFPalette* palette);
+	TFCompositionDialog(QWidget* parent = 0);
 	~TFCompositionDialog();
 
-	bool refreshSelection();
-	Composition getComposition();
+	void updateSelection(const std::map<TF::Size, TFBasicHolder*>& editors, TFPalette* palette);
+	bool selectionChanged();
+	Selection getComposition();
 
 	virtual void accept();
 	virtual void reject();
 
-//private slots:
+private slots:
 
-	//void on_toggleView_clicked();	//zapnuti/vypnuti nahledu
+	void on_previewsCheck_toggled(bool enable);
+	void button_triggered(TF::Size index);
 
-private:	
+protected:
+
+	void resizeEvent(QResizeEvent*);
+
+private:
+
+	typedef std::map<TF::Size, TFPaletteCheckButton*> Buttons;
+
+	bool previewEnabled_;
+
+	TF::Size colModulator_;
 
 	Ui::TFCompositionDialog* ui_;
-	QVBoxLayout* layout_;
+	QGridLayout* layout_;
 	QSpacerItem* pushUpSpacer_;
 
-	std::vector<QCheckBox*> checkBoxes_;
-	Composition allAvailableEditors_;
-	std::set<TF::Size> indexesMemory_;
+	bool selectionChanged_;
 
-	TFPalette* palette_;
-
-	Common::TimeStamp lastPaletteChange_;
+	Selection indexesMemory_;
+	Selection indexes_;
+	
+	Buttons buttons_;
 
 	void clearLayout_();
 };

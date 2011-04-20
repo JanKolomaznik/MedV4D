@@ -16,16 +16,19 @@ ViewerWindow::ViewerWindow():
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
-	mViewer->EnableJittering(false);
 	
 	//---TF Editor---
 
-	mTransferFunctionEditor = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
-	mTransferFunctionEditor->setupDefault();	
+	editingSystem_ = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
+	editingSystem_->setupDefault();	
+
+	bool previewUpdateConnected = QObject::connect(&(*editingSystem_), SIGNAL(UpdatePreview(M4D::GUI::TF::Size)),
+		this, SLOT(updatePreview(M4D::GUI::TF::Size)));
+	tfAssert(previewUpdateConnected);
 
 	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 	
-	dockWidget->setWidget( &(*mTransferFunctionEditor) );
+	dockWidget->setWidget( &(*editingSystem_) );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	
@@ -33,8 +36,8 @@ ViewerWindow::ViewerWindow():
 
 	//---Timer---
 
-	mTransFuncTimer.setInterval( 500 );
-	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
+	changeChecker_.setInterval( 500 );
+	QObject::connect( &changeChecker_, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
 
 	//---Viewer Switch---
 
@@ -88,7 +91,7 @@ ViewerWindow::ViewerWindow():
 		
 	//---Default buffer---
 
-	buffer_ = Buffer1DPtr(new Buffer1D(4095, Interval(0.0f, 4095.0f)));	
+	buffer_ = Buffer1D::Ptr(new Buffer1D(4095, Interval(0.0f, 4095.0f)));	
 		
 	#ifdef TF_NDEBUG
 		showMaximized();
@@ -96,6 +99,7 @@ ViewerWindow::ViewerWindow():
 	#ifndef TF_NDEBUG
 		show();
 	#endif
+	//show must be called before setting transfer function buffer
 	mViewer->SetTransferFunctionBuffer(buffer_);
 }
 
@@ -133,22 +137,81 @@ void ViewerWindow::changeColorMapType( int aColorMap ){
 void ViewerWindow::applyTransferFunction(){
 
 	if(!fileLoaded_) return;
-	
-	if(!buffer_ || (buffer_->Size() != mTransferFunctionEditor->getDomain(TF_DIMENSION_1)))
+	/*
+	if(!buffer_ || (buffer_->Size() != editingSystem_->getDomain(TF_DIMENSION_1)))
 	{
-		buffer_ = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(TF_DIMENSION_1),
-			Interval(0.0f, (float)mTransferFunctionEditor->getDomain(TF_DIMENSION_1))));
+		buffer_ = Buffer1D::Ptr(new Buffer1D(editingSystem_->getDomain(TF_DIMENSION_1),
+			Interval(0.0f, (float)editingSystem_->getDomain(TF_DIMENSION_1))));
 	}
 	
-	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer_->Begin(), buffer_->End());
+	bool tfUsed = editingSystem_->applyTransferFunction<Buffer1D::iterator>( buffer_->Begin(), buffer_->End());
 	
-	if(tfUsed) mViewer->SetTransferFunctionBuffer(buffer_);
+	if(tfUsed)
+	{
+		mViewer->SetTransferFunctionBuffer(buffer_);
+
+		QSize previewSize = editingSystem_->getPreviewSize();
+		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
+		editingSystem_->setPreview(thumbnailImage);
+	}
+	*/
+
+	if(fillBufferFromTF_(editingSystem_->getTransferFunction(), buffer_))
+	{
+		mViewer->SetTransferFunctionBuffer(buffer_);
+	}
+
+	QSize previewSize = editingSystem_->getPreviewSize();
+	QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
+	editingSystem_->setPreview(thumbnailImage);
+}
+
+bool ViewerWindow::fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const function, Buffer1D::Ptr& buffer){
+
+	if(!function) return false;
+
+	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
+	if(!buffer || buffer->Size() != domain)
+	{
+		buffer = Buffer1D::Ptr(new Buffer1D(domain, Interval(0.0f, (float)domain)));
+	}
+
+	M4D::GUI::TF::Color color;
+	for(M4D::GUI::TF::Size i = 0; i < domain; ++i)
+	{
+		color = function.getRGBfColor(TF_DIMENSION_1, i);
+
+		(*buffer)[i] = Buffer1D::value_type(
+			color.component1,
+			color.component2,
+			color.component3,
+			color.alpha);
+	}
+	return true;
+}
+
+void ViewerWindow::updatePreview(M4D::GUI::TF::Size index){
+
+	if(!fileLoaded_) return;
+	//TODO render with custom buffer
+	/*
+	QSize previewSize = editingSystem_->getPreviewSize();
+
+	if(fillBufferFromTF_(editingSystem_->getTransferFunction(index), buffer))
+	{
+		Buffer1D::Ptr buffer;
+		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize, buffer);
+		editingSystem_->setPreview(thumbnailImage, index);
+	}
+	*/
 }
 
 void ViewerWindow::updateTransferFunction(){
 
-	if(mTransferFunctionEditor->changed())
+	M4D::Common::TimeStamp lastChange = editingSystem_->lastChange();
+	if(lastChange_ != lastChange)
 	{
+		lastChange_ = lastChange;
 		applyTransferFunction();
 	}
 }
@@ -158,12 +221,12 @@ void ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
 	if ( aChecked )
 	{
 		D_PRINT( "Transfer function - interactive manipulation enabled" );
-		mTransFuncTimer.start();
+		changeChecker_.start();
 	}
 	else
 	{
 		D_PRINT( "Transfer function - interactive manipulation disabled" );
-		mTransFuncTimer.stop();
+		changeChecker_.stop();
 	}
 }
 
@@ -172,7 +235,7 @@ ViewerWindow::updateToolbars()
 {
 	int rendererType = mViewer->GetRendererType();
 
-	if(rendererType != 0 && rendererType != 2) rendererType = 0;
+	if(rendererType == M4D::GUI::rt3DGeneralSlices) rendererType = M4D::GUI::rt2DAlignedSlices;
 
 	switch ( rendererType )
 	{
@@ -266,16 +329,16 @@ void ViewerWindow::openFile( const QString &aPath )
 	{
 		tfHistogram->add(*it);
 	}
-	mTransferFunctionEditor->setDataStructure(std::vector<M4D::GUI::TF::Size>(1, tfHistogram->size()));
-	mTransferFunctionEditor->setHistogram(tfHistogram);	
+	editingSystem_->setDataStructure(std::vector<M4D::GUI::TF::Size>(1, tfHistogram->size()));
+	editingSystem_->setHistogram(tfHistogram);	
 
 	mViewer->ZoomFit();
 	applyTransferFunction();
-	mTransFuncTimer.start();
+	changeChecker_.start();
 }
 
 void ViewerWindow::closeEvent(QCloseEvent *e){
 
-	if(mTransferFunctionEditor->close()) e->accept();
+	if(editingSystem_->close()) e->accept();
 	else e->ignore();
 }

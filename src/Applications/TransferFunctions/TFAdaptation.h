@@ -3,7 +3,7 @@
 
 #include "GUI/utils/TransferFunctionBuffer.h"
 
-#include <TFAbstractFunction.h>
+#include <TFFunctionInterface.h>
 #include <TFColor.h>
 
 namespace M4D {

@@ -18,12 +18,23 @@ TFCompositeModifier::TFCompositeModifier(
 	layout_(new QVBoxLayout),
 	pushUpSpacer_(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding)),
 	function_(function),
+	managing_(false),
 	palette_(palette),
-	manager_(palette){
+	editors_(palette->getEditors()){
 
 	compositeTools_->setupUi(compositeWidget_);
 
-	compositeTools_->manageButton->setEnabled(manager_.refreshSelection());
+	bool compositionEnabled = false;
+	for(TFPalette::Editors::iterator it = editors_.begin(); it != editors_.end(); ++it)
+	{
+		if(!it->second->hasAttribute(TFBasicHolder::Composition) &&
+			it->second->getDimension() == TF_DIMENSION_1)
+		{
+			compositionEnabled = true;
+			break;
+		}
+	}
+	compositeTools_->manageButton->setEnabled(compositionEnabled);
 
 	layout_->setContentsMargins(10,10,10,10);
 	compositeTools_->scrollArea->setLayout(layout_);
@@ -74,20 +85,6 @@ std::vector<int> TFCompositeModifier::computeZoomMoveIncrements_(const int moveX
 	return std::vector<int>(1, moveX);
 }
 
-void TFCompositeModifier::clearLayout_(){
-
-	layout_->removeItem(pushUpSpacer_);
-	QLayoutItem* layoutIt;
-	while(!layout_->isEmpty())
-	{
-		layoutIt = layout_->itemAt(0);
-		layout_->removeItem(layoutIt);
-		layoutIt->widget()->hide();
-		delete layoutIt;
-	}
-	nameList_.clear();
-}
-
 void TFCompositeModifier::wheelEvent(QWheelEvent* e){
 	
 	int steps = e->delta() / 120;
@@ -110,53 +107,141 @@ void TFCompositeModifier::changeChecker_intervalChange(int value){
 	changeChecker_.setInterval(value);
 }
 
+void TFCompositeModifier::clearLayout_(){
+
+	layout_->removeItem(pushUpSpacer_);
+	QLayoutItem* layoutIt;
+	while(!layout_->isEmpty())
+	{
+		layoutIt = layout_->itemAt(0);
+		layout_->removeItem(layoutIt);
+	}
+}
+
 void TFCompositeModifier::manageComposition_clicked(){
 
-	if(manager_.refreshSelection()) manager_.exec();
-	else
-	{
-		QMessageBox::warning(this,
-			QObject::tr("Transfer Functions"),
-			QObject::tr("No function available for composition.")
-		);
-		return;
-	}
 	change_check();
+	if(!compositeTools_->manageButton->isEnabled()) return;
+
+	manager_.updateSelection(editors_, palette_);
+
+	managing_ = true;
+	manager_.exec();
+	managing_ = false;
+
+	updateComposition_();
+}
+
+void TFCompositeModifier::updateComposition_(){
+
+	Selection selection = manager_.getComposition();
+	clearLayout_();
+
+	bool recalculate = false;
+	M4D::Common::TimeStamp lastChange;
+	Editor* editor;
+	Composition newComposition;
+	Composition::iterator found;
+	for(Selection::iterator it = selection.begin(); it != selection.end(); ++it)
+	{
+		found = composition_.find(*it);
+		if(found == composition_.end())
+		{
+			editor = new Editor(editors_.find(*it)->second);
+			newComposition.insert(std::make_pair<TF::Size, Editor*>(
+				*it,
+				editor)
+			);
+			recalculate = true;
+		}
+		else
+		{
+			lastChange = found->second->holder->lastChange();
+			if(found->second->change != lastChange)
+			{
+				recalculate = true;
+				found->second->change = lastChange;
+			}
+			editor = found->second;
+			editor->updateName();
+
+			newComposition.insert(*found);
+			composition_.erase(found);
+		}
+
+		layout_->addWidget(editor->name);
+	}
+	layout_->addItem(pushUpSpacer_);
+
+	if(!composition_.empty()) recalculate = true;
+	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
+	{
+		layout_->removeWidget(it->second->name);
+		delete it->second;
+	}
+	composition_.swap(newComposition);
+
+	if(recalculate) computeResultFunction_();
 }
 
 void TFCompositeModifier::change_check(){
 
-	compositeTools_->manageButton->setEnabled(manager_.refreshSelection());
-
-	Composition composition = manager_.getComposition();
-
-	bool update = false;
-	if(composition != composition_)
+	if(managing_)
 	{
-		composition_.swap(composition);
-		clearLayout_();	
-		QLabel* editorName;
+		updateComposition_();
+		return;
+	}
+
+	bool recalculate = false;
+	
+	Common::TimeStamp lastChange = palette_->lastPaletteChange();
+	if(lastPaletteChange_ != lastChange)
+	{
+		lastPaletteChange_ = lastChange;
+		editors_.swap(palette_->getEditors());
+		
+		bool compositionEnabled = false;
+		Composition newComposition;
+		Composition::iterator found;
+		for(TFPalette::Editors::iterator it = editors_.begin(); it != editors_.end(); ++it)
+		{
+			if(!it->second->hasAttribute(TFBasicHolder::Composition) &&
+				it->second->getDimension() == TF_DIMENSION_1)
+			{
+				compositionEnabled = true;
+
+				found = composition_.find(it->first);
+				if(found != composition_.end())
+				{
+					newComposition.insert(*found);
+					composition_.erase(found);
+				}
+			}
+		}
+
+		if(!composition_.empty()) recalculate = true;
 		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 		{
-			editorName = new QLabel(QString::fromStdString((*it)->getName()));
-			nameList_.push_back(editorName);
-			layout_->addWidget(editorName);
+			layout_->removeWidget(it->second->name);
+			delete it->second;
 		}
-		layout_->addItem(pushUpSpacer_);
-		update = true;
-	}
-	else
-	{
-		QString name;
-		for(TF::Size i = 0; i < composition_.size(); ++i)
-		{
-			if(composition_[i]->changed()) update = true;
-			name = QString::fromStdString(composition_[i]->getName());
-			if(nameList_[i]->text() != name) nameList_[i]->setText(name);
-		}
+		composition_.swap(newComposition);
+
+		compositeTools_->manageButton->setEnabled(compositionEnabled);
 	}
 
-	if(update) computeResultFunction_();
+	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
+	{
+		lastChange = it->second->holder->lastChange();
+		if(it->second->change != lastChange)
+		{
+			recalculate = true;
+			it->second->change = lastChange;
+		}
+		it->second->updateName();
+	}
+
+	if(recalculate) computeResultFunction_();
 }
 
 void TFCompositeModifier::computeResultFunction_(){
@@ -164,7 +249,7 @@ void TFCompositeModifier::computeResultFunction_(){
 	TF::Size domain = function_->getDomain(TF_DIMENSION_1);
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 	{
-		if((*it)->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
+		if(it->second->holder->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
 	}	//check if dimension change is in process
 
 	for(TF::Size i = 0; i < domain; ++i)
@@ -172,7 +257,7 @@ void TFCompositeModifier::computeResultFunction_(){
 		TF::Color result;
 		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 		{
-			result += (*it)->getFunction().getRGBfColor(TF_DIMENSION_1, i);
+			result += it->second->holder->getFunction().getRGBfColor(TF_DIMENSION_1, i);
 		}
 		result /= composition_.size();
 		function_->setRGBfColor(TF_DIMENSION_1, i, result);
@@ -180,6 +265,26 @@ void TFCompositeModifier::computeResultFunction_(){
 	workCopy_->forceUpdate();
 	changed_ = true;
 	update();
+}
+
+//---TFCompositeModifier::Editor---
+
+void TFCompositeModifier::Editor::updateName(){
+
+	QString newName = QString::fromStdString(holder->getName());
+	if(name->text() != newName) name->setText(newName);
+}
+
+TFCompositeModifier::Editor::Editor(TFBasicHolder* holder):
+	holder(holder),
+	name(new QLabel(QString::fromStdString(holder->getName()))),
+	change(holder->lastChange()){
+}
+
+TFCompositeModifier::Editor::~Editor(){
+
+	name->hide();
+	delete name;
 }
 
 } // namespace GUI

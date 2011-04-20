@@ -6,17 +6,20 @@
 namespace M4D {
 namespace GUI {
 
-TFCompositionDialog::TFCompositionDialog(TFPalette* palette):
-	QDialog(palette),
+TFCompositionDialog::TFCompositionDialog(QWidget* parent):
+	QDialog(parent),
 	ui_(new Ui::TFCompositionDialog),
-	layout_(new QVBoxLayout()),
+	layout_(new QGridLayout()),
 	pushUpSpacer_(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding)),
-	palette_(palette){
+	colModulator_(1),
+	selectionChanged_(false),
+	previewEnabled_(false){
 
 	ui_->setupUi(this);
 
-	layout_->setContentsMargins(10,10,10,10);
-	ui_->scrollArea->setLayout(layout_);
+	layout_->setContentsMargins(5,5,5,5);
+	layout_->setAlignment(Qt::AlignCenter);
+	ui_->scrollAreaWidget->setLayout(layout_);
 }
 
 TFCompositionDialog::~TFCompositionDialog(){
@@ -24,94 +27,151 @@ TFCompositionDialog::~TFCompositionDialog(){
 	delete ui_;
 }
 
-bool TFCompositionDialog::refreshSelection(){
+void TFCompositionDialog::updateSelection(const std::map<TF::Size, TFBasicHolder*>& editors, TFPalette* palette){
 
-	Common::TimeStamp stamp = palette_->lastPaletteChange();
-	if(lastPaletteChange_ != stamp)
+	clearLayout_();
+
+	Buttons newButtons;
+
+	Buttons::iterator found;
+	TFPaletteCheckButton* button;
+	bool available;
+	TF::Size rowCounter = 0, colCounter = 0;
+	for(TFPalette::Editors::const_iterator it = editors.begin(); it != editors.end(); ++it)
 	{
-		lastPaletteChange_ = stamp;
+		available = !it->second->hasAttribute(TFBasicHolder::Composition);
+		available = available && (it->second->getDimension() == TF_DIMENSION_1);
 
-		clearLayout_();
-	
-		std::set<TF::Size> indexes;
-		QCheckBox* editorCheck;
-		bool wrongDimension;
-		bool isComposition;
-		Composition allEditors = palette_->getEditors();
-		for(Composition::iterator it = allEditors.begin(); it != allEditors.end(); ++it)
+		found = buttons_.find(it->second->getIndex());
+		if(found == buttons_.end())
 		{
-			isComposition = (*it)->hasAttribute(TFBasicHolder::Composition);
-			wrongDimension = ((*it)->getDimension() != TF_DIMENSION_1);
-			if(isComposition || wrongDimension) continue;
+			button = new TFPaletteCheckButton(it->second->getIndex());
+			button->setup(it->second->getName(), previewEnabled_);
+			button->setPreview(palette->getPreview(it->second->getIndex()));
+			button->setAvailable(available);
+			button->setActive(indexes_.find(it->second->getIndex()) != indexes_.end());
 
-			editorCheck = new QCheckBox(QString::fromStdString((*it)->getName()));
-			if(indexesMemory_.find((*it)->getIndex()) != indexesMemory_.end())
-			{
-				editorCheck->setChecked(true);
-				indexes.insert((*it)->getIndex());
-			}
+			bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(button_triggered(TF::Size)));
+			tfAssert(buttonConnected);
 
-			checkBoxes_.push_back(editorCheck);
-			layout_->addWidget(editorCheck);
-
-			allAvailableEditors_.push_back(*it);
+			newButtons.insert(std::make_pair<TF::Size, TFPaletteCheckButton*>(it->second->getIndex(), button));
 		}
-		layout_->addItem(pushUpSpacer_);
-		indexesMemory_.swap(indexes);
+		else
+		{
+			button = found->second;
+			button->setName(it->second->getName());
+			button->setPreview(palette->getPreview(it->second->getIndex()));
+			button->togglePreview(previewEnabled_);
+			button->setAvailable(available);
+			button->setActive(indexes_.find(it->second->getIndex()) != indexes_.end());
+
+			newButtons.insert(*found);
+			buttons_.erase(found);
+		}
+
+		layout_->addWidget(button, rowCounter, colCounter, Qt::AlignCenter);
+		button->show();
+		++colCounter;
+		if(colCounter == colModulator_)
+		{
+			colCounter = 0;
+			++rowCounter;
+		}
 	}
-	return !allAvailableEditors_.empty();
+	for(Buttons::iterator it = buttons_.begin(); it != buttons_.end(); ++it)
+	{
+		delete it->second;
+	}
+	buttons_.swap(newButtons);
+}
+
+void TFCompositionDialog::button_triggered(TF::Size index){
+
+	Buttons::iterator triggered = buttons_.find(index);
+	tfAssert(triggered != buttons_.end());
+
+	if(triggered->second->isActive())
+	{
+		triggered->second->setActive(false);
+		indexes_.erase(index);
+	}
+	else
+	{
+		triggered->second->setActive(true);
+		indexes_.insert(index);
+	}
+	
+	selectionChanged_ = true;
 }
 
 void TFCompositionDialog::accept(){
 
-	indexesMemory_.clear();
-	for(TF::Size i = 0;	i < checkBoxes_.size();	++i)
-	{
-		if(checkBoxes_[i]->isChecked()) 
-		{
-			indexesMemory_.insert(allAvailableEditors_[i]->getIndex());
-		}
-	}
+	indexesMemory_ = indexes_;
 	QDialog::accept();
 }
 
 void TFCompositionDialog::reject(){
 
-	bool wasChecked;
-	for(TF::Size i = 0;	i < checkBoxes_.size();	++i)
-	{
-		wasChecked = (indexesMemory_.find(allAvailableEditors_[i]->getIndex()) != indexesMemory_.end());
-		checkBoxes_[i]->setChecked(wasChecked);
-	}
+	indexes_ = indexesMemory_;
 	QDialog::reject();
 }
 
-TFCompositionDialog::Composition TFCompositionDialog::getComposition(){
+TFCompositionDialog::Selection TFCompositionDialog::getComposition(){
 
-	Composition result;
-	for(TF::Size i = 0;	i < checkBoxes_.size();	++i)
-	{
-		if(checkBoxes_[i]->isChecked()) 
-		{
-			result.push_back(allAvailableEditors_[i]);
-		}
-	}
-	return result;
+	selectionChanged_ = false;
+	return indexes_;
+}
+
+bool TFCompositionDialog::selectionChanged(){
+
+	return selectionChanged_;
 }
 
 void TFCompositionDialog::clearLayout_(){
 
-	layout_->removeItem(pushUpSpacer_);
 	QLayoutItem* layoutIt;
 	while(!layout_->isEmpty())
 	{
 		layoutIt = layout_->itemAt(0);
 		layout_->removeItem(layoutIt);
 		layoutIt->widget()->hide();
-		delete layoutIt;
 	}
-	checkBoxes_.clear();
-	allAvailableEditors_.clear();
+}
+
+void TFCompositionDialog::resizeEvent(QResizeEvent*){
+
+	ui_->dialogWidget->resize(size());
+
+	TF::Size newColModulator = ui_->scrollArea->width()/buttons_.begin()->second->width();
+	if(newColModulator == 0) newColModulator = 1;
+
+	if(colModulator_ == newColModulator) return;
+
+	colModulator_ = newColModulator;
+
+	clearLayout_();
+
+	TF::Size rowCounter = 0, colCounter = 0;
+	for(Buttons::iterator it = buttons_.begin(); it != buttons_.end(); ++it)
+	{
+		layout_->addWidget(it->second, rowCounter, colCounter, Qt::AlignCenter);
+		it->second->show();
+		++colCounter;
+		if(colCounter == colModulator_)
+		{
+			colCounter = 0;
+			++rowCounter;
+		}
+	}
+}
+
+void TFCompositionDialog::on_previewsCheck_toggled(bool enable){
+
+	previewEnabled_ = enable;
+	for(Buttons::iterator it = buttons_.begin(); it != buttons_.end(); ++it)
+	{
+		it->second->togglePreview(previewEnabled_);
+	}
 }
 
 } // namespace GUI

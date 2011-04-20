@@ -12,6 +12,7 @@
 #include <TFCommon.h>
 #include <TFWorkCopy.h>
 #include <TFAbstractPainter.h>
+#include <TFAbstractFunction.h>
 
 #include <QtGui/QWidget>
 

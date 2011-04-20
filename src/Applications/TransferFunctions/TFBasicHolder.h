@@ -12,7 +12,7 @@
 #include <TFCommon.h>
 #include <TFHistogram.h>
 
-#include <TFAbstractFunction.h>
+#include <TFFunctionInterface.h>
 #include <TFAbstractModifier.h>
 #include <TFWorkCopy.h>
 
@@ -53,7 +53,6 @@ public:
 	virtual void setup(QMainWindow* mainWindow, const int index = -1);
 	virtual void setHistogram(TF::Histogram::Ptr histogram);
 	virtual void setDataStructure(const std::vector<TF::Size>& dataStructure);
-	void setAvailable(const bool available);
 
 	TF::Size getIndex();
 	std::string getName();
@@ -66,8 +65,9 @@ public:
 	QDockWidget* getDockWidget() const;
 
 	virtual void setActive(const bool active);
+	void setAvailable(const bool available);
 
-	virtual bool changed();
+	virtual Common::TimeStamp lastChange();
 
 	template<typename BufferIterator>
 	bool applyTransferFunction(
@@ -114,6 +114,7 @@ protected:
 	Attributes attributes_;
 
 	M4D::Common::TimeStamp lastSave_;
+	M4D::Common::TimeStamp lastChange_;
 	bool active_;
 
 	TFAbstractModifier::Ptr modifier_;

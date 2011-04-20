@@ -12,6 +12,8 @@
 namespace M4D {
 namespace GUI {
 
+class TFPalette;
+
 class TFCompositeModifier: public TFViewModifier{
 
 	Q_OBJECT
@@ -35,22 +37,40 @@ protected slots:
 
 protected:
 
-	typedef TFCompositionDialog::Composition Composition;
+	struct Editor{
+		TFBasicHolder* holder;
+		Common::TimeStamp change;
+		QLabel* name;
+
+		void updateName();
+
+		Editor(TFBasicHolder* holder);
+
+		~Editor();
+	};
+	typedef std::map<TF::Size, Editor*> Composition;
+
+	typedef TFCompositionDialog::Selection Selection;
 
 	Ui::TFCompositeModifier* compositeTools_;
 	QWidget* compositeWidget_;
 	QVBoxLayout* layout_;
 	QSpacerItem* pushUpSpacer_;
-	std::vector<QLabel*> nameList_;
 	
 	TFPalette* palette_;
+	Common::TimeStamp lastPaletteChange_;
+	std::map<TF::Size, TFBasicHolder*> editors_;
+
 	TFCompositionDialog manager_;
+	bool managing_;
 
 	QTimer changeChecker_;
 	Composition composition_;
+
 	TFAbstractFunction<TF_DIMENSION_1>::Ptr function_;
 
 	virtual void computeResultFunction_();
+	void updateComposition_();
 
 	virtual void createTools_();
 	void clearLayout_();

@@ -1,6 +1,8 @@
 #ifndef TF_WINDOW
 #define TF_WINDOW
 
+#include "common/IDGenerator.h"
+
 #include <map>
 
 #include <QtGui/QWidget>
@@ -12,6 +14,7 @@
 #include <QtGui/QKeySequence>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QVBoxLayout>
+#include <QtCore/QTimer>
 
 #include <TFCreator.h>
 #include <TFPaletteButton.h>
@@ -34,6 +37,7 @@ class TFPalette : public QMainWindow{
 public:
 
 	typedef boost::shared_ptr<TFPalette> Ptr;
+	typedef std::map<TF::Size, TFBasicHolder*> Editors;
 
 	TFPalette(QMainWindow* parent);
     ~TFPalette();
@@ -43,14 +47,16 @@ public:
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 	void setHistogram(const TF::Histogram::Ptr histogram);
 	void setPreview(const QImage& preview, const int index = -1);
+	QImage getPreview(const int index = -1);
 
+	QSize getPreviewSize();
 	TF::Size getDomain(const TF::Size dimension);	
 	TF::Size getDimension();	
 
-	std::vector<TFBasicHolder*> getEditors();	
-	TFFunctionInterface::Const getTransferFunction();
+	Editors getEditors();	
+	TFFunctionInterface::Const getTransferFunction(const int index = -1);
 
-	bool changed();
+	Common::TimeStamp lastChange();
 	Common::TimeStamp lastPaletteChange();
 
 	template<typename BufferIterator>
@@ -62,6 +68,10 @@ public:
 		return palette_.find(activeEditor_)->second.holder->applyTransferFunction<BufferIterator>(begin, end);
 	}
 
+signals:
+
+	void UpdatePreview(M4D::GUI::TF::Size index);
+
 private slots:
 
     void close_triggered(TF::Size index);
@@ -70,6 +80,9 @@ private slots:
 	void on_removeButton_clicked();
 
 	void change_activeHolder(TF::Size index);
+
+	void update_previews();
+	void on_previewsCheck_toggled(bool enable);
 
 protected:
 
@@ -81,6 +94,8 @@ private:
 	struct Editor{
 		TFBasicHolder* holder;
 		TFPaletteButton* button;
+		M4D::Common::TimeStamp change;
+		M4D::Common::TimeStamp previewUpdate;
 
 		Editor():
 			holder(NULL),
@@ -91,9 +106,20 @@ private:
 			holder(holder),
 			button(button){
 		}
+
+		void updatePreview(){
+
+			previewUpdate = M4D::Common::TimeStamp();
+		}
+
+		~Editor(){
+
+			delete button;
+			delete holder;
+		}
 	};
 
-	typedef std::map<TF::Size, Editor> HolderMap;
+	typedef std::map<TF::Size, Editor*> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
 
 	static const int noFunctionAvailable = -1;
@@ -106,14 +132,18 @@ private:
 	TF::Histogram::Ptr histogram_;
 	std::vector<TF::Size> dataStructure_;
 
+	M4D::Common::TimeStamp lastPaletteChange_;
 	M4D::Common::TimeStamp lastChange_;
 	bool activeChanged_;
 
-	TF::Indexer indexer_;
+	M4D::Common::IDGenerator idGenerator_;
 	int activeEditor_;
 	HolderMap palette_;
 
 	TFCreator creator_;
+
+	QTimer previewUpdater_;
+	bool previewEnabled_;
 
 	void addToPalette_(TFBasicHolder* holder);
 	void removeFromPalette_(const TF::Size index);

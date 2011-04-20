@@ -200,9 +200,10 @@ QDockWidget* TFBasicHolder::getDockWidget() const{
 	return holderDock_;
 }
 
-bool TFBasicHolder::changed(){
+Common::TimeStamp TFBasicHolder::lastChange(){
 
-	return modifier_->changed();
+	if(modifier_->changed()) ++lastChange_;
+	return lastChange_;
 }
 
 void TFBasicHolder::setHistogram(TF::Histogram::Ptr histogram){

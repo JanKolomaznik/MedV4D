@@ -2,7 +2,7 @@
 #define TF_WORKCOPY
 
 #include <TFCommon.h>
-#include <TFAbstractFunction.h>
+#include <TFFunctionInterface.h>
 #include <TFHistogram.h>
 
 #include <cmath>

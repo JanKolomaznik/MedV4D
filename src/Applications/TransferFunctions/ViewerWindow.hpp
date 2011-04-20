@@ -14,18 +14,11 @@
 #include <QtCore>
 
 #include <TFPalette.h>
+#include <TFFunctionInterface.h>
 
 class ViewerWindow: public QMainWindow, public Ui::ViewerWindow{
 
 	Q_OBJECT
-
-	typedef M4D::GUI::TransferFunctionBuffer1D Buffer1D;
-	typedef boost::shared_ptr<Buffer1D> Buffer1DPtr;
-	typedef Buffer1D::MappedInterval Interval;
-
-	typedef M4D::Imaging::Histogram64 Histogram;
-
-	typedef M4D::GUI::TF::Histogram TFHistogram;
 
 public:
 
@@ -36,7 +29,7 @@ public:
 public slots:
 
 	void openFile();
-	void  openFile( const QString &aPath );
+	void openFile( const QString &aPath );
 
 	void applyTransferFunction();
 	void toggleInteractiveTransferFunction( bool aChecked );
@@ -47,16 +40,27 @@ public slots:
 	void updateTransferFunction();
 	void updateToolbars();
 
+	void updatePreview(M4D::GUI::TF::Size index);
+
 protected:
 
+	typedef M4D::GUI::TransferFunctionBuffer1D Buffer1D;
+	typedef Buffer1D::MappedInterval Interval;
+
+	typedef M4D::Imaging::Histogram64 Histogram;
+	typedef M4D::GUI::TF::Histogram TFHistogram;
+
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
-	M4D::GUI::TFPalette::Ptr mTransferFunctionEditor;
+	M4D::GUI::TFPalette::Ptr editingSystem_;
 
-	Buffer1DPtr buffer_;
+	Buffer1D::Ptr buffer_;
 
-	QTimer	mTransFuncTimer;
+	QTimer	changeChecker_;
+	M4D::Common::TimeStamp lastChange_;
 
 	bool fileLoaded_;
+
+	bool fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const function, Buffer1D::Ptr& buffer);
 
 	void closeEvent(QCloseEvent*);
 };
