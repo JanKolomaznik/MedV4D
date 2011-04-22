@@ -46,10 +46,11 @@ public:
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 	void setHistogram(const TF::Histogram::Ptr histogram);
+
 	void setPreview(const QImage& preview, const int index = -1);
 	QImage getPreview(const int index = -1);
-
 	QSize getPreviewSize();
+
 	TF::Size getDomain(const TF::Size dimension);	
 	TF::Size getDimension();	
 
@@ -110,12 +111,6 @@ private:
 		void updatePreview(){
 
 			previewUpdate = M4D::Common::TimeStamp();
-		}
-
-		~Editor(){
-
-			delete button;
-			delete holder;
 		}
 	};
 

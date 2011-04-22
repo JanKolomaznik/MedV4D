@@ -159,11 +159,11 @@ void ViewerWindow::applyTransferFunction(){
 	if(fillBufferFromTF_(editingSystem_->getTransferFunction(), buffer_))
 	{
 		mViewer->SetTransferFunctionBuffer(buffer_);
-	}
 
-	QSize previewSize = editingSystem_->getPreviewSize();
-	QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
-	editingSystem_->setPreview(thumbnailImage);
+		QSize previewSize = editingSystem_->getPreviewSize();
+		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
+		editingSystem_->setPreview(thumbnailImage);
+	}
 }
 
 bool ViewerWindow::fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const function, Buffer1D::Ptr& buffer){
@@ -192,16 +192,18 @@ bool ViewerWindow::fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const functi
 
 void ViewerWindow::updatePreview(M4D::GUI::TF::Size index){
 
-	if(!fileLoaded_) return;
-	//TODO render with custom buffer
+	if(!fileLoaded_) return;	
 	/*
-	QSize previewSize = editingSystem_->getPreviewSize();
-
+	Buffer1D::Ptr buffer;
 	if(fillBufferFromTF_(editingSystem_->getTransferFunction(index), buffer))
 	{
-		Buffer1D::Ptr buffer;
-		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize, buffer);
+		mViewer->SetTransferFunctionBuffer(buffer);
+
+		QSize previewSize = editingSystem_->getPreviewSize();
+		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
 		editingSystem_->setPreview(thumbnailImage, index);
+
+		mViewer->SetTransferFunctionBuffer(buffer_);
 	}
 	*/
 }

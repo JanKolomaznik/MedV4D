@@ -76,6 +76,7 @@ void TFPalette::setPreview(const QImage& preview, const int index){
 	if(editor == palette_.end()) return;
 
 	editor->second->button->setPreview(preview);
+	editor->second->previewUpdate = editor->second->holder->lastChange();
 }
 
 QImage TFPalette::getPreview(const int index){
@@ -255,6 +256,8 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	mainWindow_->removeDockWidget(toRemoveIt->second->holder->getDockWidget());
 	layout_->removeWidget(toRemoveIt->second->button);
 
+	delete toRemoveIt->second->button;
+	delete toRemoveIt->second->holder;
 	delete toRemoveIt->second;
 	palette_.erase(toRemoveIt);
 
