@@ -58,8 +58,8 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		glLoadIdentity();
 		//Set viewing parameters
 		M4D::SetViewAccordingToCamera( aConfig.camera );
-		glMatrixMode(GL_MODELVIEW);
 	}
+	glMatrixMode(GL_MODELVIEW);
 	
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
@@ -140,14 +140,11 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		glLoadIdentity();
 		//Set viewing parameters
 		M4D::SetViewAccordingToCamera( aConfig.camera );
-		glMatrixMode(GL_MODELVIEW);
 	}
+	glMatrixMode(GL_MODELVIEW);
 	
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
-
-	glColor3f( 1.0f, 0.0f, 0.0f );
-	M4D::GLDrawBoundingBox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );

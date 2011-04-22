@@ -30,6 +30,13 @@ namespace GUI
 namespace Viewer
 {
 
+/*class ViewerState
+{
+
+
+};*/
+
+
 enum RendererType
 {
 	rt2DAlignedSlices,
@@ -290,6 +297,10 @@ signals:
 	{ _image = image; }*/
 
 protected:
+	virtual void
+	render();
+
+
 	void	
 	initializeGL ();
 
@@ -368,6 +379,7 @@ protected:
 
 	M4D::GUI::Renderer::VolumeRenderer	mVolumeRenderer;
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
+	bool 					mEnableVolumeBoundingBox;
 
 	//QStateMachine	mStateMachine;
 	std::map< int, IUserEvents::Ptr>	mUserEventHandlers;

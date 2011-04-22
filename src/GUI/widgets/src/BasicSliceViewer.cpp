@@ -15,7 +15,7 @@ namespace Viewer
 {
 
 BasicSliceViewer::BasicSliceViewer( QWidget *parent ) : 
-	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _prepared( false ), mSaveFile( false ), mSaveCycle( false ), mRendererType( rt2DAlignedSlices )
+	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _prepared( false ), mSaveFile( false ), mSaveCycle( false ), mRendererType( rt2DAlignedSlices ), mEnableVolumeBoundingBox( true )
 {
      /*QState *s1 = new QState();
      QState *s2 = new QState();
@@ -159,8 +159,10 @@ BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFun
 		_THROW_ ErrorHandling::EBadParameter();
 	}
 	mTFunctionBuffer = aTFunctionBuffer;
-
+	
+	makeCurrent();
 	mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
+	doneCurrent();
 
 	mSliceRenderConfig.transferFunction = mTransferFunctionTexture.get();
 	mVolumeRenderConfig.transferFunction = mTransferFunctionTexture.get();
@@ -211,6 +213,34 @@ BasicSliceViewer::initializeOverlayGL()
 
 }
 
+void
+BasicSliceViewer::render()
+{
+	switch ( mRendererType ) {
+	case rt3D:
+		{
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			//Set viewing parameters
+			M4D::SetViewAccordingToCamera( mVolumeRenderConfig.camera );
+			
+			if ( mEnableVolumeBoundingBox ) {
+				glColor3f( 1.0f, 0.0f, 0.0f );
+				M4D::GLDrawBoundingBox( mVolumeRenderConfig.imageData->GetMinimum(), mVolumeRenderConfig.imageData->GetMaximum() );
+			}
+
+			mVolumeRenderer.Render( mVolumeRenderConfig, false );
+		}
+		break;
+	case rt2DAlignedSlices:
+		mSliceRenderer.Render( mSliceRenderConfig );
+		break;
+	default:
+		ASSERT( false );
+	}
+}
+
+
 void	
 BasicSliceViewer::paintGL()
 {
@@ -252,16 +282,7 @@ BasicSliceViewer::paintGL()
 	mFrameBufferObject.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	switch ( mRendererType ) {
-	case rt3D:
-		mVolumeRenderer.Render( mVolumeRenderConfig );
-		break;
-	case rt2DAlignedSlices:
-		mSliceRenderer.Render( mSliceRenderConfig );
-		break;
-	default:
-		ASSERT( false );
-	}
+	render();
 	
 	mFrameBufferObject.Unbind();
 
