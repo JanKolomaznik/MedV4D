@@ -23,7 +23,6 @@
 #include <TFColor.h>
 #include <TFHistogram.h>
 #include <TFBasicHolder.h>
-#include <TFIndexer.h>
 
 #include "ui_TFPalette.h"
 
