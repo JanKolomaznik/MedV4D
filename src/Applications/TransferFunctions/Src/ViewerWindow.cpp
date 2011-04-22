@@ -33,6 +33,7 @@ ViewerWindow::ViewerWindow():
 	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+	dockWidget->setFloating(true);
 
 	//---Timer---
 
@@ -193,7 +194,7 @@ bool ViewerWindow::fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const functi
 void ViewerWindow::updatePreview(M4D::GUI::TF::Size index){
 
 	if(!fileLoaded_) return;	
-	/*
+	
 	Buffer1D::Ptr buffer;
 	if(fillBufferFromTF_(editingSystem_->getTransferFunction(index), buffer))
 	{
@@ -205,7 +206,7 @@ void ViewerWindow::updatePreview(M4D::GUI::TF::Size index){
 
 		mViewer->SetTransferFunctionBuffer(buffer_);
 	}
-	*/
+	
 }
 
 void ViewerWindow::updateTransferFunction(){
@@ -314,17 +315,20 @@ void ViewerWindow::openFile()
 void ViewerWindow::openFile( const QString &aPath )
 {
 	std::string path = std::string( aPath.toLocal8Bit().data() );
+
+	statusbar->showMessage("Loading data...");
+
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	mProdconn.PutDataset( image );
 	fileLoaded_ = true;
 	
+	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
 	Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	
 	TFHistogram::Ptr tfHistogram(new TFHistogram);
 	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)
@@ -334,8 +338,14 @@ void ViewerWindow::openFile( const QString &aPath )
 	editingSystem_->setDataStructure(std::vector<M4D::GUI::TF::Size>(1, tfHistogram->size()));
 	editingSystem_->setHistogram(tfHistogram);	
 
+	LOG( "Histogram computed in " << clock.SecondsPassed() );
+
 	mViewer->ZoomFit();
+
+	statusbar->showMessage("Applying transfer function...");
 	applyTransferFunction();
+
+	statusbar->clearMessage();
 	changeChecker_.start();
 }
 

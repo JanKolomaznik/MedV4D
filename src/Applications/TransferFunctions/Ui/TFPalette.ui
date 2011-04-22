@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>175</width>
-    <height>230</height>
+    <width>180</width>
+    <height>265</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>175</width>
-    <height>230</height>
+    <width>180</width>
+    <height>265</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>175</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -43,8 +43,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>175</width>
-      <height>230</height>
+      <width>180</width>
+      <height>265</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="paletteLayout">
@@ -54,22 +54,41 @@
      <item>
       <layout class="QHBoxLayout" name="addRemoveLayout">
        <property name="spacing">
-        <number>6</number>
+        <number>10</number>
        </property>
        <property name="leftMargin">
-        <number>5</number>
+        <number>10</number>
        </property>
        <property name="topMargin">
         <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>5</number>
+        <number>10</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QPushButton" name="addButton">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>75</width>
@@ -87,26 +106,10 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="removeButton">
-         <property name="maximumSize">
-          <size>
-           <width>75</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Remove</string>
-         </property>
-         <property name="shortcut">
-          <string>Alt+R</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
-      <widget class="Line" name="line">
+      <widget class="Line" name="lineTop">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -140,34 +143,37 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>163</width>
-          <height>150</height>
+          <width>168</width>
+          <height>176</height>
          </rect>
         </property>
        </widget>
       </widget>
      </item>
      <item>
+      <widget class="Line" name="lineBottom">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="previewCheckLayout">
        <property name="spacing">
+        <number>10</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
         <number>0</number>
        </property>
-       <property name="margin">
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <spacer name="horizontalSpacer2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item>
         <widget class="QCheckBox" name="previewsCheck">
          <property name="minimumSize">

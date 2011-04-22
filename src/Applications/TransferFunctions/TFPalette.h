@@ -13,7 +13,7 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QKeySequence>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QGridLayout>
 #include <QtCore/QTimer>
 
 #include <TFCreator.h>
@@ -77,7 +77,6 @@ private slots:
     void close_triggered(TF::Size index);
 
 	void on_addButton_clicked();
-	void on_removeButton_clicked();
 
 	void change_activeHolder(TF::Size index);
 
@@ -121,7 +120,8 @@ private:
 
     Ui::TFPalette* ui_;
 	QMainWindow* mainWindow_;
-	QVBoxLayout* layout_;
+	QGridLayout* layout_;
+	TF::Size colModulator_;
 
 	TF::Histogram::Ptr histogram_;
 	std::vector<TF::Size> dataStructure_;
@@ -141,6 +141,8 @@ private:
 
 	void addToPalette_(TFBasicHolder* holder);
 	void removeFromPalette_(const TF::Size index);
+
+	void reformLayout_(bool forceReform = false);
 
 	void activateNext_(HolderMapIt it);
 

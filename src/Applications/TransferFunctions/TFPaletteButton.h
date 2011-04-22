@@ -42,7 +42,7 @@ signals:
 
 protected:
 
-	static const TF::Size nameHeight_ = 15;
+	static const TF::Size nameHeight_ = 25;
 	static const TF::Size frameLineWidth_ = 2;
 
 	TF::Size index_;

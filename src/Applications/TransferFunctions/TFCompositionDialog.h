@@ -4,7 +4,7 @@
 #include <set>
 
 #include <QtGui/QDialog>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QGridLayout>
 #include <QtGui/QCheckBox>
 
 #include <TFCommon.h>
@@ -51,11 +51,9 @@ private:
 
 	bool previewEnabled_;
 
-	TF::Size colModulator_;
-
 	Ui::TFCompositionDialog* ui_;
 	QGridLayout* layout_;
-	QSpacerItem* pushUpSpacer_;
+	TF::Size colModulator_;
 
 	bool selectionChanged_;
 

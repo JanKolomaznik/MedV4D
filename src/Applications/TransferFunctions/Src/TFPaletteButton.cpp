@@ -128,7 +128,9 @@ bool TFPaletteButton::isAvailable(){
 	return available_;
 }
 
-void TFPaletteButton::paintEvent(QPaintEvent*){
+void TFPaletteButton::paintEvent(QPaintEvent* e){
+
+	QFrame::paintEvent(e);
 	
 	if(!previewEnabled_) return;
 

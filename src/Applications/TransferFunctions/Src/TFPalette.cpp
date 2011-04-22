@@ -6,8 +6,10 @@ namespace GUI {
 TFPalette::TFPalette(QMainWindow* parent):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
+	layout_(new QGridLayout()),
 	mainWindow_(parent),
 	activeEditor_(emptyPalette),
+	colModulator_(1),
 	activeChanged_(false),
 	previewEnabled_(true),
 	creator_(parent, this){
@@ -15,11 +17,10 @@ TFPalette::TFPalette(QMainWindow* parent):
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
 
-	layout_ = new QVBoxLayout;
-	layout_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	layout_->setContentsMargins(10,10,10,10);
+	layout_->setAlignment(Qt::AlignCenter);
+	layout_->setSpacing(5);
 	ui_->scrollAreaWidget->setLayout(layout_);
-
-	ui_->removeButton->setEnabled(false);
 
 	bool timerConnected = QObject::connect(&previewUpdater_, SIGNAL(timeout()), this, SLOT(update_previews()));
 	tfAssert(timerConnected);
@@ -99,6 +100,7 @@ void TFPalette::update_previews(){
 
 	if(!previewEnabled_) return;
 
+	bool updateRequestSent = false;
 	M4D::Common::TimeStamp lastChange;
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
@@ -106,10 +108,10 @@ void TFPalette::update_previews(){
 	{
 		it->second->button->setName(it->second->holder->getName());
 		lastChange = it->second->holder->lastChange();
-		if(it->second->previewUpdate != lastChange)
+		if(!updateRequestSent && (it->first != activeEditor_) && (it->second->previewUpdate != lastChange))
 		{
-			it->second->previewUpdate = lastChange;
 			emit UpdatePreview(it->first);
+			updateRequestSent = true;
 		}
 	}
 }
@@ -119,10 +121,6 @@ TFFunctionInterface::Const TFPalette::getTransferFunction(const int index){
 	TF::Size editorIndex = activeEditor_;
 	if(index >= 0) editorIndex = index;
 
-	if(editorIndex == noFunctionAvailable)
-	{
-		QMessageBox::warning(this, "Warning", "No function matches requirements for use.");
-	}
 	if(activeEditor_ == emptyPalette)
 	{
 		on_addButton_clicked();
@@ -227,12 +225,7 @@ void TFPalette::addToPalette_(TFBasicHolder* holder){
 	
 	QDockWidget* dockHolder = holder->getDockWidget();
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
-	dockHolder->setAllowedAreas(
-		Qt::LeftDockWidgetArea |
-		Qt::RightDockWidgetArea |
-		Qt::TopDockWidgetArea |
-		Qt::BottomDockWidgetArea
-	);
+	dockHolder->setAllowedAreas(Qt::AllDockWidgetAreas);
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
 	dockHolder->setFloating(true);
 	
@@ -244,7 +237,8 @@ void TFPalette::addToPalette_(TFBasicHolder* holder){
 		change_activeHolder(addedIndex);
 	}
 
-	ui_->removeButton->setEnabled(true);
+	reformLayout_(true);
+
 	++lastPaletteChange_;
 }
 
@@ -261,7 +255,8 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	delete toRemoveIt->second;
 	palette_.erase(toRemoveIt);
 
-	if(palette_.empty()) ui_->removeButton->setEnabled(false);
+	reformLayout_(true);
+
 	++lastPaletteChange_;
 }
 
@@ -290,7 +285,43 @@ void TFPalette::activateNext_(HolderMapIt it){
 
 void TFPalette::resizeEvent(QResizeEvent* e){
 
-	ui_->paletteLayoutWidget->setGeometry(ui_->paletteArea->geometry());
+	ui_->paletteLayoutWidget->resize(size());
+	reformLayout_();
+}
+
+void TFPalette::reformLayout_(bool forceReform){
+	
+	if(palette_.empty()) return;
+
+	TF::Size newColModulator = (ui_->scrollArea->width() - 25)/(palette_.begin()->second->button->width() + 5);
+	if(newColModulator == 0) newColModulator = 1;
+
+	if(!forceReform && colModulator_ == newColModulator) return;
+
+	colModulator_ = newColModulator;
+
+	QLayoutItem* layoutIt;
+	while(!layout_->isEmpty())
+	{
+		layoutIt = layout_->itemAt(0);
+		layout_->removeItem(layoutIt);
+		layoutIt->widget()->hide();
+	}
+
+	TF::Size rowCounter = 0, colCounter = 0;
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		layout_->addWidget(it->second->button, rowCounter, colCounter, Qt::AlignCenter);
+		it->second->button->show();
+		++colCounter;
+		if(colCounter == colModulator_)
+		{
+			colCounter = 0;
+			++rowCounter;
+		}
+	}
 }
 
 void TFPalette::close_triggered(TF::Size index){
@@ -325,11 +356,6 @@ void TFPalette::on_addButton_clicked(){
 	if(!created) return;
 	
 	addToPalette_(created);
-}
-
-void TFPalette::on_removeButton_clicked(){
-
-	palette_.find(activeEditor_)->second->holder->close();
 }
 
 void TFPalette::on_previewsCheck_toggled(bool enable){

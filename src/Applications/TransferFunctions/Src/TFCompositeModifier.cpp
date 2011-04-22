@@ -37,7 +37,7 @@ TFCompositeModifier::TFCompositeModifier(
 	compositeTools_->manageButton->setEnabled(compositionEnabled);
 
 	layout_->setContentsMargins(10,10,10,10);
-	compositeTools_->scrollArea->setLayout(layout_);
+	compositeTools_->scrollAreaWidget->setLayout(layout_);
 
 	bool manageConnected = QObject::connect(compositeTools_->manageButton, SIGNAL(clicked()),
 		this, SLOT(manageComposition_clicked()));

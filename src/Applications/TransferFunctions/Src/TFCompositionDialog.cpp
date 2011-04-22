@@ -10,15 +10,15 @@ TFCompositionDialog::TFCompositionDialog(QWidget* parent):
 	QDialog(parent),
 	ui_(new Ui::TFCompositionDialog),
 	layout_(new QGridLayout()),
-	pushUpSpacer_(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding)),
 	colModulator_(1),
 	selectionChanged_(false),
 	previewEnabled_(false){
 
 	ui_->setupUi(this);
 
-	layout_->setContentsMargins(5,5,5,5);
+	layout_->setContentsMargins(10,10,10,10);
 	layout_->setAlignment(Qt::AlignCenter);
+	layout_->setSpacing(5);
 	ui_->scrollAreaWidget->setLayout(layout_);
 }
 
@@ -142,7 +142,7 @@ void TFCompositionDialog::resizeEvent(QResizeEvent*){
 
 	ui_->dialogWidget->resize(size());
 
-	TF::Size newColModulator = ui_->scrollArea->width()/buttons_.begin()->second->width();
+	TF::Size newColModulator = (ui_->scrollArea->width() - 25)/(buttons_.begin()->second->width() + 5);
 	if(newColModulator == 0) newColModulator = 1;
 
 	if(colModulator_ == newColModulator) return;

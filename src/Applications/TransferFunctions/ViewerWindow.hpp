@@ -12,6 +12,7 @@
 
 #include <QtGui>
 #include <QtCore>
+#include <QtGui\QMessageBox>
 
 #include <TFPalette.h>
 #include <TFFunctionInterface.h>
