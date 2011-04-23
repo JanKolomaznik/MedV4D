@@ -92,30 +92,54 @@ void TFSimplePainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-void TFSimplePainter::updateComponent1View_(TFWorkCopy::Ptr workCopy){
+void TFSimplePainter::updateFunctionView_(TFWorkCopy::Ptr workCopy){
 		
-	viewComponent1Buffer_ = QPixmap(area_.width(), area_.height());
-	viewComponent1Buffer_.fill(noColor_);
+	viewFunctionBuffer_ = QPixmap(area_.width(), area_.height());
+	viewFunctionBuffer_.fill(noColor_);
 
-	QPainter drawer(&viewComponent1Buffer_);
+	QPainter drawer(&viewFunctionBuffer_);
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	TF::Coordinates coordsBegin(1, 0);
+	TF::Coordinates coordsEnd(1, 0);
+	TF::Color colorBegin;
+	TF::Color colorEnd;
 	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
-		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getComponent1(TF_DIMENSION_1, i))*inputArea_.height();
-		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getComponent1(TF_DIMENSION_1, i + 1))*inputArea_.height();
+		coordsBegin[0] = i;
+		coordsEnd[0] = i + 1;
+		colorBegin = workCopy->getColor(coordsBegin);
+		colorEnd = workCopy->getColor(coordsEnd);
 
+		x1 = origin.x + coordsBegin[0];
+		x2 = origin.x + coordsEnd[0];
+
+		y1 = origin.y + (1 - colorBegin.component1)*inputArea_.height();
+		y2 = origin.y + (1 - colorEnd.component1)*inputArea_.height();
 		drawer.setPen(component1_);
+		drawer.drawLine(x1, y1,	x2, y2);
+
+		y1 = origin.y + (1 - colorBegin.component2)*inputArea_.height();
+		y2 = origin.y + (1 - colorEnd.component2)*inputArea_.height();
+		drawer.setPen(component2_);
+		drawer.drawLine(x1, y1,	x2, y2);	
+
+		y1 = origin.y + (1 - colorBegin.component3)*inputArea_.height();
+		y2 = origin.y + (1 - colorEnd.component3)*inputArea_.height();
+		drawer.setPen(component3_);
+		drawer.drawLine(x1, y1,	x2, y2);	
+
+		y1 = origin.y + (1 - colorBegin.alpha)*inputArea_.height();
+		y2 = origin.y + (1 - colorEnd.alpha)*inputArea_.height();
+		drawer.setPen(alpha_);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
-
+/*
 void TFSimplePainter::updateComponent2View_(TFWorkCopy::Ptr workCopy){
 		
 	viewComponent2Buffer_ = QPixmap(area_.width(), area_.height());
@@ -187,7 +211,7 @@ void TFSimplePainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
-
+*/
 void TFSimplePainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
@@ -197,12 +221,14 @@ void TFSimplePainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
 		bottomBarArea_.width() + 1, bottomBarArea_.height());
 
+	TF::Coordinates coords(1);
 	TF::Color tfColor;
 	QColor qColor;
 	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{
-		tfColor = workCopy->getColor(TF_DIMENSION_1, i);
+		coords[0] = i;
+		tfColor = workCopy->getRGBfColor(coords);
 
 		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
 		drawer.setPen(qColor);
@@ -223,10 +249,7 @@ QPixmap TFSimplePainter::getView(TFWorkCopy::Ptr workCopy){
 	{
 		updateBackground_();
 		updateHistogramView_(workCopy);
-		updateComponent1View_(workCopy);
-		updateComponent2View_(workCopy);
-		updateComponent3View_(workCopy);
-		updateAlphaView_(workCopy);
+		updateFunctionView_(workCopy);
 		change = true;
 	}
 	else
@@ -236,24 +259,9 @@ QPixmap TFSimplePainter::getView(TFWorkCopy::Ptr workCopy){
 			updateHistogramView_(workCopy);
 			change = true;
 		}
-		if(workCopy->component1Changed(TF_DIMENSION_1))
+		if(workCopy->changed())
 		{
-			updateComponent1View_(workCopy);
-			change = true;
-		}
-		if(workCopy->component2Changed(TF_DIMENSION_1))
-		{
-			updateComponent2View_(workCopy);
-			change = true;
-		}
-		if(workCopy->component3Changed(TF_DIMENSION_1))
-		{
-			updateComponent3View_(workCopy);
-			change = true;
-		}
-		if(workCopy->alphaChanged(TF_DIMENSION_1))
-		{
-			updateAlphaView_(workCopy);
+			updateFunctionView_(workCopy);
 			change = true;
 		}
 	}
@@ -267,10 +275,7 @@ QPixmap TFSimplePainter::getView(TFWorkCopy::Ptr workCopy){
 
 		drawer.drawPixmap(0, 0, viewBackgroundBuffer_);
 		drawer.drawPixmap(0, 0, viewHistogramBuffer_);
-		drawer.drawPixmap(0, 0, viewComponent3Buffer_);
-		drawer.drawPixmap(0, 0, viewComponent2Buffer_);
-		drawer.drawPixmap(0, 0, viewComponent1Buffer_);
-		drawer.drawPixmap(0, 0, viewAlphaBuffer_);
+		drawer.drawPixmap(0, 0, viewFunctionBuffer_);
 		drawer.drawPixmap(0, 0, viewBottomColorBarBuffer_);
 	}
 

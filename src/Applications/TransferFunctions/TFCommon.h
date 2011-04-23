@@ -21,6 +21,7 @@ namespace GUI {
 namespace TF{
 
 typedef unsigned long Size;
+typedef std::vector<int> Coordinates;
 
 template<typename From, typename To>
 static To convert(const From &s){

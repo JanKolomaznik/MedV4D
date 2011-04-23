@@ -67,8 +67,6 @@ protected:
 	QTimer changeChecker_;
 	Composition composition_;
 
-	TFAbstractFunction<TF_DIMENSION_1>::Ptr function_;
-
 	virtual void mousePressEvent(QMouseEvent *e);
 
 	virtual void computeResultFunction_();

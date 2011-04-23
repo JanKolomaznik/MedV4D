@@ -22,15 +22,14 @@ public:
 
 	virtual Ptr clone() = 0;
 	
-	virtual TF::Color& color(const TF::Size dimension, const TF::Size index) = 0;
+	virtual TF::Color& color(const TF::Coordinates& coords) = 0;
 
-	virtual TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index) = 0;
-	virtual void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value) = 0;
+	virtual TF::Color getRGBfColor(const TF::Coordinates& coords) = 0;
+	virtual void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value) = 0;
 
 	virtual TF::Size getDomain(const TF::Size dimension) = 0;
 	virtual TF::Size getDimension() = 0;
 
-	virtual void clear(const TF::Size dimension) = 0;
 	virtual void resize(const std::vector<TF::Size>& dataStructure) = 0;
 
 	virtual void save(TF::XmlWriterInterface* writer) = 0;
@@ -88,16 +87,16 @@ public:
 		return !null_;
 	}
 	
-	const TF::Color& color(const TF::Size dimension, const TF::Size index){
+	const TF::Color& color(const TF::Coordinates& coords){
 
 		if(null_) return nullColor;
-		return function_->color(dimension, index);
+		return function_->color(coords);
 	}
 
-	TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
+	TF::Color getRGBfColor(const TF::Coordinates& coords){
 
 		if(null_) return nullColor;
-		return function_->getRGBfColor(dimension, index);
+		return function_->getRGBfColor(coords);
 	}
 
 	TF::Size getDomain(const TF::Size dimension){

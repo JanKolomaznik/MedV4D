@@ -177,10 +177,12 @@ bool ViewerWindow::fillBufferFromTF_(M4D::GUI::TFFunctionInterface::Const functi
 		buffer = Buffer1D::Ptr(new Buffer1D(domain, Interval(0.0f, (float)domain)));
 	}
 
+	M4D::GUI::TF::Coordinates coords(1);
 	M4D::GUI::TF::Color color;
 	for(M4D::GUI::TF::Size i = 0; i < domain; ++i)
 	{
-		color = function.getRGBfColor(TF_DIMENSION_1, i);
+		coords[0] = i;
+		color = function.getRGBfColor(coords);
 
 		(*buffer)[i] = Buffer1D::value_type(
 			color.component1,

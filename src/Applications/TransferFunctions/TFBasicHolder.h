@@ -18,8 +18,6 @@
 
 #include <TFPredefined.h>
 
-#include <TFAdaptation.h>
-
 #include <set>
 
 #include <ui_TFHolderUI.h>
@@ -68,18 +66,6 @@ public:
 	void setAvailable(const bool available);
 
 	virtual Common::TimeStamp lastChange();
-
-	template<typename BufferIterator>
-	bool applyTransferFunction(
-		BufferIterator begin,
-		BufferIterator end){
-
-			return TF::Adaptation::applyTransferFunction<BufferIterator>(
-				begin,
-				end,
-				TFFunctionInterface::Const(modifier_->getFunction())
-			);
-	}
 
 signals:
 

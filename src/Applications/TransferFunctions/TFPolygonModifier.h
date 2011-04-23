@@ -50,7 +50,7 @@ private:
 
 	std::vector<ScrollMode> scrollModes_;
 
-	const TF::Size radiusStep_;
+	const TF::Size polygonSpinStep_;
 
 	TF::Size baseRadius_;
 	TF::Size topRadius_;

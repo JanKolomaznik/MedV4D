@@ -28,7 +28,7 @@ typename TFAbstractFunction<dim>* TFCreator::createFunction_(){
 	{
 		case TF::Types::FunctionRGBa1D:
 		{
-			return new typename TFAbstractFunction<dim>(dataStructure_);
+			return new typename TFRGBaFunction<dim>(dataStructure_);
 		}
 		case TF::Types::FunctionHSVa1D:
 		{
@@ -37,7 +37,7 @@ typename TFAbstractFunction<dim>* TFCreator::createFunction_(){
 	}
 
 	tfAssert(!"Unknown function");
-	return new typename TFAbstractFunction<dim>(dataStructure_);	//default
+	return new typename TFRGBaFunction<dim>(dataStructure_);	//default
 }
 
 TFAbstractPainter* TFCreator::createPainter_(TFBasicHolder::Attributes& attributes){

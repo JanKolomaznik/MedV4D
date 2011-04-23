@@ -19,7 +19,7 @@ public:
 
 	~TFGrayscaleAlphaPainter();
 
-	QPixmap getView(TFWorkCopy::Ptr workCopy);
+	void updateFunctionView_(TFWorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

@@ -8,6 +8,7 @@
 #include <TFCommon.h>
 #include <TFColor.h>
 #include <TFFunctionInterface.h>
+#include <TFColorVector.h>
 
 namespace M4D {
 namespace GUI {
@@ -19,39 +20,17 @@ public:
 
 	typedef typename boost::shared_ptr<TFAbstractFunction<dim>> Ptr;
 
-	TFAbstractFunction(const std::vector<TF::Size>& domains){
-
-		for(TF::Size i = 0; i < dim; ++i)
-		{
-			if(i < domains.size()) colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(domains[i]));
-			else colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(TFFunctionInterface::defaultDomain));
-			clear(i+1);
-		}
-	}
-
 	virtual ~TFAbstractFunction(){}
 
-	TFFunctionInterface::Ptr clone(){
+	TFFunctionInterface::Ptr clone() = 0;
 
-		return TFFunctionInterface::Ptr(new TFAbstractFunction<dim>(*this));
+	TF::Color& color(const TF::Coordinates& coords){
+
+		return colorMap_->value(coords);
 	}
 
-	TF::Color& color(const TF::Size dimension, const TF::Size index){
-
-		TF::Size innerDimension = dimension - 1;
-
-		return (*colorMap_[innerDimension])[index];
-	}
-
-	virtual TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
-
-		return color(dimension, index); 
-	}
-
-	virtual void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value){
-
-		color(dimension, index) = value; 
-	}
+	virtual TF::Color getRGBfColor(const TF::Coordinates& coords) = 0;
+	virtual void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value) = 0;
 	
 	TF::Size getDimension(){
 
@@ -60,34 +39,12 @@ public:
 	
 	TF::Size getDomain(const TF::Size dimension){
 
-		TF::Size innerDimension = dimension - 1;
-
-		return colorMap_[innerDimension]->size();
-	}
-
-	void clear(const TF::Size dimension){
-
-		TF::Size innerDimension = dimension - 1;
-
-		TF::Color::Map::iterator begin = colorMap_[innerDimension]->begin();
-		TF::Color::Map::iterator end = colorMap_[innerDimension]->end();
-		for(TF::Color::Map::iterator it = begin; it!=end; ++it)
-		{
-			*it = TF::Color();
- 		}
+		return colorMap_->size(dimension);
 	}
 	
 	void resize(const std::vector<TF::Size>& dataStructure){
-		
-		for(TF::Size i = 0; i < dataStructure.size(); ++i)
-		{
-			if(dataStructure[i] == colorMap_[i]->size()) return;
 
-			TF::Color::MapPtr resized(new TF::Color::Map(dataStructure[i]));
-			resize_(colorMap_[i], resized);
-
-			colorMap_[i] = resized;
-		}
+		colorMap_->recalculate(dataStructure);
 	}
 	 
 	void save(TF::XmlWriterInterface* writer){
@@ -100,27 +57,10 @@ public:
 				
 			for(TF::Size i = 0; i < dim; ++i)
 			{
-				writer->writeStartElement("Dimension");
-				writer->writeAttribute("Number", TF::convert<TF::Size, std::string>(i));
-				writer->writeAttribute("Domain", TF::convert<TF::Size, std::string>(colorMap_[i]->size()));
-
-				for(TF::Size j = 0; j < colorMap_[i]->size(); ++j)
-				{
-						writer->writeStartElement("Color");
-
-							writer->writeAttribute("Component1",
-								TF::convert<float, std::string>((*colorMap_[i])[j].component1));
-							writer->writeAttribute("Component2",
-								TF::convert<float, std::string>((*colorMap_[i])[j].component2));
-							writer->writeAttribute("Component3",
-								TF::convert<float, std::string>((*colorMap_[i])[j].component3));
-							writer->writeAttribute("Alpha",
-								TF::convert<float, std::string>((*colorMap_[i])[j].alpha));
-					
-						writer->writeEndElement();
-				}
-				writer->writeEndElement();
+				writer->writeAttribute("Dimension" + i,  TF::convert<TF::Size, std::string>(colorMap_->size(i)));
 			}
+			TF::Coordinates coords(dim);
+			saveDimensions_(writer, coords);
 
 		writer->writeEndElement();
 	}
@@ -139,117 +79,106 @@ public:
 				reader->readAttribute("Dimensions"));
 			if(dimControl != dim) return false;
 
-			TF::Size dimension;
-			TF::Size domain;
+			std::vector<TF::Size> dataStructure;
 			for(TF::Size i = 0; i < dim; ++i)
 			{
-				dimension = TF::convert<std::string, TF::Size>(
-					reader->readAttribute("Number"));
-				if(dimension != i+1) return false;
-				domain = TF::convert<std::string, TF::Size>(
-					reader->readAttribute("Domain"));
-				if(domain == 0) return false;
-
-				TF::Color::MapPtr loaded(new TF::Color::Map(domain));			
-				TF::Size j = 0;
-				for(; j < domain; ++j)
-				{
-					if(!loadColor_(reader, loaded, j)) break;
-				}
-
-				if(j != domain) return false;
-					
-				resize_(loaded, colorMap_[i]);
+				dataStructure.push_back(TF::convert<std::string, TF::Size>(
+					reader->readAttribute("Dimension" + i)));
 			}
+			resize(dataStructure);
+
+			TF::Coordinates coords(dim);
+			return loadDimensions_(reader, coords);
 		}
-		return true;
+		return false;
 	}
 
 protected:
 
-	TF::Color::MapPtr colorMap_[dim];
+	typename TF::ColorVector<dim>::Ptr colorMap_;
 
-	void resize_(const TF::Color::MapPtr old, TF::Color::MapPtr resized){
-
-		int inputSize = old->size();
-		int outputSize = resized->size();
-
-		float correction = outputSize/(float)inputSize;
-
-		if(correction >= 1)
-		{
-			int ratio = (int)(correction);	//how many old values are used for computing 1 resized values
-			correction -= ratio;
-			float corrStep = correction;
-
-			int outputIndexer = 0;
-			for(int inputIndexer = 0; inputIndexer < inputSize; ++inputIndexer)
-			{
-				TF::Size valueCount = ratio + (int)correction;
-				for(TF::Size i = 0; i < valueCount; ++i)
-				{
-					//tfAssert(outputIndexer < outputSize);
-					if(inputIndexer >= inputSize) break;
-
-					(*resized)[outputIndexer] = (*old)[inputIndexer];
-
-					++outputIndexer;
-				}
-				correction -= (int)correction;
-				correction += corrStep;
-			}
-		}
-		else
-		{
-			correction = inputSize/(float)outputSize;
-			int ratio =  (int)(correction);	//how many old values are used for computing 1 resized values
-			correction -= ratio;
-			float corrStep = correction;
-
-			int inputIndexer = 0;
-			for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
-			{
-				TF::Color computedValue;
-				TF::Size valueCount = ratio + (int)correction;
-				for(TF::Size i = 0; i < valueCount; ++i)
-				{
-					//tfAssert(inputIndexer < inputSize);
-					if(inputIndexer >= inputSize)
-					{
-						valueCount = i;
-						break;
-					}
-
-					computedValue += (*old)[inputIndexer];
-
-					++inputIndexer;
-				}
-				correction -= (int)correction;
-				correction += corrStep;
-
-				if(valueCount == 0) break;
-				(*resized)[outputIndexer] = computedValue/valueCount;
-			}
-		}
+	TFAbstractFunction(const std::vector<TF::Size>& domains):
+		colorMap_(new TF::ColorVector<dim>(domains)){
 	}
+
+	TFAbstractFunction(){}
 
 	virtual void saveSettings_(TF::XmlWriterInterface* writer){}
 	virtual bool loadSettings_(TF::XmlReaderInterface* reader){ return true; }
 
-	bool loadColor_(TF::XmlReaderInterface* reader, TF::Color::MapPtr loaded, TF::Size index){
+	void saveDimensions_(TF::XmlWriterInterface* writer,
+			TF::Coordinates& coords,
+			const TF::Size currentDim = 1){
 
-		bool ok = false;
-		if(reader->readElement("Color"))
-		{		
-			(*loaded)[index].component1 = TF::convert<std::string, float>(
-				reader->readAttribute("Component1"));
-			(*loaded)[index].component2 = TF::convert<std::string, float>(
-				reader->readAttribute("Component2"));
-			(*loaded)[index].component3 = TF::convert<std::string, float>(
-				reader->readAttribute("Component3"));
-			(*loaded)[index].alpha = TF::convert<std::string, float>(
-				reader->readAttribute("Alpha"));
-			ok = true;
+		if(currentDim == dim)
+		{
+			std::string strCoords = "[";
+			for(TF::Size i = 0; i < dim - 1; ++i) strCoords += coords[i] + ",";
+			strCoords += coords[dim - 1] + "]";
+
+			writer->writeStartElement("Color");
+
+				writer->writeAttribute("TF::Coordinates", strCoords);
+
+				writer->writeAttribute("Component1",
+					TF::convert<float, std::string>(colorMap_->value(coords).component1));
+				writer->writeAttribute("Component2",
+					TF::convert<float, std::string>(colorMap_->value(coords).component2));
+				writer->writeAttribute("Component3",
+					TF::convert<float, std::string>(colorMap_->value(coords).component3));
+				writer->writeAttribute("Alpha",
+					TF::convert<float, std::string>(colorMap_->value(coords).alpha));
+		
+			writer->writeEndElement();
+
+			return;
+		}
+
+		for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
+		{
+			saveDimensions_(writer, coords, currentDim + 1);
+
+			++coords[currentDim - 1];
+			for(TF::Size j = currentDim; j < dim; ++j)
+			{
+				coords[j] = 0;
+			}
+		}
+	}
+
+	bool loadDimensions_(TF::XmlReaderInterface* reader,
+			TF::Coordinates& coords,
+			const TF::Size currentDim = 1){
+
+		if(currentDim == dim)
+		{
+			if(reader->readElement("Color"))
+			{		
+				colorMap_->value(coords).component1 = TF::convert<std::string, float>(
+					reader->readAttribute("Component1"));
+				colorMap_->value(coords).component2 = TF::convert<std::string, float>(
+					reader->readAttribute("Component2"));
+				colorMap_->value(coords).component3 = TF::convert<std::string, float>(
+					reader->readAttribute("Component3"));
+				colorMap_->value(coords).alpha = TF::convert<std::string, float>(
+					reader->readAttribute("Alpha"));
+				return true;
+			}
+			return false;
+		}
+
+		bool ok = true;
+		bool indexOK;
+		for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
+		{
+			indexOK = loadDimensions_(reader, coords, currentDim + 1);
+			ok = ok && indexOK;
+
+			++coords[currentDim - 1];
+			for(TF::Size j = currentDim; j < dim; ++j)
+			{
+				coords[j] = 0;
+			}
 		}
 		return ok;
 	}

@@ -5,42 +5,43 @@
 
 namespace M4D {
 namespace GUI {
-/*
+
 template<TF::Size dim>
 class TFRGBaFunction: public TFAbstractFunction<dim>{
 
 public:
 
-	TFRGBaFunction(const TF::Size domain[dim]){
-
-		for(TF::Size i = 0; i < dim; ++i)
-		{
-			colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(domain[i]));
-			clear(i);
-		}
+	TFRGBaFunction(std::vector<TF::Size> domains):
+		typename TFAbstractFunction<dim>(domains){
 	}
 
-	TFRGBaFunction(TFRGBaFunction<dim> &function){
+	TFRGBaFunction(const TFRGBaFunction<dim> &function){
 
-		operator=(function);
+		colorMap_ = function.colorMap_;
+	}
+
+	void operator=(const TFRGBaFunction<dim> &function){
+
+		colorMap_ = function.colorMap_;
 	}
 
 	~TFRGBaFunction(){}
 
-	TF::Color getRGBfColor(const TF::Size index, const TF::Size dimension){
+	TF::Color getRGBfColor(const TF::Coordinates& coords){
 
-		return (*colorMap_[dimension])[index];
-	}
-	void setRGBfColor(const TF::Size index, const TF::Size dimension, const TF::Color& value){
-
-		(*colorMap_[dimension])[index] = [value];
+		return color(coords); 
 	}
 
-	typename TFFunctionInterface::Ptr clone(){
+	void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value){
+
+		color(coords) = value;
+	}
+
+	TFFunctionInterface::Ptr clone(){
 
 		return TFFunctionInterface::Ptr(new TFRGBaFunction<dim>(*this));
 	}
-};*/
+};
 
 } // namespace GUI
 } // namespace M4D

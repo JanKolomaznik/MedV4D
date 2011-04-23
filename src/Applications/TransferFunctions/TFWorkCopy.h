@@ -24,20 +24,14 @@ public:
 	void save(TF::XmlWriterInterface* writer);
 	bool load(TF::XmlReaderInterface* reader, bool& sideError);
 	
-	//TFFunctionInterface::Const getFunctionMemento();	
 	TFFunctionInterface::Ptr getFunction();
 	
 	TF::Size getDimension();
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
-	//void update(TFFunctionInterface::Const function);
-
 	//---change---
 	
-	bool component1Changed(const TF::Size dimension);
-	bool component2Changed(const TF::Size dimension);
-	bool component3Changed(const TF::Size dimension);
-	bool alphaChanged(const TF::Size dimension);
+	bool changed();
 	bool histogramChanged();
 
 	void forceUpdate(const bool updateHistogram = false);
@@ -52,29 +46,28 @@ public:
 
 	//---getters---
 	
-	TF::Color getColor(const TF::Size dimension, const int index);
-	float getComponent1(const TF::Size dimension, const int index);
-	float getComponent2(const TF::Size dimension, const int index);
-	float getComponent3(const TF::Size dimension, const int index);
-	float getAlpha(const TF::Size dimension, const int index);
+	TF::Color getRGBfColor(const TF::Coordinates& coords);
+	TF::Color getColor(const TF::Coordinates& coords);
 	float getHistogramValue(const int index);
 
 	//---setters---
 	
-	void setComponent1(const TF::Size dimension, const int index, const float value);
-	void setComponent2(const TF::Size dimension, const int index, const float value);
-	void setComponent3(const TF::Size dimension, const int index, const float value);	
-	void setAlpha(const TF::Size dimension, const int index, const float value);
+	void setComponent1(const TF::Coordinates& coords, const float value);
+	void setComponent2(const TF::Coordinates& coords, const float value);
+	void setComponent3(const TF::Coordinates& coords, const float value);	
+	void setAlpha(const TF::Coordinates& coords, const float value);
+	void setColor(const TF::Coordinates& coords, const float value);
 
 	//---size---
 	
 	void resize(const TF::Size dimension, const TF::Size size);
+	void resize(const std::vector<TF::Size>& sizes);
 	void resizeHistogram(const TF::Size size);
 
 	//---zoom---
 	
 	void zoom(const TF::Size dimension, const int center, const int stepCount);
-	void move(const std::vector<int> increments);
+	void move(const std::vector<int>& increments);
 	void zoomHistogram(const int center, const int stepCount);
 	void moveHistogram(const int increment);
 	
@@ -144,25 +137,11 @@ private:
 		}
 	};
 
-	struct DimensionChange{
-		bool component1;
-		bool component2;
-		bool component3;
-		bool alpha;
-
-		DimensionChange():
-			component1(true),
-			component2(true),
-			component3(true),
-			alpha(true){
-		}
-
-		void setAllChanged(){
-			component1 = true;
-			component2 = true;
-			component3 = true;
-			alpha = true;
-		}
+	enum Component{
+		Component1,
+		Component2,
+		Component3,
+		Alpha
 	};
 
 	static const TF::Size histogramIndex = 0;
@@ -170,15 +149,28 @@ private:
 	TFFunctionInterface::Ptr data_;
 	TF::Histogram::Ptr histogram_;
 
+	TF::Coordinates coords_;
+
 	std::vector<TF::Size> sizes_;
+
 	ZoomProperties zoom_;
 
-	std::vector<DimensionChange> changes_;
+	bool changed_;
 
 	bool histogramChanged_;
 	bool histogramEnabled_;
 	HistProperties hist_;
 	
+	TF::Color getColorFromZoomedArea_(const TF::Coordinates& coords,
+		TF::Size& count,
+		const bool& RGBf,
+		TF::Size dimension = 1);
+	
+	void TFWorkCopy::setComponentToZoomedArea_(const TF::Coordinates& coords,
+		const Component& component,
+		const float& value,
+		TF::Size dimension = 1);
+
 	void computeZoom_(const TF::Size dimension, const float nextZoom, const float center);	
 };
 

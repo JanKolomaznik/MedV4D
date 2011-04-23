@@ -2,6 +2,7 @@
 
 namespace M4D {
 namespace GUI {
+
 /*
 template<TF::Size dim>
 TFHSVaFunction<dim>::TFHSVaFunction(const TF::Size domain){

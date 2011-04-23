@@ -17,7 +17,6 @@ TFCompositeModifier::TFCompositeModifier(
 	compositeWidget_(new QWidget),
 	layout_(new QVBoxLayout),
 	pushUpSpacer_(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding)),
-	function_(function),
 	managing_(false),
 	palette_(palette),
 	editors_(palette->getEditors()){
@@ -235,19 +234,21 @@ void TFCompositeModifier::change_check(){
 
 void TFCompositeModifier::computeResultFunction_(){
 
-	TF::Size domain = function_->getDomain(TF_DIMENSION_1);
+	TFFunctionInterface::Ptr function = workCopy_->getFunction();
+	TF::Size domain = function->getDomain(TF_DIMENSION_1);
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
-	{
+	{	//check if dimension change is in process
 		if(it->second->holder->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
-	}	//check if dimension change is in process
+	}
 
 	for(TF::Size i = 0; i < domain; ++i)
 	{		
+		coords_[0] = i;
 		TF::Color result;
 		TF::Color color;
 		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 		{
-			color = it->second->holder->getFunction().getRGBfColor(TF_DIMENSION_1, i);
+			color = it->second->holder->getFunction().getRGBfColor(coords_);
 			result.component1 += (color.component1*color.alpha);
 			result.component2 += (color.component2*color.alpha);
 			result.component3 += (color.component3*color.alpha);
@@ -256,9 +257,9 @@ void TFCompositeModifier::computeResultFunction_(){
 		if(result.component1 > 1) result.component1 = 1;
 		if(result.component2 > 1) result.component2 = 1;
 		if(result.component3 > 1) result.component3 = 1;
-		result.alpha = function_->getRGBfColor(TF_DIMENSION_1, i).alpha;
+		result.alpha = function->getRGBfColor(coords_).alpha;
 
-		function_->setRGBfColor(TF_DIMENSION_1, i, result);
+		function->setRGBfColor(coords_, result);
 	}
 	workCopy_->forceUpdate();
 	changed_ = true;

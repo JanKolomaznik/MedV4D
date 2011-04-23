@@ -52,18 +52,12 @@ protected:
 	QPixmap viewBuffer_;
 	QPixmap viewBackgroundBuffer_;
 	QPixmap viewHistogramBuffer_;
-	QPixmap viewComponent1Buffer_;
-	QPixmap viewComponent2Buffer_;
-	QPixmap viewComponent3Buffer_;
-	QPixmap viewAlphaBuffer_;
+	QPixmap viewFunctionBuffer_;
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
 	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
-	void updateComponent1View_(TFWorkCopy::Ptr workCopy);
-	void updateComponent2View_(TFWorkCopy::Ptr workCopy);
-	void updateComponent3View_(TFWorkCopy::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
+	virtual void updateFunctionView_(TFWorkCopy::Ptr workCopy);
 	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
 };
 

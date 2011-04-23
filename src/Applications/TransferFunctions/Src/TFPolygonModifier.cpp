@@ -9,15 +9,20 @@ TFPolygonModifier::TFPolygonModifier(
 	TFSimpleModifier(function, painter),
 	polygonTools_(new Ui::TFPolygonModifier),
 	polygonWidget_(new QWidget),
-	baseRadius_(50),
-	topRadius_(20),
-	radiusStep_(5){
+	polygonSpinStep_(10){
 
 	polygonTools_->setupUi(polygonWidget_);
+
+	topRadius_ = polygonTools_->topSpin->value()/2;
+	polygonTools_->topSpin->setSingleStep(polygonSpinStep_);
 
 	bool topSpinConnected = QObject::connect(polygonTools_->topSpin, SIGNAL(valueChanged(int)),
 		this, SLOT(topSpin_changed(int)));
 	tfAssert(topSpinConnected);
+
+	baseRadius_ = polygonTools_->baseSpin->value()/2;
+	polygonTools_->baseSpin->setSingleStep(polygonSpinStep_);
+
 	bool baseSpinConnected = QObject::connect(polygonTools_->baseSpin, SIGNAL(valueChanged(int)),
 		this, SLOT(baseSpin_changed(int)));
 	tfAssert(baseSpinConnected);
@@ -56,14 +61,14 @@ void TFPolygonModifier::createTools_(){
 
 void TFPolygonModifier::topSpin_changed(int value){
 
-	topRadius_ = value;
-	if(baseRadius_ < topRadius_) polygonTools_->baseSpin->setValue(topRadius_);
+	topRadius_ = value/2;
+	if(baseRadius_ < topRadius_) polygonTools_->baseSpin->setValue(value);
 }
 
 void TFPolygonModifier::baseSpin_changed(int value){
 
-	baseRadius_ = value;
-	if(baseRadius_ < topRadius_) polygonTools_->topSpin->setValue(baseRadius_);
+	baseRadius_ = value/2;
+	if(baseRadius_ < topRadius_) polygonTools_->topSpin->setValue(value);
 }
 
 void TFPolygonModifier::mouseReleaseEvent(QMouseEvent *e){
@@ -85,16 +90,17 @@ void TFPolygonModifier::mouseMoveEvent(QMouseEvent *e){
 
 	if(leftMousePressed_)
 	{
+		float zoom = workCopy_->getZoom(1);
 		for(;inputHelper_.x < relativePoint.x; ++inputHelper_.x)
 		{
-			addPoint_(inputHelper_.x - baseRadius_, 0);
+			addPoint_(inputHelper_.x - baseRadius_*zoom, 0);
 		}
 
 		addPolygon_(relativePoint);
 
 		for(;inputHelper_.x > relativePoint.x; --inputHelper_.x)
 		{
-			addPoint_(inputHelper_.x + baseRadius_, 0);
+			addPoint_(inputHelper_.x + baseRadius_*zoom, 0);
 		}
 		update();
 	}
@@ -114,12 +120,12 @@ void TFPolygonModifier::wheelEvent(QWheelEvent *e){
 	{
 		case ScrollBase:
 		{
-			polygonTools_->baseSpin->setValue(polygonTools_->baseSpin->value() + radiusStep_*steps);	
+			polygonTools_->baseSpin->setValue(polygonTools_->baseSpin->value() + polygonSpinStep_*steps);	
 			break;
 		}
 		case ScrollTop:
 		{
-			polygonTools_->topSpin->setValue(polygonTools_->topSpin->value() + radiusStep_*steps);	
+			polygonTools_->topSpin->setValue(polygonTools_->topSpin->value() + polygonSpinStep_*steps);	
 			break;
 		}
 		default:
@@ -180,9 +186,10 @@ void TFPolygonModifier::keyReleaseEvent(QKeyEvent *e){
 
 void TFPolygonModifier::addPolygon_(const TF::PaintingPoint point){
 
-	addLine_(point.x - baseRadius_, 0,	point.x - topRadius_, point.y);
-	addLine_(point.x - topRadius_, point.y, point.x + topRadius_, point.y);
-	addLine_(point.x + topRadius_, point.y, point.x + baseRadius_, 0);
+	float zoom = workCopy_->getZoom(1);
+	addLine_(point.x - baseRadius_*zoom, 0,	point.x - topRadius_*zoom, point.y);
+	addLine_(point.x - topRadius_*zoom, point.y, point.x + topRadius_*zoom, point.y);
+	addLine_(point.x + topRadius_*zoom, point.y, point.x + baseRadius_*zoom, 0);
 }
 
 } // namespace GUI

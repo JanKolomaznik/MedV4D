@@ -59,15 +59,6 @@ public:
 	Common::TimeStamp lastChange();
 	Common::TimeStamp lastPaletteChange();
 
-	template<typename BufferIterator>
-	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
-
-		if(activeEditor_ == emptyPalette) on_addButton_clicked();
-		if(activeEditor_ == emptyPalette || activeEditor_ == noFunctionAvailable) return false;
-
-		return palette_.find(activeEditor_)->second.holder->applyTransferFunction<BufferIterator>(begin, end);
-	}
-
 signals:
 
 	void UpdatePreview(M4D::GUI::TF::Size index);

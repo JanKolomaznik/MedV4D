@@ -12,40 +12,46 @@ class TFHSVaFunction: public TFAbstractFunction<dim>{
 
 public:
 
-	TFHSVaFunction(const std::vector<TF::Size>& domains):
+	TFHSVaFunction(std::vector<TF::Size> domains):
 		typename TFAbstractFunction<dim>(domains){
 	}
 
-	TFHSVaFunction(TFHSVaFunction<dim> &function){
+	TFHSVaFunction(const TFHSVaFunction<dim> &function){
 
-		operator=(function);
+		colorMap_ = function.colorMap_;
+	}
+
+	void operator=(const TFHSVaFunction<dim> &function){
+
+		colorMap_ = function.colorMap_;
 	}
 
 	~TFHSVaFunction(){}
 
-	TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
+	TF::Color getRGBfColor(const TF::Coordinates& coords){
 
-		TF::Size innerDimension = dimension - 1;
-		QColor color;
-		color.setHsvF(
-			(*colorMap_[innerDimension])[index].component1,
-			(*colorMap_[innerDimension])[index].component2,
-			(*colorMap_[innerDimension])[index].component3,
-			(*colorMap_[innerDimension])[index].alpha);
+		TF::Color tfColor = color(coords);
+		QColor qColor;
+		qColor.setHsvF(
+			tfColor.component1,
+			tfColor.component2,
+			tfColor.component3,
+			tfColor.alpha);
 		
-		return TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+		return TF::Color(qColor.redF(), qColor.greenF(), qColor.blueF(), qColor.alphaF());
 	}
 
-	void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value){
+	void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value){
 		
-		QColor color;
-		color.setRgbF(value.component1, value.component2, value.component3, value.alpha);
+		QColor qColor;
+		qColor.setRgbF(value.component1, value.component2, value.component3, value.alpha);
 
-		TF::Size innerDimension = dimension - 1;
-		(*colorMap_[innerDimension])[index].component1 = color.hueF();
-		(*colorMap_[innerDimension])[index].component2 = color.saturationF();
-		(*colorMap_[innerDimension])[index].component3 = color.valueF();
-		(*colorMap_[innerDimension])[index].alpha = color.alphaF();
+		color(coords) = TF::Color(qColor.hueF(), qColor.saturationF(), qColor.valueF(), qColor.alphaF());
+	}
+
+	TFFunctionInterface::Ptr clone(){
+
+		return TFFunctionInterface::Ptr(new TFHSVaFunction<dim>(*this));
 	}
 };
 

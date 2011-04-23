@@ -59,6 +59,12 @@ std::vector<int> TFSimpleModifier::computeZoomMoveIncrements_(const int moveX, c
 	return std::vector<int>(1, moveX);
 }
 
+void TFSimpleModifier::setHistogram(const TF::Histogram::Ptr histogram){
+
+	workCopy_->setHistogram(histogram);
+	workCopy_->zoomHistogram(workCopy_->getZoomCenter(1), workCopy_->getZoom(1));
+}
+
 void TFSimpleModifier::activeView_changed(int index){
 
 	switch(index)
@@ -165,31 +171,32 @@ void TFSimpleModifier::addPoint_(const int x, const int y){
 
 	float yValue = y/(float)inputArea_.height();
 	
+	coords_[0] = x;
 	switch(activeView_)
 	{
 		case Active1:
 		{
-			workCopy_->setComponent1(TF_DIMENSION_1, x, yValue);
+			workCopy_->setComponent1(coords_, yValue);
 			if(firstOnly_)
 			{
-				workCopy_->setComponent2(TF_DIMENSION_1, x, yValue);
-				workCopy_->setComponent3(TF_DIMENSION_1, x, yValue);
+				workCopy_->setComponent2(coords_, yValue);
+				workCopy_->setComponent3(coords_, yValue);
 			}
 			break;
 		}
 		case Active2:
 		{
-			workCopy_->setComponent2(TF_DIMENSION_1, x, yValue);
+			workCopy_->setComponent2(coords_, yValue);
 			break;
 		}
 		case Active3:
 		{
-			workCopy_->setComponent3(TF_DIMENSION_1, x, yValue);
+			workCopy_->setComponent3(coords_, yValue);
 			break;
 		}
 		case ActiveAlpha:
 		{
-			workCopy_->setAlpha(TF_DIMENSION_1, x, yValue);
+			workCopy_->setAlpha(coords_, yValue);
 			break;
 		}
 	}

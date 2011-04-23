@@ -152,7 +152,7 @@
           <number>10000</number>
          </property>
          <property name="singleStep">
-          <number>5</number>
+          <number>10</number>
          </property>
          <property name="value">
           <number>40</number>
@@ -218,7 +218,7 @@
           <number>10000</number>
          </property>
          <property name="singleStep">
-          <number>5</number>
+          <number>10</number>
          </property>
          <property name="value">
           <number>20</number>

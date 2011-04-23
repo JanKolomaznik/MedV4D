@@ -20,6 +20,8 @@ public:
 		TFSimplePainter::Ptr painter);
 
 	~TFSimpleModifier();
+	
+	void setHistogram(const TF::Histogram::Ptr histogram);
 
 protected slots:
 

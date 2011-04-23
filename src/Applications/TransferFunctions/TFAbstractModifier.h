@@ -95,12 +95,15 @@ protected:
 	M4D::Common::TimeStamp stamp_;
 
 	TFWorkCopy::Ptr workCopy_;
+	TF::Coordinates coords_;
+
 	QRect inputArea_;
 	const TF::PaintingPoint ignorePoint_;
 
 	TFAbstractModifier(TFFunctionInterface::Ptr function, TFAbstractPainter::Ptr painter):
 		painter_(painter),
 		workCopy_(TFWorkCopy::Ptr(new TFWorkCopy(function))),
+		coords_(function->getDimension()),
 		ignorePoint_(-1, -1),
 		toolsWidget_(NULL),
 		changed_(true){
