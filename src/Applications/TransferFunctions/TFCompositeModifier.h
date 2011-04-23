@@ -1,7 +1,7 @@
 #ifndef TF_COMPOSITE_MODIFIER
 #define TF_COMPOSITE_MODIFIER
 
-#include <TFViewModifier.h>
+#include <TFSimpleModifier.h>
 #include <TFCompositionDialog.h>
 
 #include <QtCore/QTimer>
@@ -14,7 +14,7 @@ namespace GUI {
 
 class TFPalette;
 
-class TFCompositeModifier: public TFViewModifier{
+class TFCompositeModifier: public TFSimpleModifier{
 
 	Q_OBJECT
 
@@ -69,16 +69,13 @@ protected:
 
 	TFAbstractFunction<TF_DIMENSION_1>::Ptr function_;
 
+	virtual void mousePressEvent(QMouseEvent *e);
+
 	virtual void computeResultFunction_();
 	void updateComposition_();
 
 	virtual void createTools_();
 	void clearLayout_();
-
-	void computeInput_();
-	std::vector<int> computeZoomMoveIncrements_(const int moveX, const int moveY);
-
-	virtual void wheelEvent(QWheelEvent* e);
 };
 
 } // namespace GUI

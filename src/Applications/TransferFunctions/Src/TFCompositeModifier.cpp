@@ -12,7 +12,7 @@ TFCompositeModifier::TFCompositeModifier(
 		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
 		TFSimplePainter::Ptr painter,		
 		TFPalette* palette):
-	TFViewModifier(function, painter),
+	TFSimpleModifier(function, painter),
 	compositeTools_(new Ui::TFCompositeModifier),
 	compositeWidget_(new QWidget),
 	layout_(new QVBoxLayout),
@@ -51,6 +51,8 @@ TFCompositeModifier::TFCompositeModifier(
 	tfAssert(timerConnected);
 	changeChecker_.setInterval(compositeTools_->delaySpin->value());
 	changeChecker_.start();
+
+	activeView_ = ActiveAlpha;
 }
 
 TFCompositeModifier::~TFCompositeModifier(){
@@ -59,6 +61,8 @@ TFCompositeModifier::~TFCompositeModifier(){
 }
 
 void TFCompositeModifier::createTools_(){
+
+	simpleWidget_->hide();
 
     QFrame* separator = new QFrame();
     separator->setFrameShape(QFrame::HLine);
@@ -73,33 +77,18 @@ void TFCompositeModifier::createTools_(){
 	toolsWidget_->setLayout(layout);
 }
 
-void TFCompositeModifier::computeInput_(){
-
-	workCopy_->resize(1, inputArea_.width());
-	workCopy_->resizeHistogram(inputArea_.width());
-}
-
-std::vector<int> TFCompositeModifier::computeZoomMoveIncrements_(const int moveX, const int moveY){
-
-	workCopy_->moveHistogram(moveX);
-	return std::vector<int>(1, moveX);
-}
-
-void TFCompositeModifier::wheelEvent(QWheelEvent* e){
-	
-	int steps = e->delta() / 120;
-	if(steps == 0) return;
+void TFCompositeModifier::mousePressEvent(QMouseEvent *e){
 
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y());
 	if(relativePoint == ignorePoint_) return;
 
-	if(!altPressed_)
+	if(e->button() == Qt::LeftButton)
 	{
-		workCopy_->zoomHistogram(relativePoint.x, steps);
-		update();
+		leftMousePressed_ = true;
+		inputHelper_ = relativePoint;
 	}
 
-	TFViewModifier::wheelEvent(e);
+	TFViewModifier::mousePressEvent(e);
 }
 
 void TFCompositeModifier::changeChecker_intervalChange(int value){
@@ -255,11 +244,20 @@ void TFCompositeModifier::computeResultFunction_(){
 	for(TF::Size i = 0; i < domain; ++i)
 	{		
 		TF::Color result;
+		TF::Color color;
 		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 		{
-			result += it->second->holder->getFunction().getRGBfColor(TF_DIMENSION_1, i);
+			color = it->second->holder->getFunction().getRGBfColor(TF_DIMENSION_1, i);
+			result.component1 += (color.component1*color.alpha);
+			result.component2 += (color.component2*color.alpha);
+			result.component3 += (color.component3*color.alpha);
 		}
-		result /= composition_.size();
+
+		if(result.component1 > 1) result.component1 = 1;
+		if(result.component2 > 1) result.component2 = 1;
+		if(result.component3 > 1) result.component3 = 1;
+		result.alpha = function_->getRGBfColor(TF_DIMENSION_1, i).alpha;
+
 		function_->setRGBfColor(TF_DIMENSION_1, i, result);
 	}
 	workCopy_->forceUpdate();

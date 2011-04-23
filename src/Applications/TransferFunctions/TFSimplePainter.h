@@ -26,7 +26,7 @@ protected:
 		const QColor& component1,
 		const QColor& component2,
 		const QColor& component3,
-		const QColor& alpha = QColor(255,165,0));	
+		const QColor& alpha = QColor(255,127,0));	
 
 	std::vector<std::string> componentNames_;
 

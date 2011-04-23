@@ -30,7 +30,7 @@ ViewerWindow::ViewerWindow():
 	
 	dockWidget->setWidget( &(*editingSystem_) );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
-	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
 	dockWidget->setFloating(true);
