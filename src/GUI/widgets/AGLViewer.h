@@ -36,6 +36,13 @@ public:
 
 	unsigned	availableViewTypes;
 	ViewType	viewType;
+
+	template< typename TViewerType >
+	TViewerType &
+	getViewerWindow()
+	{
+		return *boost::polymorphic_cast< TViewerType *>( viewerWindow );
+	}
 };
 
 class AViewerController

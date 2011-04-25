@@ -38,15 +38,21 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 
 
 void
-GeneralViewer::SetLUTWindow( Vector2f window )
+GeneralViewer::setLUTWindow( Vector2f window )
 {
 	getViewerState().mSliceRenderConfig.lutWindow = window;
 	getViewerState().mVolumeRenderConfig.lutWindow = window;
 }
 
+Vector2f
+GeneralViewer::getLUTWindow() const
+{
+	//TODO
+	return getViewerState().mSliceRenderConfig.lutWindow;
+}
 
 void
-GeneralViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
+GeneralViewer::setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
 {
 	if ( !aTFunctionBuffer ) {
 		_THROW_ ErrorHandling::EBadParameter();
@@ -64,7 +70,7 @@ GeneralViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFuncti
 }
 
 void
-GeneralViewer::SetCurrentSlice( int32 slice )
+GeneralViewer::setCurrentSlice( int32 slice )
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
 	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = Max( 
@@ -145,7 +151,7 @@ GeneralViewer::PrepareData()
 	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState()._textureData->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState()._textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
 	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
-	ResetView();
+	resetView();
 
 	_prepared = true;
 	return true;

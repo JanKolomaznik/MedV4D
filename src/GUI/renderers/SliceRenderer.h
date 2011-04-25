@@ -6,6 +6,7 @@
 #include "GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>
 #include "GUI/utils/TransferFunctionBuffer.h"
+#include "GUI/renderers/RendererTools.h"
 
 namespace M4D
 {
@@ -18,14 +19,6 @@ namespace Renderer
 class SliceRenderer
 {
 public:
-	enum ColorTransform
-	{
-		ctLUTWindow,
-		ctTransferFunction1D,
-		ctMaxIntensityProjection,
-		ctSimpleColorMap
-	};
-
 	struct RenderingConfiguration;
 	
 	void

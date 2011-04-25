@@ -31,6 +31,8 @@ namespace GUI
 namespace Viewer
 {
 
+class GeneralViewer;
+
 class ViewerState : public BaseViewerState
 {
 public:
@@ -38,6 +40,7 @@ public:
 	
 	GLTextureImage::Ptr	_textureData;
 
+	unsigned colorTransform;
 
 	Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;
@@ -57,33 +60,62 @@ public:
 	
 };
 
+struct MouseTrackInfo
+{
+	void
+	startTracking( QPoint aLocalPosition, QPoint aGlobalPosition ) 
+	{
+		mStartLocalPosition = mLastLocalPosition = aLocalPosition;
+
+		mStartGlobalPosition = mLastGlobalPosition = aGlobalPosition;
+	}
+
+	QPoint
+	trackUpdate( QPoint aLocalPosition, QPoint aGlobalPosition )
+	{
+		QPoint diff = aLocalPosition - mLastLocalPosition;
+		mLastLocalPosition = aLocalPosition;
+
+		mLastGlobalPosition = aGlobalPosition;
+		return diff;
+	}
+
+	QPoint	mStartLocalPosition;
+	QPoint	mLastLocalPosition;
+
+	QPoint	mStartGlobalPosition;
+	QPoint	mLastGlobalPosition;
+};
+
 class ViewerController
 {
 public:
 	typedef boost::shared_ptr< ViewerController > Ptr;
 	enum InteractionMode { 
 		imNONE,
-		imORBIT_CAMERA 
+		imORBIT_CAMERA,
+		imLUT_SETTING
 	};
+
+	ViewerController()
+	{
+		mCameraOrbitButton = Qt::MidButton;
+		mLUTSetMouseButton = Qt::RightButton;
+	}
 
 	bool
 	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
 	{
 		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-		if ( state.viewType == vt3D ) {
-			QPoint tmp = event->globalPos();
-			switch ( mInteractionMode ) {
-			case imORBIT_CAMERA: {
-					QPoint diff = tmp - mLastPoint;   
-					state.mVolumeRenderConfig.camera.YawAround( diff.x() * -0.02f );
-					state.mVolumeRenderConfig.camera.PitchAround( diff.y() * -0.02f );
-					break;
-				}
-			default:
-				break;
-			}
-			mLastPoint = event->globalPos();
-			state.viewerWindow->update();
+
+		QPoint diff = mTrackInfo.trackUpdate( event->pos(), event->globalPos() );
+		if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
+			state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+			return true;
+		}
+		if ( mInteractionMode == imLUT_SETTING ) {
+			Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
+			state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
 			return true;
 		}
 		return false;
@@ -96,18 +128,27 @@ public:
 
 		return false;
 	}
+
 	bool
 	mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
 	{
 		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+
+		mTrackInfo.startTracking( event->pos(), event->globalPos() );
 		if ( state.viewType == vt3D ) {
-			mClickPosition = event->globalPos();
-			mLastPoint = mClickPosition;
-			if( event->button() == Qt::LeftButton ) {
+			if( event->button() == mCameraOrbitButton ) {
 				mInteractionMode = imORBIT_CAMERA;
 				return true;
 			}
 		}
+
+		if ( state.colorTransform == ctLUTWindow || state.colorTransform == ctMaxIntensityProjection ) {
+			if( event->button() == mLUTSetMouseButton ) {
+				mInteractionMode = imLUT_SETTING;
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -115,8 +156,11 @@ public:
 	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
 	{
 		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-		if ( state.viewType == vt3D ) {
+		if ( (mInteractionMode == imORBIT_CAMERA && event->button() == mCameraOrbitButton)
+		  || (mInteractionMode == imLUT_SETTING && event->button() == mLUTSetMouseButton) ) 
+		{
 			mInteractionMode = imNONE;
+			return true
 		}
 		return false;
 	}
@@ -126,13 +170,27 @@ public:
 	{
 		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
+		int numDegrees = event->delta() / 8;
+		int numSteps = numDegrees / 15;
+		
+		if ( state.viewType == vt3D ) {
+			float dollyRatio = 1.1f;
+			if ( event->delta() > 0 ) {
+				dollyRatio = 1.0f/dollyRatio;
+			}
+			state.getViewerWindow< GeneralViewer >().cameraDolly( dollyRatio );
+			event->accept();
+			return true;
+		}
+
 		return false;
 	}
 
 protected:
+	Qt::MouseButton	mCameraOrbitButton;
+
 	InteractionMode mInteractionMode;
-	QPoint					mClickPosition;
-	QPoint					mLastPoint;
+	MouseTrackInfo	mTrackInfo;
 };
 
 
@@ -154,16 +212,142 @@ public:
 
 
 	void
-	SetLUTWindow( float32 center, float32 width );
+	setLUTWindow( float32 center, float32 width );
 
 	void
-	SetLUTWindow( Vector2f window );
+	setLUTWindow( Vector2f window );
+
+	Vector2f
+	getLUTWindow() const;
 
 	void
-	SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
+	setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
 
 	void
-	SetCurrentSlice( int32 slice );
+	setCurrentSlice( int32 slice );
+
+	bool
+	isColorTransformAvailable( unsigned aTransformType );
+
+	/*int
+	GetRendererType()
+	{
+		return mRendererType;//_renderer.GetRendererType();
+	}*/
+
+	int
+	getColorTransformType()
+	{
+		return getViewerState().colorTransform;//mSliceRenderConfig.colorTransform;//_renderer.GetColorTransformType();
+	}
+
+
+	void
+	ReceiveMessage( 
+		M4D::Imaging::PipelineMessage::Ptr 			msg, 
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
+		M4D::Imaging::FlowDirection				direction
+	)
+	{
+		PrepareData();
+	}
+
+	bool
+	isShadingEnabled() const
+	{
+		return getViewerState().mVolumeRenderConfig.shadingEnabled;
+	}
+
+	bool
+	isJitteringEnabled() const
+	{
+		return getViewerState().mVolumeRenderConfig.jitterEnabled;
+	}
+
+	void
+	cameraOrbit( Vector2f aAngles )
+	{
+		getViewerState().mVolumeRenderConfig.camera.YawAround( aAngles[0] );
+		getViewerState().mVolumeRenderConfig.camera.PitchAround( aAngles[1] );
+		update();
+	}
+
+	void
+	cameraDolly( float aDollyRatio )
+	{
+		DollyCamera( getViewerState().mVolumeRenderConfig.camera, aDollyRatio );
+		update();
+	}
+public slots:
+	void
+	setViewType( int aViewType )
+	{
+		getViewerState().mViewType = aViewType;
+		//TODO 
+
+		update();
+
+		emit ViewTypeChanged( aViewType );
+	}
+
+	void
+	setColorTransformType( int aColorTransform )
+	{
+		//TODO 
+		getViewerState().colorTransform = aColorTransform;
+		getViewerState().mSliceRenderConfig.colorTransform = aColorTransform;
+		getViewerState().mVolumeRenderConfig.colorTransform = aColorTransform;
+
+		update();
+
+		emit ColorTransformTypeChanged( aColorTransform );
+	}
+
+	void
+	fineRender()
+	{
+		//_renderer.FineRender();
+		update();
+	}
+
+	void
+	enableShading( bool aEnable )
+	{
+		getViewerState().mVolumeRenderConfig.shadingEnabled = aEnable;
+		update();
+	}
+
+	void
+	enableJittering( bool aEnable )
+	{
+		getViewerState().mVolumeRenderConfig.jitterEnabled = aEnable;
+		update();
+	}
+
+	
+	void
+	resetView()
+	{
+		Vector3f pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
+		pos[1] += -550;
+		getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
+		
+		update();
+	}
+
+signals:
+	void
+	SettingsChanged();
+
+	void
+	ViewTypeChanged( int aRendererType );
+
+	void
+	ColorTransformTypeChanged( int aColorTransform );
+
+	void
+	MouseInfoUpdate( const QString &aInfo );
+
 
 protected:
 
@@ -189,15 +373,7 @@ protected:
 	bool
 	PrepareData();
 
-	void
-	ResetView()
-	{
-		Vector3f pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
-		pos[1] += -550;
-		getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
-		
-		update();
-	}
+	
 
 	bool _prepared;
 //******** TMP ************
