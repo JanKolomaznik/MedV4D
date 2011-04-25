@@ -14,6 +14,7 @@
 #include "GUI/widgets/ViewerConstructionKit.h"
 
 #include "GUI/widgets/AGLViewer.h"
+#include "GUI/renderers/RendererTools.h"
 #include "GUI/renderers/SliceRenderer.h"
 #include "GUI/renderers/VolumeRenderer.h"
 
@@ -97,97 +98,26 @@ public:
 		imLUT_SETTING
 	};
 
-	ViewerController()
-	{
-		mCameraOrbitButton = Qt::MidButton;
-		mLUTSetMouseButton = Qt::RightButton;
-	}
+	ViewerController();
 
 	bool
-	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
-	{
-		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-
-		QPoint diff = mTrackInfo.trackUpdate( event->pos(), event->globalPos() );
-		if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
-			state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
-			return true;
-		}
-		if ( mInteractionMode == imLUT_SETTING ) {
-			Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
-			state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
-			return true;
-		}
-		return false;
-	}
+	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool	
-	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
-	{
-		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-
-		return false;
-	}
+	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
-	{
-		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-
-		mTrackInfo.startTracking( event->pos(), event->globalPos() );
-		if ( state.viewType == vt3D ) {
-			if( event->button() == mCameraOrbitButton ) {
-				mInteractionMode = imORBIT_CAMERA;
-				return true;
-			}
-		}
-
-		if ( state.colorTransform == ctLUTWindow || state.colorTransform == ctMaxIntensityProjection ) {
-			if( event->button() == mLUTSetMouseButton ) {
-				mInteractionMode = imLUT_SETTING;
-				return true;
-			}
-		}
-
-		return false;
-	}
+	mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
-	{
-		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-		if ( (mInteractionMode == imORBIT_CAMERA && event->button() == mCameraOrbitButton)
-		  || (mInteractionMode == imLUT_SETTING && event->button() == mLUTSetMouseButton) ) 
-		{
-			mInteractionMode = imNONE;
-			return true
-		}
-		return false;
-	}
+	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event )
-	{
-		ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-
-		int numDegrees = event->delta() / 8;
-		int numSteps = numDegrees / 15;
-		
-		if ( state.viewType == vt3D ) {
-			float dollyRatio = 1.1f;
-			if ( event->delta() > 0 ) {
-				dollyRatio = 1.0f/dollyRatio;
-			}
-			state.getViewerWindow< GeneralViewer >().cameraDolly( dollyRatio );
-			event->accept();
-			return true;
-		}
-
-		return false;
-	}
+	wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event );
 
 protected:
 	Qt::MouseButton	mCameraOrbitButton;
+	Qt::MouseButton	mLUTSetMouseButton;
 
 	InteractionMode mInteractionMode;
 	MouseTrackInfo	mTrackInfo;
@@ -282,7 +212,7 @@ public slots:
 	void
 	setViewType( int aViewType )
 	{
-		getViewerState().mViewType = aViewType;
+		getViewerState().viewType = (ViewType)aViewType;
 		//TODO 
 
 		update();
@@ -384,6 +314,12 @@ private:
 	{
 		ASSERT( mViewerState );
 		return *(boost::polymorphic_downcast< ViewerState *>( mViewerState.get() ) ); 
+	}
+	const ViewerState &
+	getViewerState() const
+	{
+		ASSERT( mViewerState );
+		return *(boost::polymorphic_downcast< const ViewerState *>( mViewerState.get() ) ); 
 	}
 };
 

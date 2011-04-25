@@ -14,14 +14,107 @@ namespace GUI
 namespace Viewer
 {
 
+ViewerController::ViewerController()
+{
+	mCameraOrbitButton = Qt::MidButton;
+	mLUTSetMouseButton = Qt::RightButton;
+}
+
+bool
+ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+{
+	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+
+	QPoint diff = mTrackInfo.trackUpdate( event->pos(), event->globalPos() );
+	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
+		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+		return true;
+	}
+	if ( mInteractionMode == imLUT_SETTING ) {
+		Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
+		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
+		return true;
+	}
+	return false;
+}
+
+bool	
+ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+{
+	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+
+	return false;
+}
+
+bool
+ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+{
+	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+
+	mTrackInfo.startTracking( event->pos(), event->globalPos() );
+	if ( state.viewType == vt3D ) {
+		if( event->button() == mCameraOrbitButton ) {
+			mInteractionMode = imORBIT_CAMERA;
+			return true;
+		}
+	}
+
+	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow || state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection ) {
+		if( event->button() == mLUTSetMouseButton ) {
+			mInteractionMode = imLUT_SETTING;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool
+ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+{
+	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+	if ( (mInteractionMode == imORBIT_CAMERA && event->button() == mCameraOrbitButton)
+	  || (mInteractionMode == imLUT_SETTING && event->button() == mLUTSetMouseButton) ) 
+	{
+		mInteractionMode = imNONE;
+		return true;
+	}
+	return false;
+}
+
+bool
+ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event )
+{
+	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+
+	int numDegrees = event->delta() / 8;
+	//int numSteps = numDegrees / 15;
+	
+	if ( state.viewType == vt3D ) {
+		float dollyRatio = 1.1f;
+		if ( event->delta() > 0 ) {
+			dollyRatio = 1.0f/dollyRatio;
+		}
+		state.getViewerWindow< GeneralViewer >().cameraDolly( dollyRatio );
+		event->accept();
+		return true;
+	}
+
+	return false;
+}
+
+
+
+//********************************************************************************************
+
 GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _prepared( false )
 {
 	ViewerState * state = new ViewerState;
 
-	state->mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::SliceRenderer::ctLUTWindow;
+	state->mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::ctLUTWindow;
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
-	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::VolumeRenderer::ctMaxIntensityProjection;
+	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
 	state->mVolumeRenderConfig.sampleCount = 200;
 	state->mVolumeRenderConfig.shadingEnabled = true;
 	state->mVolumeRenderConfig.jitterEnabled = true;

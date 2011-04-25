@@ -29,10 +29,10 @@ BasicSliceViewer::BasicSliceViewer( QWidget *parent ) :
      mStateMachine.addState(s2);
      mStateMachine.addState(s3);
      mStateMachine.setInitialState(s1);*/
-	mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::SliceRenderer::ctLUTWindow;
+	mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::ctLUTWindow;
 	mSliceRenderConfig.plane = XY_PLANE;
 
-	mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::VolumeRenderer::ctMaxIntensityProjection;
+	mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
 	mVolumeRenderConfig.sampleCount = 200;
 	mVolumeRenderConfig.shadingEnabled = true;
 	mVolumeRenderConfig.jitterEnabled = true;

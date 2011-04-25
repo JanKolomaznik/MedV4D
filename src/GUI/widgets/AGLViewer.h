@@ -6,6 +6,7 @@
 #include <QtGui>
 #include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
+#include <boost/cast.hpp>
 
 namespace M4D
 {
