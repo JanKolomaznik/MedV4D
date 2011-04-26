@@ -44,12 +44,22 @@ public slots:
 
 	void
 	testSlot();
+
+	void
+	initAfterLoopStart();
+signals:
+	void
+	callInitAfterLoopStart();
 protected:
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 	M4D::GUI::TransferFunction1DEditor *mTransferFunctionEditor;
 
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;
+
+	QComboBox *mColorTransformChooser;
+
+	M4D::GUI::Viewer::ViewerController::Ptr mViewerController;
 private:
 
 };

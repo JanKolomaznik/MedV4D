@@ -41,6 +41,7 @@ SetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 		);
 
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void
@@ -168,15 +169,16 @@ GLDrawVolumeSliceCenterSamples(
 		maxId	
 		);
 	
+	numberOfSteps = 2; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
 	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
 		planePoint -= stepSize * camera.GetTargetDirection();
 		//Get n-gon as intersection of the current plane and bounding box
-		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
+		/*unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
 				bbox, planePoint, camera.GetTargetDirection(), minId, vertices
-				);
+				);*/
 
 
 		glBegin( GL_POINTS );

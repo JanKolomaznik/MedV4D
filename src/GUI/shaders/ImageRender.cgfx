@@ -1,6 +1,7 @@
 
 #define DELTA (0.01)
 #define THRESHOLD (0.1)
+#define EPSILON (0.0000001f)
 
 struct ImageData3D
 {
@@ -35,12 +36,19 @@ struct Light
 	float3 ambient;
 };
 
+struct BoundingBox
+{
+	float3	vertices[8];
+};
+
+
 ImageData3D gImageData3D;
 
 float3 gSliceNormalTexCoords;
 sampler2D gNoiseMap;
 float2 gNoiseMapSize;
 
+float4x4 gModelViewProj;// : glstate.matrix.modelview[0];
 
 //int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
@@ -58,6 +66,74 @@ float gRenderingSliceThickness;
 float2 gWLWindow;
 sampler1D gColorMap;
 float gMaskAlpha;
+
+BoundingBox gBBox;
+uint gMinID;
+
+uint2
+GetBBoxEdgePoints( uint idx )
+{
+	if( idx < 4 ) {
+		return uint2( idx, (idx + 1) % 4 );
+	}
+
+	if( idx < 8 ) {
+		return uint2( idx % 4, idx );
+	}
+	if( idx < 11 ) {
+		return uint2( idx - 4, idx - 3 );
+	}
+	return uint2( idx - 4, 4 );
+}
+
+
+int edgeOrder[8*12];
+
+
+struct IntersectionResult
+{
+	uint resultType;
+	float3 intersection;
+};
+
+IntersectionResult
+LinePlaneIntersection( 
+		float3	lineA, 
+		float3	lineB,
+		float3	planePoint, 
+		float3	planeNormal
+		)
+{
+
+	float3 u = float3( lineB - lineA );
+	float3 w = float3( lineA - planePoint );
+	IntersectionResult result;
+	result.resultType = 0;
+	result.intersection = float3(0.0f, 0.0f, 0.0f);
+	
+	float D = dot( planeNormal, u );
+	float N = dot(-planeNormal, w );
+
+	if ( abs(D) < EPSILON ) {          // segment is parallel to plane
+		if ( abs(N) < EPSILON ) {                   // segment lies in plane
+		    result.resultType = 1;
+		} else {
+		    result.resultType = 2;                   // no intersection
+		}
+		return result;
+	}
+	// they are not parallel
+	// compute intersect param
+	float sI = N / D;
+	if (sI < 0.0f || sI > 1.0f) {
+		result.resultType = 2;
+		return result;                       // no intersection
+	}
+
+	result.intersection = lineA + sI * u;                 // compute segment intersect point
+	return result;
+}
+
 
 
 float3
@@ -350,27 +426,34 @@ fp_SimpleRegionColorMap_3D(
 	return OUT;
 }
 
-POINT TRIANGLE_OUT
+
+POINT LINE_OUT
 void gp_GenerateSlice( 
 			AttribArray<float4> position :POSITION,
-			AttribArray<float3> texCoord :TEXCOORD0,
-			uniform float3 aViewDirection 
+			uniform float3 aViewDirection,
+			uniform uint aMinID,
+			uniform BoundingBox aBBox
 			)
 {
-	float3 dir1 = normalize( cross( aViewDirection, aViewDirection.yxz ) );
-	float3 dir2 = normalize( cross( aViewDirection, dir1 ) );
-
-	float3 v1 = position[0].xyz + dir1 * 100;
-	float3 v2 = position[0].xyz + dir2 * 100;
-		
-	/*emitVertex( position[0] : POSITION, texCoord[0] );
-	emitVertex( float4( v1, 1.0f ) : POSITION, texCoord[0] );
-	emitVertex( float4( v2, 1.0f ) : POSITION, texCoord[0] );*/
-
-	emitVertex( (position[0]) : POSITION, texCoord[0] );
-	emitVertex( (position[0] + float4( 300*dir2, 1.0 )) : POSITION, texCoord[1] );
-	emitVertex( (position[0] + float4( 300*dir1, 1.0 )) : POSITION, texCoord[2] );
-	restartStrip();
+	uint2 lineIndices;
+	float4 vertices[6];
+	
+	float4 color = float4( 0.2f, 0.7f, 1.0f, 0.3f );
+	uint idx = 0;
+	float4 pos = position[0] / position[0].w;
+	IntersectionResult res;
+	for( uint i = 0; i < 12; ++i ) {
+		lineIndices = GetBBoxEdgePoints( edgeOrder[aMinID*12 + i] ); 
+		res = LinePlaneIntersection( aBBox.vertices[ lineIndices.x ], aBBox.vertices[ lineIndices.y ], pos.xyz, aViewDirection );
+		if( res.resultType == 0 ) {
+			vertices[idx++] = float4(res.intersection,1.0f);
+		}
+	
+	}
+	for( uint i = 0; i < idx; ++i ) {
+		emitVertex( mul(gModelViewProj, vertices[i] ) : POSITION, color : COLOR, vertices[i].xyz : TEXCOORD0 );
+	}
+	emitVertex( mul(gModelViewProj, vertices[0] ) : POSITION, color : COLOR, vertices[0].xyz : TEXCOORD0 );
 }
 
 
@@ -387,7 +470,7 @@ vertexPassThru
 	)
 {
 	VertexOutput result;
-	result.position = mul(modelViewProj, position);
+	result.position =position;
 	result.color    = color;
 	result.texCoord = texCoord;
 	return result;
@@ -488,9 +571,9 @@ technique TransferFunction1DJitter_3D {
 
 technique TransferFunction1DShadingJitter_3D {
 	pass t0 {
-		//VertexProgram = compile gp5vp vertexPassThru(modelViewProj);
+		//VertexProgram = compile gp4vp vertexPassThru(gModelViewProj);
 
-		//GeometryProgram = compile gp5gp "-po Vertices=3" /*triangle_shrinky();*/gp_GenerateSlice( gViewDirection );
+		//GeometryProgram = compile gp4gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
 
 		FragmentProgram = compile glslf fp_TransferFunction1DShadingJitter_3D( 
 									gImageData3D, 

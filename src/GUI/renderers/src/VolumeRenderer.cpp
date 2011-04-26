@@ -40,6 +40,10 @@ VolumeRenderer::Initialize()
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	delete buf;
+
+	mAvailableColorTransforms.clear();
+	mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
+	mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
 }
 
 void
@@ -53,6 +57,18 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 {
 	ASSERT( aConfig.imageData != NULL );
 
+	static int edgeOrder[8*12] = {
+		 10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
+		 11,  8, 10,  5,  9,  6,  2,  1,  7,  3,  0,  4,
+		  8,  9, 11,  6, 10,  7,  3,  2,  4,  0,  1,  5,
+		  9, 10,  8,  7, 11,  4,  0,  3,  5,  1,  2,  6,
+		  1,  0,  2,  4,  3,  7, 10, 11,  6,  9,  8,  5,
+		  2,  1,  3,  5,  0,  4, 11,  8,  7, 10,  9,  6,
+		  3,  2,  0,  6,  1,  5,  8,  9,  4, 11, 10,  7,
+		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
+	};
+
+
 	if( aSetupView ) {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -63,6 +79,24 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
+
+	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() ); 
+	float 				min = 0; 
+	float 				max = 0;
+	unsigned			minId = 0;	
+	unsigned			maxId = 0;
+	GetBBoxMinMaxDistance( 
+			bbox, 
+			aConfig.camera.GetEyePosition(), 
+			aConfig.camera.GetTargetDirection(), 
+			min, 
+			max, 
+		       	minId,	
+		       	maxId	
+			);
+
+
+	LOG( "minId : " << minId );
 
 	glColor3f( 1.0f, 0.0f, 0.0f );
 	M4D::GLDrawBoundingBox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
@@ -75,13 +109,17 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
 	mCgEffect.SetParameter( "gViewDirection", aConfig.camera.GetTargetDirection() );
+	mCgEffect.SetParameter( "edgeOrder", edgeOrder, 8*12 );
+	mCgEffect.SetParameter( "gMinID", (int)minId );
+	mCgEffect.SetParameter( "gBBox", bbox );
 
 	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetSize() );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
 
-
+	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
+	
 	std::string techniqueName;
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
@@ -118,7 +156,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
-				M4D::BoundingBox3D( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() ),
+				bbox,
 				aConfig.camera,
 				sliceCount,
 				1.0f

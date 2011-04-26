@@ -45,6 +45,16 @@
 
 //*****************************************************************************
 
+struct WideNameIdPair
+{
+	WideNameIdPair( std::wstring aName, unsigned aId ): name( aName ), id( aId )
+	{ }
+
+	std::wstring name;
+	unsigned id;
+};
+
+
 
 template< typename T >
 struct AlignedArrayPointer

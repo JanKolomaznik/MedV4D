@@ -73,7 +73,9 @@ class AGLViewer: public QGLWidget
 	Q_OBJECT;
 public:
 	AGLViewer( QWidget *parent ): QGLWidget( parent )
-	{}
+	{
+		setMouseTracking ( true );
+	}
 
 	void
 	setViewerController( AViewerController::Ptr aController )

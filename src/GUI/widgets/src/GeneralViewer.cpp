@@ -41,7 +41,13 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEven
 bool	
 ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
 {
-	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+	if ( state.viewType == vt2DAlignedSlices ) {
+		state.getViewerWindow< GeneralViewer >().switchToNextPlane();
+
+		event->accept();
+		return true;
+	}
 
 	return false;
 }
@@ -87,7 +93,7 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
-	int numDegrees = event->delta() / 8;
+	//int numDegrees = event->delta() / 8;
 	//int numSteps = numDegrees / 15;
 	
 	if ( state.viewType == vt3D ) {
@@ -96,6 +102,12 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 			dollyRatio = 1.0f/dollyRatio;
 		}
 		state.getViewerWindow< GeneralViewer >().cameraDolly( dollyRatio );
+		event->accept();
+		return true;
+	}
+	if ( state.viewType == vt2DAlignedSlices ) {
+		state.getViewerWindow< GeneralViewer >().changeCurrentSlice( event->delta() > 0 ? 1: -1 );
+
 		event->accept();
 		return true;
 	}
@@ -121,12 +133,18 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 
 	state->viewerWindow = this;
 
-	state->backgroundColor = QColor( 20, 10, 90);
+	//state->backgroundColor = QColor( 20, 10, 90);
+	state->backgroundColor = QColor( 0, 0, 0);
 
 	state->availableViewTypes = 7;
 	state->viewType = vt2DAlignedSlices;
 
 	mViewerState = BaseViewerState::Ptr( state );
+
+
+
+	setColorTransformType( M4D::GUI::Renderer::ctLUTWindow );
+
 }
 
 
@@ -135,6 +153,7 @@ GeneralViewer::setLUTWindow( Vector2f window )
 {
 	getViewerState().mSliceRenderConfig.lutWindow = window;
 	getViewerState().mVolumeRenderConfig.lutWindow = window;
+	update();
 }
 
 Vector2f
@@ -169,6 +188,7 @@ GeneralViewer::setCurrentSlice( int32 slice )
 	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = Max( 
 								Min( getViewerState()._regionMax[plane]-1, slice ), 
 								getViewerState()._regionMin[plane] );
+	update();
 }
 
 
@@ -193,13 +213,53 @@ GeneralViewer::preparedForRendering()
 void
 GeneralViewer::prepareForRenderingStep()
 {
+	glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+	switch ( getViewerState().viewType ) {
+	case vt3D:
+		{
+			
 
+			getViewerState().mVolumeRenderConfig.camera.SetAspectRatio( getViewerState().aspectRatio );
+			//Set viewing parameters
+			SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
+		}
+		break;
+	case vt2DAlignedSlices:
+		{
+			zoomFit();
+			SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
+		}
+		break;
+	default:
+		ASSERT( false );
+	}
 }
 
 void
 GeneralViewer::render()
 {
+	switch ( getViewerState().viewType ) {
+	case vt3D:
+		{
+			if ( getViewerState().mEnableVolumeBoundingBox ) {
+				glColor3f( 1.0f, 0.0f, 0.0f );
+				M4D::GLDrawBoundingBox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
+			}
 
+			getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
+		}
+		break;
+	case vt2DAlignedSlices:
+		{
+			getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
+		}
+		break;
+	default:
+		ASSERT( false );
+	}
 }
 
 void
@@ -248,6 +308,16 @@ GeneralViewer::PrepareData()
 
 	_prepared = true;
 	return true;
+}
+
+void	
+GeneralViewer::zoomFit( ZoomType zoomType )
+{
+	getViewerState().mSliceRenderConfig.viewConfig = GetOptimalViewConfiguration(
+			VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane ), 
+			VectorPurgeDimension( getViewerState()._regionRealMax, getViewerState().mSliceRenderConfig.plane ),
+			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ), 
+			zoomType );
 }
 
 

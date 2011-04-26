@@ -123,6 +123,54 @@ CgEffect::SetParameter( std::string aName, int aValue )
 }
 
 void
+CgEffect::SetParameter( std::string aName, const BoundingBox3D &aValue )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, TO_STRING( aName << ".vertices" ).data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuefr( cgParameter, 3*8, aValue.vertices[0].GetData() );
+}
+
+void
+CgEffect::SetParameter( std::string aName, const float *aValue, size_t aCount )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuefr( cgParameter, aCount, aValue );
+}
+
+void
+CgEffect::SetParameter( std::string aName, const double *aValue, size_t aCount )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuedr( cgParameter, aCount, aValue );
+}
+
+void
+CgEffect::SetParameter( std::string aName, const int *aValue, size_t aCount )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValueir( cgParameter, aCount, aValue );
+}
+
+
+void
+CgEffect::SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, aName.data() );
+
+	cgGLSetStateMatrixParameter(cgParameter, matrix, transform);
+}
+
+
+
+
+void
 CgEffect::prepareState()
 {
 

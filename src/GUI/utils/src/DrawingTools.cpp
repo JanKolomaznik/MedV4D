@@ -18,7 +18,7 @@ static unsigned edgeOrder[8][12] = {
 
 
 static unsigned
-GetBBoxEdgePointA( const BoundingBox3D &bbox, unsigned idx )
+GetBBoxEdgePointA( unsigned idx )
 {
 	ASSERT( idx < 12 ); //only 12 edges
 
@@ -29,7 +29,7 @@ GetBBoxEdgePointA( const BoundingBox3D &bbox, unsigned idx )
 }
 
 static unsigned
-GetBBoxEdgePointB( const BoundingBox3D &bbox, unsigned idx )
+GetBBoxEdgePointB( unsigned idx )
 {
 	ASSERT( idx < 12 ); //only 12 edges
 
@@ -87,8 +87,8 @@ GetPlaneVerticesInBoundingBox(
 	Vector< float, 3 > center;
 	unsigned idx = 0;
 	for( unsigned i = 0; i < 12; ++i ) {
-		unsigned lineAIdx = GetBBoxEdgePointA( bbox, edgeOrder[minId][i] ); 
-		unsigned lineBIdx = GetBBoxEdgePointB( bbox, edgeOrder[minId][i] );
+		unsigned lineAIdx = GetBBoxEdgePointA( edgeOrder[minId][i] ); 
+		unsigned lineBIdx = GetBBoxEdgePointB( edgeOrder[minId][i] );
 		if( ie_UNIQUE_INTERSECTION == 
 				LinePlaneIntersection( bbox.vertices[ lineAIdx ], bbox.vertices[ lineBIdx ], planePoint, planeNormal, vertices[idx] ) 
 		  ) {

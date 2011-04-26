@@ -12,6 +12,12 @@ SliceRenderer::Initialize()
 {
 	InitializeCg();
 	mCgEffect.Initialize( "ImageRender.cgfx" );
+
+
+	mAvailableColorTransforms.clear();
+	mAvailableColorTransforms.push_back( WideNameIdPair( L"LUT window", ctLUTWindow ) );
+	mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
+	mAvailableColorTransforms.push_back( WideNameIdPair( L"Region colormap", ctSimpleColorMap ) );
 }
 
 void
@@ -27,11 +33,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 	ASSERT( aConfig.imageData != NULL );
 
 	if( aSetupView ) {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
 		SetToViewConfiguration2D( aConfig.viewConfig );
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
 	}
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );

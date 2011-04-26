@@ -29,9 +29,17 @@ public:
 
 	virtual void
 	Render( RenderingConfiguration & aConfig, bool aSetupView = true );
+
+	const ColorTransformNameIDList&
+	GetAvailableColorTransforms()const
+	{
+		return mAvailableColorTransforms;
+	}
 protected:
 	CGcontext   				mCgContext;
 	CgEffect				mCgEffect;
+
+	ColorTransformNameIDList		mAvailableColorTransforms;
 };
 
 struct SliceRenderer::RenderingConfiguration

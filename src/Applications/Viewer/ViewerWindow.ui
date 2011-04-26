@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>ViewerWindow</string>
   </property>
-  <widget class="M4D::GUI::Viewer::BasicSliceViewer" name="mViewer"/>
+  <widget class="M4D::GUI::Viewer::GeneralViewer" name="mViewer"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -194,17 +194,17 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>M4D::GUI::Viewer::BasicSliceViewer</class>
+   <class>M4D::GUI::Viewer::GeneralViewer</class>
    <extends>QWidget</extends>
-   <header>GUI/widgets/BasicSliceViewer.h</header>
+   <header>GUI/widgets/GeneralViewer.h</header>
    <container>1</container>
    <slots>
-    <slot>FineRender()</slot>
-    <slot>EnableShading(bool)</slot>
-    <slot>SaveCurrentView()</slot>
-    <slot>ResetView()</slot>
-    <slot>SaveCycle()</slot>
-    <slot>EnableJittering(bool)</slot>
+    <slot>fineRender()</slot>
+    <slot>enableShading(bool)</slot>
+    <slot>saveCurrentView()</slot>
+    <slot>resetView()</slot>
+    <slot>saveCycle()</slot>
+    <slot>enableJittering(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -214,7 +214,7 @@
    <sender>actionFine_Render</sender>
    <signal>triggered()</signal>
    <receiver>mViewer</receiver>
-   <slot>FineRender()</slot>
+   <slot>fineRender()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -246,7 +246,7 @@
    <sender>actionEnable_Shading</sender>
    <signal>toggled(bool)</signal>
    <receiver>mViewer</receiver>
-   <slot>EnableShading(bool)</slot>
+   <slot>enableShading(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -262,7 +262,7 @@
    <sender>actionSave_View</sender>
    <signal>triggered()</signal>
    <receiver>mViewer</receiver>
-   <slot>SaveCurrentView()</slot>
+   <slot>saveCurrentView()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -278,7 +278,7 @@
    <sender>actionReset_View</sender>
    <signal>triggered()</signal>
    <receiver>mViewer</receiver>
-   <slot>ResetView()</slot>
+   <slot>resetView()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -294,7 +294,7 @@
    <sender>actionSave_Cycle</sender>
    <signal>triggered()</signal>
    <receiver>mViewer</receiver>
-   <slot>SaveCycle()</slot>
+   <slot>saveCycle()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -310,7 +310,7 @@
    <sender>actionEnable_Jittering</sender>
    <signal>toggled(bool)</signal>
    <receiver>mViewer</receiver>
-   <slot>EnableJittering(bool)</slot>
+   <slot>enableJittering(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

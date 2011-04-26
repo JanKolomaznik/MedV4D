@@ -19,6 +19,8 @@ namespace Renderer
 class VolumeRenderer
 {
 public:
+	//typedef std::map< std::wstring, int > ColorTransformNameToIDMap;
+	//typedef std::map< int, std::wstring > ColorTransformIDToNameMap;
 
 	struct RenderingConfiguration;
 
@@ -30,11 +32,19 @@ public:
 	
 	virtual void
 	Render( RenderingConfiguration & aConfig, bool aSetupView = true );
+
+	const ColorTransformNameIDList&
+	GetAvailableColorTransforms()const
+	{
+		return mAvailableColorTransforms;
+	}
 protected:
 
 	CGcontext   				mCgContext;
 	CgEffect				mCgEffect;
 	GLuint					mNoiseMap;
+
+	ColorTransformNameIDList		mAvailableColorTransforms;
 };
 
 struct VolumeRenderer::RenderingConfiguration

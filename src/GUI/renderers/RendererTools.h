@@ -2,6 +2,7 @@
 #define RENDERER_TOOLS_H
 
 #include "common/Common.h"
+#include <vector>
 
 namespace M4D
 {
@@ -18,6 +19,7 @@ enum ColorTransform
 	ctSimpleColorMap
 };
 
+typedef std::vector< WideNameIdPair > ColorTransformNameIDList;
 
 }//Renderer
 }//GUI

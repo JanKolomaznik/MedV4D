@@ -88,7 +88,7 @@ struct MouseTrackInfo
 	QPoint	mLastGlobalPosition;
 };
 
-class ViewerController
+class ViewerController: public AViewerController
 {
 public:
 	typedef boost::shared_ptr< ViewerController > Ptr;
@@ -156,6 +156,26 @@ public:
 	void
 	setCurrentSlice( int32 slice );
 
+	void
+	switchToNextPlane()
+	{
+		getViewerState().mSliceRenderConfig.plane = NextCartesianPlane( getViewerState().mSliceRenderConfig.plane );
+		update();
+	}
+
+	int32
+	getCurrentSlice()const
+	{
+		CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
+		return getViewerState().mSliceRenderConfig.currentSlice[ plane ];
+	}
+
+	void
+	changeCurrentSlice( int32 diff )
+	{
+		setCurrentSlice( diff + getCurrentSlice() );
+	}
+
 	bool
 	isColorTransformAvailable( unsigned aTransformType );
 
@@ -208,6 +228,33 @@ public:
 		DollyCamera( getViewerState().mVolumeRenderConfig.camera, aDollyRatio );
 		update();
 	}
+
+	ViewType
+	getViewType()const
+	{
+		return getViewerState().viewType;
+	}
+
+	QStringList 
+	getAvailableColorTransformations()
+	{
+		QStringList strList;
+		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
+		switch ( getViewerState().viewType ) {
+		case vt3D: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
+			break;
+		case vt2DAlignedSlices: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
+			break;
+		default:
+			ASSERT( false );
+		}
+		ASSERT( idList && idList->size() > 0 );
+		for( unsigned i = 0; i < idList->size(); ++i ) {
+			strList << QString::fromStdWString( (*idList)[ i ].name );
+		}
+
+		return strList;
+	}
 public slots:
 	void
 	setViewType( int aViewType )
@@ -218,6 +265,29 @@ public slots:
 		update();
 
 		emit ViewTypeChanged( aViewType );
+	}
+
+	void
+	setColorTransformType( QString aColorTransformName )
+	{
+		//TODO
+		std::wstring name = aColorTransformName.toStdWString();
+		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
+		switch ( getViewerState().viewType ) {
+		case vt3D: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
+			break;
+		case vt2DAlignedSlices: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
+			break;
+		default:
+			ASSERT( false );
+		}
+		ASSERT( idList && idList->size() > 0 );
+		for( unsigned i = 0; i < idList->size(); ++i ) {
+			if( name == (*idList)[ i ].name ) {
+				setColorTransformType( (*idList)[ i ].id );
+				return;
+			}
+		}
 	}
 
 	void
@@ -264,6 +334,9 @@ public slots:
 		
 		update();
 	}
+
+	void
+	zoomFit( ZoomType zoomType = ztFIT );
 
 signals:
 	void

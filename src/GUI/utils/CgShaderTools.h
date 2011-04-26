@@ -84,7 +84,22 @@ public:
 	SetParameter( std::string aName, int aValue );
 
 	void
+	SetParameter( std::string aName, const float *aValue, size_t aCount );
+
+	void
+	SetParameter( std::string aName, const double *aValue, size_t aCount );
+
+	void
+	SetParameter( std::string aName, const int *aValue, size_t aCount );
+
+	void
+	SetParameter( std::string aName, const BoundingBox3D &aValue );
+
+	void
 	SetTextureParameter( std::string aName, GLuint aTexture );
+
+	void
+	SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform );
 protected:
 	virtual void
 	prepareState();
