@@ -123,7 +123,20 @@ protected:
 	MouseTrackInfo	mTrackInfo;
 };
 
+class RenderingExtension
+{
+public:
+	typedef boost::shared_ptr< RenderingExtension > Ptr;
 
+	virtual unsigned
+	getAvailableViewTypes()const = 0;
+
+	virtual void
+	render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, CartesianPlanes aPlane ) = 0;
+
+	virtual void
+	render3D() = 0;
+};
 
 
 class GeneralViewer : 
@@ -191,6 +204,28 @@ public:
 		return getViewerState().colorTransform;//mSliceRenderConfig.colorTransform;//_renderer.GetColorTransformType();
 	}
 
+	QString
+	getColorTransformName()
+	{
+		//TODO
+		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
+		switch ( getViewerState().viewType ) {
+		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
+			break;
+		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
+			break;
+		default:
+			ASSERT( false );
+		}
+		ASSERT( idList && idList->size() > 0 );
+		for( unsigned i = 0; i < idList->size(); ++i ) {
+			if ( (*idList)[ i ].id == getViewerState().colorTransform ) {
+				return QString::fromStdWString( (*idList)[ i ].name );
+			}
+		}
+
+		return QString();
+	}
 
 	void
 	ReceiveMessage( 
@@ -241,9 +276,9 @@ public:
 		QStringList strList;
 		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
 		switch ( getViewerState().viewType ) {
-		case vt3D: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
+		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
 			break;
-		case vt2DAlignedSlices: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
+		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
 			break;
 		default:
 			ASSERT( false );
@@ -255,12 +290,30 @@ public:
 
 		return strList;
 	}
+	
+	void
+	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension )
+	{
+		mRenderingExtension = aRenderingExtension;
+		update();
+	}
 public slots:
 	void
 	setViewType( int aViewType )
 	{
 		getViewerState().viewType = (ViewType)aViewType;
 		//TODO 
+		switch ( getViewerState().viewType ) {
+		case vt3D: 
+			setColorTransformType( GUI::Renderer::ctTransferFunction1D );
+			break;
+		case vt2DAlignedSlices: 
+			setColorTransformType( GUI::Renderer::ctLUTWindow );
+			break;
+		default:
+			ASSERT( false );
+		}
+
 
 		update();
 
@@ -268,15 +321,15 @@ public slots:
 	}
 
 	void
-	setColorTransformType( QString aColorTransformName )
+	setColorTransformType( const QString & aColorTransformName )
 	{
 		//TODO
 		std::wstring name = aColorTransformName.toStdWString();
 		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
 		switch ( getViewerState().viewType ) {
-		case vt3D: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
+		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
 			break;
-		case vt2DAlignedSlices: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
+		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
 			break;
 		default:
 			ASSERT( false );
@@ -285,6 +338,7 @@ public slots:
 		for( unsigned i = 0; i < idList->size(); ++i ) {
 			if( name == (*idList)[ i ].name ) {
 				setColorTransformType( (*idList)[ i ].id );
+				D_PRINT( "Setting color transform : " << aColorTransformName.toStdString() );
 				return;
 			}
 		}
@@ -381,6 +435,7 @@ protected:
 	bool _prepared;
 //******** TMP ************
 
+	RenderingExtension::Ptr mRenderingExtension;
 private:
 	ViewerState &
 	getViewerState()

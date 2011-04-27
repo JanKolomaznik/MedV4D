@@ -6,6 +6,7 @@
 #include "ui_ViewerWindow.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
+#include "EditorController.hpp"
 
 class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
 {
@@ -40,7 +41,7 @@ public slots:
 	changeViewerType( int aRendererType );
 
 	void
-	changeColorMapType( int aColorMap );
+	changeColorMapType( const QString & aColorMapName );
 
 	void
 	testSlot();
@@ -59,7 +60,7 @@ protected:
 
 	QComboBox *mColorTransformChooser;
 
-	M4D::GUI::Viewer::ViewerController::Ptr mViewerController;
+	EditorController::Ptr mViewerController;
 private:
 
 };

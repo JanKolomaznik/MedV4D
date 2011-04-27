@@ -136,7 +136,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	//state->backgroundColor = QColor( 20, 10, 90);
 	state->backgroundColor = QColor( 0, 0, 0);
 
-	state->availableViewTypes = 7;
+	state->availableViewTypes = 5;
 	state->viewType = vt2DAlignedSlices;
 
 	mViewerState = BaseViewerState::Ptr( state );
@@ -244,9 +244,13 @@ GeneralViewer::render()
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
+			glEnable( GL_DEPTH_TEST );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				M4D::GLDrawBoundingBox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
+			}
+			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+				mRenderingExtension->render3D();	
 			}
 
 			getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
@@ -254,6 +258,13 @@ GeneralViewer::render()
 		break;
 	case vt2DAlignedSlices:
 		{
+			if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
+				mRenderingExtension->render2DAlignedSlices( getViewerState().mSliceRenderConfig.currentSlice[ getViewerState().mSliceRenderConfig.plane ], 
+						Vector2f(), //TODO
+						getViewerState().mSliceRenderConfig.plane 
+						);	
+			}
+
 			getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
 		}
 		break;
