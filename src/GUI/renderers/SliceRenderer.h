@@ -51,6 +51,13 @@ struct SliceRenderer::RenderingConfiguration
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;
 
+	Vector3f
+	getCurrentRealSlice()
+	{
+		ASSERT( imageData );
+		return imageData->GetMinimum() + VectorMemberProduct( currentSlice, imageData->GetElementExtents() );
+	}
+
 	int					colorTransform;
 	const GLTransferFunctionBuffer1D	*transferFunction;
 	Vector2f				lutWindow;

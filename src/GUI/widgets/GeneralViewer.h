@@ -101,19 +101,19 @@ public:
 	ViewerController();
 
 	bool
-	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool	
-	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
 
 	bool
-	wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event );
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
 
 protected:
 	Qt::MouseButton	mCameraOrbitButton;
@@ -135,7 +135,10 @@ public:
 	render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, CartesianPlanes aPlane ) = 0;
 
 	virtual void
-	render3D() = 0;
+	preRender3D() = 0;
+
+	virtual void
+	postRender3D() = 0;
 };
 
 

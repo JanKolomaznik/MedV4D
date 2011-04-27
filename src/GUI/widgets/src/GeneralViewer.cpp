@@ -250,10 +250,15 @@ GeneralViewer::render()
 				M4D::GLDrawBoundingBox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
 			}
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
-				mRenderingExtension->render3D();	
+				mRenderingExtension->preRender3D();	
 			}
 
 			getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
+
+			glClear( GL_DEPTH_BUFFER_BIT );
+			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+				mRenderingExtension->postRender3D();	
+			}
 		}
 		break;
 	case vt2DAlignedSlices:

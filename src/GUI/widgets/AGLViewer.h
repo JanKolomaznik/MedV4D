@@ -52,19 +52,19 @@ public:
 	typedef boost::shared_ptr< AViewerController > Ptr;
 
 	virtual bool
-	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
 
 	virtual bool	
-	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
 
 	virtual bool
-	mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
 
 	virtual bool
-	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
 
 	virtual bool
-	wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event ) = 0;
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) = 0;
 };
 
 

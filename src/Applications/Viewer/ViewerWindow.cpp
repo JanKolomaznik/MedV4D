@@ -148,6 +148,8 @@ ViewerWindow::changeColorMapType( const QString & aColorMapName )
 void
 ViewerWindow::testSlot()
 {
+	mViewerController->mOverlay = !mViewerController->mOverlay;
+	mViewer->update();
 	//QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
 	//label->setPixmap( QPixmap::fromImage( image ) );
 }
