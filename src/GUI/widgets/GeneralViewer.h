@@ -90,12 +90,14 @@ struct MouseTrackInfo
 
 class ViewerController: public AViewerController
 {
+	Q_OBJECT;
 public:
 	typedef boost::shared_ptr< ViewerController > Ptr;
 	enum InteractionMode { 
 		imNONE,
 		imORBIT_CAMERA,
-		imLUT_SETTING
+		imLUT_SETTING,
+		imFAST_SLICE_CHANGE
 	};
 
 	ViewerController();
@@ -115,12 +117,21 @@ public:
 	bool
 	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
 
+protected slots:
+	virtual void
+	timerCall();
+
 protected:
 	Qt::MouseButton	mCameraOrbitButton;
 	Qt::MouseButton	mLUTSetMouseButton;
+	Qt::MouseButton	mFastSliceChangeMouseButton;
 
 	InteractionMode mInteractionMode;
 	MouseTrackInfo	mTrackInfo;
+
+	QTimer	mTimer;
+	GeneralViewer *mTmpViewer;
+	bool mPositive;
 };
 
 class RenderingExtension

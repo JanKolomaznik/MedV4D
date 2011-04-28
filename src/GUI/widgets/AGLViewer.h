@@ -46,7 +46,7 @@ public:
 	}
 };
 
-class AViewerController
+class AViewerController: public QObject
 {
 public:
 	typedef boost::shared_ptr< AViewerController > Ptr;

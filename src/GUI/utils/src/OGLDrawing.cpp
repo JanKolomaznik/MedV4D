@@ -34,8 +34,8 @@ SetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 	glOrtho( 
 		(double)min[0], 
 		(double)max[0], 
-		(double)min[1], 
 		(double)max[1], 
+		(double)min[1], 
 		-1.0, 
 		1.0
 		);
@@ -213,10 +213,10 @@ GLDrawVolumeSlice(
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
 
-	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
 
 	//std::cout << sliceCoord << "  " << sliceTexCoord << " tex\n";
 	glBegin( GL_QUADS );

@@ -218,6 +218,19 @@ ClampToInterval( NType a, NType b, NType val ) {
 	return val;
 }
 
+template< typename NType >
+inline bool
+IntervalTest( NType a, NType b, NType val ) {
+	if( val < a ) {
+		return false;
+	} 
+	if( val > b ) {
+		return false;
+	} 
+
+	return true;
+}
+
 inline bool
 EpsilonTest( float32 &aValue, float32 aEpsilon = Epsilon )
 {

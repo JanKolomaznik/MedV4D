@@ -18,6 +18,10 @@ ViewerController::ViewerController()
 {
 	mCameraOrbitButton = Qt::MidButton;
 	mLUTSetMouseButton = Qt::RightButton;
+	mFastSliceChangeMouseButton = Qt::MidButton;
+
+	mTimer.setSingleShot( false );
+	QObject::connect( &mTimer, SIGNAL(timeout()), this, SLOT( timerCall() ) );
 }
 
 bool
@@ -33,6 +37,20 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEven
 	if ( mInteractionMode == imLUT_SETTING ) {
 		Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
 		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
+		return true;
+	}
+	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
+		int speed = mTrackInfo.mStartLocalPosition.y() - event->pos().y();
+		mTmpViewer = &(state.getViewerWindow< GeneralViewer >());
+		mPositive = speed > 0;
+		if( speed != 0 ) {
+			float ms = 1000.0f / Abs(speed);
+			mTimer.setInterval( Max<int>( static_cast<int>( ms ), 10 ) );
+			mTimer.start();
+			timerCall();
+		} else {
+			mTimer.stop();
+		}
 		return true;
 	}
 	return false;
@@ -64,7 +82,12 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEve
 			return true;
 		}
 	}
-
+	if ( state.viewType == vt2DAlignedSlices ) {
+		if( event->button() == mFastSliceChangeMouseButton ) {
+			mInteractionMode = imFAST_SLICE_CHANGE;
+			return true;
+		}
+	}
 	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow || state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection ) {
 		if( event->button() == mLUTSetMouseButton ) {
 			mInteractionMode = imLUT_SETTING;
@@ -82,6 +105,11 @@ ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseE
 	if ( (mInteractionMode == imORBIT_CAMERA && event->button() == mCameraOrbitButton)
 	  || (mInteractionMode == imLUT_SETTING && event->button() == mLUTSetMouseButton) ) 
 	{
+		mInteractionMode = imNONE;
+		return true;
+	}
+	if ( mInteractionMode == imFAST_SLICE_CHANGE && event->button() == mFastSliceChangeMouseButton ) {
+		mTimer.stop();
 		mInteractionMode = imNONE;
 		return true;
 	}
@@ -115,6 +143,15 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 	return false;
 }
 
+
+void
+ViewerController::timerCall()
+{
+	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
+		ASSERT(mTmpViewer);
+		mTmpViewer->changeCurrentSlice( mPositive ? 1: -1 );
+	}
+}
 
 
 //********************************************************************************************
@@ -263,14 +300,19 @@ GeneralViewer::render()
 		break;
 	case vt2DAlignedSlices:
 		{
+			getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
+
+			glClear( GL_DEPTH_BUFFER_BIT );
 			if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
+				CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
+				Vector3f realSlices = getViewerState().mSliceRenderConfig.getCurrentRealSlice();
+				Vector3f hextents = 0.5f * getViewerState()._elementExtents;
+
 				mRenderingExtension->render2DAlignedSlices( getViewerState().mSliceRenderConfig.currentSlice[ getViewerState().mSliceRenderConfig.plane ], 
-						Vector2f(), //TODO
+						Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
 						getViewerState().mSliceRenderConfig.plane 
 						);	
 			}
-
-			getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
 		}
 		break;
 	default:
