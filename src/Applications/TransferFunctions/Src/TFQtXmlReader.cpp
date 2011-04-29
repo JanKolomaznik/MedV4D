@@ -26,16 +26,18 @@ bool QtXmlReader::begin(const std::string& file){
 		return false;
 	}
 	
-	qFile_.setFileName(QString::fromStdString(file));
+	qFile_.setFileName(file.c_str());
 	if (!qFile_.open(QFile::ReadOnly | QFile::Text))
 	{
 		fileError_ = true;
 		error_ = true;
 		errorMsg_ = "Cannot read file " + file + ":\n"
-			+ qFile_.errorString().toStdString() + ".";
+			+ qFile_.errorString().toLocal8Bit().data() + ".";
 		return false;
 	}
 	fileName_ = file;
+
+	fileError_ = false;
 
 	qReader_.setDevice(&qFile_);
 
@@ -57,7 +59,7 @@ bool QtXmlReader::readElement(const std::string& element){
 		qReader_.readNext(); 
 
 		if (qReader_.isStartElement() &&
-			(qReader_.name().toString().toStdString() == element)) 
+			(qReader_.name().toString().toLocal8Bit().data() == element)) 
 		{
 			return true;
 		}
@@ -65,7 +67,7 @@ bool QtXmlReader::readElement(const std::string& element){
 	if(qReader_.hasError())
 	{
 		error_ = true;
-		errorMsg_ = qReader_.errorString().toStdString();
+		errorMsg_ = qReader_.errorString().toLocal8Bit().data();
 	}
 	return false;
 }
@@ -74,7 +76,7 @@ std::string QtXmlReader::readAttribute(const std::string& attribute){
 
 	if(fileError_) return false;
 
-	QStringRef value = qReader_.attributes().value(QString::fromStdString(attribute));
+	QStringRef value = qReader_.attributes().value(attribute.c_str());
 
 	if(value.isEmpty())
 	{
@@ -83,7 +85,7 @@ std::string QtXmlReader::readAttribute(const std::string& attribute){
 		return "";
 	}
 
-	return value.toString().toStdString();
+	return value.toString().toLocal8Bit().data();
 }
 
 }	//namespace TF

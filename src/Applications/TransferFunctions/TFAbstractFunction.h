@@ -49,20 +49,21 @@ public:
 	 
 	void save(TF::XmlWriterInterface* writer){
 
-		saveSettings_(writer);
-
 		writer->writeStartElement("Function");
 
 			writer->writeAttribute("Dimensions", TF::convert<TF::Size, std::string>(dim));
 				
-			for(TF::Size i = 0; i < dim; ++i)
+			for(TF::Size i = 1; i <= dim; ++i)
 			{
-				writer->writeAttribute("Dimension" + i,  TF::convert<TF::Size, std::string>(colorMap_->size(i)));
+				writer->writeAttribute("Dimension" + TF::convert<TF::Size, std::string>(i),
+					TF::convert<TF::Size, std::string>(colorMap_->size(i)));
 			}
 			TF::Coordinates coords(dim);
 			saveDimensions_(writer, coords);
 
 		writer->writeEndElement();
+
+		saveSettings_(writer);
 	}
 
 	bool load(TF::XmlReaderInterface* reader, bool& sideError){
@@ -70,9 +71,8 @@ public:
 		#ifndef TF_NDEBUG
 			std::cout << "Loading function..." << std::endl;
 		#endif
-			
-		sideError = !loadSettings_(reader);
 
+		bool ok = false;
 		if(reader->readElement("Function"))
 		{		
 			TF::Size dimControl = TF::convert<std::string, TF::Size>(
@@ -80,17 +80,20 @@ public:
 			if(dimControl != dim) return false;
 
 			std::vector<TF::Size> dataStructure;
-			for(TF::Size i = 0; i < dim; ++i)
+			for(TF::Size i = 1; i <= dim; ++i)
 			{
 				dataStructure.push_back(TF::convert<std::string, TF::Size>(
-					reader->readAttribute("Dimension" + i)));
+					reader->readAttribute("Dimension" + TF::convert<TF::Size, std::string>(i))));
 			}
 			resize(dataStructure);
 
 			TF::Coordinates coords(dim);
-			return loadDimensions_(reader, coords);
+			ok = loadDimensions_(reader, coords);	
+
+			sideError = !loadSettings_(reader);
 		}
-		return false;
+
+		return ok;
 	}
 
 protected:
@@ -112,24 +115,29 @@ protected:
 
 		if(currentDim == dim)
 		{
-			std::string strCoords = "[";
-			for(TF::Size i = 0; i < dim - 1; ++i) strCoords += coords[i] + ",";
-			strCoords += coords[dim - 1] + "]";
+			for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
+			{
+				std::string strCoords = "[";
+				for(TF::Size j = 0; j < dim - 1; ++j) strCoords += TF::convert<int, std::string>(coords[j]) + ",";
+				strCoords += TF::convert<int, std::string>(coords[dim - 1]) + "]";
 
-			writer->writeStartElement("Color");
+				writer->writeStartElement("Color");
 
-				writer->writeAttribute("TF::Coordinates", strCoords);
+					writer->writeAttribute("Coordinates", strCoords);
 
-				writer->writeAttribute("Component1",
-					TF::convert<float, std::string>(colorMap_->value(coords).component1));
-				writer->writeAttribute("Component2",
-					TF::convert<float, std::string>(colorMap_->value(coords).component2));
-				writer->writeAttribute("Component3",
-					TF::convert<float, std::string>(colorMap_->value(coords).component3));
-				writer->writeAttribute("Alpha",
-					TF::convert<float, std::string>(colorMap_->value(coords).alpha));
-		
-			writer->writeEndElement();
+					writer->writeAttribute("Component1",
+						TF::convert<float, std::string>(colorMap_->value(coords).component1));
+					writer->writeAttribute("Component2",
+						TF::convert<float, std::string>(colorMap_->value(coords).component2));
+					writer->writeAttribute("Component3",
+						TF::convert<float, std::string>(colorMap_->value(coords).component3));
+					writer->writeAttribute("Alpha",
+						TF::convert<float, std::string>(colorMap_->value(coords).alpha));
+			
+				writer->writeEndElement();
+				
+				++coords[currentDim - 1];
+			}
 
 			return;
 		}
@@ -150,24 +158,34 @@ protected:
 			TF::Coordinates& coords,
 			const TF::Size currentDim = 1){
 
+		bool ok = true;
+
 		if(currentDim == dim)
 		{
-			if(reader->readElement("Color"))
-			{		
-				colorMap_->value(coords).component1 = TF::convert<std::string, float>(
-					reader->readAttribute("Component1"));
-				colorMap_->value(coords).component2 = TF::convert<std::string, float>(
-					reader->readAttribute("Component2"));
-				colorMap_->value(coords).component3 = TF::convert<std::string, float>(
-					reader->readAttribute("Component3"));
-				colorMap_->value(coords).alpha = TF::convert<std::string, float>(
-					reader->readAttribute("Alpha"));
-				return true;
+			for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
+			{
+				if(reader->readElement("Color"))
+				{		
+					colorMap_->value(coords).component1 = TF::convert<std::string, float>(
+						reader->readAttribute("Component1"));
+					colorMap_->value(coords).component2 = TF::convert<std::string, float>(
+						reader->readAttribute("Component2"));
+					colorMap_->value(coords).component3 = TF::convert<std::string, float>(
+						reader->readAttribute("Component3"));
+					colorMap_->value(coords).alpha = TF::convert<std::string, float>(
+						reader->readAttribute("Alpha"));
+				}
+				else
+				{
+					ok = false;
+				}
+				
+				++coords[currentDim - 1];
 			}
-			return false;
+
+			return ok;
 		}
 
-		bool ok = true;
 		bool indexOK;
 		for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
 		{

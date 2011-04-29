@@ -483,7 +483,8 @@ public:
 
 	Size size(const Size dimension){
 
-		//return dimensionSizes[dimension-1];
+		tfAssert(dimension == 1);
+		if(dimension != 1) throw std::out_of_range("Bad dimension");
 		return vector_.size();
 	}
 

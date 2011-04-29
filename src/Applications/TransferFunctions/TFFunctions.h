@@ -58,7 +58,7 @@ inline std::string convert<Types::Function, std::string>(const Types::Function &
 template<>
 inline Types::Function TF::convert<std::string, Types::Function>(const std::string &function){
 
-	if(function == "RGB 1D function"){
+	if(function == "RGBa 1D function"){
 		return Types::FunctionRGBa1D;
 	}
 	if(function == "HSVa 1D function"){

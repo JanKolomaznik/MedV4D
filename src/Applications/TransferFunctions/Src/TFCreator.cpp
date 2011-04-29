@@ -193,7 +193,7 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 	QMessageBox errorMessage(QMessageBox::Critical, "Error", "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
 
-	if(!reader_->begin(fileName.toStdString()))
+	if(!reader_->begin(fileName.toLocal8Bit().data()))
 	{
 		errorMessage.setText(QString::fromStdString(reader_->errorMessage()));
 		errorMessage.exec();

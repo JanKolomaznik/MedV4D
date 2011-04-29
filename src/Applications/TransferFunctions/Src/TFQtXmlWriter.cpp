@@ -24,7 +24,7 @@ bool QtXmlWriter::begin(const std::string& file){
 		return false;
 	}
 	
-	qFile_.setFileName(QString::fromStdString(file));
+	qFile_.setFileName(file.c_str());
 	if (!qFile_.open(QFile::WriteOnly | QFile::Text))
 	{
 		error_ = true;
@@ -33,6 +33,8 @@ bool QtXmlWriter::begin(const std::string& file){
 		return false;
 	}
 	fileName_ = file;
+
+	error_ = false;
 
 	qWriter_.setDevice(&qFile_);
 	qWriter_.setAutoFormatting(true);

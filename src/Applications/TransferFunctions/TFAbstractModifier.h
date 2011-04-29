@@ -73,16 +73,14 @@ public:
 		#ifndef TF_NDEBUG
 			std::cout << "Loading modifier..." << std::endl;
 		#endif
+
+		bool painterOk = painter_->load(reader);
+		bool workCopyOk = workCopy_->load(reader, sideError);
 	
-		sideError = loadSettings_(reader);
-
-		bool error = painter_->load(reader);
+		bool error = !loadSettings_(reader);
 		sideError = sideError || error;
 
-		bool ok = workCopy_->load(reader, error);
-		sideError = sideError || error;
-
-		return ok;
+		return painterOk && workCopyOk;
 	}
 
 protected:

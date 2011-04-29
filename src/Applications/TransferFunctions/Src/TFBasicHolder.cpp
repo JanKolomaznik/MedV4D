@@ -16,6 +16,7 @@ TFBasicHolder::TFBasicHolder(TFAbstractModifier::Ptr modifier,
 	modifier_(modifier),
 	index_(0),
 	name_(name),
+	structure_(structure),
 	attributes_(attributes){
 }
 
@@ -80,7 +81,7 @@ void TFBasicHolder::save(){
 	if (fileName_.isEmpty()) return;
 
 	
-	if (!writer_->begin(fileName_.toStdString()))
+	if (!writer_->begin(fileName_.toLocal8Bit().data()))
 	{
 		QMessageBox errorMessage(QMessageBox::Critical,
 			"Error",
@@ -125,13 +126,12 @@ void TFBasicHolder::saveData_(TF::XmlWriterInterface* writer){
 bool TFBasicHolder::loadData(TF::XmlReaderInterface* reader, bool& sideError){	
 
 	#ifndef TF_NDEBUG
-		std::cout << "Loading data:" << std::endl;
+		std::cout << "Loading holder..." << std::endl;
 	#endif
-	
-	sideError = loadSettings_(reader);
 
-	bool error;
-	bool ok = modifier_->load(reader, error);
+	bool ok = modifier_->load(reader, sideError);
+	
+	bool error = !loadSettings_(reader);
 	sideError = sideError || error;
 
 	fileName_ = QString::fromStdString(reader->fileName());
