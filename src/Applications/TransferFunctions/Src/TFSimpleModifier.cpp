@@ -62,7 +62,6 @@ std::vector<int> TFSimpleModifier::computeZoomMoveIncrements_(const int moveX, c
 void TFSimpleModifier::setHistogram(const TF::Histogram::Ptr histogram){
 
 	workCopy_->setHistogram(histogram);
-	workCopy_->zoomHistogram(workCopy_->getZoomCenter(1), workCopy_->getZoom(1));
 }
 
 void TFSimpleModifier::activeView_changed(int index){

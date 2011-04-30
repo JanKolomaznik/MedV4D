@@ -137,6 +137,7 @@ void TFWorkCopy::forceUpdate(const bool updateHistogram){
 void TFWorkCopy::setHistogram(const TF::Histogram::Ptr histogram){
 
 	histogram_ = histogram;
+	computeZoom_(histogramIndex, zoom_.zoom[histogramIndex], zoom_.center[histogramIndex]);
 }
 
 void TFWorkCopy::setHistogramEnabled(bool value){
