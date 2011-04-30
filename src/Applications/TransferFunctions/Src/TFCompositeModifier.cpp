@@ -1,7 +1,7 @@
 #include "TFCompositeModifier.h"
 
 #include <TFPalette.h>
-#include <TFBasicHolder.h>
+#include <TFEditor.h>
 
 #include <QtGui/QMessageBox>
 
@@ -9,7 +9,7 @@ namespace M4D {
 namespace GUI {
 
 TFCompositeModifier::TFCompositeModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFFunctionInterface::Ptr function,
 		TFSimplePainter::Ptr painter,		
 		TFPalette* palette):
 	TFSimpleModifier(function, painter),
@@ -26,7 +26,7 @@ TFCompositeModifier::TFCompositeModifier(
 	bool compositionEnabled = false;
 	for(TFPalette::Editors::iterator it = editors_.begin(); it != editors_.end(); ++it)
 	{
-		if(!it->second->hasAttribute(TFBasicHolder::Composition) &&
+		if(!it->second->hasAttribute(TFEditor::Composition) &&
 			it->second->getDimension() == TF_DIMENSION_1)
 		{
 			compositionEnabled = true;
@@ -144,7 +144,7 @@ void TFCompositeModifier::updateComposition_(){
 		}
 		else
 		{
-			lastChange = found->second->holder->lastChange();
+			lastChange = found->second->editor->lastChange();
 			if(found->second->change != lastChange)
 			{
 				recalculate = true;
@@ -193,7 +193,7 @@ void TFCompositeModifier::change_check(){
 		Composition::iterator found;
 		for(TFPalette::Editors::iterator it = editors_.begin(); it != editors_.end(); ++it)
 		{
-			if(!it->second->hasAttribute(TFBasicHolder::Composition) &&
+			if(!it->second->hasAttribute(TFEditor::Composition) &&
 				it->second->getDimension() == TF_DIMENSION_1)
 			{
 				compositionEnabled = true;
@@ -220,7 +220,7 @@ void TFCompositeModifier::change_check(){
 
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 	{
-		lastChange = it->second->holder->lastChange();
+		lastChange = it->second->editor->lastChange();
 		if(it->second->change != lastChange)
 		{
 			recalculate = true;
@@ -238,7 +238,7 @@ void TFCompositeModifier::computeResultFunction_(){
 	TF::Size domain = function->getDomain(TF_DIMENSION_1);
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 	{	//check if dimension change is in process
-		if(it->second->holder->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
+		if(it->second->editor->getFunction().getDomain(TF_DIMENSION_1) != domain) return;
 	}
 
 	for(TF::Size i = 0; i < domain; ++i)
@@ -248,7 +248,7 @@ void TFCompositeModifier::computeResultFunction_(){
 		TF::Color color;
 		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 		{
-			color = it->second->holder->getFunction().getRGBfColor(coords_);
+			color = it->second->editor->getFunction().getRGBfColor(coords_);
 			result.component1 += (color.component1*color.alpha);
 			result.component2 += (color.component2*color.alpha);
 			result.component3 += (color.component3*color.alpha);
@@ -270,14 +270,14 @@ void TFCompositeModifier::computeResultFunction_(){
 
 void TFCompositeModifier::Editor::updateName(){
 
-	QString newName = QString::fromStdString(holder->getName());
+	QString newName = QString::fromStdString(editor->getName());
 	if(name->text() != newName) name->setText(newName);
 }
 
-TFCompositeModifier::Editor::Editor(TFBasicHolder* holder):
-	holder(holder),
-	name(new QLabel(QString::fromStdString(holder->getName()))),
-	change(holder->lastChange()){
+TFCompositeModifier::Editor::Editor(TFEditor* editor):
+	editor(editor),
+	name(new QLabel(QString::fromStdString(editor->getName()))),
+	change(editor->lastChange()){
 }
 
 TFCompositeModifier::Editor::~Editor(){

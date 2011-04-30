@@ -4,7 +4,7 @@
 
 #include <TFPalette.h>
 
-#include <TFBasicHolder.h>
+#include <TFEditorGUI.h>
 
 #include <TFSimpleModifier.h>
 #include <TFPolygonModifier.h>
@@ -21,16 +21,18 @@
 namespace M4D {
 namespace GUI {
 
+//---creation-methods---
+
 template<TF::Size dim>
 typename TFAbstractFunction<dim>* TFCreator::createFunction_(){
 
 	switch(structure_[mode_].function)
 	{
-		case TF::Types::FunctionRGBa1D:
+		case TF::Types::FunctionRGBa:
 		{
 			return new typename TFRGBaFunction<dim>(dataStructure_);
 		}
-		case TF::Types::FunctionHSVa1D:
+		case TF::Types::FunctionHSVa:
 		{
 			return new typename TFHSVaFunction<dim>(dataStructure_);
 		}
@@ -40,7 +42,7 @@ typename TFAbstractFunction<dim>* TFCreator::createFunction_(){
 	return new typename TFRGBaFunction<dim>(dataStructure_);	//default
 }
 
-TFAbstractPainter* TFCreator::createPainter_(TFBasicHolder::Attributes& attributes){
+TFAbstractPainter* TFCreator::createPainter_(TFEditor::Attributes& attributes){
 
 	switch(structure_[mode_].painter)
 	{
@@ -62,32 +64,32 @@ TFAbstractPainter* TFCreator::createPainter_(TFBasicHolder::Attributes& attribut
 	return new TFRGBaPainter();
 }
 
-TFAbstractModifier* TFCreator::createModifier_(TFBasicHolder::Attributes& attributes){
+TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes){
 	
 	switch(structure_[mode_].modifier)
 	{
 		case TF::Types::ModifierSimple1D:
 		{
-			attributes.insert(TFBasicHolder::Dimension1);
+			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			return new TFSimpleModifier(
-				TFAbstractFunction<TF_DIMENSION_1>::Ptr(createFunction_<TF_DIMENSION_1>()),
+				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
 			);
 		}
 		case TF::Types::ModifierPolygon1D:
 		{
-			attributes.insert(TFBasicHolder::Dimension1);
+			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			return new TFPolygonModifier(
-				TFAbstractFunction<TF_DIMENSION_1>::Ptr(createFunction_<TF_DIMENSION_1>()),
+				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
 			);
 		}
 		case TF::Types::ModifierComposite1D:
 		{
-			attributes.insert(TFBasicHolder::Dimension1);
-			attributes.insert(TFBasicHolder::Composition);
+			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
+			attributes.insert(TFEditor::Composition);
 			return new TFCompositeModifier(
-				TFAbstractFunction<TF_DIMENSION_1>::Ptr(createFunction_<TF_DIMENSION_1>()),
+				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes))),
 				palette_
 			);
@@ -95,31 +97,22 @@ TFAbstractModifier* TFCreator::createModifier_(TFBasicHolder::Attributes& attrib
 	}
 
 	tfAssert(!"Unknown modifier!");	
-	attributes.insert(TFBasicHolder::Dimension1);
 	return new TFSimpleModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr(createFunction_<TF_DIMENSION_1>()),
+		TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 		TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
 	);	//default
 
 }
 
-TFBasicHolder* TFCreator::createHolder_(){
+TFEditor* TFCreator::createEditor_(){
 
-	switch(structure_[mode_].holder)
-	{
-		case TF::Types::HolderBasic:
-		{
-			TFBasicHolder::Attributes attributes;
-			TFAbstractModifier::Ptr modifier(createModifier_(attributes));
+	TFEditor::Attributes attributes;
+	TFAbstractModifier::Ptr modifier(createModifier_(attributes));
 
-			return new TFBasicHolder(modifier, structure_[mode_], attributes, name_);
-		}
-	}
-
-	tfAssert(!"Unknown holder");
-	return NULL;
+	return new TFEditorGUI(modifier, structure_[mode_], attributes, name_);
 }
 
+//---creation-dialog---
 
 TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette):
 	QDialog(mainWindow),
@@ -131,7 +124,7 @@ TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette):
 	layout_(new QVBoxLayout()),
 	state_(ModeSelection),
 	mode_(CreatePredefined),
-	holderSet_(false),
+	dimensionSet_(false),
 	predefinedSet_(false),
 	functionSet_(false),
 	painterSet_(false),
@@ -165,7 +158,7 @@ TFCreator::~TFCreator(){
 	delete ui_;
 }
 
-TFBasicHolder* TFCreator::createTransferFunction(){
+TFEditor* TFCreator::createEditor(){
 
 	clearLayout_(state_ != ModeSelection);
 	setStateModeSelection_();
@@ -174,23 +167,23 @@ TFBasicHolder* TFCreator::createTransferFunction(){
 
 	if(result() == QDialog::Rejected) return NULL;
 	
-	if(mode_ == CreateLoaded) return loadTransferFunction_();
+	if(mode_ == CreateLoaded) return loadEditor_();
 
 	name_ = TF::convert<TF::Types::Predefined, std::string>(structure_[mode_].predefined);
-	return createHolder_();	
+	return createEditor_();	
 }
 	
-TFBasicHolder* TFCreator::loadTransferFunction_(){
+TFEditor* TFCreator::loadEditor_(){
 
-	TFBasicHolder* loaded = NULL;
+	TFEditor* loaded = NULL;
 
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow_,
-		"Open Transfer Function",
+		"Load Transfer Function Editor",
 		QDir::currentPath(),
-		QObject::tr("TF Files (*.tf *.xml)"));
+		QObject::tr("TF Editor Files (*.tfe)"));
 
-	QMessageBox errorMessage(QMessageBox::Critical, "Error", "", QMessageBox::Ok);
+	QMessageBox errorMessage(QMessageBox::Critical, "Transfer Function Loading Error", "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
 
 	if(!reader_->begin(fileName.toLocal8Bit().data()))
@@ -205,14 +198,14 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 
 	if(!loaded)
 	{ 
-		errorMessage.setText(QObject::tr("File %1 is corrupted").arg(fileName));
+		errorMessage.setText(QObject::tr("File \"%1\" is corrupted.").arg(fileName));
 		errorMessage.exec();
 		return loaded;
 	}
 	else if(error)
 	{
 		QMessageBox::warning((QWidget*)mainWindow_,
-			QObject::tr("Error"),
+			QObject::tr("Transfer Function Loading Error"),
 			QObject::tr("Error while reading additional data.\nSome settings are set to default."));
 	}
 
@@ -223,13 +216,13 @@ TFBasicHolder* TFCreator::loadTransferFunction_(){
 	return loaded;
 }
 
-TFBasicHolder* TFCreator::load_(TF::XmlReaderInterface* reader, bool& sideError){
+TFEditor* TFCreator::load_(TF::XmlReaderInterface* reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading editor..." << std::endl;
 	#endif
 
-	TFBasicHolder* loaded = NULL;
+	TFEditor* loaded = NULL;
 	std::string name;
 	bool ok = false;
 	if(reader->readElement("Editor"))
@@ -239,8 +232,8 @@ TFBasicHolder* TFCreator::load_(TF::XmlReaderInterface* reader, bool& sideError)
 		structure_[mode_].predefined = TF::convert<std::string, TF::Types::Predefined>(
 			reader->readAttribute("Predefined"));
 
-		structure_[mode_].holder = TF::convert<std::string, TF::Types::Holder>(
-			reader->readAttribute("Holder"));
+		structure_[mode_].dimension = TF::convert<std::string, TF::Types::Dimension>(
+			reader->readAttribute("Dimension"));
 
 		structure_[mode_].function = TF::convert<std::string, TF::Types::Function>(
 			reader->readAttribute("Function"));
@@ -251,8 +244,8 @@ TFBasicHolder* TFCreator::load_(TF::XmlReaderInterface* reader, bool& sideError)
 		structure_[mode_].modifier = TF::convert<std::string, TF::Types::Modifier>(
 			reader->readAttribute("Modifier"));
 
-		loaded = createHolder_();
-		if(loaded) ok = loaded->loadData(reader, sideError);
+		loaded = createEditor_();
+		if(loaded) ok = loaded->load(reader, sideError);
 	}
 	if(!ok)
 	{
@@ -284,7 +277,7 @@ void TFCreator::on_nextButton_clicked(){
 				case CreateCustom:
 				{
 					clearLayout_(false);
-					setStateHolder_();
+					setStateDimension_();
 					break;
 				}
 				case CreateLoaded:
@@ -300,7 +293,7 @@ void TFCreator::on_nextButton_clicked(){
 			accept();
 			break;
 		}
-		case Holder:
+		case Dimension:
 		{
 			clearLayout_();
 			setStateModifier_();
@@ -345,10 +338,10 @@ void TFCreator::on_backButton_clicked(){
 		case Modifier:
 		{
 			clearLayout_();
-			setStateHolder_();
+			setStateDimension_();
 			break;
 		}
-		case Holder:
+		case Dimension:
 		{
 			clearLayout_();
 			setStateModeSelection_();
@@ -430,36 +423,36 @@ void TFCreator::setStatePredefined_(){
 	state_ = Predefined;
 }
 
-void TFCreator::setStateHolder_(){
+void TFCreator::setStateDimension_(){
 	
-	TF::Types::Holders allHolders = TF::Types::getAllHolders();
+	TF::Types::Dimensions allDimensions = TF::Types::getSupportedDimensions();
 	
-	TFHolderDialogButton* toActivate = NULL;
-	TF::Types::Holders::iterator begin = allHolders.begin();
-	TF::Types::Holders::iterator end = allHolders.end();
-	for(TF::Types::Holders::iterator it = begin; it != end; ++it)
+	TFDimensionDialogButton* toActivate = NULL;
+	TF::Types::Dimensions::iterator begin = allDimensions.begin();
+	TF::Types::Dimensions::iterator end = allDimensions.end();
+	for(TF::Types::Dimensions::iterator it = begin; it != end; ++it)
 	{
-		TFHolderDialogButton* type = new TFHolderDialogButton(*it);
-		type->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(*it)));
-		if(holderSet_ && structure_[mode_].holder == *it) toActivate = type;
+		TFDimensionDialogButton* type = new TFDimensionDialogButton(*it);
+		type->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(*it)));
+		if(dimensionSet_ && structure_[mode_].dimension == *it) toActivate = type;
 
-		bool typeButtonConnected = QObject::connect(type, SIGNAL(Activated(TF::Types::Holder)), this, SLOT(holderButton_clicked(TF::Types::Holder)));
+		bool typeButtonConnected = QObject::connect(type, SIGNAL(Activated(TF::Types::Dimension)), this, SLOT(dimensionButton_clicked(TF::Types::Dimension)));
 		tfAssert(typeButtonConnected);
 
 		layout_->addWidget(type);
 	}
 	if(toActivate) toActivate->setChecked(true);
 	
-	ui_->description->setText(QObject::tr("Available Holders"));
+	ui_->description->setText(QObject::tr("Available Dimensions"));
 	ui_->backButton->setText(QObject::tr("Back"));
-	ui_->nextButton->setEnabled(holderSet_);
+	ui_->nextButton->setEnabled(dimensionSet_);
 
-	state_ = Holder;
+	state_ = Dimension;
 }
 
 void TFCreator::setStateModifier_(){
 
-	TF::Types::Modifiers allowedModifiers = TF::Types::getAllowedModifiers(structure_[mode_].holder);
+	TF::Types::Modifiers allowedModifiers = TF::Types::getAllowedModifiers(structure_[mode_].dimension);
 
 	TFModifierDialogButton* toActivate = NULL;
 	TF::Types::Modifiers::iterator begin = allowedModifiers.begin();
@@ -547,8 +540,8 @@ void TFCreator::mode_clicked(){
 			ui_->predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
 				structure_[mode_].predefined
 			)));
-			ui_->holderValue->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(
-				structure_[mode_].holder
+			ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+				structure_[mode_].dimension
 			)));
 			ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 				structure_[mode_].modifier
@@ -563,7 +556,7 @@ void TFCreator::mode_clicked(){
 		else
 		{
 			ui_->predefinedValue->setText("Predefined");
-			ui_->holderValue->setText("");
+			ui_->dimensionValue->setText("");
 			ui_->modifierValue->setText("");
 			ui_->functionValue->setText("");
 			ui_->painterValue->setText("");
@@ -575,13 +568,13 @@ void TFCreator::mode_clicked(){
 		mode_ = CreateCustom;
 		ui_->predefinedValue->setText("Custom");
 
-		if(holderSet_)
+		if(dimensionSet_)
 		{
-			ui_->holderValue->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(
-				structure_[mode_].holder
+			ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+				structure_[mode_].dimension
 			)));
 		}
-		else ui_->holderValue->setText("");
+		else ui_->dimensionValue->setText("");
 
 		if(modifierSet_)
 		{
@@ -611,7 +604,7 @@ void TFCreator::mode_clicked(){
 	{
 		mode_ = CreateLoaded;
 		ui_->predefinedValue->setText("Loaded");
-		ui_->holderValue->setText("");
+		ui_->dimensionValue->setText("");
 		ui_->modifierValue->setText("");
 		ui_->functionValue->setText("");
 		ui_->painterValue->setText("");
@@ -630,8 +623,8 @@ void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 	ui_->predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
 		structure_[mode_].predefined
 	)));
-	ui_->holderValue->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(
-		structure_[mode_].holder
+	ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+		structure_[mode_].dimension
 	)));
 	ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 		structure_[mode_].modifier
@@ -644,12 +637,12 @@ void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 	)));
 }
 
-void TFCreator::holderButton_clicked(TF::Types::Holder holder){
+void TFCreator::dimensionButton_clicked(TF::Types::Dimension dimension){
 
-	holderSet_ = true;	
+	dimensionSet_ = true;	
 	ui_->nextButton->setEnabled(true);
 
-	if(holder != structure_[mode_].holder)
+	if(dimension != structure_[mode_].dimension)
 	{
 		modifierSet_ = false;
 		functionSet_ = false;
@@ -659,9 +652,9 @@ void TFCreator::holderButton_clicked(TF::Types::Holder holder){
 		ui_->painterValue->setText("");
 	}
 
-	structure_[mode_].holder = holder;
-	ui_->holderValue->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(
-		structure_[mode_].holder
+	structure_[mode_].dimension = dimension;
+	ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+		structure_[mode_].dimension
 	)));
 }
 

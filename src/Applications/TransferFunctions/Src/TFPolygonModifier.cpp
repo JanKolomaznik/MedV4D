@@ -4,7 +4,7 @@ namespace M4D {
 namespace GUI {
 
 TFPolygonModifier::TFPolygonModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFFunctionInterface::Ptr function,
 		TFSimplePainter::Ptr painter):
 	TFSimpleModifier(function, painter),
 	polygonTools_(new Ui::TFPolygonModifier),

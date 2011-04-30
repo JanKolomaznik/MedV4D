@@ -1,5 +1,5 @@
-#ifndef TF_BASICHOLDER
-#define TF_BASICHOLDER
+#ifndef TF_EDITOR
+#define TF_EDITOR
 
 #include <QtGui/QDockWidget>
 #include <QtGui/QMainWindow>
@@ -7,7 +7,6 @@
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
-#include <QtGui/QPainter>
 
 #include <TFCommon.h>
 #include <TFHistogram.h>
@@ -20,37 +19,38 @@
 
 #include <set>
 
-#include <ui_TFHolderUI.h>
-
 namespace M4D {
 namespace GUI {	
 
-class TFBasicHolder: public QWidget{
+class TFEditor: public QMainWindow{
 
 	Q_OBJECT
 
 public:
 
-	typedef boost::shared_ptr<TFBasicHolder> Ptr;
+	typedef boost::shared_ptr<TFEditor> Ptr;
 
 	enum Attribute{
-		Composition,
-		Dimension1
+		Composition
 	};
 	typedef std::set<Attribute> Attributes;
 	
-	TFBasicHolder(TFAbstractModifier::Ptr modifier,
+	TFEditor(TFAbstractModifier::Ptr modifier,
 		TF::Types::Structure structure,
 		Attributes attributes,
 		std::string name);
 
-	virtual ~TFBasicHolder();
+	virtual ~TFEditor();
 
-	virtual bool loadData(TF::XmlReaderInterface* reader, bool& sideError);
+	bool load(TF::XmlReaderInterface* reader, bool& sideError);
+	bool loadFunction(TF::XmlReaderInterface* reader);
+	bool save();
+	bool saveFunction();
+	bool close();
 
-	virtual void setup(QMainWindow* mainWindow, const int index = -1);
-	virtual void setHistogram(TF::Histogram::Ptr histogram);
-	virtual void setDataStructure(const std::vector<TF::Size>& dataStructure);
+	virtual void setup(QMainWindow* mainWindow, const int index = -1) = 0;
+	void setHistogram(TF::Histogram::Ptr histogram);
+	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
 	TF::Size getIndex();
 	std::string getName();
@@ -63,38 +63,25 @@ public:
 	QDockWidget* getDockWidget() const;
 
 	virtual void setActive(const bool active);
-	void setAvailable(const bool available);
+	virtual void setAvailable(const bool available){}
 
-	virtual Common::TimeStamp lastChange();
+	Common::TimeStamp lastChange();
 
 signals:
 
 	void Close(const TF::Size index);
 	void Activate(const TF::Size index);
 
-public slots:
-
-	void save();
-	virtual bool close();
-
-protected slots:
-
-	void activate_clicked();
-	void on_nameEdit_editingFinished();
-
 protected:
 
-	QDockWidget* holderDock_;
-	QMainWindow* holderMain_;
-
-	Ui::TFHolderUI* ui_;
+	QDockWidget* editorDock_;
 	QDockWidget* toolsDock_;
 
 	TF::XmlWriterInterface* writer_;
 
 	TF::Types::Structure structure_;
-
 	QString fileName_;
+	QString fileNameFunction_;
 	std::string name_;
 	TF::Size index_;
 	Attributes attributes_;
@@ -104,16 +91,13 @@ protected:
 	bool active_;
 
 	TFAbstractModifier::Ptr modifier_;
-
-	virtual void resizeEvent(QResizeEvent*);
 	
-	virtual void saveData_(TF::XmlWriterInterface* writer);
-
 	virtual void saveSettings_(TF::XmlWriterInterface* writer);
+
 	virtual bool loadSettings_(TF::XmlReaderInterface* reader);
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_BASICHOLDER
+#endif //TF_EDITOR

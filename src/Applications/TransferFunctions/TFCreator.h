@@ -13,13 +13,13 @@
 #include <TFAbstractPainter.h>
 #include <TFWorkCopy.h>
 
-#include <TFHolders.h>
+#include <TFDimensions.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
 #include <TFModifiers.h>
 #include <TFPredefined.h>
 
-#include <TFBasicHolder.h>
+#include <TFEditor.h>
 
 #include <ui_TFCreator.h>
 
@@ -37,7 +37,7 @@ public:
 	TFCreator(QMainWindow* mainWindow, TFPalette* palette);
 	~TFCreator();
 
-	TFBasicHolder* createTransferFunction();
+	TFEditor* createEditor();
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
@@ -47,7 +47,7 @@ private slots:
 	void on_backButton_clicked();
 
 	void mode_clicked();
-	void holderButton_clicked(TF::Types::Holder holder);
+	void dimensionButton_clicked(TF::Types::Dimension dimension);
 	void predefinedButton_clicked(TF::Types::Predefined predefined);
 	void functionButton_clicked(TF::Types::Function function);
 	void painterButton_clicked(TF::Types::Painter painter);
@@ -58,7 +58,7 @@ private:
 	enum State{
 		ModeSelection,
 		Predefined,
-		Holder,
+		Dimension,
 		Function,
 		Painter,
 		Modifier
@@ -84,7 +84,7 @@ private:
 	std::string name_;
 
 	bool predefinedSet_;
-	bool holderSet_;
+	bool dimensionSet_;
 	bool functionSet_;
 	bool painterSet_;
 	bool modifierSet_;
@@ -95,21 +95,21 @@ private:
 
 	void setStateModeSelection_();
 	void setStatePredefined_();
-	void setStateHolder_();
+	void setStateDimension_();
 	void setStateFunction_();
 	void setStatePainter_();
 	void setStateModifier_();	
 
 	void clearLayout_(bool deleteItems = true);
 
-	TFBasicHolder* loadTransferFunction_();
-	TFBasicHolder* load_(TF::XmlReaderInterface* reader, bool& sideError);
-	TFBasicHolder* createHolder_();
+	TFEditor* loadEditor_();
+	TFEditor* load_(TF::XmlReaderInterface* reader, bool& sideError);
+	TFEditor* createEditor_();
 
 	template<TF::Size dim>
 	typename TFAbstractFunction<dim>* createFunction_();
-	TFAbstractPainter* createPainter_(TFBasicHolder::Attributes& attributes);
-	TFAbstractModifier* createModifier_(TFBasicHolder::Attributes& attributes);
+	TFAbstractPainter* createPainter_(TFEditor::Attributes& attributes);
+	TFAbstractModifier* createModifier_(TFEditor::Attributes& attributes);
 };
 
 } // namespace GUI

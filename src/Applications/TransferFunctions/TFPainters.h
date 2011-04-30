@@ -22,13 +22,13 @@ static Painters getAllowedPainters(Function function){
 
 	switch(function)
 	{
-		case TF::Types::FunctionRGBa1D:
+		case TF::Types::FunctionRGBa:
 		{
 			allowed.push_back(TF::Types::PainterGrayscaleAlpha1D);
 			allowed.push_back(TF::Types::PainterRGBa1D);
 			break;
 		}
-		case TF::Types::FunctionHSVa1D:
+		case TF::Types::FunctionHSVa:
 		{
 			allowed.push_back(TF::Types::PainterHSVa1D);
 			break;

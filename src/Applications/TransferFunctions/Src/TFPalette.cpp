@@ -45,19 +45,19 @@ void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure){
 
 	if(activeEditor_ == emptyPalette) return;
 
-	bool findNewActive = (palette_.find(activeEditor_)->second->holder->getDimension() != dataStructure_.size());
+	bool findNewActive = (palette_.find(activeEditor_)->second->editor->getDimension() != dataStructure_.size());
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		if(it->second->holder->getDimension() != dataStructure_.size())
+		if(it->second->editor->getDimension() != dataStructure_.size())
 		{
-			it->second->holder->setAvailable(false);
+			it->second->editor->setAvailable(false);
 		}
 		else
 		{
-			it->second->holder->setDataStructure(dataStructure_);
-			it->second->holder->setAvailable(true);
+			it->second->editor->setDataStructure(dataStructure_);
+			it->second->editor->setAvailable(true);
 			it->second->updatePreview();
 			if(findNewActive)
 			{
@@ -77,7 +77,7 @@ void TFPalette::setPreview(const QImage& preview, const int index){
 	if(editor == palette_.end()) return;
 
 	editor->second->button->setPreview(preview);
-	editor->second->previewUpdate = editor->second->holder->lastChange();
+	editor->second->previewUpdate = editor->second->editor->lastChange();
 }
 
 QImage TFPalette::getPreview(const int index){
@@ -106,8 +106,8 @@ void TFPalette::update_previews(){
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		it->second->button->setName(it->second->holder->getName());
-		lastChange = it->second->holder->lastChange();
+		it->second->button->setName(it->second->editor->getName());
+		lastChange = it->second->editor->lastChange();
 		if(!updateRequestSent && (it->first != activeEditor_) && (it->second->previewUpdate != lastChange))
 		{
 			emit UpdatePreview(it->first);
@@ -134,7 +134,7 @@ TFFunctionInterface::Const TFPalette::getTransferFunction(const int index){
 	}
 
 	HolderMapIt editor = palette_.find(editorIndex);	
-	return palette_.find(editorIndex)->second->holder->getFunction();
+	return palette_.find(editorIndex)->second->editor->getFunction();
 }
 	
 TF::Size TFPalette::getDimension(){
@@ -156,7 +156,7 @@ TFPalette::Editors TFPalette::getEditors(){
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		editors.insert(std::make_pair(it->first, it->second->holder));
+		editors.insert(std::make_pair(it->first, it->second->editor));
 	}
 	return editors;
 }
@@ -169,7 +169,7 @@ void TFPalette::setHistogram(const TF::Histogram::Ptr histogram){
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		it->second->holder->setHistogram(histogram_);
+		it->second->editor->setHistogram(histogram_);
 	}
 }
 
@@ -183,7 +183,7 @@ M4D::Common::TimeStamp TFPalette::lastChange(){
 	else
 	{
 		HolderMapIt active = palette_.find(activeEditor_);
-		Common::TimeStamp lastActiveChange = active->second->holder->lastChange();
+		Common::TimeStamp lastActiveChange = active->second->editor->lastChange();
 
 		if(activeChanged_ || lastActiveChange != active->second->change)
 		{
@@ -201,39 +201,39 @@ M4D::Common::TimeStamp TFPalette::lastPaletteChange(){
 	return lastPaletteChange_;
 }
 
-void TFPalette::addToPalette_(TFBasicHolder* holder){
+void TFPalette::addToPalette_(TFEditor* editor){
 	
 	TF::Size addedIndex = idGenerator_.NewID();
 
-	holder->setup(mainWindow_, addedIndex);
-	holder->setHistogram(histogram_);
+	editor->setup(mainWindow_, addedIndex);
+	editor->setHistogram(histogram_);
 
-	bool activateConnected = QObject::connect(holder, SIGNAL(Activate(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
+	bool activateConnected = QObject::connect(editor, SIGNAL(Activate(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(activateConnected);
-	bool closeConnected = QObject::connect(holder, SIGNAL(Close(TF::Size)), this, SLOT(close_triggered(TF::Size)));
+	bool closeConnected = QObject::connect(editor, SIGNAL(Close(TF::Size)), this, SLOT(close_triggered(TF::Size)));
 	tfAssert(closeConnected);
 	
 	TFPaletteButton* button = new TFPaletteButton(addedIndex);
-	button->setup(holder->getName(), previewEnabled_);
+	button->setup(editor->getName(), previewEnabled_);
 	layout_->addWidget(button);
 	button->show();
 
 	bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(buttonConnected);
 	
-	palette_.insert(std::make_pair<TF::Size, Editor*>(addedIndex, new Editor(holder, button)));
+	palette_.insert(std::make_pair<TF::Size, Editor*>(addedIndex, new Editor(editor, button)));
 	
-	QDockWidget* dockHolder = holder->getDockWidget();
+	QDockWidget* dockHolder = editor->getDockWidget();
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockHolder->setAllowedAreas(Qt::AllDockWidgetAreas);
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
 	dockHolder->setFloating(true);
 	
-	bool dimMatch = (holder->getDimension() == dataStructure_.size());
-	if(dimMatch) holder->setDataStructure(dataStructure_);
+	bool dimMatch = (editor->getDimension() == dataStructure_.size());
+	if(dimMatch) editor->setDataStructure(dataStructure_);
 	if(dataStructure_.size() == 0 || dimMatch)
 	{
-		holder->setAvailable(true);
+		editor->setAvailable(true);
 		change_activeHolder(addedIndex);
 	}
 
@@ -247,11 +247,11 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	HolderMapIt toRemoveIt = palette_.find(index);
 	if(index == activeEditor_) activateNext_(toRemoveIt);
 
-	mainWindow_->removeDockWidget(toRemoveIt->second->holder->getDockWidget());
+	mainWindow_->removeDockWidget(toRemoveIt->second->editor->getDockWidget());
 	layout_->removeWidget(toRemoveIt->second->button);
 
 	delete toRemoveIt->second->button;
-	delete toRemoveIt->second->holder;
+	//delete toRemoveIt->second->editor->close();
 	delete toRemoveIt->second;
 	palette_.erase(toRemoveIt);
 
@@ -274,10 +274,10 @@ void TFPalette::activateNext_(HolderMapIt it){
 		HolderMapIt next;
 		for(next = beginPalette; next != endPalette; ++next)
 		{
-			if(next != it && next->second->holder->getDimension() == dataStructure_.size()) break;
+			if(next != it && next->second->editor->getDimension() == dataStructure_.size()) break;
 		}
 
-		if(next != endPalette) change_activeHolder(next->second->holder->getIndex());
+		if(next != endPalette) change_activeHolder(next->second->editor->getIndex());
 		else activeEditor_ = noFunctionAvailable;
 	}
 	activeChanged_ = true;
@@ -338,20 +338,20 @@ void TFPalette::change_activeHolder(TF::Size index){
 	{
 		active = palette_.find(activeEditor_)->second;
 		active->button->setActive(false);
-		active->holder->setActive(false);
+		active->editor->setActive(false);
 	}
 
 	activeEditor_ = index;
 	active = palette_.find(activeEditor_)->second;
 	active->button->setActive(true);
-	active->holder->setActive(true);
+	active->editor->setActive(true);
 
 	activeChanged_ = true;
 }
 
 void TFPalette::on_addButton_clicked(){
 
-	TFBasicHolder* created = creator_.createTransferFunction();
+	TFEditor* created = creator_.createEditor();
 
 	if(!created) return;
 	
@@ -375,7 +375,7 @@ void TFPalette::closeEvent(QCloseEvent *e){
 	
 	while(!palette_.empty())
 	{
-		if(!palette_.begin()->second->holder->close()) break;
+		if(!palette_.begin()->second->editor->close()) break;
 	}
 	if(palette_.empty()) e->accept();
 	else e->ignore();

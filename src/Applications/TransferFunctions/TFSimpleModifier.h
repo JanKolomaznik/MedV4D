@@ -16,7 +16,7 @@ public:
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
 	TFSimpleModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFFunctionInterface::Ptr function,
 		TFSimplePainter::Ptr painter);
 
 	~TFSimpleModifier();

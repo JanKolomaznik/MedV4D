@@ -16,7 +16,7 @@ namespace M4D {
 namespace GUI {
 
 class TFPalette;
-class TFBasicHolder;
+class TFEditor;
 
 class TFCompositionDialog: public QDialog{
 
@@ -29,7 +29,7 @@ public:
 	TFCompositionDialog(QWidget* parent = 0);
 	~TFCompositionDialog();
 
-	void updateSelection(const std::map<TF::Size, TFBasicHolder*>& editors, TFPalette* palette);
+	void updateSelection(const std::map<TF::Size, TFEditor*>& editors, TFPalette* palette);
 	bool selectionChanged();
 	Selection getComposition();
 

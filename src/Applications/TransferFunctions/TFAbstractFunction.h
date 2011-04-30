@@ -66,7 +66,7 @@ public:
 		saveSettings_(writer);
 	}
 
-	bool load(TF::XmlReaderInterface* reader, bool& sideError){
+	bool load(TF::XmlReaderInterface* reader){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading function..." << std::endl;
@@ -90,7 +90,8 @@ public:
 			TF::Coordinates coords(dim);
 			ok = loadDimensions_(reader, coords);	
 
-			sideError = !loadSettings_(reader);
+			bool settingsLoaded = loadSettings_(reader);
+			ok = ok && settingsLoaded;
 		}
 
 		return ok;

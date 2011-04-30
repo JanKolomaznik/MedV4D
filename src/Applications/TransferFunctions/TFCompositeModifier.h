@@ -23,7 +23,7 @@ public:
 	typedef boost::shared_ptr<TFCompositeModifier> Ptr;
 
 	TFCompositeModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFFunctionInterface::Ptr function,
 		TFSimplePainter::Ptr painter,		
 		TFPalette* palette);
 
@@ -38,13 +38,13 @@ protected slots:
 protected:
 
 	struct Editor{
-		TFBasicHolder* holder;
+		TFEditor* editor;
 		Common::TimeStamp change;
 		QLabel* name;
 
 		void updateName();
 
-		Editor(TFBasicHolder* holder);
+		Editor(TFEditor* editor);
 
 		~Editor();
 	};
@@ -59,7 +59,7 @@ protected:
 	
 	TFPalette* palette_;
 	Common::TimeStamp lastPaletteChange_;
-	std::map<TF::Size, TFBasicHolder*> editors_;
+	std::map<TF::Size, TFEditor*> editors_;
 
 	TFCompositionDialog manager_;
 	bool managing_;

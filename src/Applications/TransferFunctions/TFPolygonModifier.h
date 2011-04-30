@@ -17,7 +17,7 @@ public:
 	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
 	TFPolygonModifier(
-		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFFunctionInterface::Ptr function,
 		TFSimplePainter::Ptr painter);
 
 	~TFPolygonModifier();

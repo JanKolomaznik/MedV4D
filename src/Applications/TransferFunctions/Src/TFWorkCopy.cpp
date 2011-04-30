@@ -54,6 +54,12 @@ void TFWorkCopy::save(TF::XmlWriterInterface* writer){
 
 	data_->save(writer);
 }
+
+void TFWorkCopy::saveFunction(TF::XmlWriterInterface* writer){
+
+	data_->save(writer);
+}
+
 bool TFWorkCopy::load(TF::XmlReaderInterface* reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
@@ -102,11 +108,12 @@ bool TFWorkCopy::load(TF::XmlReaderInterface* reader, bool& sideError){
 	}
 	else sideError = true;
 
-	bool error;
-	bool ok = data_->load(reader, error);
-	sideError = sideError || error;
+	return data_->load(reader);
+}
 
-	return ok;
+bool TFWorkCopy::loadFunction(TF::XmlReaderInterface* reader){
+
+	return data_->load(reader);
 }
 
 //---changes---

@@ -35,6 +35,7 @@ bool QtXmlWriter::begin(const std::string& file){
 	fileName_ = file;
 
 	error_ = false;
+	errorMsg_ = "";
 
 	qWriter_.setDevice(&qFile_);
 	qWriter_.setAutoFormatting(true);
@@ -47,6 +48,8 @@ void QtXmlWriter::end(){
 	if(error_) return;
 	qWriter_.writeEndDocument();
 	qFile_.close();
+	error_ = true;
+	errorMsg_ = "No file assigned.";
 }
 
 void QtXmlWriter::writeDTD(const std::string& attribute){

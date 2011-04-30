@@ -22,7 +22,7 @@
 #include <TFCommon.h>
 #include <TFColor.h>
 #include <TFHistogram.h>
-#include <TFBasicHolder.h>
+#include <TFEditor.h>
 
 #include "ui_TFPalette.h"
 
@@ -36,7 +36,7 @@ class TFPalette : public QMainWindow{
 public:
 
 	typedef boost::shared_ptr<TFPalette> Ptr;
-	typedef std::map<TF::Size, TFBasicHolder*> Editors;
+	typedef std::map<TF::Size, TFEditor*> Editors;
 
 	TFPalette(QMainWindow* parent);
     ~TFPalette();
@@ -82,18 +82,18 @@ protected:
 private:	
 
 	struct Editor{
-		TFBasicHolder* holder;
+		TFEditor* editor;
 		TFPaletteButton* button;
 		M4D::Common::TimeStamp change;
 		M4D::Common::TimeStamp previewUpdate;
 
 		Editor():
-			holder(NULL),
+			editor(NULL),
 			button(NULL){
 		}
 
-		Editor(TFBasicHolder* holder, TFPaletteButton* button):
-			holder(holder),
+		Editor(TFEditor* editor, TFPaletteButton* button):
+			editor(editor),
 			button(button){
 		}
 
@@ -130,7 +130,7 @@ private:
 	QTimer previewUpdater_;
 	bool previewEnabled_;
 
-	void addToPalette_(TFBasicHolder* holder);
+	void addToPalette_(TFEditor* editor);
 	void removeFromPalette_(const TF::Size index);
 
 	void reformLayout_(bool forceReform = false);

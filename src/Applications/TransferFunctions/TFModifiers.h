@@ -1,7 +1,7 @@
 #ifndef TF_MODIFIERS
 #define TF_MODIFIERS
 
-#include <TFHolders.h>
+#include <TFDimensions.h>
 
 namespace M4D {
 namespace GUI {
@@ -16,13 +16,13 @@ enum Modifier{
 };
 typedef std::vector<Modifier> Modifiers;
 
-static Modifiers getAllowedModifiers(Holder holder){
+static Modifiers getAllowedModifiers(Dimension dimension){
 
 	Modifiers allowed;
 
-	switch(holder)
+	switch(dimension)
 	{
-		case HolderBasic:
+		case Dimension1:
 		{
 			allowed.push_back(ModifierSimple1D);
 			allowed.push_back(ModifierPolygon1D);

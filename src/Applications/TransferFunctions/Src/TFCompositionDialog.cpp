@@ -1,7 +1,7 @@
 #include "TFCompositionDialog.h"
 
 #include <TFPalette.h>
-#include <TFBasicHolder.h>
+#include <TFEditor.h>
 
 namespace M4D {
 namespace GUI {
@@ -27,7 +27,7 @@ TFCompositionDialog::~TFCompositionDialog(){
 	delete ui_;
 }
 
-void TFCompositionDialog::updateSelection(const std::map<TF::Size, TFBasicHolder*>& editors, TFPalette* palette){
+void TFCompositionDialog::updateSelection(const std::map<TF::Size, TFEditor*>& editors, TFPalette* palette){
 
 	clearLayout_();
 
@@ -39,7 +39,7 @@ void TFCompositionDialog::updateSelection(const std::map<TF::Size, TFBasicHolder
 	TF::Size rowCounter = 0, colCounter = 0;
 	for(TFPalette::Editors::const_iterator it = editors.begin(); it != editors.end(); ++it)
 	{
-		available = !it->second->hasAttribute(TFBasicHolder::Composition);
+		available = !it->second->hasAttribute(TFEditor::Composition);
 		available = available && (it->second->getDimension() == TF_DIMENSION_1);
 
 		found = buttons_.find(it->second->getIndex());

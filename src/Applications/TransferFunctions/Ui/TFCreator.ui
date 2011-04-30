@@ -253,7 +253,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="holderLabel">
+     <widget class="QLabel" name="dimensionLabel">
       <property name="minimumSize">
        <size>
         <width>60</width>
@@ -267,7 +267,7 @@
        </size>
       </property>
       <property name="text">
-       <string>Holder:</string>
+       <string>Dimension:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -275,7 +275,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QLabel" name="holderValue">
+     <widget class="QLabel" name="dimensionValue">
       <property name="frameShape">
        <enum>QFrame::Panel</enum>
       </property>

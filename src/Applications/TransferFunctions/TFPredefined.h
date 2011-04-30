@@ -1,7 +1,7 @@
 #ifndef TF_PREDEFINED
 #define TF_PREDEFINED
 
-#include <TFHolders.h>
+#include <TFDimensions.h>
 #include <TFModifiers.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
@@ -39,7 +39,7 @@ struct Structure{
 
 	Predefined predefined;
 
-	Holder holder;
+	Dimension dimension;
 	Function function;
 	Painter painter;
 	Modifier modifier;
@@ -48,9 +48,9 @@ struct Structure{
 		predefined(PredefinedCustom){
 	}
 
-	Structure(Predefined predefined, Holder holder, Modifier modifier, Function function, Painter painter):
+	Structure(Predefined predefined, Dimension dimension, Modifier modifier, Function function, Painter painter):
 		predefined(predefined),
-		holder(holder),
+		dimension(dimension),
 		modifier(modifier),
 		function(function),
 		painter(painter){
@@ -64,41 +64,41 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 		case PredefinedGrayscale1D:
 		{
 			return Structure(PredefinedGrayscale1D,
-				HolderBasic,
+				Dimension1,
 				ModifierSimple1D,
-				FunctionRGBa1D,
+				FunctionRGBa,
 				PainterGrayscaleAlpha1D);
 		}
 		case PredefinedRGBa1D:
 		{
 			return Structure(PredefinedRGBa1D,
-				HolderBasic,
+				Dimension1,
 				ModifierSimple1D,
-				FunctionRGBa1D,
+				FunctionRGBa,
 				PainterRGBa1D);
 		}
 		case PredefinedHSVa1D:
 		{
 			return Structure(PredefinedHSVa1D,
-				HolderBasic,
+				Dimension1,
 				ModifierSimple1D,
-				FunctionHSVa1D,
+				FunctionHSVa,
 				PainterHSVa1D);
 		}
 		case PredefinedPolygonRGBa1D:
 		{
 			return Structure(PredefinedPolygonRGBa1D,
-				HolderBasic,
+				Dimension1,
 				ModifierPolygon1D,
-				FunctionRGBa1D,
+				FunctionRGBa,
 				PainterRGBa1D);
 		}
 		case PredefinedComposition1D:
 		{
 			return Structure(PredefinedComposition1D,
-				HolderBasic,
+				Dimension1,
 				ModifierComposite1D,
-				FunctionRGBa1D,
+				FunctionRGBa,
 				PainterRGBa1D);
 		}
 	}

@@ -6,7 +6,7 @@
 
 #include <TFCommon.h>
 
-#include <TFHolders.h>
+#include <TFDimensions.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
 #include <TFModifiers.h>
@@ -46,24 +46,24 @@ private:
 	TF::Types::Predefined type_;
 };
 
-class TFHolderDialogButton: public QRadioButton{
+class TFDimensionDialogButton: public QRadioButton{
 
 	Q_OBJECT
 
 public:
 
-	TFHolderDialogButton(TF::Types::Holder type, QWidget* parent = 0):
+	TFDimensionDialogButton(TF::Types::Dimension type, QWidget* parent = 0):
 		QRadioButton(parent),
 		type_(type){		
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
 	}
-	~TFHolderDialogButton(){}
+	~TFDimensionDialogButton(){}
 
 signals:
 
-	void Activated(TF::Types::Holder active);
+	void Activated(TF::Types::Dimension active);
 
 private slots:
 
@@ -74,7 +74,7 @@ private slots:
 
 private:
 
-	TF::Types::Holder type_;
+	TF::Types::Dimension type_;
 };
 
 class TFFunctionDialogButton: public QRadioButton{

@@ -38,6 +38,8 @@ bool QtXmlReader::begin(const std::string& file){
 	fileName_ = file;
 
 	fileError_ = false;
+	error_ = false;
+	errorMsg_ = "";
 
 	qReader_.setDevice(&qFile_);
 
@@ -48,6 +50,9 @@ void QtXmlReader::end(){
 
 	if(fileError_) return;
 	qFile_.close();
+	fileError_ = true;
+	error_ = true;
+	errorMsg_ = "No file assigned.";
 }
 
 bool QtXmlReader::readElement(const std::string& element){

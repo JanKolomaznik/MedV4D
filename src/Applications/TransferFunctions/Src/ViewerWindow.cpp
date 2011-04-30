@@ -20,7 +20,7 @@ ViewerWindow::ViewerWindow():
 	//---TF Editor---
 
 	editingSystem_ = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
-	editingSystem_->setupDefault();	
+	editingSystem_->setupDefault();
 
 	bool previewUpdateConnected = QObject::connect(&(*editingSystem_), SIGNAL(UpdatePreview(M4D::GUI::TF::Size)),
 		this, SLOT(updatePreview(M4D::GUI::TF::Size)));
@@ -138,24 +138,6 @@ void ViewerWindow::changeColorMapType( int aColorMap ){
 void ViewerWindow::applyTransferFunction(){
 
 	if(!fileLoaded_) return;
-	/*
-	if(!buffer_ || (buffer_->Size() != editingSystem_->getDomain(TF_DIMENSION_1)))
-	{
-		buffer_ = Buffer1D::Ptr(new Buffer1D(editingSystem_->getDomain(TF_DIMENSION_1),
-			Interval(0.0f, (float)editingSystem_->getDomain(TF_DIMENSION_1))));
-	}
-	
-	bool tfUsed = editingSystem_->applyTransferFunction<Buffer1D::iterator>( buffer_->Begin(), buffer_->End());
-	
-	if(tfUsed)
-	{
-		mViewer->SetTransferFunctionBuffer(buffer_);
-
-		QSize previewSize = editingSystem_->getPreviewSize();
-		QImage thumbnailImage = mViewer->RenderThumbnailImage(previewSize);
-		editingSystem_->setPreview(thumbnailImage);
-	}
-	*/
 
 	if(fillBufferFromTF_(editingSystem_->getTransferFunction(), buffer_))
 	{

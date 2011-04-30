@@ -30,58 +30,17 @@ public:
 	virtual void setDataStructure(const std::vector<TF::Size>& dataStructure) = 0;
 	virtual void setHistogram(const TF::Histogram::Ptr histogram) = 0;
 
-	QWidget* getTools(){
+	QWidget* getTools();
+	TF::Size getDimension();
+	TFFunctionInterface::Const getFunction();
 
-		if(!toolsWidget_) createTools_();
-		return toolsWidget_;
-	}
+	bool changed();
+	M4D::Common::TimeStamp getTimeStamp();
 
-	TF::Size getDimension(){
-
-		return workCopy_->getDimension();
-	}
-
-	TFFunctionInterface::Const getFunction(){
-
-		return workCopy_->getFunction();
-	}
-
-	bool changed(){
-
-		if(changed_)
-		{
-			changed_ = false;
-			return true;
-		}
-		return false;
-	}
-
-	M4D::Common::TimeStamp getTimeStamp(){
-
-		return stamp_;
-	}
-
-	virtual void save(TF::XmlWriterInterface* writer){
-
-		saveSettings_(writer);
-		painter_->save(writer);
-		workCopy_->save(writer);
-	}
-
-	bool load(TF::XmlReaderInterface* reader, bool& sideError){
-
-		#ifndef TF_NDEBUG
-			std::cout << "Loading modifier..." << std::endl;
-		#endif
-
-		bool painterOk = painter_->load(reader);
-		bool workCopyOk = workCopy_->load(reader, sideError);
-	
-		bool error = !loadSettings_(reader);
-		sideError = sideError || error;
-
-		return painterOk && workCopyOk;
-	}
+	virtual void save(TF::XmlWriterInterface* writer);
+	void saveFunction(TF::XmlWriterInterface* writer);
+	bool load(TF::XmlReaderInterface* reader, bool& sideError);
+	bool loadFunction(TF::XmlReaderInterface* reader);
 
 protected:
 
@@ -98,34 +57,14 @@ protected:
 	QRect inputArea_;
 	const TF::PaintingPoint ignorePoint_;
 
-	TFAbstractModifier(TFFunctionInterface::Ptr function, TFAbstractPainter::Ptr painter):
-		painter_(painter),
-		workCopy_(TFWorkCopy::Ptr(new TFWorkCopy(function))),
-		coords_(function->getDimension()),
-		ignorePoint_(-1, -1),
-		toolsWidget_(NULL),
-		changed_(true){
-	}
+	TFAbstractModifier(TFFunctionInterface::Ptr function, TFAbstractPainter::Ptr painter);
 
 	virtual void createTools_() = 0;
 
-	void resizeEvent(QResizeEvent* e){
-
-		painter_->setArea(rect());
-
-		inputArea_ = painter_->getInputArea();
-
-		computeInput_();
-		update();
-	}
-
-	void paintEvent(QPaintEvent*){
-
-		QPainter drawer(this);
-		drawer.drawPixmap(rect(), painter_->getView(workCopy_));
-	}
-
 	virtual void computeInput_() = 0;
+
+	void resizeEvent(QResizeEvent* e);
+	void paintEvent(QPaintEvent*);
 
 	virtual void mousePressEvent(QMouseEvent *e){}
 	virtual void mouseReleaseEvent(QMouseEvent *e){}

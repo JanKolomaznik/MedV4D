@@ -10,8 +10,8 @@ namespace TF {
 namespace Types {
 
 enum Function{
-	FunctionRGBa1D,
-	FunctionHSVa1D
+	FunctionRGBa,
+	FunctionHSVa
 };
 typedef std::vector<Function> Functions;
 
@@ -25,8 +25,8 @@ static Functions getAllowedFunctions(Modifier modifier){
 		case ModifierComposite1D:
 		{
 			//1D
-			allowed.push_back(FunctionRGBa1D);
-			allowed.push_back(FunctionHSVa1D);
+			allowed.push_back(FunctionRGBa);
+			allowed.push_back(FunctionHSVa);
 			break;
 		}
 	}
@@ -41,13 +41,13 @@ template<>
 inline std::string convert<Types::Function, std::string>(const Types::Function &function){
 
 	switch(function){
-		case Types::FunctionRGBa1D:
+		case Types::FunctionRGBa:
 		{
-			return "RGBa 1D function";
+			return "RGBa function";
 		}
-		case Types::FunctionHSVa1D:
+		case Types::FunctionHSVa:
 		{
-			return "HSVa 1D function";
+			return "HSVa function";
 		}
 	}
 
@@ -58,15 +58,15 @@ inline std::string convert<Types::Function, std::string>(const Types::Function &
 template<>
 inline Types::Function TF::convert<std::string, Types::Function>(const std::string &function){
 
-	if(function == "RGBa 1D function"){
-		return Types::FunctionRGBa1D;
+	if(function == "RGBa function"){
+		return Types::FunctionRGBa;
 	}
-	if(function == "HSVa 1D function"){
-		return Types::FunctionHSVa1D;
+	if(function == "HSVa function"){
+		return Types::FunctionHSVa;
 	}
 
 	tfAssert(!"Unknown function!");
-	return Types::FunctionRGBa1D;	//default
+	return Types::FunctionRGBa;	//default
 }
 
 }	//namespace TF

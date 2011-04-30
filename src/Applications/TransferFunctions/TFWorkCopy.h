@@ -22,7 +22,9 @@ public:
 	~TFWorkCopy();
 
 	void save(TF::XmlWriterInterface* writer);
+	void saveFunction(TF::XmlWriterInterface* writer);
 	bool load(TF::XmlReaderInterface* reader, bool& sideError);
+	bool loadFunction(TF::XmlReaderInterface* reader);
 	
 	TFFunctionInterface::Ptr getFunction();
 	

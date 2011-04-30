@@ -33,7 +33,7 @@ public:
 	virtual void resize(const std::vector<TF::Size>& dataStructure) = 0;
 
 	virtual void save(TF::XmlWriterInterface* writer) = 0;
-	virtual bool load(TF::XmlReaderInterface* reader, bool& sideError) = 0;
+	virtual bool load(TF::XmlReaderInterface* reader) = 0;
 
 protected:
 
