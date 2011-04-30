@@ -10,9 +10,9 @@ namespace GUI {
 
 TFCompositeModifier::TFCompositeModifier(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter,		
+		TFPainter1D::Ptr painter,		
 		TFPalette* palette):
-	TFSimpleModifier(function, painter),
+	TFModifier1D(function, painter),
 	compositeTools_(new Ui::TFCompositeModifier),
 	compositeWidget_(new QWidget),
 	layout_(new QVBoxLayout),

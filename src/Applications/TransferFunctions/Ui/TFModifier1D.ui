@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TFSimpleModifier</class>
- <widget class="QWidget" name="TFSimpleModifier">
+ <class>TFModifier1D</class>
+ <widget class="QWidget" name="TFModifier1D">
   <property name="geometry">
    <rect>
     <x>0</x>

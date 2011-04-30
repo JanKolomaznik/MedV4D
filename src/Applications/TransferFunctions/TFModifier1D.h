@@ -1,25 +1,28 @@
-#ifndef TF_SIMPLE_MODIFIER
-#define TF_SIMPLE_MODIFIER
+#ifndef TF_MODIFIER_1D
+#define TF_MODIFIER_1D
 
 #include <TFViewModifier.h>
-#include <ui_TFSimpleModifier.h>
+
+#include <TFPainter1D.h>
+
+#include <ui_TFModifier1D.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFSimpleModifier: public TFViewModifier{
+class TFModifier1D: public TFViewModifier{
 
 	Q_OBJECT
 
 public:
 
-	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
+	typedef boost::shared_ptr<TFModifier1D> Ptr;
 
-	TFSimpleModifier(
+	TFModifier1D(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter);
+		TFPainter1D::Ptr painter);
 
-	~TFSimpleModifier();
+	~TFModifier1D();
 	
 	void setHistogram(const TF::Histogram::Ptr histogram);
 
@@ -37,7 +40,7 @@ protected:
 	};	
 	ActiveView activeView_;
 
-	Ui::TFSimpleModifier* simpleTools_;
+	Ui::TFModifier1D* simpleTools_;
 	QWidget* simpleWidget_;
 
 	bool firstOnly_;
@@ -63,4 +66,4 @@ protected:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLE_MODIFIER
+#endif //TF_MODIFIER_1D

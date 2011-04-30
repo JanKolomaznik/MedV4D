@@ -1,14 +1,14 @@
 #ifndef TF_POLYGON_MODIFIER
 #define TF_POLYGON_MODIFIER
 
-#include <TFSimpleModifier.h>
+#include <TFModifier1D.h>
 
 #include <ui_TFPolygonModifier.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFPolygonModifier: public TFSimpleModifier{
+class TFPolygonModifier: public TFModifier1D{
 
 	Q_OBJECT
 
@@ -18,7 +18,7 @@ public:
 
 	TFPolygonModifier(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter);
+		TFPainter1D::Ptr painter);
 
 	~TFPolygonModifier();
 

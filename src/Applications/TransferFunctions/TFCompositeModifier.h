@@ -1,7 +1,7 @@
 #ifndef TF_COMPOSITE_MODIFIER
 #define TF_COMPOSITE_MODIFIER
 
-#include <TFSimpleModifier.h>
+#include <TFModifier1D.h>
 #include <TFCompositionDialog.h>
 
 #include <QtCore/QTimer>
@@ -14,7 +14,7 @@ namespace GUI {
 
 class TFPalette;
 
-class TFCompositeModifier: public TFSimpleModifier{
+class TFCompositeModifier: public TFModifier1D{
 
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ public:
 
 	TFCompositeModifier(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter,		
+		TFPainter1D::Ptr painter,		
 		TFPalette* palette);
 
 	~TFCompositeModifier();

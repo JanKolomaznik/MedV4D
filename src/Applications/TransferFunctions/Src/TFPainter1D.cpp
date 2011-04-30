@@ -1,9 +1,9 @@
-#include "TFSimplePainter.h"
+#include "TFPainter1D.h"
 
 namespace M4D {
 namespace GUI {
 
-TFSimplePainter::TFSimplePainter(const QColor& component1,
+TFPainter1D::TFPainter1D(const QColor& component1,
 								 const QColor& component2,
 								 const QColor& component3,
 								 const QColor& alpha):	
@@ -20,9 +20,9 @@ TFSimplePainter::TFSimplePainter(const QColor& component1,
 	sizeChanged_(true){
 }
 
-TFSimplePainter::~TFSimplePainter(){}
+TFPainter1D::~TFPainter1D(){}
 
-void TFSimplePainter::setArea(QRect area){
+void TFPainter1D::setArea(QRect area){
 	
 	area_ = area;
 
@@ -47,17 +47,17 @@ void TFSimplePainter::setArea(QRect area){
 	sizeChanged_ = true;
 }
 
-QRect TFSimplePainter::getInputArea(){
+QRect TFPainter1D::getInputArea(){
 
 	return inputArea_;
 }
 
-std::vector<std::string> TFSimplePainter::getComponentNames(){
+std::vector<std::string> TFPainter1D::getComponentNames(){
 
 	return componentNames_;
 }
 
-void TFSimplePainter::updateBackground_(){
+void TFPainter1D::updateBackground_(){
 
 	viewBackgroundBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBackgroundBuffer_.fill(noColor_);
@@ -67,7 +67,7 @@ void TFSimplePainter::updateBackground_(){
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
 }
 
-void TFSimplePainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -92,7 +92,7 @@ void TFSimplePainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-void TFSimplePainter::updateFunctionView_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateFunctionView_(TFWorkCopy::Ptr workCopy){
 		
 	viewFunctionBuffer_ = QPixmap(area_.width(), area_.height());
 	viewFunctionBuffer_.fill(noColor_);
@@ -140,7 +140,7 @@ void TFSimplePainter::updateFunctionView_(TFWorkCopy::Ptr workCopy){
 	}
 }
 /*
-void TFSimplePainter::updateComponent2View_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateComponent2View_(TFWorkCopy::Ptr workCopy){
 		
 	viewComponent2Buffer_ = QPixmap(area_.width(), area_.height());
 	viewComponent2Buffer_.fill(noColor_);
@@ -164,7 +164,7 @@ void TFSimplePainter::updateComponent2View_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-void TFSimplePainter::updateComponent3View_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateComponent3View_(TFWorkCopy::Ptr workCopy){
 		
 	viewComponent3Buffer_ = QPixmap(area_.width(), area_.height());
 	viewComponent3Buffer_.fill(noColor_);
@@ -188,7 +188,7 @@ void TFSimplePainter::updateComponent3View_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-void TFSimplePainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -212,7 +212,7 @@ void TFSimplePainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 	}
 }
 */
-void TFSimplePainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
+void TFPainter1D::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -242,7 +242,7 @@ void TFSimplePainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-QPixmap TFSimplePainter::getView(TFWorkCopy::Ptr workCopy){
+QPixmap TFPainter1D::getView(TFWorkCopy::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)

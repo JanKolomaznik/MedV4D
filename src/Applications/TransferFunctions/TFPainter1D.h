@@ -1,17 +1,17 @@
-#ifndef TF_SIMPLE_PAINTER
-#define TF_SIMPLE_PAINTER
+#ifndef TF_PAINTER_1D
+#define TF_PAINTER_1D
 
 #include <TFAbstractPainter.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFSimplePainter: public TFAbstractPainter{
+class TFPainter1D: public TFAbstractPainter{
 
 public:
 
-	typedef boost::shared_ptr<TFSimplePainter> Ptr;
-	~TFSimplePainter();
+	typedef boost::shared_ptr<TFPainter1D> Ptr;
+	~TFPainter1D();
 
 	virtual std::vector<std::string> getComponentNames();
 
@@ -22,7 +22,7 @@ public:
 
 protected:
 
-	TFSimplePainter(
+	TFPainter1D(
 		const QColor& component1,
 		const QColor& component2,
 		const QColor& component3,
@@ -64,4 +64,4 @@ protected:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLE_PAINTER
+#endif //TF_PAINTER_1D

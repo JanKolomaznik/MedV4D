@@ -1,27 +1,27 @@
-#include "TFGrayscaleAlphaPainter.h"
+#include "TFGrayscaleAlphaPainter1D.h"
 
 namespace M4D {
 namespace GUI {
 
-TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter():
-	TFSimplePainter(Qt::white, Qt::white, Qt::white){
+TFGrayscaleAlphaPainter1D::TFGrayscaleAlphaPainter1D():
+	TFPainter1D(Qt::white, Qt::white, Qt::white){
 
 	componentNames_.push_back("Gray");
 	componentNames_.push_back("Opacity");
 }
 
 
-TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(const QColor& gray,
+TFGrayscaleAlphaPainter1D::TFGrayscaleAlphaPainter1D(const QColor& gray,
 												 const QColor& alpha):
-	TFSimplePainter(gray, gray, gray, alpha){
+	TFPainter1D(gray, gray, gray, alpha){
 
 	componentNames_.push_back("Gray");
 	componentNames_.push_back("Opacity");
 }
 
-TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}
+TFGrayscaleAlphaPainter1D::~TFGrayscaleAlphaPainter1D(){}
 
-void TFGrayscaleAlphaPainter::updateFunctionView_(TFWorkCopy::Ptr workCopy){
+void TFGrayscaleAlphaPainter1D::updateFunctionView_(TFWorkCopy::Ptr workCopy){
 		
 	viewFunctionBuffer_ = QPixmap(area_.width(), area_.height());
 	viewFunctionBuffer_.fill(noColor_);

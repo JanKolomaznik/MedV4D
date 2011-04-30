@@ -1,10 +1,10 @@
-#include "TFHSVaPainter.h"
+#include "TFHSVaPainter1D.h"
 
 namespace M4D {
 namespace GUI {
 
-TFHSVaPainter::TFHSVaPainter():
-	TFSimplePainter(Qt::magenta, Qt::cyan, Qt::yellow){
+TFHSVaPainter1D::TFHSVaPainter1D():
+	TFPainter1D(Qt::magenta, Qt::cyan, Qt::yellow){
 
 	componentNames_.push_back("Hue");
 	componentNames_.push_back("Saturation");
@@ -13,11 +13,11 @@ TFHSVaPainter::TFHSVaPainter():
 }
 
 
-TFHSVaPainter::TFHSVaPainter(const QColor& hue,
+TFHSVaPainter1D::TFHSVaPainter1D(const QColor& hue,
 							 const QColor& saturation,
 							 const QColor& value,
 							 const QColor& alpha):
-	TFSimplePainter(hue, saturation, value, alpha){
+	TFPainter1D(hue, saturation, value, alpha){
 
 	componentNames_.push_back("Hue");
 	componentNames_.push_back("Saturation");
@@ -25,9 +25,9 @@ TFHSVaPainter::TFHSVaPainter(const QColor& hue,
 	componentNames_.push_back("Opacity");
 }
 
-TFHSVaPainter::~TFHSVaPainter(){}
+TFHSVaPainter1D::~TFHSVaPainter1D(){}
 
-void TFHSVaPainter::setArea(QRect area){
+void TFHSVaPainter1D::setArea(QRect area){
 	
 	area_ = area;
 
@@ -58,7 +58,7 @@ void TFHSVaPainter::setArea(QRect area){
 	sizeChanged_ = true;
 }
 
-void TFHSVaPainter::updateSideBar_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter1D::updateSideBar_(TFWorkCopy::Ptr workCopy){
 
 	viewSideBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewSideBarBuffer_.fill(noColor_);
@@ -83,10 +83,10 @@ void TFHSVaPainter::updateSideBar_(TFWorkCopy::Ptr workCopy){
 	}
 }
 
-QPixmap TFHSVaPainter::getView(TFWorkCopy::Ptr workCopy){
+QPixmap TFHSVaPainter1D::getView(TFWorkCopy::Ptr workCopy){
 
 	updateSideBar_(workCopy);
-	TFSimplePainter::getView(workCopy);
+	TFPainter1D::getView(workCopy);
 
 	QPainter drawer(&viewBuffer_);
 	drawer.drawPixmap(0, 0, viewSideBarBuffer_);

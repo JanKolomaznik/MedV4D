@@ -1,13 +1,13 @@
-#include "TFSimpleModifier.h"
+#include "TFModifier1D.h"
 
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(
+TFModifier1D::TFModifier1D(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter):
+		TFPainter1D::Ptr painter):
 	TFViewModifier(function, painter),
-	simpleTools_(new Ui::TFSimpleModifier),
+	simpleTools_(new Ui::TFModifier1D),
 	simpleWidget_(new QWidget),
 	activeView_(Active1),
 	inputHelper_(),
@@ -27,12 +27,12 @@ TFSimpleModifier::TFSimpleModifier(
 	firstOnly_ = (names.size() < 3);
 }
 
-TFSimpleModifier::~TFSimpleModifier(){
+TFModifier1D::~TFModifier1D(){
 
 	delete simpleTools_;
 }
 
-void TFSimpleModifier::createTools_(){
+void TFModifier1D::createTools_(){
 
     QFrame* separator = new QFrame();
     separator->setFrameShape(QFrame::HLine);
@@ -47,24 +47,24 @@ void TFSimpleModifier::createTools_(){
 	toolsWidget_->setLayout(layout);
 }
 
-void TFSimpleModifier::computeInput_(){
+void TFModifier1D::computeInput_(){
 
 	workCopy_->resize(1, inputArea_.width());
 	workCopy_->resizeHistogram(inputArea_.width());
 }
 
-std::vector<int> TFSimpleModifier::computeZoomMoveIncrements_(const int moveX, const int moveY){
+std::vector<int> TFModifier1D::computeZoomMoveIncrements_(const int moveX, const int moveY){
 
 	workCopy_->moveHistogram(moveX);
 	return std::vector<int>(1, moveX);
 }
 
-void TFSimpleModifier::setHistogram(const TF::Histogram::Ptr histogram){
+void TFModifier1D::setHistogram(const TF::Histogram::Ptr histogram){
 
 	workCopy_->setHistogram(histogram);
 }
 
-void TFSimpleModifier::activeView_changed(int index){
+void TFModifier1D::activeView_changed(int index){
 
 	switch(index)
 	{
@@ -103,7 +103,7 @@ void TFSimpleModifier::activeView_changed(int index){
 	}
 }
 
-void TFSimpleModifier::wheelEvent(QWheelEvent* e){
+void TFModifier1D::wheelEvent(QWheelEvent* e){
 	
 	int steps = e->delta() / 120;
 	if(steps == 0) return;
@@ -120,7 +120,7 @@ void TFSimpleModifier::wheelEvent(QWheelEvent* e){
 	TFViewModifier::wheelEvent(e);
 }
 
-void TFSimpleModifier::mousePressEvent(QMouseEvent *e){
+void TFModifier1D::mousePressEvent(QMouseEvent *e){
 
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y());
 	if(relativePoint == ignorePoint_) return;
@@ -139,7 +139,7 @@ void TFSimpleModifier::mousePressEvent(QMouseEvent *e){
 	TFViewModifier::mousePressEvent(e);
 }
 
-void TFSimpleModifier::mouseReleaseEvent(QMouseEvent *e){
+void TFModifier1D::mouseReleaseEvent(QMouseEvent *e){
 
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y(), leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
@@ -151,7 +151,7 @@ void TFSimpleModifier::mouseReleaseEvent(QMouseEvent *e){
 	TFViewModifier::mouseReleaseEvent(e);
 }
 
-void TFSimpleModifier::mouseMoveEvent(QMouseEvent *e){
+void TFModifier1D::mouseMoveEvent(QMouseEvent *e){
 	
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y(), leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
@@ -166,7 +166,7 @@ void TFSimpleModifier::mouseMoveEvent(QMouseEvent *e){
 	TFViewModifier::mouseMoveEvent(e);
 }
 
-void TFSimpleModifier::addPoint_(const int x, const int y){
+void TFModifier1D::addPoint_(const int x, const int y){
 
 	float yValue = y/(float)inputArea_.height();
 	
@@ -203,12 +203,12 @@ void TFSimpleModifier::addPoint_(const int x, const int y){
 	++stamp_;
 }
 
-void TFSimpleModifier::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
+void TFModifier1D::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
 	
 	addLine_(begin.x, begin.y, end.x, end.y);
 }
 
-void TFSimpleModifier::addLine_(int x1, int y1, int x2, int y2){
+void TFModifier1D::addLine_(int x1, int y1, int x2, int y2){
 	
 	if(x1==x2 && y1==y2) addPoint_(x1,y1);
 

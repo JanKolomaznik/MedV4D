@@ -5,8 +5,8 @@ namespace GUI {
 
 TFPolygonModifier::TFPolygonModifier(
 		TFFunctionInterface::Ptr function,
-		TFSimplePainter::Ptr painter):
-	TFSimpleModifier(function, painter),
+		TFPainter1D::Ptr painter):
+	TFModifier1D(function, painter),
 	polygonTools_(new Ui::TFPolygonModifier),
 	polygonWidget_(new QWidget),
 	polygonSpinStep_(10){
@@ -130,7 +130,7 @@ void TFPolygonModifier::wheelEvent(QWheelEvent *e){
 		}
 		default:
 		{			
-			TFSimpleModifier::wheelEvent(e);
+			TFModifier1D::wheelEvent(e);
 			break;
 		}
 	}

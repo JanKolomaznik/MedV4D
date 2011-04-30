@@ -2,7 +2,6 @@
 #define TF_VIEW_MODIFIER
 
 #include <TFAbstractModifier.h>
-#include <TFSimplePainter.h>
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QSpacerItem>

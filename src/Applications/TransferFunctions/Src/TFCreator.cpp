@@ -6,17 +6,16 @@
 
 #include <TFEditorGUI.h>
 
-#include <TFSimpleModifier.h>
+#include <TFModifier1D.h>
 #include <TFPolygonModifier.h>
-#include <TFViewModifier.h>
 #include <TFCompositeModifier.h>
 
 #include <TFRGBaFunction.h>
 #include <TFHSVaFunction.h>
 
-#include <TFGrayscaleAlphaPainter.h>
-#include <TFRGBaPainter.h>
-#include <TFHSVaPainter.h>
+#include <TFGrayscaleAlphaPainter1D.h>
+#include <TFRGBaPainter1D.h>
+#include <TFHSVaPainter1D.h>
 
 namespace M4D {
 namespace GUI {
@@ -48,20 +47,20 @@ TFAbstractPainter* TFCreator::createPainter_(TFEditor::Attributes& attributes){
 	{
 		case TF::Types::PainterGrayscaleAlpha1D:
 		{
-			return new TFGrayscaleAlphaPainter();
+			return new TFGrayscaleAlphaPainter1D();
 		}
 		case TF::Types::PainterRGBa1D:
 		{
-			return new TFRGBaPainter();
+			return new TFRGBaPainter1D();
 		}
 		case TF::Types::PainterHSVa1D:
 		{
-			return new TFHSVaPainter();
+			return new TFHSVaPainter1D();
 		}
 	}
 	
 	tfAssert(!"Unknown painter!");
-	return new TFRGBaPainter();
+	return new TFRGBaPainter1D();
 }
 
 TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes){
@@ -71,9 +70,9 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 		case TF::Types::ModifierSimple1D:
 		{
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
-			return new TFSimpleModifier(
+			return new TFModifier1D(
 				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
+				TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes)))
 			);
 		}
 		case TF::Types::ModifierPolygon1D:
@@ -81,7 +80,7 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			return new TFPolygonModifier(
 				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
+				TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes)))
 			);
 		}
 		case TF::Types::ModifierComposite1D:
@@ -90,16 +89,16 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 			attributes.insert(TFEditor::Composition);
 			return new TFCompositeModifier(
 				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes))),
+				TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes))),
 				palette_
 			);
 		}
 	}
 
 	tfAssert(!"Unknown modifier!");	
-	return new TFSimpleModifier(
+	return new TFModifier1D(
 		TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-		TFSimplePainter::Ptr(dynamic_cast<TFSimplePainter*>(createPainter_(attributes)))
+		TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes)))
 	);	//default
 
 }

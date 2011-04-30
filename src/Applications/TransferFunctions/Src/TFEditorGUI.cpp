@@ -76,10 +76,10 @@ void TFEditorGUI::on_actionEditorSave_triggered(){
 
 void TFEditorGUI::on_actionEditorSaveAs_triggered(){
 
+	ui_->statusBar->showMessage("Saving Transfer Function Editor...");
+
 	QString fileNameMem = fileName_;
 	fileName_ = "";
-
-	ui_->statusBar->showMessage("Saving Transfer Function Editor...");
 	
 	bool saveSuccess = save();
 
@@ -99,10 +99,10 @@ void TFEditorGUI::on_actionFunctionSave_triggered(){
 
 void TFEditorGUI::on_actionFunctionSaveAs_triggered(){
 
+	ui_->statusBar->showMessage("Saving Transfer Function...");
+
 	QString fileNameMem = fileNameFunction_;
 	fileNameFunction_ = "";
-
-	ui_->statusBar->showMessage("Saving Transfer Function...");
 	
 	bool saveSuccess = saveFunction();
 
@@ -112,6 +112,8 @@ void TFEditorGUI::on_actionFunctionSaveAs_triggered(){
 }
 
 void TFEditorGUI::on_actionFunctionLoad_triggered(){
+
+	ui_->statusBar->showMessage("Loading Transfer Function...");
 
 	QString fileName = QFileDialog::getOpenFileName(
 		this,
@@ -131,8 +133,6 @@ void TFEditorGUI::on_actionFunctionLoad_triggered(){
 		errorMessage.exec();
 		return;
 	}
-
-	ui_->statusBar->showMessage("Loading Transfer Function...");
 
 	bool loadSuccess = loadFunction(&reader);
 

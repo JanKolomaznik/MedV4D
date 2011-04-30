@@ -43,7 +43,7 @@ inline std::string convert<Types::Modifier, std::string>(const Types::Modifier &
 	switch(modifier){
 		case Types::ModifierSimple1D:
 		{
-			return "Simple 1D modifier";
+			return "Free-hand 1D modifier";
 		}
 		case Types::ModifierPolygon1D:
 		{
@@ -62,7 +62,7 @@ inline std::string convert<Types::Modifier, std::string>(const Types::Modifier &
 template<>
 inline Types::Modifier TF::convert<std::string, Types::Modifier>(const std::string &modifier){
 
-	if(modifier == "Simple 1D modifier"){
+	if(modifier == "Free-hand 1D modifier"){
 		return Types::ModifierSimple1D;
 	}
 	if(modifier == "Polygon 1D modifier"){
