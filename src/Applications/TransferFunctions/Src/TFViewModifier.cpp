@@ -46,6 +46,10 @@ TFViewModifier::TFViewModifier(TFFunctionInterface::Ptr function, TFAbstractPain
 
 TFViewModifier::~TFViewModifier(){
 
+	for(std::vector<Ui::TFDimensionZoom*>::iterator it = dimensionsUi_.begin(); it != dimensionsUi_.end(); ++it)
+	{
+		delete *it;
+	}
 	delete viewTools_;
 }
 

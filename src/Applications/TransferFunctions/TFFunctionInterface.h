@@ -7,14 +7,14 @@
 namespace M4D {
 namespace GUI {
 
-class TFFunctionConstAccesor;
+class TFFunctionConstAccessor;
 
 class TFFunctionInterface{
 
 public:
 
 	typedef boost::shared_ptr<TFFunctionInterface> Ptr;
-	typedef TFFunctionConstAccesor Const;
+	typedef TFFunctionConstAccessor Const;
 
 	virtual ~TFFunctionInterface(){}
 
@@ -40,7 +40,7 @@ protected:
 	TFFunctionInterface(){}
 };
 
-class TFFunctionConstAccesor{
+class TFFunctionConstAccessor{
 
 	friend class TFFunctionInterface;
 
@@ -48,25 +48,25 @@ public:
 
 	const TF::Color nullColor;
 
-	TFFunctionConstAccesor():
+	TFFunctionConstAccessor():
 		nullColor(-1,-1,-1,-1),
 		null_(true){
 	}
 
-	TFFunctionConstAccesor(TFFunctionInterface::Ptr function):
+	TFFunctionConstAccessor(TFFunctionInterface::Ptr function):
 		function_(function),
 		nullColor(-1,-1,-1,-1),
 		null_(false){
 	}
 		
-	TFFunctionConstAccesor(TFFunctionInterface* function):
+	TFFunctionConstAccessor(TFFunctionInterface* function):
 		function_(TFFunctionInterface::Ptr(function)),
 		nullColor(-1,-1,-1,-1),
 		null_(false){
 	}
-	~TFFunctionConstAccesor(){}
+	~TFFunctionConstAccessor(){}
 
-	void operator=(const TFFunctionConstAccesor &constPtr){
+	void operator=(const TFFunctionConstAccessor &constPtr){
 
 		function_ = constPtr.function_;
 		null_ = constPtr.null_;

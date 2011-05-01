@@ -44,11 +44,15 @@ void TFEditorGUI::setup(QMainWindow* mainWindow, const int index){
 		toolsDock_->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);	
 		toolsDock_->setWindowTitle(QString::fromStdString(name_ + ": Tools"));
 		addDockWidget(Qt::LeftDockWidgetArea, toolsDock_);	
-	}
 
-	int minHeight = tools->minimumHeight() + ui_->menubar->height() + ui_->statusBar->height();
-	if(ui_->editorWidget->minimumHeight() > minHeight) minHeight = ui_->editorWidget->minimumHeight();
-	editorDock_->resize(minimumWidth() + tools->width(), minHeight);
+		int minHeight = tools->minimumHeight() + ui_->menubar->height() + ui_->statusBar->height();
+		if(minimumHeight() > minHeight) minHeight = minimumHeight();
+		editorDock_->resize(minimumWidth() + tools->width(), minHeight);
+	}
+	else
+	{
+		editorDock_->resize(minimumSize());
+	}
 
 	show();
 	if(index == -1) ui_->activateButton->hide();
