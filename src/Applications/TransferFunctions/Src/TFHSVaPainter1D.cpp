@@ -85,7 +85,7 @@ void TFHSVaPainter1D::updateSideBar_(TFWorkCopy::Ptr workCopy){
 
 QPixmap TFHSVaPainter1D::getView(TFWorkCopy::Ptr workCopy){
 
-	updateSideBar_(workCopy);
+	if(sizeChanged_) updateSideBar_(workCopy);
 	TFPainter1D::getView(workCopy);
 
 	QPainter drawer(&viewBuffer_);
