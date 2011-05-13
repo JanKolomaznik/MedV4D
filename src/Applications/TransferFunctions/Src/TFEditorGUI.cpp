@@ -24,7 +24,11 @@ void TFEditorGUI::setup(QMainWindow* mainWindow, const int index){
 
 	ui_->setupUi(this);
 	ui_->nameEdit->setText(QString::fromStdString(name_));
-	if(hasAttribute(Composition)) ui_->menuEditor->setEnabled(false);
+	if(hasAttribute(Composition))
+	{
+		ui_->menuEditor->setEnabled(false);
+		ui_->actionFunctionLoad->setEnabled(false);
+	}
 
 	ui_->actionClose->setShortcut(QKeySequence::Close);
 	ui_->actionEditorSave->setShortcut(QKeySequence::Save);

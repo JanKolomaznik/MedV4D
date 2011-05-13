@@ -33,13 +33,10 @@ public slots:
 	void openFile( const QString &aPath );
 
 	void applyTransferFunction();
-	void toggleInteractiveTransferFunction( bool aChecked );
 
 	void changeViewerType( int aRendererType );
-	void changeColorMapType( int aColorMap );
 
 	void updateTransferFunction();
-	void updateToolbars();
 
 	void updatePreview(M4D::GUI::TF::Size index);
 

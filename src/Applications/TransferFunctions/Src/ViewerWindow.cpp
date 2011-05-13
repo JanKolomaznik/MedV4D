@@ -16,6 +16,8 @@ ViewerWindow::ViewerWindow():
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
+	mViewer->SetColorTransformType( M4D::GUI::ctTransferFunction1D );
+	action2D->setChecked(true);
 	
 	//---TF Editor---
 
@@ -56,32 +58,6 @@ ViewerWindow::ViewerWindow():
 	QObject::connect( action3D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
 
-	//---Color mapping Swith---
-
-	QActionGroup *colorMapTypeSwitch = new QActionGroup( this );
-	QSignalMapper *colorMapTypeSwitchSignalMapper = new QSignalMapper( this );
-	
-	colorMapTypeSwitch->setExclusive( true );	
-	colorMapTypeSwitch->addAction( actionUse_WLWindow );
-	colorMapTypeSwitch->addAction( actionUse_Simple_Colormap );
-	colorMapTypeSwitch->addAction( actionUse_MIP );
-	colorMapTypeSwitch->addAction( actionUse_Transfer_Function );
-	
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_WLWindow, M4D::GUI::ctLUTWindow );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Simple_Colormap, M4D::GUI::ctSimpleColorMap );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_MIP, M4D::GUI::ctMaxIntensityProjection );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Transfer_Function, M4D::GUI::ctTransferFunction1D );
-	
-	QObject::connect( actionUse_WLWindow, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_Simple_Colormap, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_MIP, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_Transfer_Function, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );
-
-	//---Update---
-
-	updateToolbars();
-
 	//---Mouse info---
 
 	QLabel *infoLabel = new QLabel();
@@ -110,29 +86,7 @@ ViewerWindow::~ViewerWindow(){
 void ViewerWindow::changeViewerType( int aRendererType )
 {
 	D_PRINT( "Change viewer type" );
-	if ( aRendererType == M4D::GUI::rt3D 
-		&& ( mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow 
-		|| mViewer->GetColorTransformType() == M4D::GUI::ctSimpleColorMap ) ) 
-	{
-		changeColorMapType( M4D::GUI::ctTransferFunction1D );
-	}
-
-	if ( aRendererType == M4D::GUI::rt2DAlignedSlices 
-		&& mViewer->GetColorTransformType() == M4D::GUI::ctMaxIntensityProjection ) 
-	{
-		changeColorMapType( M4D::GUI::ctLUTWindow );
-	}
-
 	mViewer->SetRendererType( aRendererType );
-	updateToolbars();
-}
-
-void ViewerWindow::changeColorMapType( int aColorMap ){
-
-	D_PRINT( "Change color map type" );
-
-	mViewer->SetColorTransformType( aColorMap );
-	updateToolbars();
 }
 
 void ViewerWindow::applyTransferFunction(){
@@ -200,87 +154,6 @@ void ViewerWindow::updateTransferFunction(){
 	{
 		lastChange_ = lastChange;
 		applyTransferFunction();
-	}
-}
-
-void ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
-{
-	if ( aChecked )
-	{
-		D_PRINT( "Transfer function - interactive manipulation enabled" );
-		changeChecker_.start();
-	}
-	else
-	{
-		D_PRINT( "Transfer function - interactive manipulation disabled" );
-		changeChecker_.stop();
-	}
-}
-
-void
-ViewerWindow::updateToolbars()
-{
-	int rendererType = mViewer->GetRendererType();
-
-	if(rendererType == M4D::GUI::rt3DGeneralSlices) rendererType = M4D::GUI::rt2DAlignedSlices;
-
-	switch ( rendererType )
-	{
-		case M4D::GUI::rt2DAlignedSlices:
-		{
-			action2D->setChecked( true );
-			actionUse_WLWindow->setEnabled( true );
-			actionUse_Simple_Colormap->setEnabled( true );
-			actionUse_MIP->setEnabled( false );
-			break;
-		}
-		case M4D::GUI::rt3DGeneralSlices:
-		{
-			ASSERT( false );
-			break;
-		}
-		case M4D::GUI::rt3D:
-		{
-			action3D->setChecked( true );
-			actionUse_WLWindow->setEnabled( false );
-			actionUse_Simple_Colormap->setEnabled( false );
-			actionUse_MIP->setEnabled( true );
-			break;
-		}
-		default:
-		{
-			ASSERT( false );
-		}
-	}
-
-	int colorTransformType = mViewer->GetColorTransformType();
-
-	switch ( colorTransformType )
-	{
-		case M4D::GUI::ctLUTWindow:
-		{
-			actionUse_WLWindow->setChecked( true );
-			break;
-		}
-		case M4D::GUI::ctSimpleColorMap:
-		{
-			actionUse_Simple_Colormap->setChecked( true );
-			break;
-		}
-		case M4D::GUI::ctTransferFunction1D:
-		{
-			actionUse_Transfer_Function->setChecked( true );
-			break;
-		}
-		case M4D::GUI::ctMaxIntensityProjection:
-		{
-			actionUse_MIP->setChecked( true );
-			break;
-		}
-		default:
-		{
-			ASSERT( false );
-		}
 	}
 }
 

@@ -182,6 +182,8 @@ TFEditor* TFCreator::loadEditor_(){
 		QDir::currentPath(),
 		QObject::tr("TF Editor Files (*.tfe)"));
 
+	if(fileName.isEmpty()) return loaded;
+
 	QMessageBox errorMessage(QMessageBox::Critical, "Transfer Function Loading Error", "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
 
