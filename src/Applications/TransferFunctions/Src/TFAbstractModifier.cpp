@@ -45,9 +45,9 @@ M4D::Common::TimeStamp TFAbstractModifier::getTimeStamp(){
 
 void TFAbstractModifier::save(TF::XmlWriterInterface* writer){
 
-	saveSettings_(writer);
 	painter_->save(writer);
 	workCopy_->save(writer);
+	saveSettings_(writer);
 }
 
 void TFAbstractModifier::saveFunction(TF::XmlWriterInterface* writer){
