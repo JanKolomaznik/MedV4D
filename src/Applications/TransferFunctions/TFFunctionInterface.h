@@ -18,7 +18,7 @@ public:
 
 	virtual ~TFFunctionInterface(){}
 
-	static const TF::Size defaultDomain = 4095;	//TODO ?
+	static const TF::Size defaultDomain = 4096;	//CT
 
 	virtual Ptr clone() = 0;
 	

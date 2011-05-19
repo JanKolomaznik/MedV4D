@@ -113,13 +113,13 @@ TFEditor* TFCreator::createEditor_(){
 
 //---creation-dialog---
 
-TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette):
+TFCreator::TFCreator(QMainWindow* mainWindow, TFPalette* palette, const std::vector<TF::Size>& dataStructure):
 	QDialog(mainWindow),
 	ui_(new Ui::TFCreator),
 	reader_(new TF::QtXmlReader),
 	mainWindow_(mainWindow),
 	palette_(palette),
-	dataStructure_(std::vector<TF::Size>(1,TFAbstractFunction<1>::defaultDomain)),
+	dataStructure_(dataStructure),
 	layout_(new QVBoxLayout()),
 	state_(ModeSelection),
 	mode_(CreatePredefined),

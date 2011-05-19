@@ -38,7 +38,7 @@ public:
 	typedef boost::shared_ptr<TFPalette> Ptr;
 	typedef std::map<TF::Size, TFEditor*> Editors;
 
-	TFPalette(QMainWindow* parent);
+	TFPalette(QMainWindow* parent, const std::vector<TF::Size>& dataStructure);
     ~TFPalette();
 
 	void setupDefault();

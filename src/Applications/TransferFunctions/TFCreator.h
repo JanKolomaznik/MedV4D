@@ -34,7 +34,7 @@ class TFCreator: public QDialog{
 
 public:
 
-	TFCreator(QMainWindow* mainWindow, TFPalette* palette);
+	TFCreator(QMainWindow* mainWindow, TFPalette* palette, const std::vector<TF::Size>& dataStructure);
 	~TFCreator();
 
 	TFEditor* createEditor();

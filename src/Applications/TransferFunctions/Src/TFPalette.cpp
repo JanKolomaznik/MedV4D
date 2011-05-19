@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFPalette::TFPalette(QMainWindow* parent):
+TFPalette::TFPalette(QMainWindow* parent, const std::vector<TF::Size>& dataStructure):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	layout_(new QGridLayout()),
@@ -12,7 +12,8 @@ TFPalette::TFPalette(QMainWindow* parent):
 	colModulator_(1),
 	activeChanged_(false),
 	previewEnabled_(true),
-	creator_(parent, this){
+	dataStructure_(dataStructure),
+	creator_(parent, this, dataStructure){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");

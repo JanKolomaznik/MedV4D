@@ -15,13 +15,13 @@ ViewerWindow::ViewerWindow():
 
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 
-	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
 	mViewer->SetColorTransformType( M4D::GUI::ctTransferFunction1D );
 	action2D->setChecked(true);
 	
 	//---TF Editor---
 
-	editingSystem_ = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
+	std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
+	editingSystem_ = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this, dataCT1D));
 	editingSystem_->setupDefault();
 
 	bool previewUpdateConnected = QObject::connect(&(*editingSystem_), SIGNAL(UpdatePreview(M4D::GUI::TF::Size)),
@@ -68,7 +68,7 @@ ViewerWindow::ViewerWindow():
 		
 	//---Default buffer---
 
-	buffer_ = Buffer1D::Ptr(new Buffer1D(4095, Interval(0.0f, 4095.0f)));	
+	buffer_ = Buffer1D::Ptr(new Buffer1D(4096, Interval(0.0f, 4095.0f)));	
 		
 	#ifdef TF_NDEBUG
 		showMaximized();
@@ -186,13 +186,24 @@ void ViewerWindow::openFile( const QString &aPath )
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
-	
+
+	int histMin = histogram->GetMin();
+	int histSize = histogram->GetMax() - histMin;
+	int domain = editingSystem_->getDomain(TF_DIMENSION_1);
+
 	TFHistogram::Ptr tfHistogram(new TFHistogram);
-	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)
+
+	int i = 0;
+	for(; i < histMin; ++i) tfHistogram->add(0);	//zeros before first value
+
+	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
 	{
 		tfHistogram->add(*it);
 	}
-	editingSystem_->setDataStructure(std::vector<M4D::GUI::TF::Size>(1, tfHistogram->size()));
+	i += histSize;
+
+	for(; i < domain; ++i) tfHistogram->add(0);	//zeros after last value
+
 	editingSystem_->setHistogram(tfHistogram);	
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
