@@ -46,7 +46,7 @@ protected:
 	typedef Buffer1D::MappedInterval Interval;
 
 	typedef M4D::Imaging::Histogram64 Histogram;
-	typedef M4D::GUI::TF::Histogram TFHistogram;
+	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 	M4D::GUI::TFPalette::Ptr editingSystem_;

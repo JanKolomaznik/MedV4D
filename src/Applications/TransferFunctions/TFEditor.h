@@ -49,7 +49,7 @@ public:
 	bool close();
 
 	virtual void setup(QMainWindow* mainWindow, const int index = -1) = 0;
-	void setHistogram(TF::Histogram::Ptr histogram);
+	void setHistogram(TF::HistogramInterface::Ptr histogram);
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
 	TF::Size getIndex();

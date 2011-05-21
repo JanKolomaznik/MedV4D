@@ -40,7 +40,7 @@ public:
 
 	//---histogram---
 	
-	void setHistogram(const TF::Histogram::Ptr histogram);	
+	void setHistogram(const TF::HistogramInterface::Ptr histogram);	
 	void setHistogramEnabled(bool value);
 	bool histogramEnabled();
 	void increaseHistogramLogBase(const long double increment = 1.0);
@@ -50,7 +50,7 @@ public:
 	
 	TF::Color getRGBfColor(const TF::Coordinates& coords);
 	TF::Color getColor(const TF::Coordinates& coords);
-	float getHistogramValue(const int index);
+	float getHistogramValue(const TF::Coordinates& coords);
 
 	//---setters---
 	
@@ -64,14 +64,11 @@ public:
 	
 	void resize(const TF::Size dimension, const TF::Size size);
 	void resize(const std::vector<TF::Size>& sizes);
-	void resizeHistogram(const TF::Size size);
 
 	//---zoom---
 	
 	void zoom(const TF::Size dimension, const int center, const int stepCount);
 	void move(const std::vector<int>& increments);
-	void zoomHistogram(const int center, const int stepCount);
-	void moveHistogram(const int increment);
 	
 	float getZoom(const TF::Size dimension);
 	float getZoomCenter(const TF::Size dimension);	
@@ -125,9 +122,9 @@ private:
 		float max;
 
 		ZoomProperties(TF::Size dimension):
-			zoom(dimension+1, 1.0f),
-			center(dimension+1, 0.5f),
-			offset(dimension+1, 0.0f),
+			zoom(dimension, 1.0f),
+			center(dimension, 0.5f),
+			offset(dimension, 0.0f),
 			max(40.0f){
 		}
 
@@ -146,10 +143,8 @@ private:
 		Alpha
 	};
 
-	static const TF::Size histogramIndex = 0;
-
 	TFFunctionInterface::Ptr data_;
-	TF::Histogram::Ptr histogram_;
+	TF::HistogramInterface::Ptr histogram_;
 
 	TF::Coordinates coords_;
 
@@ -163,14 +158,18 @@ private:
 	bool histogramEnabled_;
 	HistProperties hist_;
 	
-	TF::Color getColorFromZoomedArea_(const TF::Coordinates& coords,
+	TF::Color getColor_(const TF::Coordinates& coords,
 		TF::Size& count,
 		const bool& RGBf,
 		TF::Size dimension = 1);
 	
-	void TFWorkCopy::setComponentToZoomedArea_(const TF::Coordinates& coords,
+	void setComponent_(const TF::Coordinates& coords,
 		const Component& component,
 		const float& value,
+		TF::Size dimension = 1);
+
+	float getHistogramValue_(const TF::Coordinates& coords,
+		TF::Size& count,
 		TF::Size dimension = 1);
 
 	void computeZoom_(const TF::Size dimension, const float nextZoom, const float center);	

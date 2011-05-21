@@ -268,7 +268,7 @@ Common::TimeStamp TFEditor::lastChange(){
 	return lastChange_;
 }
 
-void TFEditor::setHistogram(TF::Histogram::Ptr histogram){
+void TFEditor::setHistogram(TF::HistogramInterface::Ptr histogram){
 
 	if(!histogram) return;
 

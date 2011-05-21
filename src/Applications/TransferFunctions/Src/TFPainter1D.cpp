@@ -80,11 +80,14 @@ void TFPainter1D::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
-	int x1, y1, x2, y2 = origin.y + inputArea_.height();
+	int x1, y1, x2;
+	int y2 = origin.y + inputArea_.height();
+	TF::Coordinates coords(1, 0);
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{
+		coords[0] = i;
 		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height();
+		y1 = origin.y + (1 - workCopy->getHistogramValue(coords))*inputArea_.height();
 		x2 = origin.x + i;
 
 		drawer.setPen(hist_);

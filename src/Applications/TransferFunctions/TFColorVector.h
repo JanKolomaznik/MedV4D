@@ -1,7 +1,8 @@
-#ifndef TF_MULTIDIMVECTOR
-#define TF_MULTIDIMVECTOR
+#ifndef TF_COLORVECTOR
+#define TF_COLORVECTOR
 
 #include <TFCommon.h>
+#include <TFMultiDVector.h>
 #include <TFColor.h>
 
 namespace M4D {
@@ -11,70 +12,20 @@ namespace TF {
 //---template-recursive-declaration---
 
 template<Size dim>
-class ColorVector{
-
-	friend class ColorVector<dim + 1>;
-
+class ColorVector: public MultiDVector<Color, dim>{
+	
 	typedef typename ColorVector<dim> MyType;
-	typedef typename std::vector<ColorVector<dim - 1>> InnerVector;
 
 public:
 
 	typedef typename boost::shared_ptr<MyType> Ptr;
 
-	typedef typename ColorVector<dim - 1> value_type;
-
-	typedef typename InnerVector::iterator iterator;
-	typedef typename InnerVector::const_iterator const_iterator;
-
-	ColorVector(std::vector<Size> dimensionSizes){	
-
-		tfAssert(dimensionSizes.size() == dim);
-
-		dimensionSizes_.swap(dimensionSizes);
-
-		std::vector<Size> nextSizes;
-		for(Size i = 1; i < dim; ++i)
-		{
-			nextSizes.push_back(dimensionSizes_[i]);
-		}
-
-		Size mySize = dimensionSizes_[0];
-		for(Size i = 0; i < mySize; ++i)
-		{
-			vector_.push_back(value_type(nextSizes));
-		}
+	ColorVector(std::vector<Size> dimensionSizes):
+		MultiDVector<Color, dim>(dimensionSizes){
 	}
 
-	ColorVector(const MyType& vector){
-
-		const_iterator begin = vector.begin();
-		const_iterator end = vector.end();
-		for(const_iterator it = begin; it!=end; ++it)
-		{
-			vector_.push_back(*it);
-		}
-		
-		dimensionSizes_ = vector.dimensionSizes_;
-	}
-
-	void operator=(const MyType& vector){
-
-		vector_.clear();
-
-		const_iterator begin = vector.begin();
-		const_iterator end = vector.end();
-		for(const_iterator it = begin; it!=end; ++it)
-		{
-			vector_.push_back(*it);
-		}
-		
-		dimensionSizes_ = vector.dimensionSizes_;
-	}
-
-	void swap(MyType& vector){
-
-		vector_.swap(vector.vector_);
+	ColorVector(const MyType& vector):
+		MultiDVector<Color, dim>{
 	}
 
 	MyType operator+(const MyType& right){
@@ -135,11 +86,6 @@ public:
 		{
 			vector_[i] /= value;
 		}
-	}
-
-	void resize(const Size newSize){
-
-		vector_.resize(newSize, value_type(dimensionSizes_));
 	}
 
 	void recalculate(std::vector<Size> dimensionSizes){
@@ -208,7 +154,6 @@ public:
 			int inputIndexer = 0;
 			for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 			{
-				TF::Color computedValue;
 				TF::Size valueCount = ratio + (int)correction;
 				for(TF::Size i = 0; i < valueCount; ++i)
 				{
@@ -238,111 +183,30 @@ public:
 		vector_.swap(resized.vector_);
 	}
 
-	Size size(const Size dimension){
-
-		return dimensionSizes_[dimension-1];
-	}
-
-	Color& value(const TF::Coordinates& coords){
-
-		tfAssert(coords.size() == dim);
-		return vector_[coords[0]].getValue_(coords, dim);
-	}
-
-	value_type& operator[](const TF::Size index){
-
-		return vector_[index];
-	}
-
-	iterator begin(){
-
-		return vector_.begin();
-	}
-
-	iterator end(){
-
-		return vector_.end();
-	}
-
-	const_iterator begin() const{
-
-		return vector_.begin();
-	}
-
-	const_iterator end() const{
-
-		return vector_.end();
-	}
-
 private:
 
-	ColorVector(){}
-
-	Color& getValue_(const TF::Coordinates& coords, Size realDim){
-		
-		Size myIndex = coords[realDim - dim];
-		return vector_[coords[myIndex]].getValue_(coords, realDim);
+	ColorVector():
+	   MultiDVector<Color, dim>(){
 	}
-
-	InnerVector vector_;
-	std::vector<Size> dimensionSizes_;
 };
 
 //---specialization-for-last-dimension---
 
 template<>
-class ColorVector<1>{
-
-	friend class ColorVector<2>;
-
+class ColorVector<1>: public MultiDVector<Color, 1>{
+	
 	typedef ColorVector<1> MyType;
-	typedef std::vector<Color> InnerVector;
 
 public:
 
 	typedef boost::shared_ptr<MyType> Ptr;
 
-	typedef Color value_type;
-
-	typedef InnerVector::iterator iterator;
-	typedef InnerVector::const_iterator const_iterator;
-
-	ColorVector(std::vector<Size> dimensionSizes){	
-
-		tfAssert(dimensionSizes.size() == 1);
-
-		Size mySize = dimensionSizes[0];
-		for(Size i = 0; i < mySize; ++i)
-		{
-			vector_.push_back(value_type());
-		}
+	ColorVector(std::vector<Size> dimensionSizes):
+		MultiDVector<Color, 1>(dimensionSizes){
 	}
 
-	ColorVector(const MyType& vector){
-
-		const_iterator begin = vector.begin();
-		const_iterator end = vector.end();
-		for(const_iterator it = begin; it!=end; ++it)
-		{
-			vector_.push_back(*it);
-		}
-	}
-
-	void operator=(const MyType& vector){
-
-		vector_.clear();
-
-		const_iterator begin = vector.begin();
-		const_iterator end = vector.end();
-		for(const_iterator it = begin; it!=end; ++it)
-		{
-			vector_.push_back(*it);
-		}
-	}
-
-	void swap(MyType& vector){
-
-		vector_.swap(vector.vector_);
+	ColorVector(const MyType& vector):
+		MultiDVector<Color, 1>(vector){
 	}
 
 	MyType operator+(const MyType& right){
@@ -405,11 +269,6 @@ public:
 		}
 	}
 
-	void resize(const Size newSize){
-
-		vector_.resize(newSize);
-	}
-
 	void recalculate(std::vector<Size> dimensionSizes){
 
 		tfAssert(dimensionSizes.size() == 1);
@@ -456,7 +315,6 @@ public:
 			int inputIndexer = 0;
 			for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 			{
-				TF::Color computedValue;
 				TF::Size valueCount = ratio + (int)correction;
 				for(TF::Size i = 0; i < valueCount; ++i)
 				{
@@ -481,59 +339,15 @@ public:
 		vector_.swap(resized.vector_);
 	}
 
-	Size size(const Size dimension){
-
-		tfAssert(dimension == 1);
-		if(dimension != 1) throw std::out_of_range("Bad dimension");
-		return vector_.size();
-	}
-
-	Color& value(const TF::Coordinates& coords){
-
-		tfAssert(coords.size() == 1);
-		return vector_[coords[0]];
-	}
-
-	value_type& operator[](const TF::Size index){
-
-		return vector_[index];
-	}
-
-	iterator begin(){
-
-		return vector_.begin();
-	}
-
-	iterator end(){
-
-		return vector_.end();
-	}
-
-	const_iterator begin() const{
-
-		return vector_.begin();
-	}
-
-	const_iterator end() const{
-
-		return vector_.end();
-	}
-
 private:
 
-	ColorVector(){}
-
-	Color& getValue_(const TF::Coordinates& coords, Size realDim){
-		
-		Size myIndex = coords[realDim - 1];
-		return vector_[coords[myIndex]];
+	ColorVector():
+	   MultiDVector<Color, 1>(){
 	}
-
-	InnerVector vector_;
 };
 
 }
 }
 }
 
-#endif	//TF_MULTIDIMVECTOR
+#endif	//TF_COLORVECTOR

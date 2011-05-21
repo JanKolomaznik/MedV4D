@@ -28,6 +28,12 @@ TFFunctionInterface::Const TFAbstractModifier::getFunction(){
 	return workCopy_->getFunction();
 }
 
+void TFAbstractModifier::setHistogram(const TF::HistogramInterface::Ptr histogram){
+
+	if(histogram->getDimension() != workCopy_->getDimension()) workCopy_->setHistogram(TF::HistogramInterface::Ptr());
+	else workCopy_->setHistogram(histogram);
+}
+
 bool TFAbstractModifier::changed(){
 
 	if(changed_)

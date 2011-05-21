@@ -50,18 +50,11 @@ void TFModifier1D::createTools_(){
 void TFModifier1D::computeInput_(){
 
 	workCopy_->resize(1, inputArea_.width());
-	workCopy_->resizeHistogram(inputArea_.width());
 }
 
 std::vector<int> TFModifier1D::computeZoomMoveIncrements_(const int moveX, const int moveY){
 
-	workCopy_->moveHistogram(moveX);
 	return std::vector<int>(1, moveX);
-}
-
-void TFModifier1D::setHistogram(const TF::Histogram::Ptr histogram){
-
-	workCopy_->setHistogram(histogram);
 }
 
 void TFModifier1D::activeView_changed(int index){
@@ -101,23 +94,6 @@ void TFModifier1D::activeView_changed(int index){
 			break;
 		}
 	}
-}
-
-void TFModifier1D::wheelEvent(QWheelEvent* e){
-	
-	int steps = e->delta() / 120;
-	if(steps == 0) return;
-
-	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y());
-	if(relativePoint == ignorePoint_) return;
-
-	if(!altPressed_)
-	{
-		workCopy_->zoomHistogram(relativePoint.x, steps);
-		update();
-	}
-
-	TFViewModifier::wheelEvent(e);
 }
 
 void TFModifier1D::mousePressEvent(QMouseEvent *e){

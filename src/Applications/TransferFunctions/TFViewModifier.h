@@ -23,7 +23,6 @@ public:
 	~TFViewModifier();
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
-	virtual void setHistogram(const TF::Histogram::Ptr histogram);
 
 protected slots:
 

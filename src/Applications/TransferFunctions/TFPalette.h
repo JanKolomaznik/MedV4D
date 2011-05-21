@@ -44,7 +44,7 @@ public:
 	void setupDefault();
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
-	void setHistogram(const TF::Histogram::Ptr histogram);
+	bool setHistogram(const TF::HistogramInterface::Ptr histogram);
 
 	void setPreview(const QImage& preview, const int index = -1);
 	QImage getPreview(const int index = -1);
@@ -114,7 +114,7 @@ private:
 	QGridLayout* layout_;
 	TF::Size colModulator_;
 
-	TF::Histogram::Ptr histogram_;
+	TF::HistogramInterface::Ptr histogram_;
 	std::vector<TF::Size> dataStructure_;
 
 	M4D::Common::TimeStamp lastPaletteChange_;

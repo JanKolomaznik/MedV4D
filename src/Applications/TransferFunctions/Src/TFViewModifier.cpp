@@ -94,11 +94,6 @@ void TFViewModifier::setDataStructure(const std::vector<TF::Size>& dataStructure
 
 	workCopy_->setDataStructure(dataStructure);
 }
-
-void TFViewModifier::setHistogram(const TF::Histogram::Ptr histogram){
-
-	workCopy_->setHistogram(histogram);
-}
 	
 bool TFViewModifier::loadSettings_(TF::XmlReaderInterface* reader){
 

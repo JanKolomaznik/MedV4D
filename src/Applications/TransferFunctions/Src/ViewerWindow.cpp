@@ -187,24 +187,19 @@ void ViewerWindow::openFile( const QString &aPath )
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
-	int histMin = histogram->GetMin();
-	int histSize = histogram->GetMax() - histMin;
 	int domain = editingSystem_->getDomain(TF_DIMENSION_1);
 
-	TFHistogram::Ptr tfHistogram(new TFHistogram);
+	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
 
-	int i = 0;
-	for(; i < histMin; ++i) tfHistogram->add(0);	//zeros before first value
-
+	M4D::GUI::TF::Coordinates coords(1, histogram->GetMin());
 	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
 	{
-		tfHistogram->add(*it);
+		tfHistogram->set(coords, *it);
+		++coords[0];
 	}
-	i += histSize;
+	tfHistogram->seal();
 
-	for(; i < domain; ++i) tfHistogram->add(0);	//zeros after last value
-
-	editingSystem_->setHistogram(tfHistogram);	
+	editingSystem_->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 

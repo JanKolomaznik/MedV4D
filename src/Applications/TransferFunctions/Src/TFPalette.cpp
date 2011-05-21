@@ -162,7 +162,14 @@ TFPalette::Editors TFPalette::getEditors(){
 	return editors;
 }
 
-void TFPalette::setHistogram(const TF::Histogram::Ptr histogram){
+bool TFPalette::setHistogram(const TF::HistogramInterface::Ptr histogram){
+
+	TF::Size histDim = histogram->getDimension();
+	if(histDim != dataStructure_.size()) return false;
+	for(TF::Size i = 1; i <= histDim; ++i)
+	{
+		if(histogram->getDomain(i) != dataStructure_[i-1]) return false;
+	}
 
 	histogram_ = histogram;
 
@@ -172,6 +179,7 @@ void TFPalette::setHistogram(const TF::Histogram::Ptr histogram){
 	{
 		it->second->editor->setHistogram(histogram_);
 	}
+	return true;
 }
 
 M4D::Common::TimeStamp TFPalette::lastChange(){

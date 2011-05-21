@@ -2,79 +2,98 @@
 #define TF_HISTOGRAM
 
 #include <TFCommon.h>
+#include <TFMultiDVector.h>
 
 namespace M4D {
 namespace GUI {	
 namespace TF {
 
-class Histogram{
+class HistogramInterface{
 
 public:
 
-	typedef boost::shared_ptr<Histogram> Ptr;
-
-	typedef std::vector<Size>::const_iterator const_iterator;
+	typedef boost::shared_ptr<HistogramInterface> Ptr;
 
 	typedef Size value_type;
 
-	Histogram():
-		values_(),
-		maxValue_(0.0f),
-		avarageValue_(0.0f){
+	virtual ~HistogramInterface(){}
+
+	bool isSealed(){
+
+		return sealed_;
 	}
 
-	void add(const Size value){
+	virtual void seal() = 0;
 
-		values_.push_back(value);
+	virtual void set(const TF::Coordinates& coords, const Size value) = 0;
+	virtual const value_type& get(const TF::Coordinates& coords) = 0;
 
-		if(value > maxValue_)
-		{
-			maxValue_ = value;
-		}
+	virtual Size getDomain(const Size dimension) = 0;
+	virtual Size getDimension() = 0;
 
-		sum_ += value;
+protected:
 
-		avarageValue_ = sum_/(float)values_.size();
+	bool sealed_;
+
+	HistogramInterface(): sealed_(false){};
+};
+
+template<Size dim>
+class Histogram: public HistogramInterface{
+
+	typedef typename MultiDVector<Size, dim> Data;
+
+public:
+
+	typedef typename boost::shared_ptr<Histogram<dim>> Ptr;
+
+	typedef typename MultiDVector<Size, dim>::const_iterator const_iterator;
+
+	Histogram(std::vector<Size> dimensionSizes):
+		values_(dimensionSizes){
 	}
 
-	Size size(){
+	void seal(){
 
-		return values_.size();
-	}
-	value_type maximum(){
-
-		return maxValue_;
-	}
-	float avarage(){
-
-		return avarageValue_;
+		sealed_ = true;
 	}
 
-	const value_type& operator[](const Size index){
+	void set(const TF::Coordinates& coords, const Size value){
 
-		tfAssert(index < values_.size());
-		return values_[index];
+		tfAssert(!sealed_);
+
+		if(sealed_) return;
+		values_.value(coords) = value;
 	}
+
+	const value_type& get(const TF::Coordinates& coords){
+
+		return values_.value(coords);
+	}
+
+	Size getDomain(const Size dimension){
+
+		return values_.size(dimension);
+	}
+
+	Size getDimension(){
+
+		return dim;
+	}
+
 	const_iterator begin(){
 
 		return values_.begin();
 	}
+
 	const_iterator end(){
 
 		return values_.end();
 	}
-	float getRelativeValue(const Size index){
-
-		tfAssert(index < values_.size());
-		return maxValue_/values_[index];
-	}
 
 private:
 
-	std::vector<Size> values_;
-	Size maxValue_;
-	Size sum_;
-	float avarageValue_;
+	typename MultiDVector<Size, dim> values_;
 };
 
 }

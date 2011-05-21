@@ -23,8 +23,6 @@ public:
 		TFPainter1D::Ptr painter);
 
 	~TFModifier1D();
-	
-	void setHistogram(const TF::Histogram::Ptr histogram);
 
 protected slots:
 
@@ -56,7 +54,6 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseReleaseEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);
-	virtual void wheelEvent(QWheelEvent *e);
 
 	virtual void addPoint_(const int x, const int y);
 	void addLine_(TF::PaintingPoint begin, TF::PaintingPoint end);

@@ -28,7 +28,8 @@ public:
 	virtual ~TFAbstractModifier(){}
 
 	virtual void setDataStructure(const std::vector<TF::Size>& dataStructure) = 0;
-	virtual void setHistogram(const TF::Histogram::Ptr histogram) = 0;
+
+	void setHistogram(const TF::HistogramInterface::Ptr histogram);
 
 	QWidget* getTools();
 	TF::Size getDimension();
