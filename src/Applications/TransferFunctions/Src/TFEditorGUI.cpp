@@ -144,7 +144,11 @@ void TFEditorGUI::on_actionFunctionLoad_triggered(){
 
 	bool loadSuccess = loadFunction(&reader);
 
-	if(loadSuccess) ui_->nameEdit->setText(name_.c_str());
+	if(loadSuccess)
+	{
+		ui_->nameEdit->setText(name_.c_str());
+		on_nameEdit_editingFinished();
+	}
 
 	ui_->statusBar->clearMessage();
 }

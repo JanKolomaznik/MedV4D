@@ -262,6 +262,7 @@ void TFCompositeModifier::computeResultFunction_(){
 		function->setRGBfColor(coords_, result);
 	}
 	workCopy_->forceUpdate();
+	++stamp_;
 	changed_ = true;
 	update();
 }
