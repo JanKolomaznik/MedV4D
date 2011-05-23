@@ -129,7 +129,11 @@ void TFEditorGUI::on_actionFunctionLoad_triggered(){
 		QDir::currentPath(),
 		QObject::tr("TF Files (*.tf)"));
 
-	if(fileName.isEmpty()) return;
+	if(fileName.isEmpty())
+	{
+		ui_->statusBar->clearMessage();
+		return;
+	}
 
 	QMessageBox errorMessage(QMessageBox::Critical, "Transfer Function Loading Error", "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
@@ -139,6 +143,7 @@ void TFEditorGUI::on_actionFunctionLoad_triggered(){
 	{
 		errorMessage.setText(QString::fromStdString(reader.errorMessage()));
 		errorMessage.exec();
+		ui_->statusBar->clearMessage();
 		return;
 	}
 
@@ -150,6 +155,7 @@ void TFEditorGUI::on_actionFunctionLoad_triggered(){
 		on_nameEdit_editingFinished();
 	}
 
+	reader.end();
 	ui_->statusBar->clearMessage();
 }
 

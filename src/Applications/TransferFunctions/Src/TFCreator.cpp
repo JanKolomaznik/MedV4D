@@ -201,7 +201,6 @@ TFEditor* TFCreator::loadEditor_(){
 	{ 
 		errorMessage.setText(QObject::tr("File \"%1\" is corrupted.").arg(fileName));
 		errorMessage.exec();
-		return loaded;
 	}
 	else if(error)
 	{
@@ -214,6 +213,7 @@ TFEditor* TFCreator::loadEditor_(){
 		std::cout << "Loading finished." << std::endl;
 	#endif
 
+	reader_->end();
 	return loaded;
 }
 
