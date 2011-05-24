@@ -69,7 +69,7 @@ EditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, Ca
 	glBegin( GL_POINTS );
 		for( size_t i = 0; i < mPoints.mPoints.size(); ++i ) {
 			if ( IntervalTest( aInterval[0], aInterval[1], mPoints.mPoints[i][aPlane] ) ) { 
-				LOG( "rendering point " << mPoints.mPoints[i] );
+				//LOG( "rendering point " << mPoints.mPoints[i] );
 				M4D::GLVertexVector( VectorPurgeDimension( mPoints.mPoints[i], aPlane ) );
 			}
 		}

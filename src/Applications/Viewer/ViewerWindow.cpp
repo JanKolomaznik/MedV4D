@@ -4,6 +4,8 @@
 #include "Imaging/Histogram.h"
 #include <cmath>
 
+#include "GUI/widgets/TerminalWidget.h"
+
 ViewerWindow::ViewerWindow()
 {
 	setupUi( this );
@@ -17,7 +19,7 @@ ViewerWindow::ViewerWindow()
 
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 	
-	QDockWidget * dockwidget = new QDockWidget;
+	QDockWidget * dockwidget = new QDockWidget( tr("Transfer Function" ) );
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	dockwidget->setWidget( mTransferFunctionEditor );
 
@@ -25,6 +27,12 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 10 );
 	addDockWidget (Qt::RightDockWidgetArea, dockwidget );
+
+	dockwidget = new QDockWidget(tr("Python Terminal" ));
+	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::TerminalWidget;
+	dockwidget->setWidget( mTerminal );
+	addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
+
 
 	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
 
