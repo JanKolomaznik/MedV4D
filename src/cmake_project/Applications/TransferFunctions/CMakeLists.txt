@@ -24,13 +24,3 @@ TARGET_MEDV4D_PROGRAM( TransferFunctions ${MEDV4D_CMAKE_SOURCE_DIR}/../Applicati
 #copy shader to project dir
 configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/shaders/ImageRender.cgfx
 	${CMAKE_CURRENT_BINARY_DIR}/ImageRender.cgfx COPYONLY)
-
-IF(MSVC)
-#ignore libraries to avoid link warning
-SET(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:
-	libc.lib;
-	libcmt.lib;
-	msvcrt.lib;
-	libcd.lib;
-	msvcrtd.lib)
-ENDIF(MSVC)
