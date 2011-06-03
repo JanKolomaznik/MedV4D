@@ -4,7 +4,8 @@
 #include "Imaging/Histogram.h"
 #include <cmath>
 
-#include "GUI/widgets/TerminalWidget.h"
+#include "GUI/widgets/PythonTerminal.h"
+#include "GUI/widgets/MultiDockWidget.h"
 
 ViewerWindow::ViewerWindow()
 {
@@ -19,19 +20,25 @@ ViewerWindow::ViewerWindow()
 
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 	
-	QDockWidget * dockwidget = new QDockWidget( tr("Transfer Function" ) );
+	MultiDockWidget * dockwidget = new MultiDockWidget( tr("Transfer Function" ) );
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
-	dockwidget->setWidget( mTransferFunctionEditor );
+	//dockwidget->setWidget( mTransferFunctionEditor );
+
+	mMainWin2 = new QMainWindow();
+	mMainWin2->show();
+	dockwidget->addDockingWindow( this );
+	dockwidget->addDockingWindow( mMainWin2 );
+
 
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 10 );
-	addDockWidget (Qt::RightDockWidgetArea, dockwidget );
+	//addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
-	dockwidget = new QDockWidget(tr("Python Terminal" ));
-	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::TerminalWidget;
+	/*dockwidget = new MultiDockWidget(tr("Python Terminal" ));
+	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	dockwidget->setWidget( mTerminal );
-	addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
+	addDockWidget (Qt::BottomDockWidgetArea, dockwidget );*/
 
 
 	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
@@ -78,6 +85,9 @@ ViewerWindow::ViewerWindow()
 	button->setPopupMode( QToolButton::InstantPopup );
 	button->setMenu( menu );
 	viewerToolBar->addWidget( button );*/
+
+
+	
 
 
 
@@ -158,6 +168,9 @@ ViewerWindow::testSlot()
 {
 	mViewerController->mOverlay = !mViewerController->mOverlay;
 	mViewer->update();
+	
+	
+	
 	//QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
 	//label->setPixmap( QPixmap::fromImage( image ) );
 }

@@ -61,6 +61,7 @@ protected:
 	QComboBox *mColorTransformChooser;
 
 	EditorController::Ptr mViewerController;
+	QMainWindow *mMainWin2;
 private:
 
 };
