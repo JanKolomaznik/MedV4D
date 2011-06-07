@@ -1,12 +1,14 @@
 #ifndef A_GL_VIEWER_H
 #define A_GL_VIEWER_H
 
+#include "GUI/widgets/GLWidget.h"
 //#include "GUI/widgets/AViewer.h"
 #include "GUI/utils/FrameBufferObject.h"
 #include <QtGui>
 #include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
+
 
 namespace M4D
 {
@@ -68,11 +70,11 @@ public:
 };
 
 
-class AGLViewer: public QGLWidget
+class AGLViewer: public GLWidget
 {
 	Q_OBJECT;
 public:
-	AGLViewer( QWidget *parent ): QGLWidget( parent )
+	AGLViewer( QWidget *parent ): GLWidget( parent )
 	{
 		setMouseTracking ( true );
 	}

@@ -26,6 +26,7 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 */
+#include <QtOpenGL>
 
 namespace M4D
 {
@@ -44,6 +45,11 @@ CheckForGLError( const std::string &situation );
 
 #define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
 
+inline bool
+IsGLContextActive()
+{
+	return QGLContext::currentContext() != NULL;
+}
 
 
 #ifdef USE_DEVIL

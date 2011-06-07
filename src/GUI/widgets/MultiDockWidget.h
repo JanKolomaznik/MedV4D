@@ -11,13 +11,13 @@ class TitleBarWidget: public QWidget
 {
 	Q_OBJECT;
 public:
-	TitleBarWidget( QWidget * parent = 0 ): QWidget( parent )
+	TitleBarWidget( const QString &aTitle, QWidget * parent = 0 ): QWidget( parent )
 	{
 		resize( QSize( 100, 15 ) );
 		setMinimumSize( QSize( 50, 12 ) );
 		
 		QHBoxLayout *layout = new QHBoxLayout;
-		QLabel *label = new QLabel( "bbbbbbasfffffff" );
+		QLabel *label = new QLabel( aTitle );
 		layout->addWidget( label );
 		setLayout( layout );
 	}
@@ -64,7 +64,7 @@ class DockWidgetPrivate: public QDockWidget
 public:
 	DockWidgetPrivate( const QString & aTitle ): QDockWidget( aTitle )
 	{
-		mTitleBar = new TitleBarWidget( this );
+		mTitleBar = new TitleBarWidget( aTitle, this );
 		setTitleBarWidget( mTitleBar );
 		//titleBar->show();
 	}
@@ -86,35 +86,62 @@ class MultiDockWidget: public QWidget
 	Q_OBJECT;
 public:
 	MultiDockWidget ( const QString & aTitle, QWidget * parent = 0 ):
-		QWidget( parent ), mTitle( aTitle ), mCurrentMainWindow( NULL ), mCurrentDockWidget( NULL )
+		QWidget( parent ), mWidget(NULL ), mTitle( aTitle ), mCurrentMainWindow( NULL ), mCurrentDockWidget( NULL )
 	{
 		//QObject::connect( this, SIGNAL( continueInDrag( QWidget *, QPoint ) ), this, SLOT( continueInDragSlot( QWidget *, QPoint ) ), Qt::QueuedConnection );
+		//mCurrentDockWidget = new DockWidgetPrivate( mTitle );
+		//QObject::connect( mCurrentDockWidget, SIGNAL( dockMoved( QPoint, QPoint ) ), this, SLOT( dockMoved( QPoint, QPoint ) ), Qt::QueuedConnection );
+		setLayout( new QVBoxLayout() );
 	}
 	
 	void
-	addDockingWindow( QMainWindow *aWin )
+	addDockingWindow( Qt::DockWidgetArea aArea, QMainWindow *aWin )
 	{
 		ASSERT( aWin );
 
-		mDockingWindows.push_back( aWin );
+		WinRecord rec;
+		rec.area = aArea;
+		rec.win = aWin;
+
+		mDockingWindows.push_back( rec );
 
 		if( mCurrentMainWindow == NULL ) {
-			switchCurrentMainWindow( aWin, QPoint(), QPoint(), false );
+			switchCurrentMainWindow( rec, QPoint(), QPoint(), false );
+			//mCurrentMainWindow = aWin;
+			//mCurrentMainWindow->addDockWidget( Qt::RightDockWidgetArea, mCurrentDockWidget );
 		}
+	}
+	void
+	setWidget( QWidget *aWidget )
+	{
+		ASSERT( aWidget );
+		mWidget = aWidget;
+		layout()->addWidget( aWidget );
 	}
 signals:
 	/*void
 	continueInDrag( QWidget *titleBar, QPoint pos );*/
 protected:
-	void
-	switchCurrentMainWindow( QMainWindow *aWin, QPoint globPos, QPoint locPos, bool dragging )
+	struct WinRecord
 	{
-		ASSERT( aWin );
+		Qt::DockWidgetArea area;
+		QMainWindow *win;
+	};
+	void
+	switchCurrentMainWindow( WinRecord aRecord, QPoint globPos, QPoint locPos, bool dragging )
+	{
+		ASSERT( aRecord.win );
 		
 		LOG( "Switching main window" );
+
+		/*mCurrentDockWidget->setVisible( false );
+		mCurrentMainWindow->removeDockWidget( mCurrentDockWidget );
+		mCurrentMainWindow = aRecord.win;
+		mCurrentMainWindow->addDockWidget( Qt::RightDockWidgetArea, mCurrentDockWidget );
+		mCurrentDockWidget->setVisible( true );*/
 		DockWidgetPrivate *dock = new DockWidgetPrivate( mTitle );
 	
-		aWin->addDockWidget( Qt::RightDockWidgetArea, dock );
+		aRecord.win->addDockWidget( aRecord.area, dock );
 		dock->setWidget( this );
 		dock->setVisible( false );
 		if( mCurrentDockWidget ) {
@@ -127,7 +154,7 @@ protected:
 			delete mCurrentDockWidget;
 		}
 		mCurrentDockWidget = dock;
-		mCurrentMainWindow = aWin;
+		mCurrentMainWindow = aRecord.win;
 		dock->setVisible( true );
 		QObject::connect( mCurrentDockWidget, SIGNAL( dockMoved( QPoint, QPoint ) ), this, SLOT( dockMoved( QPoint, QPoint ) ), Qt::QueuedConnection );
 		if (dragging) {
@@ -160,8 +187,9 @@ protected slots:
 			//app->notify( titleBar, &event );
 	}*/
 private:
+	QWidget *mWidget;
 	QString mTitle;
-	QList< QMainWindow * > mDockingWindows;
+	QList< WinRecord > mDockingWindows;
 	QMainWindow *mCurrentMainWindow;
 	DockWidgetPrivate *mCurrentDockWidget;
 };

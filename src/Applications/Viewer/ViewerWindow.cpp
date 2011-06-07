@@ -22,12 +22,12 @@ ViewerWindow::ViewerWindow()
 	
 	MultiDockWidget * dockwidget = new MultiDockWidget( tr("Transfer Function" ) );
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
-	//dockwidget->setWidget( mTransferFunctionEditor );
+	dockwidget->setWidget( mTransferFunctionEditor );
+	dockwidget->addDockingWindow( Qt::RightDockWidgetArea, this );
 
-	mMainWin2 = new QMainWindow();
+	/*mMainWin2 = new QMainWindow();
 	mMainWin2->show();
-	dockwidget->addDockingWindow( this );
-	dockwidget->addDockingWindow( mMainWin2 );
+	dockwidget->addDockingWindow( mMainWin2 );*/
 
 
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
@@ -35,10 +35,11 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetBorderWidth( 10 );
 	//addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
-	/*dockwidget = new MultiDockWidget(tr("Python Terminal" ));
+	dockwidget = new MultiDockWidget(tr("Python Terminal" ));
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	dockwidget->setWidget( mTerminal );
-	addDockWidget (Qt::BottomDockWidgetArea, dockwidget );*/
+	dockwidget->addDockingWindow( Qt::BottomDockWidgetArea, this );
+	//addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
 
 
 	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );

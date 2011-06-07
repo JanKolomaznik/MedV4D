@@ -8,6 +8,8 @@
 #include "common/Common.h"
 #include "ViewerWindow.hpp"
 
+#include "GUI/utils/ApplicationManager.h"
+
 #include <tclap/CmdLine.h>
 
 std::string inFilename;
@@ -35,9 +37,11 @@ main( int argc, char** argv )
         //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         //SET_DOUT( debugFile );
 
-	Medv4DInit();
 
-	QApplication app(argc, argv);
+	ApplicationManager appManager;
+
+	appManager.initialize( argc, argv );
+
 	try {
 		processCommandLine( argc, argv );
 
@@ -51,7 +55,7 @@ main( int argc, char** argv )
 			viewer.openFile( QString::fromStdString( inFilename ) );
 		}
 		//viewer.applyTransferFunction();
-		return app.exec();
+		return appManager.exec();
 	} catch ( std::exception &e )
 	{
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );

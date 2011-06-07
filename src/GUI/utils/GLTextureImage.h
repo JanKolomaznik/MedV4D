@@ -26,9 +26,7 @@ struct GLTextureImage
 	virtual
 	~GLTextureImage()
 	{
-		if( _gltextureID != 0 ) {
-			glDeleteTextures( 1, &_gltextureID );
-		}
+		DeleteTexture();
 	}
 
 	GLuint
@@ -50,6 +48,17 @@ struct GLTextureImage
 	PrepareTexture() = 0;
 
 	void
+	DeleteTexture()
+	{
+		ASSERT( IsGLContextActive() );
+
+		if( _gltextureID != 0 ) {
+			GL_CHECKED_CALL( glDeleteTextures( 1, &_gltextureID ) );
+			_gltextureID = 0;
+		}
+	}
+
+	void
 	SetLinearinterpolation( bool aLinearInterpolation )
 	{ _linearInterpolation = aLinearInterpolation; }
 
@@ -60,6 +69,10 @@ struct GLTextureImage
 	/*virtual bool
 	IsActual()const = 0;
 */
+
+	virtual bool
+	Is1D()const = 0;
+
 	virtual bool
 	Is2D()const = 0;
 
@@ -95,6 +108,10 @@ protected:
 template < uint32 Dim >
 struct GLTextureImageTyped: public GLTextureImage
 {
+	bool
+	Is1D()const
+	{ return Dim == 1; }
+
 	bool
 	Is2D()const
 	{ return Dim == 2; }
@@ -158,6 +175,9 @@ struct GLTextureImageTyped: public GLTextureImage
 	void
 	PrepareTexture()
 	{
+		ASSERT( IsGLContextActive() );
+
+		DeleteTexture();
 		_gltextureID = GLPrepareTextureFromImageData( *_image, _linearInterpolation );
 	}
 

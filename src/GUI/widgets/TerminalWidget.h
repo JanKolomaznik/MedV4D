@@ -142,7 +142,9 @@ protected slots:
 		mOutput->textCursor().insertText( mPromptText  + str + "\n", mDefaultCharFormat );
 		mOutput->ensureCursorVisible();
 
-		if ( mCommands.empty() || str != mCommands.back() ) {
+		if ( !str.isEmpty() && //TODO check for whitespace only strings
+			( mCommands.empty() || str != mCommands.back() ) ) 
+		{
 			mCommands.push_back( str );
 		}
 		mLastCommand = mCommands.end();

@@ -27,6 +27,8 @@ namespace Common
 class TimeStamp
 {
 public:
+	typedef uint64 IDType;
+
 	TimeStamp();
 
 	TimeStamp( const TimeStamp& b );
@@ -59,6 +61,12 @@ public:
 
 	bool
 	operator!=( const TimeStamp& b )const;
+
+	IDType
+	getID()const
+	{
+		return _uniqueID;
+	}
 private:
 	static uint64
 	GenerateUniqueID();

@@ -241,7 +241,7 @@ GeneralViewer::initializeRenderingEnvironment()
 bool
 GeneralViewer::preparedForRendering()
 {
-	if( !IsDataPrepared() && !PrepareData() ) {
+	if( !IsDataPrepared() /*&& !PrepareData()*/ ) {
 		return false;
 	}
 	return true;
@@ -351,8 +351,8 @@ GeneralViewer::PrepareData()
 
 	getViewerState().mSliceRenderConfig.currentSlice = getViewerState()._regionMin;
 
-	getViewerState()._textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
-
+	//getViewerState()._textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
+	getViewerState()._textureData = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
 	ReleaseAllInputs();
 
 
