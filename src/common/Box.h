@@ -5,6 +5,19 @@
 #include "common/DefinitionMacros.h"
 
 template< unsigned taDim, typename TCoordType = float32 >
+class AABox
+{
+public:
+	typedef Vector< TCoordType, taDim > PositionType;
+	AABox( const PositionType &aFirstCorner, const PositionType &aSecondCorner ): mFirstCorner( Min( aFirstCorner, aSecondCorner ) ), mSecondCorner( Max( aFirstCorner, aSecondCorner ) )
+	{}
+
+protected:
+	PositionType aFirstCorner;
+	PositionType aSecondCorner;
+};
+
+/*template< unsigned taDim, typename TCoordType = float32 >
 class Box
 {
 public:
@@ -15,7 +28,6 @@ public:
 protected:
 	PositionType aFirstCorner;
 	PositionType aSecondCorner;
-};
-
+};*/
 
 #endif /*BOX_H*/

@@ -38,6 +38,8 @@ public:
 		mRadius = diameter / 2;
 	}*/
 protected:
+	PositionType mCenter;
+	TCoordType mRadius;
 };
 
 
