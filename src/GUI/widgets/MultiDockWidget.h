@@ -170,11 +170,11 @@ protected slots:
 	void
 	dockMoved( QPoint globPos, QPoint locPos )
 	{
-		LOG( "Pos :" << globPos.x() << "; " << globPos.y() );
+	/*	LOG( "Pos :" << globPos.x() << "; " << globPos.y() );
 		LOG( "LPos :" << locPos.x() << "; " << locPos.y() );
 		if( globPos.x() == 1000 ) {
 			switchCurrentMainWindow( mDockingWindows[1], globPos, locPos, true );
-		}
+		}*/
 	}
 
 	/*void

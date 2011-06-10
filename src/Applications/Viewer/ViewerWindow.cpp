@@ -18,7 +18,6 @@ ViewerWindow::ViewerWindow()
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
 
-	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 	
 	MultiDockWidget * dockwidget = new MultiDockWidget( tr("Transfer Function" ) );
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
@@ -42,7 +41,6 @@ ViewerWindow::ViewerWindow()
 	//addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
 
 
-	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
 
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
@@ -96,8 +94,6 @@ ViewerWindow::ViewerWindow()
 	QLabel *infoLabel = new QLabel();
 	statusbar->addWidget( infoLabel );
 
-	//mViewer->setMouseTracking ( true );
-	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
 
 	mColorTransformChooser = new QComboBox;
 	mColorTransformChooser->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -106,8 +102,18 @@ ViewerWindow::ViewerWindow()
 	//QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( updateToolbars() ) );
 
 	mViewerController = EditorController::Ptr( new EditorController );
+
+	/*
 	mViewer->setViewerController( mViewerController );
 	mViewer->setRenderingExtension( mViewerController );
+
+	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
+	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
+
+	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
+	*/
+
+	mViewerDesktop->setLayoutOrganization( 2, 1 );
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
@@ -126,28 +132,19 @@ ViewerWindow::~ViewerWindow()
 
 }
 
+M4D::GUI::Viewer::GeneralViewer *
+ViewerWindow::getSelectedViewer()
+{
+	return NULL;
+}
+
+
 void
 ViewerWindow::changeViewerType( int aViewType )
 {
-	/*D_PRINT( "Change viewer type" );
-	if ( aViewType == M4D::GUI::Viewer::vt3D 
-		&& ( mViewer->getColorTransformType() == M4D::GUI::Renderer::ctLUTWindow 
-		|| mViewer->getColorTransformType() == M4D::GUI::Renderer::ctSimpleColorMap ) ) 
-	{
-		changeColorMapType( M4D::GUI::Renderer::ctTransferFunction1D );
-	}
+	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) { viewer->setViewType( aViewType ); }
 
-	if ( aViewType == M4D::GUI::Viewer::vt2DAlignedSlices 
-		&& mViewer->getColorTransformType() == M4D::GUI::Renderer::ctMaxIntensityProjection ) 
-	{
-		changeColorMapType( M4D::GUI::Renderer::ctLUTWindow );
-	}*/
-
-	mViewer->setViewType( aViewType );
-
-
-	//mColorTransformChooser->clear();
-	//mColorTransformChooser->addItems( mViewer->getAvailableColorTransformations() );
 	updateToolbars();
 }
 
@@ -158,7 +155,8 @@ ViewerWindow::changeColorMapType( const QString & aColorMapName )
 	if ( locked ) return;
 	locked = true;
 
-	mViewer->setColorTransformType( aColorMapName );
+	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) { viewer->setColorTransformType( aColorMapName ); }
 	updateToolbars();
 
 	locked = false;
@@ -168,7 +166,8 @@ void
 ViewerWindow::testSlot()
 {
 	mViewerController->mOverlay = !mViewerController->mOverlay;
-	mViewer->update();
+	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) { viewer->update(); }
 	
 	
 	
@@ -180,7 +179,8 @@ ViewerWindow::testSlot()
 void
 ViewerWindow::applyTransferFunction()
 {
-	mViewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() );
+	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) { viewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() ); }
 }
 
 void
@@ -211,32 +211,35 @@ ViewerWindow::updateToolbars()
 	static bool locked = false;
 	if ( locked ) return;
 	locked = true;
-
-
-	int viewType = mViewer->getViewType();
-	switch ( viewType ) {
-	case M4D::GUI::Viewer::vt2DAlignedSlices:
-		action2D->setChecked( true );
-		break;
-	case M4D::GUI::Viewer::vt2DGeneralSlices:
-		ASSERT( false );
-		break;
-	case M4D::GUI::Viewer::vt3D:
-		action3D->setChecked( true );
-		break;
-	default:
-		ASSERT( false );
-	};
 	
-	//D_PRINT( "update toolbars" );
-	mColorTransformChooser->clear();
-	mColorTransformChooser->addItems( mViewer->getAvailableColorTransformations() );
-	int idx = mColorTransformChooser->findText( mViewer->getColorTransformName() );
-	//D_PRINT( "set selected color transform" );
-	mColorTransformChooser->setCurrentIndex( idx );
+	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) 
+	{ 
+		int viewType = viewer->getViewType();
+		switch ( viewType ) {
+		case M4D::GUI::Viewer::vt2DAlignedSlices:
+			action2D->setChecked( true );
+			break;
+		case M4D::GUI::Viewer::vt2DGeneralSlices:
+			ASSERT( false );
+			break;
+		case M4D::GUI::Viewer::vt3D:
+			action3D->setChecked( true );
+			break;
+		default:
+			ASSERT( false );
+		};
+		
+		//D_PRINT( "update toolbars" );
+		mColorTransformChooser->clear();
+		mColorTransformChooser->addItems( viewer->getAvailableColorTransformations() );
+		int idx = mColorTransformChooser->findText( viewer->getColorTransformName() );
+		//D_PRINT( "set selected color transform" );
+		mColorTransformChooser->setCurrentIndex( idx );
 
-	//LOG( "update toolbars - " << mViewer->getColorTransformName().toStdString() );
-	toggleInteractiveTransferFunction( mViewer->getColorTransformType() == M4D::GUI::Renderer::ctTransferFunction1D );
+		//LOG( "update toolbars - " << viewer->getColorTransformName().toStdString() );
+		toggleInteractiveTransferFunction( viewer->getColorTransformType() == M4D::GUI::Renderer::ctTransferFunction1D );
+	}
 
 	locked = false;
 }
@@ -280,6 +283,5 @@ ViewerWindow::openFile( const QString &aPath )
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
 	
 
-	//mViewer->ZoomFit();
 	applyTransferFunction();
 }

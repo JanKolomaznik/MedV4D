@@ -13,6 +13,18 @@ namespace Viewer
 {
 
 
+AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
+{
+	setMouseTracking ( true );
+}
+
+void
+AGLViewer::selectViewer()
+{
+	mSelected = true;
+	update();
+}
+
 void	
 AGLViewer::initializeGL()
 {
@@ -35,34 +47,72 @@ AGLViewer::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if ( !preparedForRendering() ) {
-		D_PRINT( "Rendering not possible at the moment" );
-		return;
+	if ( preparedForRendering() ) {
+
+		mFrameBufferObject.Bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		//****************************************
+		prepareForRenderingStep();
+
+		render();
+
+		finalizeAfterRenderingStep();
+		//****************************************
+
+		M4D::CheckForGLError( "OGL error occured during rendering: " );
+		
+		mFrameBufferObject.Unbind();
+
+		mFrameBufferObject.Render();
+
+	} else {
+		//D_PRINT( "Rendering not possible at the moment" );
 	}
 
-	mFrameBufferObject.Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	//****************************************
-	prepareForRenderingStep();
+	if( mSelected ) {
+		glDisable(GL_DEPTH_TEST );
+		//****************************************************	
+		glClear( GL_DEPTH_BUFFER_BIT );
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho( 
+			(double)0, 
+			(double)width(), 
+			(double)0, 
+			(double)height(), 
+			-1.0, 
+			1.0
+			);
 
-	render();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
-	finalizeAfterRenderingStep();
-	//****************************************
-
-	M4D::CheckForGLError( "OGL error occured during rendering: " );
-	
-	mFrameBufferObject.Unbind();
-
-	mFrameBufferObject.Render();	
-
+		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
+			glBegin( GL_LINE_LOOP );
+				GLVertexVector( Vector2f( 5.0f, 5.0f ) );
+				GLVertexVector( Vector2f( 5.0f, height()-5.0f ) );
+				GLVertexVector( Vector2f( width()-5.0f, height()-5.0f ) );
+				GLVertexVector( Vector2f( width()-5.0f, 5.0f ) );
+			glEnd();
+	}
 }
 
 void	
 AGLViewer::paintOverlayGL()
 {
+	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	LOG( "Overlay" );
+	if ( mSelected ) {
+		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
+		glBegin( GL_LINE_LOOP );
+			GLVertexVector( Vector2f( 5.0f, 5.0f ) );
+			GLVertexVector( Vector2f( 5.0f, height()-5.0f ) );
+			GLVertexVector( Vector2f( width()-5.0f, height()-5.0f ) );
+			GLVertexVector( Vector2f( width()-5.0f, 5.0f ) );
+		glEnd();
+	}*/
 }
 
 void	
@@ -79,7 +129,22 @@ AGLViewer::resizeGL( int width, int height )
 void	
 AGLViewer::resizeOverlayGL( int width, int height )
 {
+	/*glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glViewport(0, 0, width, height);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho( 
+		(double)0, 
+		(double)width, 
+		(double)0, 
+		(double)height, 
+		-1.0, 
+		1.0
+		);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();*/
 }
 
 void	
@@ -96,6 +161,8 @@ AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 	if ( mViewerController && mViewerController->mouseDoubleClickEvent( mViewerState, event ) ) {
 		return;
 	}
+
+	selectViewer();
 }
 
 void	
@@ -104,6 +171,7 @@ AGLViewer::mousePressEvent ( QMouseEvent * event )
 	if ( mViewerController && mViewerController->mousePressEvent( mViewerState, event ) ) {
 		return;
 	}
+	selectViewer();
 }
 
 void	
@@ -112,6 +180,7 @@ AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
 	if ( mViewerController && mViewerController->mouseReleaseEvent( mViewerState, event ) ) {
 		return;
 	}
+	selectViewer();
 }
 
 void	

@@ -16,7 +16,9 @@ public:
 
 	~ViewerWindow();
 
-
+	M4D::GUI::Viewer::GeneralViewer *
+	getSelectedViewer();
+	
 public slots:
 
 	void

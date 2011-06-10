@@ -1,4 +1,21 @@
+#include "GUI/widgets/ViewerDesktop.h"
+#include "GUI/widgets/GeneralViewer.h"
 
+
+namespace M4D
+{
+namespace GUI
+{
+namespace Viewer
+{
+
+
+
+ViewerDesktop::ViewerDesktop( QWidget *parent ):
+	QWidget( parent )
+{
+	
+}
 
 void
 ViewerDesktop::setLayoutOrganization( int cols, int rows )
@@ -19,7 +36,7 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 	else
 	{ //TODO test selected viewer
 		for ( unsigned i = newSize; i < viewersSize; i++ ) {
-			delete mViewers[i];
+			delete mViewers[i].viewer;
 		}
 		mViewers.resize( newSize );
 	}
@@ -29,12 +46,14 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 	QSplitter *mainSplitter = new QSplitter();
 	mainSplitter->setOpaqueResize( true );
 	mainSplitter->setOrientation( Qt::Vertical );
+	mainSplitter->setHandleWidth( 1 );
 
-	for ( unsigned i = 0; i < rows; i++ )
+	for ( int i = 0; i < rows; i++ )
 	{
 		QSplitter *splitter = new QSplitter();
 		splitter->setOpaqueResize( true );
-		for ( unsigned j = 0; j < cols; j++ )
+		splitter->setHandleWidth( 1 );
+		for ( int j = 0; j < cols; j++ )
 		{   
 			QWidget *widget = mViewers[i * cols + j].viewer;
 			widget->resize( widget->sizeHint() );
@@ -57,4 +76,9 @@ ViewerDesktop::createViewer()
 	//TODO
 	return new GeneralViewer();
 }
+
+
+} /*namespace Viewer*/
+} /*namespace GUI*/
+} /*namespace M4D*/
 

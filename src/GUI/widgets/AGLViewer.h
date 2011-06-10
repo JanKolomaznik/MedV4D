@@ -74,10 +74,7 @@ class AGLViewer: public GLWidget
 {
 	Q_OBJECT;
 public:
-	AGLViewer( QWidget *parent ): GLWidget( parent )
-	{
-		setMouseTracking ( true );
-	}
+	AGLViewer( QWidget *parent );
 
 	void
 	setViewerController( AViewerController::Ptr aController )
@@ -85,6 +82,12 @@ public:
 		//TODO check
 		mViewerController = aController;
 	}
+public slots:
+	void
+	selectViewer();
+signals:
+	void
+	viewerSelected();
 protected:
 //**************************************************************
 	virtual void
@@ -138,10 +141,11 @@ protected:
 	wheelEvent ( QWheelEvent * event );
 
 
-	
 	FrameBufferObject	mFrameBufferObject;
 	BaseViewerState::Ptr	mViewerState;
 	AViewerController::Ptr	mViewerController;
+
+	bool mSelected;
 };
 
 
