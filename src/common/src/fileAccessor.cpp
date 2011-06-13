@@ -13,11 +13,11 @@ FileAccessor::FileAccessor(const char *file, OpenMode mode)
 
 FileAccessor::FileAccessor(const std::string &file, OpenMode mode)
 {
-	Open( file.data(), mode );
+	Open( file, mode );
 }
 
 FileAccessor::FileAccessor(const Path &file, OpenMode mode) {
-	Open( file.filename().data(), mode );
+	Open( file.string(), mode );
 }
 
 void

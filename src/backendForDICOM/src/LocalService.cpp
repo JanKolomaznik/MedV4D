@@ -218,7 +218,7 @@ LocalService::SolveDir( boost::filesystem::path & dirName,
     }
     else
     {
-      SolveFile( dir_itr->string(), dirName.string(), result );
+      SolveFile( dir_itr->path(), dirName, result );
     }
   }
 }
@@ -227,13 +227,13 @@ LocalService::SolveDir( boost::filesystem::path & dirName,
 
 void
 LocalService::SolveFile( 
-  const std::string & fileName, const std::string & path,
+  const boost::filesystem::path & fileName, const boost::filesystem::path & path,
   ResultSet &result)
 {
   OFString ofStr;
 
   DcmFileFormat dfile;
-  OFCondition cond = dfile.loadFile( fileName.c_str());
+  OFCondition cond = dfile.loadFile( fileName.string().data());
   if (! cond.good())
   {
     LOG( "Loading of " << fileName << " failed. ("  << cond.text() << ")" );
@@ -246,7 +246,7 @@ LocalService::SolveFile(
   SerieInfo serInfo;
 
   // load data and check if it is already in tree
-  CheckDataSet( dataSet, serInfo, row, path);
+  CheckDataSet( dataSet, serInfo, row, path.string());
 
   // look if this row is already in resultSet
   FoundStudiesSet::iterator found = m_alreadyFoundInRun.find(row.studyID);
@@ -474,7 +474,7 @@ LocalService::SolveDirGET( boost::filesystem::path & dirName,
 ///////////////////////////////////////////////////////////////////////
 
 void
-LocalService::SolveFileGET( const std::string & fileName,
+LocalService::SolveFileGET( const boost::filesystem::path & fileName,
   const std::string &patientID,
 	const std::string &studyID,
 	const std::string &serieID,
@@ -484,7 +484,7 @@ LocalService::SolveFileGET( const std::string & fileName,
   OFString ofStr;
 
   DcmFileFormat dfile;
-  OFCondition cond = dfile.loadFile( fileName.c_str());
+  OFCondition cond = dfile.loadFile( fileName.string().data());
   if (! cond.good())
   {
     LOG( "Loading of " << fileName << " failed. ("  << cond.text() << ")" );
@@ -510,7 +510,7 @@ LocalService::SolveFileGET( const std::string & fileName,
 
     // copy dataset reference & init
     DicomObj *newOne = &result.back();
-    newOne->Load( fileName);
+    newOne->Load( fileName.string() );
     newOne->Init();
   }
 }

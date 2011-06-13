@@ -30,6 +30,11 @@ public:
 	{ return stream_.eof(); }
 private:
 	void
+	Open(const std::string &file, OpenMode mode)
+	{
+		Open( file.data(), mode );
+	}
+	void
 	Open(const char *file, OpenMode mode);
 
 	std::fstream stream_;

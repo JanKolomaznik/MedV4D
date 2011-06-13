@@ -174,8 +174,8 @@ private:
   void SolveDir( boost::filesystem::path & dirName,
     ResultSet &result);
   // ...
-  void SolveFile( const std::string & fileName,
-    const std::string & path,
+  void SolveFile( const boost::filesystem::path & fileName,
+    const boost::filesystem::path & path,
     ResultSet &result);
   // ...
   void SolveDirGET( boost::filesystem::path & dirName,
@@ -184,7 +184,7 @@ private:
 		const std::string &serieID,
     DicomObjSet &result);
   // ...
-  void SolveFileGET( const std::string & fileName,
+  void SolveFileGET( const boost::filesystem::path & fileName,
     const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
