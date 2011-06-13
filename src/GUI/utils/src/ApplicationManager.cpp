@@ -11,7 +11,7 @@ ApplicationManager::getInstance()
 }
 
 ApplicationManager::ApplicationManager()
-	: OpenGLManager( static_cast<OpenGLManager*>( this ) ), mInitialized( false )
+	: OpenGLManager( static_cast<OpenGLManager*>( this ) ), ViewerManager( static_cast<ViewerManager*>( this ) ), mInitialized( false )
 {
 	ASSERT( appManagerInstance == NULL )
 
@@ -25,6 +25,7 @@ ApplicationManager::initialize( int argc, char** argv )
 	mApp = new QApplication(argc, argv);
 
 	OpenGLManager::initialize();
+	ViewerManager::initialize();
 	mInitialized = true;
 }
 
@@ -33,6 +34,7 @@ ApplicationManager::finalize()
 {
 	ASSERT( mInitialized );
 
+	ViewerManager::finalize();
 	OpenGLManager::finalize();
 	delete mApp;
 }
@@ -47,5 +49,12 @@ ApplicationManager::exec()
 {
 	ASSERT( mInitialized );
 	return mApp->exec();
+}
+
+void
+ApplicationManager::viewerSelectionChangedHelper()
+{
+	D_PRINT( "Viewer selection changed" );
+	emit viewerSelectionChanged();
 }
 

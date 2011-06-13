@@ -84,7 +84,9 @@ public:
 	}
 public slots:
 	void
-	selectViewer();
+	select();
+	void
+	deselect();
 signals:
 	void
 	viewerSelected();

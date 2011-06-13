@@ -4,6 +4,7 @@
 #include "GUI/utils/QtM4DTools.h"
 #include "common/MathTools.h"
 #include "GUI/widgets/AGLViewer.h"
+#include "GUI/utils/ViewerManager.h"
 
 namespace M4D
 {
@@ -16,14 +17,26 @@ namespace Viewer
 AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
 {
 	setMouseTracking ( true );
+	setMinimumSize( 50, 50 );
 }
 
 void
-AGLViewer::selectViewer()
+AGLViewer::select()
 {
+	//TODO check if enabled
 	mSelected = true;
+	ViewerManager::getInstance()->selectViewer( this );
 	update();
 }
+
+void
+AGLViewer::deselect()
+{
+	mSelected = false;
+	ViewerManager::getInstance()->deselectViewer( this );
+	update();
+}
+
 
 void	
 AGLViewer::initializeGL()
@@ -158,29 +171,31 @@ AGLViewer::mouseMoveEvent ( QMouseEvent * event )
 void	
 AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
+	ViewerManager::getInstance()->selectViewer( this );
+
 	if ( mViewerController && mViewerController->mouseDoubleClickEvent( mViewerState, event ) ) {
 		return;
 	}
-
-	selectViewer();
 }
 
 void	
 AGLViewer::mousePressEvent ( QMouseEvent * event )
 { 	
+	ViewerManager::getInstance()->selectViewer( this );
+
 	if ( mViewerController && mViewerController->mousePressEvent( mViewerState, event ) ) {
 		return;
 	}
-	selectViewer();
 }
 
 void	
 AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
 { 
+	ViewerManager::getInstance()->selectViewer( this );
+
 	if ( mViewerController && mViewerController->mouseReleaseEvent( mViewerState, event ) ) {
 		return;
 	}
-	selectViewer();
 }
 
 void	
