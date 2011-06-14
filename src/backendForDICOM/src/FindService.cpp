@@ -27,11 +27,11 @@ using namespace M4D::Dicom;
 void
 FindService::GetQuery( 
 	DcmDataset **query, 
-	const string *patientName,
-  const string *patientID,
-	const string *date,
-  const string *referringMD,
-  const string *description
+	const std::string *patientName,
+  const std::string *patientID,
+	const std::string *date,
+  const std::string *referringMD,
+  const std::string *description
 	)
 {
 	if (*query != NULL) 
@@ -47,16 +47,16 @@ FindService::GetQuery(
 
 	// patient info
   DU_putStringDOElement(*query, DCM_PatientID, patientID->c_str() );
-	DU_putStringDOElement(*query, DCM_PatientsName, patientName->c_str() );
-	DU_putStringDOElement(*query, DCM_PatientsSex, NULL);
-	DU_putStringDOElement(*query, DCM_PatientsBirthDate, NULL);
+	DU_putStringDOElement(*query, DCM_PatientName, patientName->c_str() );
+	DU_putStringDOElement(*query, DCM_PatientSex, NULL);
+	DU_putStringDOElement(*query, DCM_PatientBirthDate, NULL);
 
 	// study info
   DU_putStringDOElement(*query, DCM_StudyInstanceUID, NULL);
 	DU_putStringDOElement(*query, DCM_StudyDate, date->c_str() );
   DU_putStringDOElement(*query, DCM_Modality, NULL );
   DU_putStringDOElement(*query, DCM_StudyTime, NULL );
-  DU_putStringDOElement(*query, DCM_ReferringPhysiciansName, referringMD->c_str() );
+  DU_putStringDOElement(*query, DCM_ReferringPhysicianName, referringMD->c_str() );
   DU_putStringDOElement(*query, DCM_StudyDescription, description->c_str() );
 
 }
@@ -66,8 +66,8 @@ FindService::GetQuery(
 void
 FindService::GetWholeStudyInfoQuery( 
 	DcmDataset **query, 
-	const string &patientID,
-	const string &studyID)
+	const std::string &patientID,
+	const std::string &studyID)
 {
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
@@ -91,8 +91,8 @@ FindService::GetWholeStudyInfoQuery(
 void
 FindService::GetStudyInfoQuery( 
 	DcmDataset **query, 
-	const string &patientID,
-	const string &studyID)
+	const std::string &patientID,
+	const std::string &studyID)
 {
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
@@ -215,7 +215,7 @@ FindService::FindSupport(
 
 void
 FindService::FindStudiesAboutPatient( 
-		const string &patientID,
+		const std::string &patientID,
 		ResultSet &result) 
 {
 	// create query
@@ -231,81 +231,87 @@ FindService::FindStudiesAboutPatient(
 void
 FindService::FindForFilter( 
 		ResultSet &result, 
-		const string &patientForeName,
-    const string &patientSureName,
-    const string &patID,
-		const string &dateFrom,
-		const string &dateTo,
-    const string &referringMD,
-    const string &description) 
+		const std::string &patientForeName,
+		const std::string &patientSureName,
+		const std::string &patID,
+		const std::string &dateFrom,
+		const std::string &dateTo,
+		const std::string &referringMD,
+		const std::string &description
+		) 
 {
-  // create range match date string. Range matching character '-'
-  string dateRange;
-  {
-    stringstream dateStream;
-    if( ! dateFrom.empty() && ! dateTo.empty() )
-      dateStream << dateFrom << "-" << dateTo;
-    else if( ! dateFrom.empty() )
-      dateStream << dateFrom << "-";
-    else if( ! dateTo.empty() )
-      dateStream << "-" << dateTo;
-    dateRange = dateStream.str();
-  }
+	// create range match date string. Range matching character '-'
+	std::string dateRange;
+	{
+		std::stringstream dateStream;
+		if( ! dateFrom.empty() && ! dateTo.empty() ) {
+			dateStream << dateFrom << "-" << dateTo;
+		} else if( ! dateFrom.empty() ) {
+			dateStream << dateFrom << "-";
+		} else if( ! dateTo.empty() ) {
+			dateStream << "-" << dateTo;
+		}
+		dateRange = dateStream.str();
+	}
 
 	// create list matching for modalities. single items are delimited by '\'.
-  // RETIRED !!
-  //string modalityMatch;
-  //{
-	 // stringstream modalitiesStram;
-	 // DcmProvider::StringVector::const_iterator it = modalities.begin();
+	// RETIRED !!
+	//string modalityMatch;
+	//{
+	// stringstream modalitiesStram;
+	// DcmProvider::StringVector::const_iterator it = modalities.begin();
 
-	 // if( it != modalities.end())
-	 // {
-		//  modalitiesStram << *it;
-		//  it++;
-	 // }
+	// if( it != modalities.end())
+	// {
+	//  modalitiesStram << *it;
+	//  it++;
+	// }
 
-	 // // append others
-	 // while( it != modalities.end())
-	 // {
-		//  modalitiesStram << "\\" << *it;	
-		//  it++;
-	 // }
-  //  modalityMatch = modalitiesStram.str();
-  //}
+	// // append others
+	// while( it != modalities.end())
+	// {
+	//  modalitiesStram << "\\" << *it;	
+	//  it++;
+	// }
+	//  modalityMatch = modalitiesStram.str();
+	//}
 
-  // create wild card math for patient name
-  string patienName;
-  {
-    stringstream s;
-    if( ! patientForeName.empty())
-      s << "*" << patientForeName << "*";
-    if( ! patientSureName.empty() )
-      s << "*" << patientSureName << "*";
-    patienName = s.str();
-  }
+	// create wild card math for patient name
+	std::string patienName;
+	{
+		std::stringstream s;
+		if( ! patientForeName.empty()) {
+			s << "*" << patientForeName << "*";
+		}
+		if( ! patientSureName.empty() ) {
+			s << "*" << patientSureName << "*";
+		}
+		patienName = s.str();
+	}
 
-  // create wild card math for referring name
-  string referringMDName;
-  {
-    stringstream s;
-    if( ! referringMD.empty())
-      s << "*" << referringMD << "*";
-    referringMDName = s.str();
-  }
+	// create wild card math for referring name
+	std::string referringMDName;
+	{
+		std::stringstream s;
+		if( ! referringMD.empty()) {
+			s << "*" << referringMD << "*";
+		}
+		referringMDName = s.str();
+	}
 
-  // create wild card math for description
-  string descr;
-  {
-    stringstream s;
-    if( ! description.empty())
-      s << "*" << description << "*";
-    descr = s.str();
-  }
+	// create wild card math for description
+	std::string descr;
+	{
+		std::stringstream s;
+		if( ! description.empty()) {
+			s << "*" << description << "*";
+		}
+		descr = s.str();
+	}
 
 	// create query
 	DcmDataset *query = NULL;
-  GetQuery( &query, &patienName, &patID, &dateRange, &referringMDName, &descr);
+	GetQuery( &query, &patienName, &patID, &dateRange, &referringMDName, &descr);
 
 	// issue
 	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
@@ -315,9 +321,10 @@ FindService::FindForFilter(
 
 void
 FindService::FindWholeStudyInfo(
-		const string &patientID,
-		const string &studyID,
-		StudyInfo &info) 
+		const std::string &patientID,
+		const std::string &studyID,
+		StudyInfo &info
+		) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -331,9 +338,10 @@ FindService::FindWholeStudyInfo(
 
 void
 FindService::FindStudyInfo(
-		const string &patientID,
-		const string &studyID,
-    SerieInfoVector &seriesIDs) 
+		const std::string &patientID,
+		const std::string &studyID,
+    		SerieInfoVector &seriesIDs
+		) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -407,8 +415,8 @@ FindService::WholeStudyInfoCallback(
      */
 {
 	OFString str;
-	string imageID;
-	string setID;
+	std::string imageID;
+	std::string setID;
 
 	// Parse the response
 	responseIdentifiers->findAndGetOFString( DCM_SOPInstanceUID, str);

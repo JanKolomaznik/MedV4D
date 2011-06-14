@@ -23,7 +23,7 @@ bool DicomAssociation::_configFilePresent = false;
 ///////////////////////////////////////////////////////////////////////
 
 DicomAssociation::DICOMAddress *
-DicomAssociation::GetAddress( string addressPointer) 
+DicomAssociation::GetAddress( std::string addressPointer) 
 {
 	AddressContainer::iterator it = addressContainer.find( addressPointer);
 	if( it == addressContainer.end())
@@ -39,7 +39,7 @@ DicomAssociation::GetAddress( string addressPointer)
 
 #define MAX_LINE_LEN 128
 void
-DicomAssociation::FindNonCommentLine( ifstream &f, string &line)
+DicomAssociation::FindNonCommentLine( std::ifstream &f, std::string &line)
 {
 	char tmp[MAX_LINE_LEN];
 
@@ -62,15 +62,15 @@ typedef union {
 } UTrasferSyntaxToInt;
 
 void
-DicomAssociation::LoadOneAddress( ifstream &f) 
+DicomAssociation::LoadOneAddress( std::ifstream &f) 
 {
-	string line;
+	std::string line;
 
 	FindNonCommentLine( f, line);
 	if( f.eof() )
 		return;
 
-	string addressName;
+	std::string addressName;
 	DICOMAddress *addr = new DICOMAddress;
 
 	// read address name (the key to map)
@@ -81,12 +81,12 @@ DicomAssociation::LoadOneAddress( ifstream &f)
 		// read our AP Title
 		FindNonCommentLine( f, line);
 		if( f.eof() ) throw ExceptionBase("Unexpected EOF!");
-		addr->callingAPTitle = string( line);
+		addr->callingAPTitle = std::string( line);
 
 		// read called server name
 		FindNonCommentLine( f, line);
 		if( f.eof() ) throw ExceptionBase("Unexpected EOF!");
-		addr->calledServerName = string( line);
+		addr->calledServerName = std::string( line);
 
 		// read called server port
 		FindNonCommentLine( f, line);
@@ -99,12 +99,12 @@ DicomAssociation::LoadOneAddress( ifstream &f)
 		// read called AT (DB name)
 		FindNonCommentLine( f, line);
 		if( f.eof() ) throw ExceptionBase("Unexpected EOF!");
-		addr->calledDBName = string( line);
+		addr->calledDBName = std::string( line);
 
 		// read desired transfer model
 		FindNonCommentLine( f, line);
 		if( f.eof() ) throw ExceptionBase("Unexpected EOF!");
-		addr->transferModel = string( line);
+		addr->transferModel = std::string( line);
 
 		// read desired transfer syntax
 		FindNonCommentLine( f, line);
@@ -166,7 +166,7 @@ DicomAssociation::~DicomAssociation( void)
 
 ///////////////////////////////////////////////////////////////////////
 
-DicomAssociation::DicomAssociation( string assocAddrID)	
+DicomAssociation::DicomAssociation( std::string assocAddrID)	
 {
 	if(! _configFilePresent)
 		throw ExceptionBase(

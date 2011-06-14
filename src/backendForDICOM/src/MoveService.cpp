@@ -23,10 +23,10 @@ using namespace M4D::Dicom;
 void
 MoveService::GetQuery( 
 		DcmDataset **query,
-		const string *patientID,
-		const string *studyID,
-		const string *setID,
-		const string *imageID)
+		const std::string *patientID,
+		const std::string *studyID,
+		const std::string *setID,
+		const std::string *imageID)
 {
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
@@ -83,10 +83,10 @@ MoveService::~MoveService()
 
 void
 MoveService::MoveImage( 
-		const string &patientID,
-		const string &studyID,
-		const string &setID,
-		const string &imageID,
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &setID,
+		const std::string &imageID,
 		DicomObj &rs) 
 {
 	DcmDataset *query = NULL;
@@ -99,9 +99,9 @@ MoveService::MoveImage(
 
 void
 MoveService::MoveImageSet(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID,
 		DicomObjSet &result,
     DicomObj::ImageLoadedCallback on_loaded)
 {

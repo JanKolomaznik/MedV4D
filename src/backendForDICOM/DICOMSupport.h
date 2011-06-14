@@ -29,13 +29,13 @@ static void GetTableRowFromDataSet(
   ds->findAndGetOFString( DCM_PatientID, str);
 	row->patientID = str.c_str();
 
-	ds->findAndGetOFString( DCM_PatientsName, str);
+	ds->findAndGetOFString( DCM_PatientName, str);
 	row->name = str.c_str();
 
-	ds->findAndGetOFString( DCM_PatientsBirthDate, str);
+	ds->findAndGetOFString( DCM_PatientBirthDate, str);
 	row->birthDate = str.c_str();
 
-	ds->findAndGetOFString( DCM_PatientsSex, str);
+	ds->findAndGetOFString( DCM_PatientSex, str);
 	row->sex = (str == "M");	// M = true
 
 	// study info
@@ -54,7 +54,7 @@ static void GetTableRowFromDataSet(
   ds->findAndGetOFString( DCM_StudyDescription, str);
 	row->description = str.c_str();
 
-  ds->findAndGetOFString( DCM_ReferringPhysiciansName, str);
+  ds->findAndGetOFString( DCM_ReferringPhysicianName, str);
   row->referringMD = str.c_str();
 }
 

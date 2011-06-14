@@ -10,6 +10,7 @@
 
 #include "structures.h"
 #include "DcmObject.h"
+#include <string>
 
 /**
  *  Implements C-MOVE service to DICOM server. Its purpose is to move data files (records) from DICOM server. 
@@ -25,88 +26,115 @@ namespace Dicom
 class MoveService : AbstractService
 {
 public:
-	  // ctor & dtor
-		MoveService();
-		~MoveService();
-		
-		 // Moves one SINGLE image from server
-			void MoveImage( 
-				const string &patientID,
-				const string &studyID,
-				const string &setID,
-				const string &imageID,
-				DicomObj &rs);
+	// ctor & dtor
+	MoveService();
+	~MoveService();
 
-		  // Moves the whole image serie from server
-			void MoveImageSet(
-				const string &patientID,
-				const string &studyID,
-				const string &serieID,
-		    DicomObjSet &result,
-		    DicomObj::ImageLoadedCallback on_loaded);
+	// Moves one SINGLE image from server
+	void 
+	MoveImage( 
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &setID,
+		const std::string &imageID,
+		DicomObj &rs
+		);
+
+	// Moves the whole image serie from server
+	void 
+	MoveImageSet(
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID,
+		DicomObjSet &result,
+		DicomObj::ImageLoadedCallback on_loaded
+		);
 private:
 
-  /**
-   *  The two data retrival kinds definitions. According params of this type are the kinds of retrival distinguished in callbacks.
-   */
+	/**
+	*  The two data retrival kinds definitions. According params of this type are the kinds of retrival distinguished in callbacks.
+	*/
 	enum eCallType {
-		SINGLE_IMAGE,		// only single image -> retype to DicomObj
-		IMAGE_SET			// retype to vector<DicomObj>
+		SINGLE_IMAGE,		//< only single image -> retype to DicomObj
+		IMAGE_SET		//< retype to vector<DicomObj>
 	};
 
-  /**
-   *  Support structure for whole SET retrival that are passed to MoveSupport. It contains result container and onLoaded callback function pointer. Because actual instances are created later in callbacks so onLoaded function pointer should go along result data container.
-   */
-  struct ImageSetData 
-  {
-    ImageSetData(
-      DicomObjSet *result_,
-      DicomObj::ImageLoadedCallback on_loaded_)
-      : result(result_)
-      , on_loaded( on_loaded_)
-    {
-    }
+	/**
+	*  Support structure for whole SET retrival that are passed to MoveSupport. It contains result container and onLoaded callback function pointer. Because actual instances are created later in callbacks so onLoaded function pointer should go along result data container.
+	*/
+	struct ImageSetData 
+	{
+		ImageSetData( DicomObjSet *result_, DicomObj::ImageLoadedCallback on_loaded_)
+			: result(result_), on_loaded( on_loaded_)
+		{ /*empty*/ }
 
-    DicomObjSet *result;
-    DicomObj::ImageLoadedCallback on_loaded;
-  };
+		DicomObjSet *result;
+		DicomObj::ImageLoadedCallback on_loaded;
+	};
 
-  /// Prepares query dataSet.
-	void GetQuery( 
+	/// Prepares query dataSet.
+	void 
+	GetQuery( 
 		DcmDataset **query,
-		const string *patientID,
-		const string *studyID,
-		const string *setID,
-		const string *imageID);
+		const std::string *patientID,
+		const std::string *studyID,
+		const std::string *setID,
+		const std::string *imageID
+		);
 
-  // Supporting callbacks that cooperates with DCMTK functions ...
-	void MoveSupport( DcmDataset *query, void *data,
-		enum eCallType type) ;
-  // ...
+	// Supporting callbacks that cooperates with DCMTK functions ...
+	void 
+	MoveSupport( 
+		DcmDataset *query, 
+		void *data,
+		enum eCallType type
+		);
+	// ...
 	static void
-	MoveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
-		int responseCount, T_DIMSE_C_MoveRSP *response);
-  // ...
+	MoveCallback(
+		void *callbackData, 
+		T_DIMSE_C_MoveRQ *request,
+		int responseCount, 
+		T_DIMSE_C_MoveRSP *response
+		);
+	// ...
 	static void
-	SubAssocCallback(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc);
-  // ...
+	SubAssocCallback(
+		void *subOpCallbackData,
+		T_ASC_Network *aNet, 
+		T_ASC_Association **subAssoc
+		);
+	// ...
 	inline static void
-	SubAssocCallbackSupp(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type);
-  // ...
-	static void
-	SubAssocCallbackWholeSet(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc);
-  // ...
-	static void AcceptSubAssoc(
-		T_ASC_Network * aNet, T_ASC_Association ** assoc) ;
-  // ...
-	static void	SubTransferOperationSCP(
+	SubAssocCallbackSupp(
+		void *subOpCallbackData,
+		T_ASC_Network *aNet, 
 		T_ASC_Association **subAssoc, 
-		void *dicomOBJRef, eCallType type) ;
-  // ...
-	static void StoreSCPCallback(    
+		eCallType type
+		);
+	// ...
+	static void
+	SubAssocCallbackWholeSet(
+		void *subOpCallbackData,
+		T_ASC_Network *aNet, 
+		T_ASC_Association **subAssoc
+		);
+	// ...
+	static void 
+	AcceptSubAssoc(
+		T_ASC_Network * aNet, 
+		T_ASC_Association ** assoc
+		);
+	// ...
+	static void	
+	SubTransferOperationSCP(
+		T_ASC_Association **subAssoc, 
+		void *dicomOBJRef, 
+		eCallType type
+		);
+	// ...
+	static void 
+	StoreSCPCallback(    
 		void *callbackData,					/* in */
 		T_DIMSE_StoreProgress *progress,    /* progress state */
 		T_DIMSE_C_StoreRQ *req,             /* original store request */
@@ -114,9 +142,10 @@ private:
 		DcmDataset **imageDataSet, /* being received into */
 		/* out */
 		T_DIMSE_C_StoreRSP *rsp,            /* final store response */
-		DcmDataset **statusDetail);
+		DcmDataset **statusDetail
+		);
 
-	
+
 };
 
 } // namespace

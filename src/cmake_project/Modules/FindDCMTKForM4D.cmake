@@ -30,7 +30,7 @@ ELSE( WIN32_USE_PREPARED_PACKAGES_DCMTK )
 		SET(DCMTK_INCLUDE_DIR "/usr/include/dcmtk" )
 	ENDIF( NOT DCMTK_INCLUDE_DIR )
 	
-	SET( DCMTK_LIBRARIES dcmdata dcmimgle dcmpstat dcmtls dcmdsig dcmjpeg dcmqrdb dcmwlm dcmimage dcmnet dcmsr ijg16 ijg12 ijg8 tiff ofstd crypto ssl xml2 )
+	SET( DCMTK_LIBRARIES dcmdata dcmimgle dcmpstat dcmtls dcmdsig dcmjpeg dcmqrdb dcmwlm dcmimage dcmnet dcmsr ijg16 ijg12 ijg8 tiff ofstd oflog crypto ssl xml2 )
 	SET( DCMTK_OPTIONS "HAVE_CONFIG_H" )
 ENDIF( WIN32_USE_PREPARED_PACKAGES_DCMTK )
 

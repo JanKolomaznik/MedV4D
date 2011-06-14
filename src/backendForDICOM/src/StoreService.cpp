@@ -7,6 +7,7 @@
 #include <dcmtk/dcmnet/dimse.h>
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcelem.h>		// data dictionary
 #include <dcmtk/dcmdata/dcdict.h>		// data dictionary
 
 #include "common/Common.h"
@@ -436,7 +437,7 @@ StoreService::UpdateStringAttributeValue(
     if (cond != EC_Normal) {
         CERR << "error: updateStringAttributeValue: cannot find: " << tag.getTagName()
              << " " << key << ": "
-             << cond.text() << endl;
+             << cond.text() << std::endl;
         return OFFalse;
     }
 
@@ -446,7 +447,7 @@ StoreService::UpdateStringAttributeValue(
     if (elem->getLength() > vr.getMaxValueLength()) {
         CERR << "error: updateStringAttributeValue: INTERNAL ERROR: " << tag.getTagName()
              << " " << key << ": value too large (max "
-            << vr.getMaxValueLength() << ") for " << vr.getVRName() << " value: " << value << endl;
+            << vr.getMaxValueLength() << ") for " << vr.getVRName() << " value: " << value << std::endl;
         return OFFalse;
     }
 
@@ -454,7 +455,7 @@ StoreService::UpdateStringAttributeValue(
     if (cond != EC_Normal) {
         CERR << "error: updateStringAttributeValue: cannot put string in attribute: " << tag.getTagName()
              << " " << key << ": "
-             << cond.text() << endl;
+             << cond.text() << std::endl;
         return OFFalse;
     }
 
@@ -489,10 +490,10 @@ StoreService::ReplaceSOPInstanceInformation(DcmDataset* dataset)
 
 	// print invented IDs
 	D_PRINT( "Inventing Identifying Information:");
-	D_PRINT( "SeriesInstanceUID=" << seriesInstanceUID << endl
-        << "  SeriesNumber=" << seriesNumber << endl
-        << "  SOPInstanceUID=" << sopInstanceUID << endl
-        << "  ImageNumber=" << imageNumber << endl );
+	D_PRINT( "SeriesInstanceUID=" << seriesInstanceUID << std::endl
+        << "  SeriesNumber=" << seriesNumber << std::endl
+        << "  SOPInstanceUID=" << sopInstanceUID << std::endl
+        << "  ImageNumber=" << imageNumber << std::endl );
 
     UpdateStringAttributeValue(dataset, DCM_SeriesInstanceUID, seriesInstanceUID);
     UpdateStringAttributeValue(dataset, DCM_SeriesNumber, seriesNumber);
@@ -505,9 +506,11 @@ StoreService::ReplaceSOPInstanceInformation(DcmDataset* dataset)
 ///////////////////////////////////////////////////////////////////////
 
 void
-StoreService::ProgressCallback(void * /*callbackData*/,
-    T_DIMSE_StoreProgress *progress,
-    T_DIMSE_C_StoreRQ * /*req*/)
+StoreService::ProgressCallback(
+		void * /*callbackData*/,
+		T_DIMSE_StoreProgress *progress,
+		T_DIMSE_C_StoreRQ * /*req*/
+		)
 {
     switch (progress->state) 
 	{
@@ -525,8 +528,7 @@ StoreService::ProgressCallback(void * /*callbackData*/,
 ///////////////////////////////////////////////////////////////////////
 
 void
-StoreService::StoreObject( 
-		const DicomObj &objectToCopyAttribsFrom, DicomObj &objectToStore) 
+StoreService::StoreObject( const DicomObj &objectToCopyAttribsFrom, DicomObj &objectToStore) 
 {
 	DcmDataset *dataSetToStore = (DcmDataset *) objectToStore.m_dataset;
 	DcmDataset *dataSetPattern = 
@@ -544,15 +546,14 @@ StoreService::StoreObject(
 ///////////////////////////////////////////////////////////////////////
 
 void
-StoreService::CopyNeccessaryAttribs( 
-					DcmDataset *source, DcmDataset *dest)
+StoreService::CopyNeccessaryAttribs( DcmDataset *source, DcmDataset *dest)
 {
 	char tmp[256];
 	const char *tmpPtr = tmp;
 
 	//copy patient name
-	source->findAndGetString( DCM_PatientsName, tmpPtr);
-	dest->putAndInsertString( DCM_PatientsName, tmp);
+	source->findAndGetString( DCM_PatientName, tmpPtr);
+	dest->putAndInsertString( DCM_PatientName, tmp);
 
 	//copy patient ID
 	source->findAndGetString( DCM_PatientID, tmpPtr);
