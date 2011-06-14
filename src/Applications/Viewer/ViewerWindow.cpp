@@ -7,6 +7,8 @@
 #include "GUI/widgets/PythonTerminal.h"
 #include "GUI/widgets/MultiDockWidget.h"
 
+#include <QtGui>
+
 ViewerWindow::ViewerWindow()
 {
 	setupUi( this );
@@ -56,40 +58,13 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( action3D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
 
-	/*QActionGroup *colorMapTypeSwitch = new QActionGroup( this );
-	QSignalMapper *colorMapTypeSwitchSignalMapper = new QSignalMapper( this );
-	colorMapTypeSwitch->setExclusive( true );
-	colorMapTypeSwitch->addAction( actionUse_WLWindow );
-	colorMapTypeSwitch->addAction( actionUse_Simple_Colormap );
-	colorMapTypeSwitch->addAction( actionUse_MIP );
-	colorMapTypeSwitch->addAction( actionUse_Transfer_Function );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_WLWindow, M4D::GUI::Renderer::ctLUTWindow );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Simple_Colormap, M4D::GUI::Renderer::ctSimpleColorMap );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_MIP, M4D::GUI::Renderer::ctMaxIntensityProjection );
-	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Transfer_Function, M4D::GUI::Renderer::ctTransferFunction1D );
-	QObject::connect( actionUse_WLWindow, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_Simple_Colormap, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_MIP, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( actionUse_Transfer_Function, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );*/
 
+	//*************** TOOLBAR ***************	
+	QToolBar *toolbar = new QToolBar( tr("Viewer settings") );
+	addToolBar( toolbar );
+	toolbar->addAction( "BLLLL" );
 
-
-/*	QMenu *menu = new QMenu;
-	menu->addAction( actionEnable_Jittering );
-	menu->addAction( actionEnable_Shading );
-	
-	QToolButton *button = new QToolButton;
-	button->setText( "Settings" );
-	button->setPopupMode( QToolButton::InstantPopup );
-	button->setMenu( menu );
-	viewerToolBar->addWidget( button );*/
-
-
-	
-
-
-
+	//***************************************
 
 	QLabel *infoLabel = new QLabel();
 	statusbar->addWidget( infoLabel );

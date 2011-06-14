@@ -76,6 +76,8 @@ class AGLViewer: public GLWidget
 public:
 	AGLViewer( QWidget *parent );
 
+	~AGLViewer();
+
 	void
 	setViewerController( AViewerController::Ptr aController )
 	{

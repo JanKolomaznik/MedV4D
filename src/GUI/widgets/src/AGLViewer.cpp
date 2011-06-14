@@ -20,6 +20,11 @@ AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
 	setMinimumSize( 50, 50 );
 }
 
+AGLViewer::~AGLViewer()
+{
+	deselect();
+}
+
 void
 AGLViewer::select()
 {
