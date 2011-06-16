@@ -54,8 +54,11 @@ struct SliceRenderer::RenderingConfiguration
 	Vector3f
 	getCurrentRealSlice()
 	{
-		ASSERT( imageData );
-		return imageData->GetMinimum() + VectorMemberProduct( currentSlice, imageData->GetElementExtents() );
+		if ( imageData ) {
+			return imageData->GetMinimum() + VectorMemberProduct( currentSlice, imageData->GetElementExtents() );
+		} else {
+			return Vector3f();
+		}
 	}
 
 	int					colorTransform;

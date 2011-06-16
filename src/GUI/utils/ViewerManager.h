@@ -3,6 +3,7 @@
 
 #include "common/Common.h"
 #include "GUI/widgets/AGLViewer.h"
+//#include "GUI/utils/ViewerAction.h"
 
 namespace M4D
 {
@@ -14,6 +15,10 @@ namespace Viewer
 } /*namespace Viewer*/
 } /*namespace GUI*/
 } /*namespace M4D*/
+
+class ViewerActionSet;
+
+struct ViewerManagerPimpl;
 
 class ViewerManager
 {
@@ -43,6 +48,12 @@ public:
 
 	virtual void
 	deselectViewer( M4D::GUI::Viewer::AGLViewer *aViewer );
+
+	ViewerActionSet &
+	getViewerActionSet();
+
+	virtual void
+	notifyAboutChangedViewerSettings()=0;
 protected:
 	virtual void
 	viewerSelectionChangedHelper() = 0;
@@ -50,8 +61,7 @@ protected:
 
 	ViewerManager( ViewerManager *aInstance );
 
-
-	M4D::GUI::Viewer::AGLViewer* mSelectedViewer;
+	ViewerManagerPimpl *mPimpl;
 
 };
 

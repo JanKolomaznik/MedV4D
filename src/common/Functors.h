@@ -12,16 +12,19 @@
  *  destruction tools
  */
 
+#include <functional>
+
+
 namespace M4D
 {
 namespace Functors
 {
 
-template< typename Pointer >
-struct Deletor
+template< typename TPointer >
+struct Deletor: public std::unary_function< TPointer, void >
 {
 	void
-	operator()( Pointer& p )
+	operator()( TPointer& p )
 	{ delete p; }
 };
 
@@ -39,8 +42,27 @@ struct MakeTypeBox
 	};
 };
 
-}/*namespace Functors*/
-}/*namespace M4D*/
+struct PredicateAlwaysTrue
+{
+	typedef bool result_type;
+	template < typename TType >
+	bool
+	operator()( TType p )
+	{ return true; }
+};
+
+struct PredicateAlwaysFalse
+{
+	typedef bool result_type;
+	template < typename TType >
+	bool
+	operator()( TType p )
+	{ return false; }
+};
+
+
+}//namespace Functors
+}//namespace M4D
 
 /** @} */
 

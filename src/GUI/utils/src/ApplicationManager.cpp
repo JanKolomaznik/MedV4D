@@ -54,7 +54,13 @@ ApplicationManager::exec()
 void
 ApplicationManager::viewerSelectionChangedHelper()
 {
-	D_PRINT( "Viewer selection changed" );
+	//D_PRINT( "Viewer selection changed" );
 	emit viewerSelectionChanged();
+}
+
+void
+ApplicationManager::notifyAboutChangedViewerSettings()
+{
+	emit selectedViewerSettingsChanged();
 }
 

@@ -23,9 +23,15 @@ public:
 	exec();
 
 	~ApplicationManager();
+
+	void
+	notifyAboutChangedViewerSettings();
 signals:
 	void
 	viewerSelectionChanged();
+
+	void
+	selectedViewerSettingsChanged();
 protected:
 	void
 	viewerSelectionChangedHelper();

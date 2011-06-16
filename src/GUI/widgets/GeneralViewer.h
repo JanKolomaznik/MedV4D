@@ -24,6 +24,8 @@
 #include <boost/cast.hpp>
 #include <map>
 
+#include "common/Types.h"
+
 
 namespace M4D
 {
@@ -184,25 +186,20 @@ public:
 	setCurrentSlice( int32 slice );
 
 	void
-	switchToNextPlane()
-	{
-		getViewerState().mSliceRenderConfig.plane = NextCartesianPlane( getViewerState().mSliceRenderConfig.plane );
-		update();
-	}
+	switchToNextPlane();
 
-	int32
-	getCurrentSlice()const
-	{
-		CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-		return getViewerState().mSliceRenderConfig.currentSlice[ plane ];
-	}
+	CartesianPlanes
+	getCurrentViewPlane()const;
 
 	void
-	changeCurrentSlice( int32 diff )
-	{
-		setCurrentSlice( diff + getCurrentSlice() );
-	}
+	setCurrentViewPlane( CartesianPlanes aPlane );
 
+	int32
+	getCurrentSlice()const;
+
+	void
+	changeCurrentSlice( int32 diff );
+	
 	bool
 	isColorTransformAvailable( unsigned aTransformType );
 
@@ -213,202 +210,70 @@ public:
 	}*/
 
 	int
-	getColorTransformType()
-	{
-		return getViewerState().colorTransform;//mSliceRenderConfig.colorTransform;//_renderer.GetColorTransformType();
-	}
+	getColorTransformType();
 
 	QString
-	getColorTransformName()
-	{
-		//TODO
-		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
-		switch ( getViewerState().viewType ) {
-		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
-			break;
-		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
-			break;
-		default:
-			ASSERT( false );
-		}
-		ASSERT( idList && idList->size() > 0 );
-		for( unsigned i = 0; i < idList->size(); ++i ) {
-			if ( (*idList)[ i ].id == getViewerState().colorTransform ) {
-				return QString::fromStdWString( (*idList)[ i ].name );
-			}
-		}
-
-		return QString();
-	}
+	getColorTransformName();
 
 	void
 	ReceiveMessage( 
 		M4D::Imaging::PipelineMessage::Ptr 			msg, 
 		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
 		M4D::Imaging::FlowDirection				direction
-	)
-	{
-		PrepareData();
-	}
+		);
 
 	bool
-	isShadingEnabled() const
-	{
-		return getViewerState().mVolumeRenderConfig.shadingEnabled;
-	}
+	isShadingEnabled() const;
 
 	bool
-	isJitteringEnabled() const
-	{
-		return getViewerState().mVolumeRenderConfig.jitterEnabled;
-	}
+	isJitteringEnabled() const;
 
 	void
-	cameraOrbit( Vector2f aAngles )
-	{
-		getViewerState().mVolumeRenderConfig.camera.YawAround( aAngles[0] );
-		getViewerState().mVolumeRenderConfig.camera.PitchAround( aAngles[1] );
-		update();
-	}
+	cameraOrbit( Vector2f aAngles );
 
 	void
-	cameraDolly( float aDollyRatio )
-	{
-		DollyCamera( getViewerState().mVolumeRenderConfig.camera, aDollyRatio );
-		update();
-	}
+	cameraDolly( float aDollyRatio );
 
 	ViewType
-	getViewType()const
-	{
-		return getViewerState().viewType;
-	}
+	getViewType()const;
 
 	QStringList 
-	getAvailableColorTransformations()
-	{
-		QStringList strList;
-		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
-		switch ( getViewerState().viewType ) {
-		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
-			break;
-		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
-			break;
-		default:
-			ASSERT( false );
-		}
-		ASSERT( idList && idList->size() > 0 );
-		for( unsigned i = 0; i < idList->size(); ++i ) {
-			strList << QString::fromStdWString( (*idList)[ i ].name );
-		}
+	getAvailableColorTransformationNames();
 
-		return strList;
-	}
+	GUI::Renderer::ColorTransformNameIDList
+	getAvailableColorTransformations();
 	
 	void
-	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension )
-	{
-		mRenderingExtension = aRenderingExtension;
-		update();
-	}
+	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension );
 public slots:
 	void
-	setViewType( int aViewType )
-	{
-		getViewerState().viewType = (ViewType)aViewType;
-		//TODO 
-		switch ( getViewerState().viewType ) {
-		case vt3D: 
-			setColorTransformType( GUI::Renderer::ctTransferFunction1D );
-			break;
-		case vt2DAlignedSlices: 
-			setColorTransformType( GUI::Renderer::ctLUTWindow );
-			break;
-		default:
-			ASSERT( false );
-		}
-
-
-		update();
-
-		emit ViewTypeChanged( aViewType );
-	}
+	setViewType( int aViewType );
 
 	void
-	setColorTransformType( const QString & aColorTransformName )
-	{
-		//TODO
-		std::wstring name = aColorTransformName.toStdWString();
-		const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
-		switch ( getViewerState().viewType ) {
-		case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
-			break;
-		case vt2DAlignedSlices: idList = &getViewerState().mSliceRenderer.GetAvailableColorTransforms();
-			break;
-		default:
-			ASSERT( false );
-		}
-		ASSERT( idList && idList->size() > 0 );
-		for( unsigned i = 0; i < idList->size(); ++i ) {
-			if( name == (*idList)[ i ].name ) {
-				setColorTransformType( (*idList)[ i ].id );
-				D_PRINT( "Setting color transform : " << aColorTransformName.toStdString() );
-				return;
-			}
-		}
-	}
+	setColorTransformType( const QString & aColorTransformName );
 
 	void
-	setColorTransformType( int aColorTransform )
-	{
-		//TODO 
-		getViewerState().colorTransform = aColorTransform;
-		getViewerState().mSliceRenderConfig.colorTransform = aColorTransform;
-		getViewerState().mVolumeRenderConfig.colorTransform = aColorTransform;
-
-		update();
-
-		emit ColorTransformTypeChanged( aColorTransform );
-	}
+	setColorTransformType( int aColorTransform );
 
 	void
-	fineRender()
-	{
-		//_renderer.FineRender();
-		update();
-	}
+	fineRender();
 
 	void
-	enableShading( bool aEnable )
-	{
-		getViewerState().mVolumeRenderConfig.shadingEnabled = aEnable;
-		update();
-	}
+	enableShading( bool aEnable );
 
 	void
-	enableJittering( bool aEnable )
-	{
-		getViewerState().mVolumeRenderConfig.jitterEnabled = aEnable;
-		update();
-	}
+	enableJittering( bool aEnable );
 
 	
 	void
-	resetView()
-	{
-		Vector3f pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
-		pos[1] += -550;
-		getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
-		
-		update();
-	}
+	resetView();
 
 	void
 	zoomFit( ZoomType zoomType = ztFIT );
 
 signals:
 	void
-	SettingsChanged();
+	settingsChanged();
 
 	void
 	ViewTypeChanged( int aRendererType );
@@ -421,6 +286,8 @@ signals:
 
 
 protected:
+	void
+	notifyAboutSettingsChange();
 
 	void
 	initializeRenderingEnvironment();

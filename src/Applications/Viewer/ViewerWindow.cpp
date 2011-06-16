@@ -6,8 +6,67 @@
 
 #include "GUI/widgets/PythonTerminal.h"
 #include "GUI/widgets/MultiDockWidget.h"
+#include "GUI/utils/ViewerManager.h"
+#include "GUI/utils/ViewerAction.h"
 
 #include <QtGui>
+namespace M4D
+{
+namespace GUI
+{
+namespace Viewer
+{
+
+class GeneralViewerFactory: public AViewerFactory
+{
+public:
+	GeneralViewerFactory() :mConnection( NULL )
+	{}
+	typedef boost::shared_ptr< GeneralViewerFactory > Ptr;
+
+	AGLViewer *
+	createViewer()
+	{
+		GeneralViewer *viewer = new GeneralViewer();
+		if( mRenderingExtension ) {
+			viewer->setRenderingExtension( mRenderingExtension );
+		}
+		if( mViewerController ) {
+			viewer->setViewerController( mViewerController );
+		}
+		if( mConnection ) {
+			mConnection->ConnectConsumer( viewer->InputPort()[0] );
+		}
+
+		viewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
+		return viewer;
+	}
+	void
+	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension )
+	{
+		mRenderingExtension = aRenderingExtension;
+	}
+
+	void
+	setViewerController( AViewerController::Ptr aController )
+	{
+		mViewerController = aController;
+	}
+	void
+	setInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
+	{
+		mConnection = &mProdconn;
+	}
+
+protected:
+	RenderingExtension::Ptr mRenderingExtension;
+	AViewerController::Ptr	mViewerController;
+	M4D::Imaging::ConnectionInterface *mConnection;
+};
+
+} /*namespace Viewer*/
+} /*namespace GUI*/
+} /*namespace M4D*/
 
 ViewerWindow::ViewerWindow()
 {
@@ -47,7 +106,7 @@ ViewerWindow::ViewerWindow()
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
 
-	QActionGroup *viewerTypeSwitch = new QActionGroup( this );
+	/*QActionGroup *viewerTypeSwitch = new QActionGroup( this );
 	QSignalMapper *viewerTypeSwitchSignalMapper = new QSignalMapper( this );
 	viewerTypeSwitch->setExclusive( true );
 	viewerTypeSwitch->addAction( action2D );
@@ -57,38 +116,46 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( action2D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( action3D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
+	*/
 
-
-	//*************** TOOLBAR ***************	
-	QToolBar *toolbar = new QToolBar( tr("Viewer settings") );
+	//************* TOOLBAR & MENU *************	
+	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
+	QToolBar *toolbar = createToolBarFromViewerActionSet( actions, "Viewer settings" );
 	addToolBar( toolbar );
-	toolbar->addAction( "BLLLL" );
 
-	//***************************************
+	addViewerActionSetToWidget( *menuViewer, actions );
+	//toolbar->addAction( "BLLLL" );
+
+	//*****************************************
 
 	QLabel *infoLabel = new QLabel();
 	statusbar->addWidget( infoLabel );
 
 
-	mColorTransformChooser = new QComboBox;
+	/*mColorTransformChooser = new QComboBox;
 	mColorTransformChooser->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 	viewerToolBar->addWidget( mColorTransformChooser );
 	QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( changeColorMapType( const QString & ) ) );
 	//QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( updateToolbars() ) );
+	*/
 
 	mViewerController = EditorController::Ptr( new EditorController );
 
 	/*
-	mViewer->setViewerController( mViewerController );
-	mViewer->setRenderingExtension( mViewerController );
 
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
 
 	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
 	*/
+	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
+	factory->setViewerController( mViewerController );
+	factory->setRenderingExtension( mViewerController );
+	factory->setInputConnection( mProdconn );
 
+	mViewerDesktop->setViewerFactory( factory );
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
+
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
@@ -99,6 +166,8 @@ ViewerWindow::initAfterLoopStart()
 {
 	changeViewerType( M4D::GUI::Viewer::vt2DAlignedSlices );
 	updateToolbars();
+
+	toggleInteractiveTransferFunction( true );
 }
 
 
@@ -151,11 +220,31 @@ ViewerWindow::testSlot()
 }
 
 
+struct SetTransferFunctionFtor
+{
+	SetTransferFunctionFtor( M4D::GUI::TransferFunctionBuffer1D::Ptr aTF ): mTF( aTF )
+	{ /*empty*/ }
+
+	void
+	operator()( M4D::GUI::Viewer::AGLViewer * aViewer )
+	{
+		M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
+
+		if ( viewer ) {
+			viewer->setTransferFunctionBuffer( mTF );
+		}
+	}
+
+	M4D::GUI::TransferFunctionBuffer1D::Ptr mTF;
+};
+
 void
 ViewerWindow::applyTransferFunction()
 {
-	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() ); }
+	D_PRINT( "Function updated" );
+	mViewerDesktop->forEachViewer( SetTransferFunctionFtor( mTransferFunctionEditor->GetTransferFunctionBuffer() ) );
+	/*M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
+	if ( viewer ) { viewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() ); }*/
 }
 
 void
@@ -187,34 +276,6 @@ ViewerWindow::updateToolbars()
 	if ( locked ) return;
 	locked = true;
 	
-	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) 
-	{ 
-		int viewType = viewer->getViewType();
-		switch ( viewType ) {
-		case M4D::GUI::Viewer::vt2DAlignedSlices:
-			action2D->setChecked( true );
-			break;
-		case M4D::GUI::Viewer::vt2DGeneralSlices:
-			ASSERT( false );
-			break;
-		case M4D::GUI::Viewer::vt3D:
-			action3D->setChecked( true );
-			break;
-		default:
-			ASSERT( false );
-		};
-		
-		//D_PRINT( "update toolbars" );
-		mColorTransformChooser->clear();
-		mColorTransformChooser->addItems( viewer->getAvailableColorTransformations() );
-		int idx = mColorTransformChooser->findText( viewer->getColorTransformName() );
-		//D_PRINT( "set selected color transform" );
-		mColorTransformChooser->setCurrentIndex( idx );
-
-		//LOG( "update toolbars - " << viewer->getColorTransformName().toStdString() );
-		toggleInteractiveTransferFunction( viewer->getColorTransformType() == M4D::GUI::Renderer::ctTransferFunction1D );
-	}
 
 	locked = false;
 }

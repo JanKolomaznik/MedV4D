@@ -20,6 +20,7 @@ ViewerDesktop::ViewerDesktop( QWidget *parent ):
 void
 ViewerDesktop::setLayoutOrganization( int cols, int rows )
 {
+	ASSERT( mViewerFactory );
 	unsigned newSize = cols * rows;
 	unsigned viewersSize = mViewers.size();
 	int difference = newSize - viewersSize;
@@ -73,8 +74,10 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 AGLViewer *
 ViewerDesktop::createViewer()
 {
+	ASSERT( mViewerFactory );
+	return mViewerFactory->createViewer();
 	//TODO
-	return new GeneralViewer();
+	//return new GeneralViewer();
 }
 
 

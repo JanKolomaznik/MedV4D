@@ -3,6 +3,8 @@
 
 #include <QtGui>
 #include "GUI/widgets/AGLViewer.h"
+#include <boost/bind/bind.hpp>
+#include "Imaging/ConnectionInterface.h"
 
 namespace M4D
 {
@@ -11,7 +13,13 @@ namespace GUI
 namespace Viewer
 {
 
-
+class AViewerFactory
+{
+public:
+	typedef boost::shared_ptr< AViewerFactory > Ptr;
+	virtual AGLViewer *
+	createViewer() = 0;
+};
 
 class ViewerDesktop: public QWidget
 {
@@ -23,6 +31,21 @@ public:
 	TFunctor
 	forEachViewer( TFunctor ftor );
 
+	/*void
+	setInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
+	{
+		for ( ViewerList::iterator it = mViewers.begin(); it != mViewers.end(); ++it ) {
+			GeneralViewer * viewer = dynamic_cast< GeneralViewer * >( it->viewer );
+			if ( viewer ) {
+				mProdconn.ConnectConsumer( viewer->InputPort()[0] );
+			}
+		}
+	}*/
+	void
+	setViewerFactory( AViewerFactory::Ptr aFactory )
+	{
+		mViewerFactory = aFactory;
+	}
 public slots:
 	void
 	setLayoutOrganization( int cols, int rows );
@@ -40,6 +63,8 @@ protected:
 
 	ViewerList mViewers;
 
+	AViewerFactory::Ptr mViewerFactory;
+
 };
 
 template< typename TFunctor >
@@ -51,7 +76,6 @@ ViewerDesktop::forEachViewer( TFunctor ftor )
 	}
 	return ftor;
 }
-
 
 
 } /*namespace Viewer*/

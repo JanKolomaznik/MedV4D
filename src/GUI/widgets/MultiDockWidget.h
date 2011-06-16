@@ -64,8 +64,8 @@ class DockWidgetPrivate: public QDockWidget
 public:
 	DockWidgetPrivate( const QString & aTitle ): QDockWidget( aTitle )
 	{
-		mTitleBar = new TitleBarWidget( aTitle, this );
-		setTitleBarWidget( mTitleBar );
+		//mTitleBar = new TitleBarWidget( aTitle, this );
+		//setTitleBarWidget( mTitleBar );
 		//titleBar->show();
 	}
 signals:
@@ -76,7 +76,7 @@ protected:
 	moveEvent ( QMoveEvent * event )
 	{
 		QDockWidget::moveEvent( event );
-		emit dockMoved( event->pos(), mTitleBar->getClickPos() );
+		//emit dockMoved( event->pos(), mTitleBar->getClickPos() );
 	}
 	TitleBarWidget *mTitleBar;
 };
@@ -161,9 +161,7 @@ protected:
 			//emit continueInDrag( titleBar, pos );
 			LOG( "sending event " << M4D::GUI::QPointToVector2i( locPos ) );
 			QMouseEvent *event = new QMouseEvent( QEvent::MouseButtonPress, locPos, globPos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier );
-			QCoreApplication::postEvent ( dock->titleBarWidget(), event );
-			//QCoreApplication *app = QCoreApplication::instance();
-			//app->notify( titleBar, &event );
+			QCoreApplication::postEvent ( dock->titleBarWidget(), event );  
 		}
 	}
 protected slots:
