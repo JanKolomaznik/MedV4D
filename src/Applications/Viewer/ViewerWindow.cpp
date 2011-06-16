@@ -71,6 +71,7 @@ protected:
 ViewerWindow::ViewerWindow()
 {
 	setupUi( this );
+	setAnimated( false );
 
 	#ifdef WIN32
 		//Reposition console window
