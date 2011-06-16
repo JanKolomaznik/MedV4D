@@ -19,7 +19,8 @@ enum ColorTransform
 	ctSimpleColorMap
 };
 
-typedef std::vector< WideNameIdPair > ColorTransformNameIDList;
+//typedef std::vector< WideNameIdPair > ColorTransformNameIDList;
+typedef std::vector< NameIdPair > ColorTransformNameIDList;
 
 }//Renderer
 }//GUI

@@ -15,9 +15,12 @@ SliceRenderer::Initialize()
 
 
 	mAvailableColorTransforms.clear();
-	mAvailableColorTransforms.push_back( WideNameIdPair( L"LUT window", ctLUTWindow ) );
-	mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
-	mAvailableColorTransforms.push_back( WideNameIdPair( L"Region colormap", ctSimpleColorMap ) );
+	//mAvailableColorTransforms.push_back( WideNameIdPair( L"LUT window", ctLUTWindow ) );
+	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
+	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Region colormap", ctSimpleColorMap ) );
+	mAvailableColorTransforms.push_back( NameIdPair( "LUT window", ctLUTWindow ) );
+	mAvailableColorTransforms.push_back( NameIdPair( "Transfer function", ctTransferFunction1D ) );
+	mAvailableColorTransforms.push_back( NameIdPair( "Region colormap", ctSimpleColorMap ) );
 }
 
 void

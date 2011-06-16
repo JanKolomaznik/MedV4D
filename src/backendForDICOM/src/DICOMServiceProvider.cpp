@@ -198,8 +198,8 @@ DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 struct DicomObjectComparatorPosition {
   bool operator() (const DicomObj &a, const DicomObj &b) 
   { 
-	  float32 x1, y1, z1;
-	  float32 x2, y2, z2;
+	  float32 /*x1, y1,*/ z1;
+	  float32 /*x2, y2,*/ z2;
 	  //a.GetImagePosition( x1, y1, z1 );
 	  //b.GetImagePosition( x2, y2, z2 );
 	  //return a.OrderInSet() < b.OrderInSet();

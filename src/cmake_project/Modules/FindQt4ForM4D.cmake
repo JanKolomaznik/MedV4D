@@ -35,10 +35,10 @@ IF( WIN32_USE_PREPARED_PACKAGES_QT )
 	
 	SET(QT_USE_FILE ${CMAKE_ROOT}/Modules/UseQt4.cmake)
 	
-	SET(QT_QTCORE_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtCore.lib" "debug" "${QT_LIBRARY_DIR}/QtCored.lib" )
-	SET(QT_QTGUI_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtGui.lib" "debug" "${QT_LIBRARY_DIR}/QtGuid.lib" )
+	SET(QT_QTCORE_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtCore4.lib" "debug" "${QT_LIBRARY_DIR}/QtCored4.lib" )
+	SET(QT_QTGUI_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtGui4.lib" "debug" "${QT_LIBRARY_DIR}/QtGuid4.lib" )
 	SET(QT_QTMAIN_LIBRARY "optimized" "${QT_LIBRARY_DIR}/qtmain.lib" "debug" "${QT_LIBRARY_DIR}/qtmaind.lib" )
-	SET(QT_QTOPENGL_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtOpenGL.lib" "debug" "${QT_LIBRARY_DIR}/QtOpenGLd.lib" )
+	SET(QT_QTOPENGL_LIBRARY "optimized" "${QT_LIBRARY_DIR}/QtOpenGL4.lib" "debug" "${QT_LIBRARY_DIR}/QtOpenGLd4.lib" )
 
 	SET( QT_DEFINITIONS "")
 	

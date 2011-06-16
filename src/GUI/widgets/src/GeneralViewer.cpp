@@ -290,7 +290,8 @@ GeneralViewer::getColorTransformName()
 	ASSERT( idList && idList->size() > 0 );
 	for( unsigned i = 0; i < idList->size(); ++i ) {
 		if ( (*idList)[ i ].id == getViewerState().colorTransform ) {
-			return QString::fromStdWString( (*idList)[ i ].name );
+			//return QString::fromStdWString( (*idList)[ i ].name );
+			return QString::fromStdString( (*idList)[ i ].name );
 		}
 	}
 
@@ -356,7 +357,8 @@ GeneralViewer::getAvailableColorTransformationNames()
 	}
 	ASSERT( idList && idList->size() > 0 );
 	for( unsigned i = 0; i < idList->size(); ++i ) {
-		strList << QString::fromStdWString( (*idList)[ i ].name );
+		//strList << QString::fromStdWString( (*idList)[ i ].name );
+		strList << QString::fromStdString( (*idList)[ i ].name );
 	}
 
 	return strList;
@@ -375,6 +377,7 @@ GeneralViewer::getAvailableColorTransformations()
 	default:
 		ASSERT( false );
 	}
+	return GUI::Renderer::ColorTransformNameIDList();
 }
 
 
@@ -413,7 +416,8 @@ void
 GeneralViewer::setColorTransformType( const QString & aColorTransformName )
 {
 	//TODO
-	std::wstring name = aColorTransformName.toStdWString();
+	//std::wstring name = aColorTransformName.toStdWString();
+	std::string name = aColorTransformName.toStdString();
 	const GUI::Renderer::ColorTransformNameIDList * idList = NULL;
 	switch ( getViewerState().viewType ) {
 	case vt3D: idList = &getViewerState().mVolumeRenderer.GetAvailableColorTransforms();

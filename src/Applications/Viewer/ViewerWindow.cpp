@@ -96,12 +96,13 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetBorderWidth( 10 );
 	//addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
+#ifdef USE_PYTHON
 	dockwidget = new MultiDockWidget(tr("Python Terminal" ));
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	dockwidget->setWidget( mTerminal );
 	dockwidget->addDockingWindow( Qt::BottomDockWidgetArea, this );
 	//addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
-
+#endif //USE_PYTHON
 
 
 	mTransFuncTimer.setInterval( 500 );

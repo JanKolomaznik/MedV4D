@@ -54,6 +54,15 @@ struct WideNameIdPair
 	unsigned id;
 };
 
+struct NameIdPair
+{
+	NameIdPair( std::string aName, unsigned aId ): name( aName ), id( aId )
+	{ }
+
+	std::string name;
+	unsigned id;
+};
+
 
 
 template< typename T >
