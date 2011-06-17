@@ -44,8 +44,8 @@ VolumeRenderer::Initialize()
 	mAvailableColorTransforms.clear();
 	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
 	//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
-	mAvailableColorTransforms.push_back( NameIdPair( "Transfer function", ctTransferFunction1D ) );
-	mAvailableColorTransforms.push_back( NameIdPair( "MIP", ctMaxIntensityProjection ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
 }
 
 void

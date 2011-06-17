@@ -19,8 +19,17 @@ enum ColorTransform
 	ctSimpleColorMap
 };
 
+struct QStringNameIdPair
+{
+	QStringNameIdPair( QString aName, unsigned aId ): name( aName ), id( aId )
+	{ }
+
+	QString name;
+	unsigned id;
+};
+
 //typedef std::vector< WideNameIdPair > ColorTransformNameIDList;
-typedef std::vector< NameIdPair > ColorTransformNameIDList;
+typedef std::vector< QStringNameIdPair > ColorTransformNameIDList;
 
 }//Renderer
 }//GUI
