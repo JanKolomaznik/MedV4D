@@ -441,11 +441,13 @@ LocalService::Load( std::ifstream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-LocalService::SolveDirGET( boost::filesystem::path & dirName,
-  const std::string &patientID,
-	const std::string &studyID,
-	const std::string &serieID,
- DicomObjSet &result)
+LocalService::SolveDirGET( 
+		boost::filesystem::path & dirName,
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID, 
+		DicomObjSet &result
+		)
 {
   // Get all files in this dir
   // loop through them
@@ -525,7 +527,7 @@ LocalService::Reset(void)
 
 ///////////////////////////////////////////////////////////////////////
 
-void
+/*void
 LocalService::GetSeriesFromFolder( const std::string &folder,
       const std::string &patientID,
   		const std::string &studyID,
@@ -534,6 +536,59 @@ LocalService::GetSeriesFromFolder( const std::string &folder,
 {
 	fs::path p = fs::path(folder);
 	SolveDirGET( p, patientID, studyID, serieID, result);
+}*/
+
+///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::GetSeriesFromFolder( 
+		std::string aFolder,
+		std::string aPatientID,
+		std::string aStudyID,
+		std::string aSerieID,
+		DicomObjSet &aResult,
+		ProgressNotifier::Ptr aProgressNotifier
+		)
+{
+	fs::path dirName = fs::path(aFolder);
+	if ( fs::is_directory( dirName ) ) {
+		if( aProgressNotifier ) {
+			aProgressNotifier->init( 1 );
+		}
+
+		fs::directory_iterator end_iter;
+		fs::directory_iterator dir_itr( dirName );
+		int i = 0;
+		for ( ; dir_itr != end_iter; ++dir_itr )
+		{
+			++i;
+		}
+		if( aProgressNotifier ) {
+			aProgressNotifier->initNextPhase( i );
+		}
+		for ( dir_itr = fs::directory_iterator( dirName ); dir_itr != end_iter; ++dir_itr )
+		{
+			// if it is subdir, call itself on subdir
+			if ( ! fs::is_directory( dir_itr->status() ) ) {
+				SolveFileGET( 
+						dir_itr->string(), 
+						aPatientID, 
+						aStudyID, 
+						aSerieID, 
+						aResult, 
+						dirName.string() 
+						);
+			}
+			if( aProgressNotifier ) {
+				aProgressNotifier->updateProgress();
+			}
+		}
+		if( aProgressNotifier ) {
+			aProgressNotifier->finished();
+		}
+	} else {
+		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( aFolder << " doesn't name a directory!" ) );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////

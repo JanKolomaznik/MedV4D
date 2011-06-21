@@ -28,6 +28,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpen_DICOM"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuViewer">
@@ -50,12 +51,13 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpen_DICOM"/>
    <addaction name="separator"/>
    <addaction name="actionTest"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open ...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -72,6 +74,11 @@
   <action name="actionTest">
    <property name="text">
     <string>Test</string>
+   </property>
+  </action>
+  <action name="actionOpen_DICOM">
+   <property name="text">
+    <string>Open DICOM ...</string>
    </property>
   </action>
  </widget>

@@ -15,7 +15,7 @@
 #include "structures.h"
 #include "Imaging/ImageFactory.h"
 #include "DcmObject.h"
-
+#include "common/ProgressNotifier.h"
 
 
 /**
@@ -217,11 +217,23 @@ public:
 			DicomObjSet 		&result
 			);
 
-	static void
+	/*static void
 	LoadSerieThatFileBelongsTo(
 			const std::string 	&fileName,
 			const std::string 	&folder, 
-			DicomObjSet 		&result
+			DicomObjSet 		&result,
+			ProgressNotifier::Ptr aProgressNotifier
+			);*/
+
+	/**
+	 * Variant with progress notification
+	 **/
+	static void
+	LoadSerieThatFileBelongsTo(
+			std::string fileName,
+			std::string folder, 
+			DicomObjSet &result,
+			ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
 			);
 
 private:

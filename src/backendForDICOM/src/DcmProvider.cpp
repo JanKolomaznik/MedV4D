@@ -16,12 +16,13 @@
 
 #include "common/Common.h"
 
-#include "../DICOMServiceProvider.h"
-#include "../DicomAssoc.h"
-#include "../AbstractService.h"
-#include "../MoveService.h"
-#include "../FindService.h"
-#include "../LocalService.h"
+#include "backendForDICOM/DcmProvider.h"
+#include "backendForDICOM/DicomAssoc.h"
+#include "backendForDICOM/AbstractService.h"
+#include "backendForDICOM/MoveService.h"
+#include "backendForDICOM/FindService.h"
+#include "backendForDICOM/LocalService.h"
+
 
 using namespace M4D::Dicom;
 using namespace M4D::Imaging;
@@ -262,9 +263,13 @@ DcmProvider::CreateImageDataFromDICOM(
 		//(*dicomObjects)[0].GetSliceThickness( voxelDepth );
 		float32 tmp1 = 0.0;
 		float32 tmp2 = 1.0;
+		float32 tmp3 = 0.0;
 		(*dicomObjects)[0].GetSliceLocation( tmp1 );
 		(*dicomObjects)[1].GetSliceLocation( tmp2 );
-		voxelDepth = Abs( tmp1 - tmp2 );
+		if( dicomObjects->size() > 2 ) {
+			(*dicomObjects)[2].GetSliceLocation( tmp3 );
+		}
+		voxelDepth = Max( Abs( tmp1 - tmp2 ), Abs( tmp2 - tmp3 ) );
 
 		if(voxelWidth <= 0.0f) voxelWidth = 1.0f;
 		if(voxelHeight <= 0.0f) voxelHeight = 1.0f;
@@ -385,7 +390,7 @@ DcmProvider::FlushDicomObjects(
 
 ///////////////////////////////////////////////////////////////////////
 
-void
+/*void
 DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName,
 		const std::string &folder, DicomObjSet &result)
 {
@@ -401,6 +406,30 @@ DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName,
 
 	g_localService.GetSeriesFromFolder(
 			folder, patientID, studyUID, seriesUID, result);
+}*/
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::LoadSerieThatFileBelongsTo(
+		std::string fileName,
+		std::string folder, 
+		DicomObjSet &result,
+		ProgressNotifier::Ptr aProgressNotifier
+		)
+{
+	DicomObj o;
+	o.Load(fileName);
+
+	std::string seriesUID;
+	o.GetTagValue(0x0020, 0x000e, seriesUID);
+	std::string studyUID;
+	o.GetTagValue(0x0020, 0x000d, studyUID);
+	std::string patientID;
+	o.GetTagValue(0x0010, 0x0020, patientID);
+
+	g_localService.GetSeriesFromFolder(
+			folder, patientID, studyUID, seriesUID, result, aProgressNotifier );
 }
 
 ///////////////////////////////////////////////////////////////////////

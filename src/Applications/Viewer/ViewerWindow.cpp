@@ -9,6 +9,10 @@
 #include "GUI/utils/ViewerManager.h"
 #include "GUI/utils/ViewerAction.h"
 
+#include <boost/thread.hpp>
+
+
+
 #include <QtGui>
 namespace M4D
 {
@@ -288,7 +292,13 @@ ViewerWindow::openFile()
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
 
 	if ( !fileName.isEmpty() ) {
-		openFile( fileName );
+		QFileInfo pathInfo( fileName );
+		QString ext = pathInfo.suffix();
+		if ( ext.toLower() == "dcm" ) {
+			openDicom( fileName );
+		} else {
+			openFile( fileName );
+		}
 	}
 }
 
@@ -297,6 +307,66 @@ ViewerWindow::openFile( const QString &aPath )
 {
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
+	mProdconn.PutDataset( image );
+	
+	M4D::Common::Clock clock;
+	
+	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
+	);*/ 
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		IMAGE_TYPE::PointType strides;
+		IMAGE_TYPE::SizeType size;
+		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
+		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
+	);*/ 
+
+	M4D::Imaging::Histogram64::Ptr histogram;
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+	);
+
+	LOG( "Histogram computed in " << clock.SecondsPassed() );
+	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
+	
+
+	applyTransferFunction();
+}
+
+void 
+ViewerWindow::openDicom( const QString &aPath )
+{
+	LOG( "Opening Dicom" );
+	std::string path = std::string( aPath.toLocal8Bit().data() );
+
+	QFileInfo pathInfo( aPath );
+
+	if( !mDicomObjSet ) {
+		mDicomObjSet = M4D::Dicom::DicomObjSetPtr( new M4D::Dicom::DicomObjSet() );
+	}
+
+	if( !mProgressDialog ) {
+		mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
+		QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
+	}
+	boost::thread th = boost::thread( 
+			&M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo,  
+			std::string( pathInfo.absoluteFilePath().toLocal8Bit().data() ), 
+			std::string( pathInfo.absolutePath().toLocal8Bit().data() ), 
+			boost::ref( *mDicomObjSet ),
+			mProgressDialog
+			);
+	th.detach();
+	mProgressDialog->show();
+	//th.join();
+}
+
+void
+ViewerWindow::dataLoaded()
+{
+	M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
+
 	mProdconn.PutDataset( image );
 	
 	M4D::Common::Clock clock;

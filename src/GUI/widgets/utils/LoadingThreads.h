@@ -10,7 +10,7 @@
 
 #include <QObject>
 
-#include "backendForDICOM/DICOMServiceProvider.h"
+#include "backendForDICOM/DcmProvider.h"
 
 
 namespace M4D {

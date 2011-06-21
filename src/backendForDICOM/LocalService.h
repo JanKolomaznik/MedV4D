@@ -13,6 +13,7 @@
 #include <set>
 #include "structures.h"
 #include "DcmObject.h"
+#include "common/ProgressNotifier.h"
 
 namespace M4D
 {
@@ -32,176 +33,174 @@ namespace Dicom
 class LocalService
 {
 public:
-  // performs search run on given folder
-	void Find( 
-			ResultSet &result,
-      const std::string &path);
+	// performs search run on given folder
+	void 
+	Find( 
+		ResultSet &result,
+		const std::string &path
+		);
 
-  // returns serie info based on build info structure
-  void FindStudyInfo( 
-    SerieInfoVector &result,
-      const std::string &patientID,
-			const std::string &studyID);
+	// returns serie info based on build info structure
+	void 
+	FindStudyInfo( 
+		SerieInfoVector &result,
+		const std::string &patientID,
+		const std::string &studyID
+		);
 
-  // performs search run and returns set of loaded data files (DicomObj)
-  void GetImageSet(
-      const std::string &patientID,
-			const std::string &studyID,
-			const std::string &serieID,
-      DicomObjSet &result);
+	// performs search run and returns set of loaded data files (DicomObj)
+	void 
+	GetImageSet(
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID,
+		DicomObjSet &result
+		);
 
-  LocalService();
-  ~LocalService();
-  
-  void GetSeriesFromFolder( const std::string &folder,
-      const std::string &patientID,
-  		const std::string &studyID,
-  		const std::string &serieID,
-      DicomObjSet &result);
+	LocalService();
+	~LocalService();
+
+	void 
+	GetSeriesFromFolder( 
+		std::string aFolder,
+		std::string aPatientID,
+		std::string aStudyID,
+		std::string aSerieID,
+		DicomObjSet &aResult,
+		ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
+		);
 
 private:
-  struct Serie
-  {
-    std::string id;
-    std::string desc;
-    std::string path;
+	struct Serie
+	{
+		std::string id;
+		std::string desc;
+		std::string path;
 
-    Serie() {}
+		Serie() {}
 
-    Serie( std::string id_, std::string desc_, std::string path_)
-      : id(id_)
-      , desc( desc_)
-      , path( path_)
-    {
-    }
+		Serie( std::string id_, std::string desc_, std::string path_)
+			: id(id_), desc( desc_), path( path_)
+		{
+		}
 
-    Serie( const Serie &other)
-      : id(other.id)
-      , desc( other.desc)
-      , path( other.path)
-    {
-    }
+		Serie( const Serie &other)
+			: id(other.id), desc( other.desc), path( other.path)
+		{
+		}
 
-    inline bool operator< (const Serie &b) const
-    {
-      return id.compare( b.id) < 0;
-    }
-  };
-  typedef std::map<std::string, Serie> Series;
+		inline bool operator< (const Serie &b) const
+		{
+			return id.compare( b.id) < 0;
+		}
+	};
+	typedef std::map<std::string, Serie> Series;
 
-  struct Study
-  {
-    std::string id;
-    std::string date;
-    Series series;
+	struct Study
+	{
+		std::string id;
+		std::string date;
+		Series series;
 
-    Study() {}
+		Study() {}
 
-    Study( std::string id_, std::string date_, Series series_)
-      : id(id_)
-      , date( date_)
-      , series( series_)
-    {
-    }
+		Study( std::string id_, std::string date_, Series series_)
+			: id(id_), date( date_), series( series_)
+		{
+		}
 
-    Study( const Study &other)
-      : id(other.id)
-      , date( other.date)
-      , series( other.series)
-    {
-    }
+		Study( const Study &other)
+			: id(other.id), date( other.date), series( other.series)
+		{
+		}
 
-    inline bool operator< (const Study &b) const
-    {
-      return id.compare( b.id) < 0;
-    }
-  };
-  typedef std::map<std::string, Study> Studies;
+		inline bool operator< (const Study &b) const
+		{
+			return id.compare( b.id) < 0;
+		}
+	};
+	typedef std::map<std::string, Study> Studies;
 
-  struct Patient
-  {
-    std::string id;
-    std::string name;
-    std::string bornDate;
-    uint8 sex;
-    Studies studies;
+	struct Patient
+	{
+		std::string id;
+		std::string name;
+		std::string bornDate;
+		uint8 sex;
+		Studies studies;
 
-    Patient() {}
+		Patient() {}
 
-    Patient( std::string id_, std::string name_
-      , std::string bornDate_, bool sex_, Studies studies_)
-      : id(id_)
-      , name( name_)
-      , bornDate( bornDate_)
-      , sex( sex_)
-      , studies( studies_)
-    {
-    }
+		Patient( 
+			std::string id_, 
+			std::string name_,
+			std::string bornDate_, 
+			bool sex_, 
+			Studies studies_
+			) : id(id_), name( name_), bornDate( bornDate_), sex( sex_), studies( studies_)
+		{
+		}
 
-    Patient( const Patient &other)
-      : id(other.id)
-      , name( other.name)
-      , bornDate( other.bornDate)
-      , sex( other.sex)
-      , studies( other.studies)
-    {
-    }
+		Patient( const Patient &other)
+		: id(other.id), name( other.name), bornDate( other.bornDate), sex( other.sex), studies( other.studies)
+		{
+		}
 
-    inline bool operator< (const Patient &b) const
-    {
-      return id.compare( b.id) < 0;
-    }
-  };
-  typedef std::map<std::string, Patient> Patients;
+		inline bool operator< (const Patient &b) const
+		{
+			return id.compare( b.id) < 0;
+		}
+	};
+	typedef std::map<std::string, Patient> Patients;
 
-  Patients m_patients;
+	Patients m_patients;
 
-  typedef std::set<std::string> FoundStudiesSet;
+	typedef std::set<std::string> FoundStudiesSet;
 
-  FoundStudiesSet m_alreadyFoundInRun;
+	FoundStudiesSet m_alreadyFoundInRun;
 
-  void Reset(void);
+	void Reset(void);
 
-  // queue of remainig subfolders
-  std::queue<boost::filesystem::path> m_mainQueue;
+	// queue of remainig subfolders
+	std::queue<boost::filesystem::path> m_mainQueue;
 
-  // currently searched folder
-  std::string m_lastSearchDir;
+	// currently searched folder
+	std::string m_lastSearchDir;
 
-  ResultSet m_lastResultSet;
+	ResultSet m_lastResultSet;
 
-  // supporting functions to go on one folder or to solve single file
-  void SolveDir( boost::filesystem::path & dirName,
-    ResultSet &result);
-  // ...
-  void SolveFile( const boost::filesystem::path & fileName,
-    const boost::filesystem::path & path,
-    ResultSet &result);
-  // ...
-  void SolveDirGET( boost::filesystem::path & dirName,
-    const std::string &patientID,
-		const std::string &studyID,
-		const std::string &serieID,
-    DicomObjSet &result);
-  // ...
-  void SolveFileGET( const boost::filesystem::path & fileName,
-    const std::string &patientID,
-		const std::string &studyID,
-		const std::string &serieID,
-    DicomObjSet &result,
-    const std::string &path);
-	
-  void CheckDataSet( 
-    DcmDataset *dataSet,
-    SerieInfo &sInfo,
-    TableRow &row,
-    std::string path);
+	// supporting functions to go on one folder or to solve single file
+	void SolveDir( boost::filesystem::path & dirName,
+	ResultSet &result);
+	// ...
+	void SolveFile( const boost::filesystem::path & fileName,
+	const boost::filesystem::path & path,
+	ResultSet &result);
+	// ...
+	void SolveDirGET( boost::filesystem::path & dirName,
+	const std::string &patientID,
+	const std::string &studyID,
+	const std::string &serieID,
+	DicomObjSet &result);
+	// ...
+	void SolveFileGET( const boost::filesystem::path & fileName,
+	const std::string &patientID,
+	const std::string &studyID,
+	const std::string &serieID,
+	DicomObjSet &result,
+	const std::string &path);
 
-  Series &GetSeries( const std::string &patientID,
-			const std::string &studyID);
+	void CheckDataSet( 
+	DcmDataset *dataSet,
+	SerieInfo &sInfo,
+	TableRow &row,
+	std::string path);
 
-  void Flush( std::ofstream &stream);
-  void Load( std::ifstream &stream);
+	Series &GetSeries( const std::string &patientID,
+	const std::string &studyID);
+
+	void Flush( std::ofstream &stream);
+	void Load( std::ifstream &stream);
 };
 
 } // namespace

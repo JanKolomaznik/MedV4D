@@ -7,6 +7,8 @@
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
 #include "EditorController.hpp"
+#include "GUI/widgets/ProgressInfoDialog.h"
+#include "backendForDICOM/DcmProvider.h"
 
 class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
 {
@@ -30,6 +32,9 @@ public slots:
 	void 
 	openFile( const QString &aPath );
 
+	void 
+	openDicom( const QString &aPath );
+
 	void
 	updateTransferFunction();
 
@@ -50,6 +55,9 @@ public slots:
 
 	void
 	initAfterLoopStart();
+
+	void
+	dataLoaded();
 signals:
 	void
 	callInitAfterLoopStart();
@@ -64,6 +72,9 @@ protected:
 
 	EditorController::Ptr mViewerController;
 	QMainWindow *mMainWin2;
+
+	ProgressInfoDialog::Ptr mProgressDialog;
+	M4D::Dicom::DicomObjSetPtr mDicomObjSet;
 private:
 
 };

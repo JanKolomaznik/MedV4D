@@ -8,7 +8,7 @@
 #ifndef STUDY_FILTER_H
 #define STUDY_FILTER_H
 
-#include "backendForDICOM/DICOMServiceProvider.h"
+#include "backendForDICOM/DcmProvider.h"
 
 
 namespace M4D {

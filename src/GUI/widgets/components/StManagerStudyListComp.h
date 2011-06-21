@@ -10,7 +10,7 @@
 
 #include <QWidget>
 
-#include "backendForDICOM/DICOMServiceProvider.h"
+#include "backendForDICOM/DcmProvider.h"
 
 
 class QModelIndex;
