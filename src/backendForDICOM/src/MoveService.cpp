@@ -380,50 +380,46 @@ typedef union {
 } UDcmDatasetToVoid;
 
 void
-MoveService::SubTransferOperationSCP(
-	T_ASC_Association **subAssoc, void *data, eCallType type) 
+MoveService::SubTransferOperationSCP( T_ASC_Association **subAssoc, void *data, eCallType type ) 
 {
-    T_DIMSE_Message     msg;
-    T_ASC_PresentationContextID presID;
+	T_DIMSE_Message     msg;
+	T_ASC_PresentationContextID presID;
 
-    if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
+	if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
 	{
-        throw ExceptionBase("No data waiting!");
+	throw ExceptionBase("No data waiting!");
 	}
 
 #define MOVE_OPER_TIMEOUT 30
 
-    OFCondition cond = DIMSE_receiveCommand(
-		*subAssoc, m_mode, MOVE_OPER_TIMEOUT, &presID,
-        &msg, NULL);
+	OFCondition cond = DIMSE_receiveCommand(
+	*subAssoc, m_mode, MOVE_OPER_TIMEOUT, &presID,
+	&msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
 	DicomObj *result = NULL;
 
-  ImageSetData *dataStruct;
+	ImageSetData *dataStruct;
 	DicomObj buddy;
 
-  if (cond == EC_Normal) 
-	{
-    switch (msg.CommandField) 
-    {
-    case DIMSE_C_STORE_RQ:
+	if (cond == EC_Normal) {
+		switch (msg.CommandField) {
+		case DIMSE_C_STORE_RQ:
 			cond = EC_Normal;
 			req = &msg.msg.CStoreRQ;
 
-			switch( type)
-			{
+			switch( type) {
 			case IMAGE_SET:
 				// insert new DICOMObj into container
-        dataStruct = static_cast<ImageSetData *>(data);
+				dataStruct = static_cast<ImageSetData *>(data);
 
 				// SINCHRONIZE !!! ???
 				dataStruct->result->push_back( buddy);
 				result = &dataStruct->result->back();
 				// SINCHRONIZE !!! ???
 
-        // set on_load callback
-        result->SetLoadedCallback( dataStruct->on_loaded);
+				// set on_load callback
+				result->SetLoadedCallback( dataStruct->on_loaded);
 				break;
 
 			case SINGLE_IMAGE:
@@ -432,46 +428,47 @@ MoveService::SubTransferOperationSCP(
 			}
 
 #define WRITE_METAHEADER false
-			UDcmDatasetToVoid uConv; uConv.vp = &result->m_dataset;
-			
-			cond = DIMSE_storeProvider(
-				*subAssoc, presID, req, 
-				(char *)NULL, WRITE_METAHEADER,
-				uConv.dsp, 
-				StoreSCPCallback, (void *)result,
-				m_mode, MOVE_OPER_TIMEOUT);
-            break;
+			UDcmDatasetToVoid uConv; 
+			uConv.vp = (void **)&result->m_dataset;
 
-        default:
+			cond = DIMSE_storeProvider( 
+					*subAssoc, 
+					presID, 
+					req, 
+					(char *)NULL, 
+					WRITE_METAHEADER, 
+					uConv.dsp, 
+					StoreSCPCallback, 
+					(void *)result, 
+					m_mode, 
+					MOVE_OPER_TIMEOUT
+					);
+			break;
+		default:
 			D_PRINT("Unknown command recieved on sub assotation!");
 			throw ExceptionBase();
-            break;
-        }
-    }
+			break;
+		}
+	}
 
 	/* clean up on association termination */
-	if (cond == DUL_PEERREQUESTEDRELEASE)
-	{
-		if( ASC_acknowledgeRelease(*subAssoc).bad())
-		{
+	if (cond == DUL_PEERREQUESTEDRELEASE) {
+		if( ASC_acknowledgeRelease(*subAssoc).bad()) {
 			D_PRINT("Release ACK not sent!");
 			throw ExceptionBase();
 		}
+
 		ASC_dropSCPAssociation(*subAssoc);
 		ASC_destroyAssociation(subAssoc);
-	}
-	else if (cond == DUL_PEERABORTEDASSOCIATION)
-	{
-	}
-	else if (cond != EC_Normal)
-	{
+	} else if (cond == DUL_PEERABORTEDASSOCIATION){
+		/*empty*/
+	} else if (cond != EC_Normal) {
 		LOG("DIMSE Failure (aborting sub-association)");
 		/* some kind of error so abort the association */
 		cond = ASC_abortAssociation(*subAssoc);
 	}
 
-	if (cond != EC_Normal)
-	{
+	if (cond != EC_Normal) {
 		ASC_dropAssociation(*subAssoc);
 		ASC_destroyAssociation(subAssoc);
 	}

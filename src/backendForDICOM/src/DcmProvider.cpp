@@ -12,6 +12,10 @@
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
 
+#include <dcmtk/dcmjpeg/djdecode.h>
+#include <dcmtk/dcmjpls/djdecode.h>
+
+
 #include "boost/filesystem/path.hpp"
 
 #include "common/Common.h"
@@ -44,6 +48,9 @@ DcmProvider::Init(void)
 		g_findService = new FindService();
 		g_moveService = new MoveService();
 	}
+	//TODO - init more codecs
+	DJDecoderRegistration::registerCodecs(); 
+	//DJLSDecoderRegistration::registerCodecs();
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -62,14 +69,15 @@ DcmProvider::Shutdown(void)
 
 void
 DcmProvider::Find(
-		ResultSet &result,
-    const std::string &patientForeName,
-    const std::string &patientSureName,
-    const std::string &patientID,
-		const std::string &dateFrom,
-		const std::string &dateTo,
-    const std::string &referringMD,
-    const std::string &description)
+	ResultSet &result,
+	const std::string &patientForeName,
+	const std::string &patientSureName,
+	const std::string &patientID,
+	const std::string &dateFrom,
+	const std::string &dateTo,
+	const std::string &referringMD,
+	const std::string &description
+	)
 {
 	g_findService->FindForFilter(
     result, patientForeName, patientSureName, patientID,

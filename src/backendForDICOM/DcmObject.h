@@ -10,6 +10,10 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
+
+class DcmDataset;
+class DcmFileFormat;
+
 namespace M4D
 {
 namespace Dicom 
@@ -49,14 +53,11 @@ public:
 
 	/** 
 	 * Pointer to actual dataset container.  
-	 * Void is used because of unimportance
-	 * of files that use (and include) this file to know something about dataSet
-	 * that is defined in DCMTK libraries that are quite bad organized and large.
 	 **/
-	mutable void *m_dataset;
+	mutable DcmDataset *m_dataset;
 
 	/// support for loading & saving
-	void *m_fileFormat;
+	DcmFileFormat *m_fileFormat;
 
 	//  Basic image information members.
 	
