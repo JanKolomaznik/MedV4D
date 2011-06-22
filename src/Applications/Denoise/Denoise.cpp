@@ -5,8 +5,8 @@
 #include <sstream>
 #include <tclap/CmdLine.h>
 
-#include <QWidget>
-#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+//#include <QWidget>
+//#include "GUI/widgets/m4dGUISliceViewerWidget.h"
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
 
