@@ -1,3 +1,7 @@
+#ifndef APPLICATION_MANAGER_H
+#define APPLICATION_MANAGER_H
+
+
 #include "GUI/utils/OpenGLManager.h"
 #include "GUI/utils/ViewerManager.h"
 #include <QtCore>
@@ -39,3 +43,5 @@ protected:
 	bool	mInitialized;
 	QApplication *mApp;
 };
+
+#endif /*APPLICATION_MANAGER_H*/

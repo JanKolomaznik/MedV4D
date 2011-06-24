@@ -42,6 +42,7 @@
 #include "common/TimeMeasurement.h"
 #include <iomanip>
 #include <sstream>
+#include <boost/filesystem.hpp>
 
 //*****************************************************************************
 

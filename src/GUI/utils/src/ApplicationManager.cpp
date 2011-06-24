@@ -1,4 +1,5 @@
 #include "GUI/utils/ApplicationManager.h"
+#include "backendForDICOM/DcmProvider.h"
 #include <QtGui>
 
 
@@ -23,6 +24,7 @@ ApplicationManager::initialize( int argc, char** argv )
 {
 	Medv4DInit();
 	mApp = new QApplication(argc, argv);
+	M4D::Dicom::DcmProvider::Init();
 
 	OpenGLManager::initialize();
 	ViewerManager::initialize();
@@ -36,6 +38,8 @@ ApplicationManager::finalize()
 
 	ViewerManager::finalize();
 	OpenGLManager::finalize();
+
+	M4D::Dicom::DcmProvider::Shutdown();
 	delete mApp;
 }
 
