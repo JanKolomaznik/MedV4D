@@ -324,8 +324,14 @@ GeneralViewer::isJitteringEnabled() const
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
 {
-	getViewerState().mVolumeRenderConfig.camera.YawAround( aAngles[0] );
-	getViewerState().mVolumeRenderConfig.camera.PitchAround( aAngles[1] );
+	getViewerState().mVolumeRenderConfig.camera.YawPitchAround( aAngles[0], aAngles[1] );
+	update();
+}
+
+void
+GeneralViewer::cameraOrbitAbsolute( Vector2f aAngles )
+{
+	getViewerState().mVolumeRenderConfig.camera.YawPitchAbsolute( aAngles[0], aAngles[1] );
 	update();
 }
 

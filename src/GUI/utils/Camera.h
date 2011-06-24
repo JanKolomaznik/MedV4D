@@ -75,8 +75,15 @@ public:
 
 	void
 	YawPitchAround( FloatType yangle, FloatType pangle );
-protected:
+
+	void
+	YawPitchAbsolute( FloatType yangle, FloatType pangle );
+
 	
+protected:
+	void
+	ResetOrbit();
+
 	void
 	UpdateDistance()
 	{ 
@@ -94,7 +101,7 @@ protected:
 		mRightDirection = VectorProduct( mTargetDirection, mUpDirection );
 	}
 	
-	Quaternion<FloatType>	mRotation;
+	//Quaternion<FloatType>	mRotation;
 
 	Position		mTargetPos;
 	Position		mEyePos;

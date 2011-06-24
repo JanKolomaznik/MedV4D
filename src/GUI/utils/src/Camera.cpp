@@ -98,6 +98,22 @@ Camera::YawPitchAround( Camera::FloatType yangle, Camera::FloatType pangle )
 }
 
 void
+Camera::YawPitchAbsolute( FloatType yangle, FloatType pangle )
+{
+	ResetOrbit();
+	YawPitchAround( yangle, pangle );
+}
+
+void
+Camera::ResetOrbit()
+{
+	mEyePos = mTargetPos + Position( 0.0f, 0.0f, mTargetDistance );
+	mUpDirection = Direction( 0.0f, 1.0f, 0.0f );
+	UpdateTargetDirection();
+	UpdateRightDirection();	
+}
+
+void
 DollyCamera( Camera &aCamera, float32 aRatio )
 {
 	Camera::Position center = aCamera.GetTargetPosition();

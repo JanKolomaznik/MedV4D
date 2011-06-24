@@ -232,6 +232,9 @@ public:
 	cameraOrbit( Vector2f aAngles );
 
 	void
+	cameraOrbitAbsolute( Vector2f aAngles );
+
+	void
 	cameraDolly( float aDollyRatio );
 
 	ViewType
