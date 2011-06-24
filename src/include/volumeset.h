@@ -2523,12 +2523,15 @@ bool volGetLocalMinima(/*const*/ CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 		std::list<WatershedCell<T> > fillQueue;
 		for(int x = 0; x < width; x++) {
 			T value = src.planes[z][offset+x];
+
 			if(markers.planes[z][offset+x] == MARKER_UNDEF) {
+				// found a voxel, that has not been processed yet
 				cellQueue.push_back(WatershedCell<T>(value, currentIdx, x, y, z));
 				markers.planes[z][offset+x] = MARKER_VISITED;
 
 				bool bMinimum = true;
 
+				// floodfill
 				while(!cellQueue.empty()) {
 					WatershedCell<T> cell = *cellQueue.begin();
 					cellQueue.pop_front();
@@ -2537,6 +2540,7 @@ bool volGetLocalMinima(/*const*/ CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 					int cellOffset = width * cell.y + cell.x;
 					
 					int tx, ty, tz;
+					// visit all neighbours
 					for(int n = 0; n < (int)vNeighbours.size(); n++) {
 						tx = cell.x + vNeighbours[n].x;
 						ty = cell.y + vNeighbours[n].y;
@@ -2546,24 +2550,25 @@ bool volGetLocalMinima(/*const*/ CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 
 						T destValue = src.getValue(tx, ty, tz);
 						if(destValue < value) {
+							// a lower value has been found on the border -> this is not a minimum (but continue to fill, to prevent false minima)
 							bMinimum = false;
 						} else if(destValue == value && (markers.getValue(tx, ty, tz) == MARKER_UNDEF)) {
+							// another possible member of a minimum, add to queue
 							cellQueue.push_back(WatershedCell<T>(value, currentIdx, tx, ty, tz));
 							markers.setValue(tx, ty, tz, MARKER_VISITED);
 						} 
-
 					}
-
 				}
 
-				if(bMinimum) { // paint found voxels with marker id
+				// found true minimum, paint found voxels with marker id
+				if(bMinimum) { 
 					totalFilled += (int)fillQueue.size();
 					std::list<WatershedCell<T> >::iterator itr;
 					for(itr = fillQueue.begin(); itr != fillQueue.end(); itr++) {
 						WatershedCell<T> cell = *itr;
 
-						if(markers.planes[cell.z][cell.y * width + cell.x] >= 0)
-							printf("Voxel already marked! (%d, %d, %d) id=%d newid=%d\n", cell.x, cell.y, cell.z, markers.planes[cell.z][cell.y * width + cell.x], currentIdx);
+						ASSERT(markers.planes[cell.z][cell.y * width + cell.x] >= 0);
+							//printf("Voxel already marked! (%d, %d, %d) id=%d newid=%d\n", cell.x, cell.y, cell.z, markers.planes[cell.z][cell.y * width + cell.x], currentIdx);
 						markers.planes[cell.z][cell.y * width + cell.x] = currentIdx;
 					}
 					currentIdx++;
@@ -2622,6 +2627,7 @@ bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVol
 	int width, depth, height;
 	src.getSize(width, height, depth);
 
+	// construct a field of +-1 indices for indexing neighbours
 	std::vector<SPoint3D<int> > vNeighbours;
 	getNeighbourIndices(vNeighbours);
 

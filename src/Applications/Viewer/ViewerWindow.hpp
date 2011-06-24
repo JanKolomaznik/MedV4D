@@ -9,6 +9,10 @@
 #include "EditorController.hpp"
 #include "GUI/widgets/ProgressInfoDialog.h"
 #include "backendForDICOM/DcmProvider.h"
+#ifdef OIS_ENABLED
+#include "JoyInput.h"
+#endif
+
 
 class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
 {
@@ -58,6 +62,12 @@ public slots:
 
 	void
 	dataLoaded();
+
+#ifdef OIS_ENABLED
+	void
+	updateJoyControl();
+#endif
+
 signals:
 	void
 	callInitAfterLoopStart();
@@ -75,6 +85,13 @@ protected:
 
 	ProgressInfoDialog::Ptr mProgressDialog;
 	M4D::Dicom::DicomObjSetPtr mDicomObjSet;
+
+#ifdef OIS_ENABLED
+	// OIS
+	JoyInput mJoyInput;
+	QTimer mJoyTimer;
+#endif 
+
 private:
 
 };

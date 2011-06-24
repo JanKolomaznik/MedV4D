@@ -12,7 +12,6 @@
 #include <boost/thread.hpp>
 
 
-
 #include <QtGui>
 namespace M4D
 {
@@ -165,6 +164,16 @@ ViewerWindow::ViewerWindow()
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
+
+	// HH: OIS support
+#ifdef OIS_ENABLED
+	mJoyInput.startup((size_t)this->winId());
+	if(mJoyInput.getNrJoysticks() > 0) {
+		mJoyTimer.setInterval( 50 );
+		QObject::connect( &mJoyTimer, SIGNAL( timeout() ), this, SLOT( updateJoyControl() ) );
+		mJoyTimer.start();
+	}
+#endif
 }
 
 void
@@ -179,6 +188,9 @@ ViewerWindow::initAfterLoopStart()
 
 ViewerWindow::~ViewerWindow()
 {
+#ifdef OIS_ENABLED
+	mJoyInput.destroy();
+#endif
 
 }
 
@@ -262,6 +274,46 @@ ViewerWindow::updateTransferFunction()
 		mLastTimeStamp = timestamp;
 	}
 }
+
+#ifdef OIS_ENABLED
+void
+ViewerWindow::updateJoyControl()
+{
+	M4D::GUI::Viewer::AGLViewer *pViewer;
+	pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+	static M4D::Common::Clock myTimer;
+
+	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+	if(pGenViewer != NULL) {
+		mJoyInput.updateJoys();
+		float dt = myTimer.SecondsPassed();
+		myTimer.Reset();
+
+		float fConstant = dt * 4.0f;
+		static float alpha = 0, beta = 0;
+
+		int iOffset = 512;
+		int iInputValue = mJoyInput.getSlider(0, 0);
+		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0);
+		beta = (beta) * (1-fConstant) + fConstant * (-iInputValue * M_PI / 32768);
+		iInputValue = mJoyInput.getAxis(0, 0);
+		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0);
+		alpha = (alpha) * (1-fConstant) + fConstant * (iInputValue * M_PI / 32768);
+		pGenViewer->cameraOrbit(Vector2f(alpha*0.05f, beta*0.05f));
+
+		float camZ1 = 0;
+		iInputValue = mJoyInput.getAxis(0, 1);
+		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0); // right stick Y
+		camZ1 = fConstant * iInputValue / 65535.0f;
+		float camZ2 = 0;
+		iInputValue = mJoyInput.getAxis(0, 4);
+		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0); // left stick Y
+		camZ2 = fConstant * iInputValue / 65535.0f;
+		pGenViewer->cameraDolly(1.0f + camZ1 + camZ2);		
+	}
+}
+#endif
 
 void
 ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )

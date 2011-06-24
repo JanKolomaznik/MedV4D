@@ -19,6 +19,12 @@ public:
 	{
 		return ((float32)::clock() - mTime)/CLOCKS_PER_SEC;
 	}
+
+	void
+	Reset()
+	{
+		mTime = ::clock();
+	}
 private:
 	clock_t mTime;
 };

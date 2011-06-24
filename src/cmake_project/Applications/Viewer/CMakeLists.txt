@@ -6,6 +6,31 @@ SET(MEDV4D_CMAKE_MODULES_DIR ${MEDV4D_CMAKE_SOURCE_DIR}/Modules)
 
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/ApplicationCMakeListMandatoryInclude.cmake" )
 
+###############################
+## OIS
+OPTION(OIS_ENABLED "Enable components with OIS support" OFF)
+IF(OIS_ENABLED)
+	MESSAGE(STATUS "OIS support enabled")
+	ADD_DEFINITIONS(-DOIS_ENABLED)
+
+	FIND_PACKAGE(OIS REQUIRED)
+
+	INCLUDE_DIRECTORIES( ${OIS_INCLUDE_DIR} )
+ELSE(OIS_ENABLED)
+	MESSAGE(STATUS "OIS support disabled")
+ENDIF(OIS_ENABLED)
+## OIS
+###############################
+
 SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 
 TARGET_MEDV4D_PROGRAM( Viewer ${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/Viewer )
+
+
+###############################
+## OIS
+IF(OIS_ENABLED)
+	TARGET_LINK_LIBRARIES(Viewer ${OIS_LIBRARIES})
+ENDIF(OIS_ENABLED)
+## OIS
+###############################
