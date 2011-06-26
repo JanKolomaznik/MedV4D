@@ -594,7 +594,7 @@ GeneralViewer::finalizeAfterRenderingStep()
 
 }
 
-const MouseEventInfo &
+MouseEventInfo
 GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 {
 	switch ( getViewerState().viewType ) {
@@ -611,14 +611,14 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 				getViewerState().mSliceRenderConfig.viewConfig 
 				);
 			float32 realSlice = getCurrentRealSlice();
-			Vector3f pos = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
-			return MouseEventInfo( event, vt2DAlignedSlices, pos );
+			Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
+			return MouseEventInfo( event, vt2DAlignedSlices, position );
 		}
 		break;
 	default:
 		ASSERT( false );
 	}
-	return MouseEventInfo( NULL, 0 ); //Shouldn't reach this
+	return MouseEventInfo( NULL, vt3D ); //Shouldn't reach this
 }
 
 //***********************************************************************************

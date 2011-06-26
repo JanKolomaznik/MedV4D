@@ -6,7 +6,7 @@
 #include "ui_ViewerWindow.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
-#include "EditorController.hpp"
+#include "AnnotationEditorController.hpp"
 #include "GUI/widgets/ProgressInfoDialog.h"
 #include "backendForDICOM/DcmProvider.h"
 #ifdef OIS_ENABLED
@@ -80,7 +80,7 @@ protected:
 
 	QComboBox *mColorTransformChooser;
 
-	EditorController::Ptr mViewerController;
+	AnnotationEditorController::Ptr mViewerController;
 	QMainWindow *mMainWin2;
 
 	ProgressInfoDialog::Ptr mProgressDialog;

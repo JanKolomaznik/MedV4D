@@ -29,7 +29,7 @@ public:
 	bool mSelected;
 };
 
-class AnnotationEditorController: public QObject, public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
+class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
 	Q_OBJECT;
 public:
@@ -41,13 +41,13 @@ public:
 		aemANGLES,
 
 		aemSENTINEL //use for valid interval testing 
-	} 
+	};
 
 	typedef boost::shared_ptr< AnnotationEditorController > Ptr;
 	typedef M4D::GUI::Viewer::ViewerController ControllerPredecessor;
 	typedef M4D::GUI::Viewer::RenderingExtension RenderingExtPredecessor;
 
-	EditorController();
+	AnnotationEditorController();
 
 	/*bool
 	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
@@ -56,7 +56,7 @@ public:
 	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );*/
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	/*bool
 	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
@@ -79,6 +79,9 @@ public:
 	void
 	render3D();
 
+	QList<QAction *> &
+	getActions();
+
 public slots:
 	void
 	setAnnotationEditMode( int aMode );
@@ -89,6 +92,13 @@ public slots:
 signals:
 	void
 	updateRequest();
+
+protected slots:
+	void
+	editModeActionToggled( QAction *aAction );
+
+	void
+	updateActions();
 public:
 
 	PointSet mPoints;
@@ -96,6 +106,11 @@ public:
 
 	bool mOverlay;
 	AnnotationEditMode mEditMode;
+
+	QList<QAction *> mActions;
+
+	std::map< AnnotationEditMode, AViewerController::Ptr > mAnnotationPrimitiveHandlers;
+
 };
 
 #endif /*ANNOTATION_EDITOR_CONTROLLER_HPP*/

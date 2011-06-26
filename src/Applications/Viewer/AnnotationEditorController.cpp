@@ -1,12 +1,112 @@
 #include "AnnotationEditorController.hpp"
 
 
+class IgnoreViewerController: public M4D::GUI::Viewer::AViewerController
+{
+public:
+	typedef boost::shared_ptr< M4D::GUI::Viewer::AViewerController > Ptr;
+
+	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool	
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) { return false; }
+};
+
+class AnnotatePoints: public M4D::GUI::Viewer::AViewerController
+{
+public:
+	typedef boost::shared_ptr< M4D::GUI::Viewer::AViewerController > Ptr;
+
+	Qt::MouseButton	mVectorEditorInteractionButton;
+	PointSet &mPoints;
+
+	AnnotatePoints( PointSet &aPoints ): mVectorEditorInteractionButton( Qt::LeftButton ), mPoints( aPoints ) {}
+
+	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool	
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
+	{ 
+		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
+		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
+			mPoints.addPoint( aEventInfo.realCoordinates );
+			state.viewerWindow->update();
+			return true;
+		} 
+		return false;
+	}
+
+	bool
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) { return false; }
+};
+
+
 AnnotationEditorController::AnnotationEditorController()
 	: mEditMode( aemNONE )
 {
 	mVectorEditorInteractionButton = Qt::LeftButton;
 
 	mOverlay = false;
+
+		
+	QActionGroup *group = new QActionGroup( this );
+	group->setExclusive( false );
+
+	QAction *action = new QAction( tr( "Point" ), this );
+	action->setData( QVariant( aemPOINTS ) );
+	action->setCheckable( true );
+	group->addAction( action );
+	mActions.push_back( action );
+	mAnnotationPrimitiveHandlers[aemPOINTS] = M4D::GUI::Viewer::AViewerController::Ptr( new AnnotatePoints(mPoints) );
+
+	action = new QAction( tr( "Sphere" ), this );
+	action->setData( QVariant( aemSPHERES ) );
+	action->setCheckable( true );
+	group->addAction( action );
+	mActions.push_back( action );
+	mAnnotationPrimitiveHandlers[aemSPHERES] = M4D::GUI::Viewer::AViewerController::Ptr( new IgnoreViewerController );
+
+	action = new QAction( tr( "Angle" ), this );
+	action->setData( QVariant( aemANGLES ) );
+	action->setCheckable( true );
+	group->addAction( action );
+	mActions.push_back( action );
+	mAnnotationPrimitiveHandlers[aemANGLES] = M4D::GUI::Viewer::AViewerController::Ptr( new IgnoreViewerController );
+
+	action = new QAction( tr( "Line" ), this );
+	action->setData( QVariant( aemLINES ) );
+	action->setCheckable( true );
+	group->addAction( action );
+	mActions.push_back( action );
+	mAnnotationPrimitiveHandlers[aemLINES] = M4D::GUI::Viewer::AViewerController::Ptr( new IgnoreViewerController );
+
+	QObject::connect( group, SIGNAL( triggered ( QAction * ) ), this, SLOT( editModeActionToggled( QAction * ) ) );
+}
+
+void
+AnnotationEditorController::updateActions()
+{
+	for ( QList<QAction*>::iterator it = mActions.begin(); it != mActions.end(); ++it )
+	{
+		(*it)->setChecked( (*it)->data().value<int>() == mEditMode );
+	}
 }
 
 /*bool
@@ -16,19 +116,18 @@ bool
 mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event );*/
 
 bool
-AnnotationEditorController::mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
+AnnotationEditorController::mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
 	//D_PRINT( "mousePressEvent" );
-	M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-	if ( aEventInfo.event->button() == mVectorEditorInteractionButton 
-		&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
-		mPoints.addPoint( aEventInfo.realCoordinates );
-		state.viewerWindow->update();
-		return true;
+
+	if ( mEditMode != aemNONE ) {
+		if ( mAnnotationPrimitiveHandlers[ mEditMode ]->mousePressEvent( aViewerState, aEventInfo ) ) {
+			return true;
+		}
 	}
 	
-	D_PRINT( "mousePressEvent not handled" );
-	return ControllerPredecessor::mousePressEvent ( aViewerState, aEventInfo.event );
+	//D_PRINT( "mousePressEvent not handled" );
+	return ControllerPredecessor::mousePressEvent ( aViewerState, aEventInfo );
 }
 
 /*bool
@@ -113,7 +212,9 @@ AnnotationEditorController::render3D()
 void
 AnnotationEditorController::setAnnotationEditMode( int aMode )
 {
-	ASSERT( aMode < aemSENTINEL && aMode > 0 ); //TODO
+	ASSERT( aMode < aemSENTINEL && aMode >= 0 ); //TODO
+
+	//LOG( "setAnnotationEditMode - " << aMode );
 
 	if( mEditMode != aemNONE ) {
 		abortEditInProgress();
@@ -121,12 +222,36 @@ AnnotationEditorController::setAnnotationEditMode( int aMode )
 		emit updateRequest();
 	}
 
-	mEditMode = aMode;
-	
+	mEditMode = static_cast< AnnotationEditMode >( aMode );
+
+	updateActions();	
 }
 
 void
 AnnotationEditorController::abortEditInProgress()
 {
 	
+}
+
+QList<QAction *> &
+AnnotationEditorController::getActions()
+{
+	return mActions;
+}
+
+void
+AnnotationEditorController::editModeActionToggled( QAction *aAction )
+{
+	ASSERT( aAction != NULL );
+
+	QVariant data = aAction->data();
+	if ( data.canConvert<int>() ) {
+		if ( aAction->isChecked() ) {
+			setAnnotationEditMode( data.value<int>() );
+		} else {
+			setAnnotationEditMode( aemNONE );
+		}
+		return;
+	}
+	D_PRINT( "NOT HANDLED -----------------------" );
 }

@@ -123,12 +123,27 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
 	*/
 
-	//************* TOOLBAR & MENU *************	
+	mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );
+
+	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
 	QToolBar *toolbar = createToolBarFromViewerActionSet( actions, "Viewer settings" );
 	addToolBar( toolbar );
 
 	addViewerActionSetToWidget( *menuViewer, actions );
+	//toolbar->addAction( "BLLLL" );
+
+	//**********************************************
+	//************* ANNOTATION TOOLBAR *************	
+	QList<QAction*> annotationActions = mViewerController->getActions();
+	toolbar = new QToolBar( tr( "Annotations" ), this );
+	for ( QList<QAction*>::iterator it = annotationActions.begin(); it != annotationActions.end(); ++it )
+	{
+		toolbar->addAction( *it );
+	}
+	addToolBar( toolbar );
+
+	//addViewerActionSetToWidget( *menuViewer, actions );
 	//toolbar->addAction( "BLLLL" );
 
 	//*****************************************
@@ -144,15 +159,6 @@ ViewerWindow::ViewerWindow()
 	//QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( updateToolbars() ) );
 	*/
 
-	mViewerController = EditorController::Ptr( new EditorController );
-
-	/*
-
-	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
-	mViewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
-
-	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
-	*/
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mViewerController );
@@ -259,7 +265,7 @@ struct SetTransferFunctionFtor
 void
 ViewerWindow::applyTransferFunction()
 {
-	D_PRINT( "Function updated" );
+	//D_PRINT( "Function updated" );
 	mViewerDesktop->forEachViewer( SetTransferFunctionFtor( mTransferFunctionEditor->GetTransferFunctionBuffer() ) );
 	/*M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
 	if ( viewer ) { viewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() ); }*/

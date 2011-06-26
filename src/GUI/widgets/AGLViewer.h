@@ -130,7 +130,7 @@ protected:
 	virtual void
 	finalizeAfterRenderingStep() = 0;
 
-	virtual const MouseEventInfo &
+	virtual MouseEventInfo 
 	getMouseEventInfo( QMouseEvent * event ) = 0;
 
 //**************************************************************

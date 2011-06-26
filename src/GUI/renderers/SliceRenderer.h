@@ -52,7 +52,7 @@ struct SliceRenderer::RenderingConfiguration
 	Vector3i				currentSlice;
 
 	Vector3f
-	getCurrentRealSlice()
+	getCurrentRealSlice()const
 	{
 		if ( imageData ) {
 			return imageData->GetMinimum() + VectorMemberProduct( currentSlice, imageData->GetElementExtents() );

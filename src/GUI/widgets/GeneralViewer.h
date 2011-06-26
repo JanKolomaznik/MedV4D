@@ -198,7 +198,7 @@ public:
 	getCurrentSlice()const;
 
 	float32
-	getCurrentRealSlice()const
+	getCurrentRealSlice()const;
 
 	void
 	changeCurrentSlice( int32 diff );
@@ -310,7 +310,7 @@ protected:
 	void
 	finalizeAfterRenderingStep();
 
-	const MouseEventInfo &
+	MouseEventInfo
 	getMouseEventInfo( QMouseEvent * event );
 
 //******** TMP ************
