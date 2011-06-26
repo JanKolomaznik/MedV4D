@@ -26,11 +26,11 @@ ViewerController::ViewerController()
 }
 
 bool
-ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
-	QPoint diff = mTrackInfo.trackUpdate( event->pos(), event->globalPos() );
+	QPoint diff = mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
 	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
 		return true;
@@ -41,7 +41,7 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEven
 		return true;
 	}
 	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
-		int speed = mTrackInfo.mStartLocalPosition.y() - event->pos().y();
+		int speed = mTrackInfo.mStartLocalPosition.y() - aEventInfo.event->pos().y();
 		mTmpViewer = &(state.getViewerWindow< GeneralViewer >());
 		mPositive = speed > 0;
 		if( speed != 0 ) {
@@ -58,13 +58,13 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, QMouseEven
 }
 
 bool	
-ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 	if ( state.viewType == vt2DAlignedSlices ) {
 		state.getViewerWindow< GeneralViewer >().switchToNextPlane();
 
-		event->accept();
+		aEventInfo.event->accept();
 		return true;
 	}
 
@@ -72,25 +72,25 @@ ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, QMo
 }
 
 bool
-ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
-	mTrackInfo.startTracking( event->pos(), event->globalPos() );
+	mTrackInfo.startTracking( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
 	if ( state.viewType == vt3D ) {
-		if( event->button() == mCameraOrbitButton ) {
+		if( aEventInfo.event->button() == mCameraOrbitButton ) {
 			mInteractionMode = imORBIT_CAMERA;
 			return true;
 		}
 	}
 	if ( state.viewType == vt2DAlignedSlices ) {
-		if( event->button() == mFastSliceChangeMouseButton ) {
+		if( aEventInfo.event->button() == mFastSliceChangeMouseButton ) {
 			mInteractionMode = imFAST_SLICE_CHANGE;
 			return true;
 		}
 	}
 	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow || state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection ) {
-		if( event->button() == mLUTSetMouseButton ) {
+		if( aEventInfo.event->button() == mLUTSetMouseButton ) {
 			mInteractionMode = imLUT_SETTING;
 			return true;
 		}
@@ -100,16 +100,16 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, QMouseEve
 }
 
 bool
-ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, QMouseEvent * event )
+ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-	if ( (mInteractionMode == imORBIT_CAMERA && event->button() == mCameraOrbitButton)
-	  || (mInteractionMode == imLUT_SETTING && event->button() == mLUTSetMouseButton) ) 
+	if ( (mInteractionMode == imORBIT_CAMERA && aEventInfo.event->button() == mCameraOrbitButton)
+	  || (mInteractionMode == imLUT_SETTING && aEventInfo.event->button() == mLUTSetMouseButton) ) 
 	{
 		mInteractionMode = imNONE;
 		return true;
 	}
-	if ( mInteractionMode == imFAST_SLICE_CHANGE && event->button() == mFastSliceChangeMouseButton ) {
+	if ( mInteractionMode == imFAST_SLICE_CHANGE && aEventInfo.event->button() == mFastSliceChangeMouseButton ) {
 		mTimer.stop();
 		mInteractionMode = imNONE;
 		return true;
@@ -260,6 +260,14 @@ GeneralViewer::getCurrentSlice()const
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
 	return getViewerState().mSliceRenderConfig.currentSlice[ plane ];
+}
+
+float32
+GeneralViewer::getCurrentRealSlice()const
+{
+	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
+	Vector3f realSlices = getViewerState().mSliceRenderConfig.getCurrentRealSlice();
+	return realSlices[plane];
 }
 
 void
@@ -584,6 +592,33 @@ void
 GeneralViewer::finalizeAfterRenderingStep()
 {
 
+}
+
+const MouseEventInfo &
+GeneralViewer::getMouseEventInfo( QMouseEvent * event )
+{
+	switch ( getViewerState().viewType ) {
+	case vt3D:
+		{
+			return MouseEventInfo( event, vt3D );
+		}
+		break;
+	case vt2DAlignedSlices:
+		{
+			Vector2f pos = GetRealCoordinatesFromScreen( 
+				Vector2f( event->posF().x(), event->posF().y() ), 
+				getViewerState().mWindowSize, 
+				getViewerState().mSliceRenderConfig.viewConfig 
+				);
+			float32 realSlice = getCurrentRealSlice();
+			Vector3f pos = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
+			return MouseEventInfo( event, vt2DAlignedSlices, pos );
+		}
+		break;
+	default:
+		ASSERT( false );
+	}
+	return MouseEventInfo( NULL, 0 ); //Shouldn't reach this
 }
 
 //***********************************************************************************

@@ -105,16 +105,16 @@ public:
 	ViewerController();
 
 	bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
 	bool	
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
 	bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event );
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
 	bool
 	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
@@ -196,6 +196,9 @@ public:
 
 	int32
 	getCurrentSlice()const;
+
+	float32
+	getCurrentRealSlice()const
 
 	void
 	changeCurrentSlice( int32 diff );
@@ -306,6 +309,9 @@ protected:
 
 	void
 	finalizeAfterRenderingStep();
+
+	const MouseEventInfo &
+	getMouseEventInfo( QMouseEvent * event );
 
 //******** TMP ************
 	bool

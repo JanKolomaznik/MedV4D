@@ -168,7 +168,7 @@ AGLViewer::resizeOverlayGL( int width, int height )
 void	
 AGLViewer::mouseMoveEvent ( QMouseEvent * event )
 { 
-	if ( mViewerController && mViewerController->mouseMoveEvent( mViewerState, event ) ) {
+	if ( mViewerController && mViewerController->mouseMoveEvent( mViewerState, getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }
@@ -178,7 +178,7 @@ AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
 	ViewerManager::getInstance()->selectViewer( this );
 
-	if ( mViewerController && mViewerController->mouseDoubleClickEvent( mViewerState, event ) ) {
+	if ( mViewerController && mViewerController->mouseDoubleClickEvent( mViewerState, getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }
@@ -188,7 +188,7 @@ AGLViewer::mousePressEvent ( QMouseEvent * event )
 { 	
 	ViewerManager::getInstance()->selectViewer( this );
 
-	if ( mViewerController && mViewerController->mousePressEvent( mViewerState, event ) ) {
+	if ( mViewerController && mViewerController->mousePressEvent( mViewerState,  getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }
@@ -198,7 +198,7 @@ AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
 { 
 	ViewerManager::getInstance()->selectViewer( this );
 
-	if ( mViewerController && mViewerController->mouseReleaseEvent( mViewerState, event ) ) {
+	if ( mViewerController && mViewerController->mouseReleaseEvent( mViewerState, getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }

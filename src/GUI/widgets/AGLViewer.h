@@ -24,6 +24,27 @@ enum ViewType
 	vt3D			= 1 << 2
 };
 
+struct MouseEventInfo
+{
+	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType ): event( aEvent ), viewType( aViewType )
+		{ }
+
+	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Vector3f aPos ): event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
+		{ }
+
+	QMouseEvent *event;
+	ViewType viewType;
+
+	//2D section
+	Vector3f realCoordinates;
+
+	//3D section
+	
+	//HalfAxis axis;
+
+};
+
+
 class BaseViewerState
 {
 public:
@@ -54,16 +75,16 @@ public:
 	typedef boost::shared_ptr< AViewerController > Ptr;
 
 	virtual bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 
 	virtual bool	
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 
 	virtual bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 
 	virtual bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QMouseEvent * event ) = 0;
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 
 	virtual bool
 	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) = 0;
@@ -108,6 +129,9 @@ protected:
 
 	virtual void
 	finalizeAfterRenderingStep() = 0;
+
+	virtual const MouseEventInfo &
+	getMouseEventInfo( QMouseEvent * event ) = 0;
 
 //**************************************************************
 
