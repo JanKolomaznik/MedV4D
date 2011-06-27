@@ -60,6 +60,8 @@ struct VolumeRenderer::RenderingConfiguration
 	bool					jitterEnabled;
 	bool					shadingEnabled;
 	size_t					sampleCount;				
+
+	Vector3f				lightPosition;
 };
 
 

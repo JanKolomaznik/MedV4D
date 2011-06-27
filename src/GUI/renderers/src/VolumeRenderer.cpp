@@ -53,8 +53,9 @@ VolumeRenderer::Finalize()
 {
 	//TODO
 }
-
-/*void
+//#define HHHHAAAA
+#ifdef HHHHAAAA
+void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
 {
 	ASSERT( aConfig.imageData != NULL );
@@ -105,7 +106,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
-	mCgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
+	mCgEffect.SetParameter( "gLightPosition", aConfig.lightPosition );
 	mCgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
 	mCgEffect.SetParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
 	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
@@ -167,7 +168,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 
 	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
-}*/
+}
+
+#else
 
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
@@ -245,7 +248,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
 }
-
+#endif
 
 }//Renderer
 }//GUI

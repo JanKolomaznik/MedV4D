@@ -3,6 +3,7 @@
 
 
 #include "common/Common.h"
+#include "common/Sphere.h"
 #include "GUI/utils/OGLTools.h"
 #include "Imaging/AImage.h"
 #include "Imaging/ImageRegion.h"
@@ -144,10 +145,22 @@ GLDrawMesh( const M4D::Imaging::Geometry::Mesh< VertexType, FaceType > &mesh );
 
 
 void
-DrawCircle( float32 radius );
+DrawCircle( float32 radius, size_t segCount = 32 );
+
+void
+DrawCircle( Vector2f center, float32 radius, size_t segCount = 32 );
+
+void
+DrawCircle( const Circlef &circle, size_t segCount = 32 );
 
 void
 DrawSphere( float32 radius );
+
+void
+DrawSphere( Vector3f center, float32 radius );
+
+void
+DrawSphere( const Sphere3Df &sphere );
 
 void
 DrawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );

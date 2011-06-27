@@ -168,6 +168,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	state->mVolumeRenderConfig.sampleCount = 200;
 	state->mVolumeRenderConfig.shadingEnabled = true;
 	state->mVolumeRenderConfig.jitterEnabled = true;
+	state->mVolumeRenderConfig.lightPosition = Vector3f( 3000.0f, -3000.0f, 3000.0f );
 
 	state->viewerWindow = this;
 
@@ -554,6 +555,12 @@ GeneralViewer::render()
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				M4D::GLDrawBoundingBox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
 			}
+			GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
+			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
+			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_AMBIENT, Vector4f( 0.25f, 0.25f, 0.25f, 1.0f ).GetData() ) );
+			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_DIFFUSE, Vector4f( 1.0f, 1.0f, 1.0f, 1.0f ).GetData() ) );
+			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );
+
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				mRenderingExtension->preRender3D();	
 			}

@@ -110,6 +110,12 @@ public slots:
 	select();
 	void
 	deselect();
+
+	void
+	setBackgroundColor( QColor aColor )
+	{
+		mViewerState->backgroundColor = aColor;
+	}
 signals:
 	void
 	viewerSelected();

@@ -427,7 +427,7 @@ fp_SimpleRegionColorMap_3D(
 }
 
 
-POINT LINE_OUT
+POINT TRIANGLE_OUT
 void gp_GenerateSlice( 
 			AttribArray<float4> position :POSITION,
 			uniform float3 aViewDirection,
@@ -575,7 +575,7 @@ technique TransferFunction1DShadingJitter_3D {
 
 		//GeometryProgram = compile gp4gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
 
-		FragmentProgram = compile glslf fp_TransferFunction1DShadingJitter_3D( 
+		FragmentProgram = compile gp4fp fp_TransferFunction1DShadingJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
 									gTransferFunction1DInterval, 

@@ -4,6 +4,7 @@
 #include <cmath>
 #include "common/Common.h"
 #include "common/Vector.h"
+#include "common/GeometricPrimitives.h"
 #include <ostream>
 #include <iomanip>
 

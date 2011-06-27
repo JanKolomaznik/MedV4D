@@ -42,6 +42,8 @@ public:
 		}
 
 		viewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
+
+		//viewer->setBackgroundColor( QColor( 50,50,100 ) );
 		return viewer;
 	}
 	void

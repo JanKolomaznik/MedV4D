@@ -169,7 +169,7 @@ GLDrawVolumeSliceCenterSamples(
 		maxId	
 		);
 	
-	numberOfSteps = 2; //**************
+	numberOfSteps = 4; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
 	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
@@ -412,19 +412,36 @@ GLDrawBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 
 }
 
 void
-DrawCircle( float32 radius )
+DrawCircle( float32 radius, size_t segCount )
 {
-	size_t segCount = 32;
-	float sAlpha = sin( PI / segCount );
-	float cAlpha = cos( PI / segCount );
+	float sAlpha = sin( 2*PI / segCount );
+	float cAlpha = cos( 2*PI / segCount );
 
 	Vector< float, 2 > v( radius, 0.0f );
-	glBegin( GL_POLYGON );
+	glBegin( GL_TRIANGLE_FAN );
+	GLVertexVector( Vector2f() );
 	for( size_t i = 0; i < segCount-1; ++i ) {
 		GLVertexVector( v );
 		v = Vector< float, 2 >( v[0] * cAlpha - v[1] * sAlpha, v[0] * sAlpha + v[1] * cAlpha );
 	}
+	GLVertexVector( Vector2f(radius,0.0f) );
 	glEnd();
+}
+
+void
+DrawCircle( Vector2f center, float32 radius, size_t segCount )
+{
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glTranslatef( center[0], center[1], 0.0f );
+	DrawCircle( radius, segCount );
+	glPopMatrix();
+}
+
+void
+DrawCircle( const Circlef &circle, size_t segCount )
+{
+	DrawCircle( circle.center(), circle.radius(), segCount );
 }
 
 void
@@ -437,6 +454,22 @@ DrawSphere( float32 radius )
 	gluSphere(quadratic,radius,32,32);
 
 	gluDeleteQuadric(quadratic);
+}
+
+void
+DrawSphere( Vector3f center, float32 radius )
+{
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glTranslatef( center[0], center[1], center[2] );
+	DrawSphere( radius );
+	glPopMatrix();
+}
+
+void
+DrawSphere( const Sphere3Df &sphere )
+{
+	DrawSphere( sphere.center(), sphere.radius() );
 }
 
 void

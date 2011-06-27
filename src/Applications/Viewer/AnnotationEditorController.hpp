@@ -3,6 +3,8 @@
 
 #include <QtGui>
 
+#include "common/GeometricPrimitives.h"
+#include "common/Sphere.h"
 #include "GUI/widgets/GeneralViewer.h"
 #include "GUI/utils/OGLTools.h"
 #include "GUI/utils/OGLDrawing.h"
@@ -11,7 +13,7 @@
 
 
 //using namespace M4D;
-class PointSet
+/*class PointSet
 {
 public:
 	void
@@ -27,7 +29,39 @@ public:
 
 	size_t mSelectedIdx;
 	bool mSelected;
+};*/
+
+class AnnotationBasicViewerController: public M4D::GUI::Viewer::AViewerController
+{
+public:
+	typedef boost::shared_ptr< AnnotationBasicViewerController > Ptr;
+
+	Qt::MouseButton	mVectorEditorInteractionButton;
+
+	AnnotationBasicViewerController(): mVectorEditorInteractionButton( Qt::LeftButton ) {}
+
+	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool	
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) { return false; }
+
+	virtual void
+	abortEditation(){}
 };
+
+typedef std::vector< M4D::Point3Df > PointSet;
+typedef std::vector< M4D::Line3Df > LineSet;
+typedef std::vector< M4D::Sphere3Df > SphereSet;
 
 class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -49,20 +83,20 @@ public:
 
 	AnnotationEditorController();
 
-	/*bool
-	mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
+	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool	
-	mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );*/
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool
 	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
-	/*bool
-	mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
+	bool
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool
-	wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event );*/
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
 
 	unsigned
 	getAvailableViewTypes()const;
@@ -102,6 +136,8 @@ protected slots:
 public:
 
 	PointSet mPoints;
+	LineSet mLines;
+	SphereSet mSpheres;
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	bool mOverlay;
@@ -109,7 +145,7 @@ public:
 
 	QList<QAction *> mActions;
 
-	std::map< AnnotationEditMode, AViewerController::Ptr > mAnnotationPrimitiveHandlers;
+	std::map< AnnotationEditMode, AnnotationBasicViewerController::Ptr > mAnnotationPrimitiveHandlers;
 
 };
 

@@ -89,7 +89,8 @@ AGLViewer::paintGL()
 	}
 
 	if( mSelected ) {
-		glDisable(GL_DEPTH_TEST );
+		GL_CHECKED_CALL( glDisable(GL_DEPTH_TEST ) );
+		GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 		//****************************************************	
 		glClear( GL_DEPTH_BUFFER_BIT );
 		glMatrixMode(GL_PROJECTION);
