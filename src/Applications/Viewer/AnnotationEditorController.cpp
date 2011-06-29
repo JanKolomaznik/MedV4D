@@ -1,4 +1,5 @@
 #include "AnnotationEditorController.hpp"
+#include "AnnotationSettingsDialog.hpp"
 
 
 
@@ -174,7 +175,7 @@ AnnotationEditorController::AnnotationEditorController()
 
 	mOverlay = false;
 
-		
+	//Chosen tool actions****************
 	QActionGroup *group = new QActionGroup( this );
 	group->setExclusive( false );
 
@@ -182,40 +183,75 @@ AnnotationEditorController::AnnotationEditorController()
 	action->setData( QVariant( aemPOINTS ) );
 	action->setCheckable( true );
 	group->addAction( action );
-	mActions.push_back( action );
+	mChosenToolActions.push_back( action );
 	mAnnotationPrimitiveHandlers[aemPOINTS] = AnnotationBasicViewerController::Ptr( new AnnotatePoints(mPoints) );
 
 	action = new QAction( tr( "Sphere" ), this );
 	action->setData( QVariant( aemSPHERES ) );
 	action->setCheckable( true );
 	group->addAction( action );
-	mActions.push_back( action );
+	mChosenToolActions.push_back( action );
 	mAnnotationPrimitiveHandlers[aemSPHERES] = AnnotationBasicViewerController::Ptr( new AnnotateSpheres( mSpheres ) );
 
 	action = new QAction( tr( "Angle" ), this );
 	action->setData( QVariant( aemANGLES ) );
 	action->setCheckable( true );
 	group->addAction( action );
-	mActions.push_back( action );
+	mChosenToolActions.push_back( action );
 	mAnnotationPrimitiveHandlers[aemANGLES] = AnnotationBasicViewerController::Ptr( new AnnotationBasicViewerController );
 
 	action = new QAction( tr( "Line" ), this );
 	action->setData( QVariant( aemLINES ) );
 	action->setCheckable( true );
 	group->addAction( action );
-	mActions.push_back( action );
+	mChosenToolActions.push_back( action );
 	mAnnotationPrimitiveHandlers[aemLINES] = AnnotationBasicViewerController::Ptr( new AnnotateLines( mLines ) );
 
 	QObject::connect( group, SIGNAL( triggered ( QAction * ) ), this, SLOT( editModeActionToggled( QAction * ) ) );
+
+	mActions.append( mChosenToolActions );
+	//****************************************
+	
+	action = new QAction( tr("Annotations Enabled"), this );
+	mActions.push_back( action );
+
+	action = new QAction( tr("Annotation Settings"), this );
+	QObject::connect( action, SIGNAL( triggered ( bool ) ), this, SLOT( showSettingsDialog() ) );
+	mActions.push_back( action );
+
+	mSettingsDialog = new AnnotationSettingsDialog();
+	QObject::connect( mSettingsDialog, SIGNAL( applied() ), this, SLOT( applySettings() ) );
+}
+
+AnnotationEditorController::~AnnotationEditorController()
+{
+	delete mSettingsDialog;
 }
 
 void
 AnnotationEditorController::updateActions()
 {
-	for ( QList<QAction*>::iterator it = mActions.begin(); it != mActions.end(); ++it )
+	for ( QActionList::iterator it = mChosenToolActions.begin(); it != mChosenToolActions.end(); ++it )
 	{
 		(*it)->setChecked( (*it)->data().value<int>() == mEditMode );
 	}
+}
+
+void
+AnnotationEditorController::showSettingsDialog()
+{
+	ASSERT( mSettingsDialog != NULL );
+	if ( mSettingsDialog->showDialog( mSettings ) ) {
+		applySettings();
+	}	
+}
+
+void
+AnnotationEditorController::applySettings()
+{
+	mSettings = mSettingsDialog->getSettings();
+
+	emit updateRequest();
 }
 
 bool
@@ -355,6 +391,44 @@ AnnotationEditorController::render3D()
 	GL_CHECKED_CALL( glPointSize( 4.0f ) );
 
 	
+	renderPoints3D();
+
+	renderLines3D();
+
+	renderSpheres3D();
+	
+	renderAngles3D();
+
+	GL_CHECKED_CALL( glPopAttrib() );
+}
+
+void
+AnnotationEditorController::renderPoints2D()
+{
+
+}
+
+void
+AnnotationEditorController::renderSpheres2D()
+{
+
+}
+
+void
+AnnotationEditorController::renderLines2D()
+{
+
+}
+
+void
+AnnotationEditorController::renderAngles2D()
+{
+
+}
+//------------------------------------------
+void
+AnnotationEditorController::renderPoints3D()
+{
 	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
@@ -364,7 +438,23 @@ AnnotationEditorController::render3D()
 		}
 		//std::for_each( mPoints.mPoints.begin(), mPoints.mPoints.end(), M4D::GLVertexVector );
 	glEnd();
+}
 
+void
+AnnotationEditorController::renderSpheres3D()
+{
+	GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
+	//GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
+	GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Vector4f( 1.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
+	//GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, Vector4f( 3.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
+	for( size_t i = 0; i < mSpheres.size(); ++i ) {
+		M4D::DrawSphere( mSpheres[i] );
+	}
+}
+
+void
+AnnotationEditorController::renderLines3D()
+{
 	glBegin( GL_LINES );
 		for( size_t i = 0; i < mLines.size(); ++i ) {
 			M4D::GLVertexVector( mLines[i].firstPoint() );
@@ -377,19 +467,13 @@ AnnotationEditorController::render3D()
 			M4D::GLVertexVector( mLines[i].secondPoint() );
 		}
 	glEnd();
-
-	
-	GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
-	//GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
-	GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Vector4f( 1.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
-	//GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, Vector4f( 3.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
-	for( size_t i = 0; i < mSpheres.size(); ++i ) {
-		M4D::DrawSphere( mSpheres[i] );
-	}
-
-	GL_CHECKED_CALL( glPopAttrib() );
 }
 
+void
+AnnotationEditorController::renderAngles3D()
+{
+
+}
 
 void
 AnnotationEditorController::setAnnotationEditMode( int aMode )

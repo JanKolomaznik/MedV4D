@@ -1,4 +1,4 @@
-#include "backendForDICOM/DICOMServiceProvider.h"
+#include "backendForDICOM/DcmProvider.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 #include <sstream>

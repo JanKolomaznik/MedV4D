@@ -326,7 +326,7 @@ fp_TransferFunction1DJitter_3D(
 {
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness*3;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
 	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
 	float3 position = aTexCoord;
 
@@ -355,7 +355,7 @@ fp_TransferFunction1DShadingJitter_3D(
 {
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness*3;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
 	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
 	float3 position = aTexCoord;
 

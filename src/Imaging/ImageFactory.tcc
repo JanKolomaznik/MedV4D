@@ -124,8 +124,13 @@ PrepareElementArraySimple( uint32 size )
 		ElementType *arrayP = NULL;
 		arrayP = new ElementType[size];
 		
-		D_PRINT( "******** Allocating array - size:= " << size << "; pointer:= " 
-			<< (int*)arrayP << "; end:= " << (int*)(arrayP + size) );
+		D_PRINT( "******** Allocating array ********" << std::endl 
+				<< "element type - " << TypeTraits<ElementType>::Typename() << std::endl
+				<< "size := " << size  << std::endl
+				<< "size (bytes) := " << size*sizeof(ElementType)  << std::endl
+				<< "pointer := " << (int*)arrayP  << std::endl
+				<< "end := " << (int*)(arrayP + size) 
+				);
 
 		return arrayP;
 	}
@@ -163,10 +168,12 @@ ImageFactory::CreateEmptyImageFromExtents(
 		)
 {
 	D_BLOCK_COMMENT( "++++++++ Create Empty Image from Extents ++++++++", "++++++++ Create Empty Image finished ++++++++" )
-	D_PRINT( "++++++++ Dimension      = " << Dim );
-	D_PRINT( "++++++++ minimum      = " << minimum );
-	D_PRINT( "++++++++ maximum     = " << maximum );
-	D_PRINT( "++++++++ ElementExt = " << elementExtents );
+	D_PRINT( "++++++++ Element type = " << TypeTraits<ElementType>::Typename() << std::endl
+	<< "++++++++ Dimension    = " << Dim  << std::endl
+	<< "++++++++ minimum      = " << minimum  << std::endl
+	<< "++++++++ maximum      = " << maximum  << std::endl
+	<< "++++++++ ElementExt   = " << elementExtents  << std::endl
+	);
 	typename ImageDataTemplate< ElementType >::Ptr data = 
 		ImageFactory::CreateEmptyImageDataTyped< ElementType, Dim>( maximum - minimum, elementExtents );
 
@@ -204,9 +211,11 @@ ImageFactory::CreateEmptyImage2DTyped(
 			)
 {
 	D_BLOCK_COMMENT( "++++++++ Creating 2D Image ++++++++", "++++++++ Image creation finished ++++++++" )
-	D_PRINT( "++++++++ Width      = " << width );
-	D_PRINT( "++++++++ Height     = " << height );
-	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight );
+	D_PRINT( std::endl 
+		<< "++++++++ Width      = " << width << std::endl
+		<< "++++++++ Height     = " << height << std::endl
+		<< "++++++++ ElementExt = " << elementWidth << "x" << elementHeight 
+		);
 
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
@@ -228,9 +237,11 @@ ImageFactory::ReallocateImage2DData(
 		)
 {
 	D_BLOCK_COMMENT( "++++++++ Reallocating 2D Image ++++++++", "++++++++ Image reallocation finished ++++++++" )
-	D_PRINT( "++++++++ Width      = " << width );
-	D_PRINT( "++++++++ Height     = " << height );
-	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight );
+	D_PRINT( std::endl 
+		<< "++++++++ Width      = " << width << std::endl
+		<< "++++++++ Height     = " << height << std::endl
+		<< "++++++++ ElementExt = " << elementWidth << "x" << elementHeight 
+		);
 
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
@@ -272,10 +283,12 @@ ImageFactory::CreateEmptyImage3DTyped(
 			)
 {
 	D_BLOCK_COMMENT( "++++++++ Creating 3D Image ++++++++", "++++++++ Image creation finished ++++++++" )
-	D_PRINT( "++++++++ Width      = " << width );
-	D_PRINT( "++++++++ Height     = " << height );
-	D_PRINT( "++++++++ Depth      = " << depth );
-	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth );
+	D_PRINT( std::endl 
+		<< "++++++++ Width      = " << width << std::endl
+		<< "++++++++ Height     = " << height << std::endl
+		<< "++++++++ Depth      = " << depth << std::endl
+		<< "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth 
+		);
 
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
@@ -299,10 +312,12 @@ ImageFactory::ReallocateImage3DData(
 		)
 {
 	D_BLOCK_COMMENT( "++++++++ Reallocating 3D Image ++++++++", "++++++++ Image reallocation finished ++++++++" )
-	D_PRINT( "++++++++ Width      = " << width );
-	D_PRINT( "++++++++ Height     = " << height );
-	D_PRINT( "++++++++ Depth      = " << depth );
-	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth );
+	D_PRINT( std::endl 
+		<< "++++++++ Width      = " << width << std::endl
+		<< "++++++++ Height     = " << height << std::endl
+		<< "++++++++ Depth      = " << depth << std::endl
+		<< "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth 
+		);
 
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 

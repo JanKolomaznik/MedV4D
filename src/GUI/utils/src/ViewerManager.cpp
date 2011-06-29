@@ -77,6 +77,15 @@ ViewerManager::initialize()
 			true 
 			);
 	mPimpl->mViewerActions.addAction( actionEnableShading );
+	//****************************	
+	QAction *actionEnableBoundingBox = createGeneralViewerAction( 
+			QString( "Bounding Box" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableBoundingBox, _1, _2 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isBoundingBoxEnabled, _1 ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true 
+			);
+	mPimpl->mViewerActions.addAction( actionEnableBoundingBox );
 	mPimpl->mViewerActions.addSeparator();
 	//****************************	
 	QAction *actionXY = createGeneralViewerAction( 
@@ -130,6 +139,42 @@ ViewerManager::initialize()
 			M4D::Functors::PredicateAlwaysTrue()
 			);
 	mPimpl->mViewerActions.addAction( colorTransformChooser );
+	//****************************	
+	QAction *actionLowQuality = createGeneralViewerAction( 
+			QString( "Low Quality" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmLow ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmLow) ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true
+			);
+	QAction *actionNormalQuality = createGeneralViewerAction( 
+			QString( "Normal Quality" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmNormal ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmNormal) ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true
+			);
+	QAction *actionHighQuality = createGeneralViewerAction( 
+			QString( "High Quality" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmHigh ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmHigh) ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true
+			);
+	QAction *actionFinestQuality = createGeneralViewerAction( 
+			QString( "Finest Quality" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmFinest ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmFinest) ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true
+			);
+	QActionGroup *qualityGroup = new QActionGroup( NULL );
+	qualityGroup->addAction( actionLowQuality );
+	qualityGroup->addAction( actionNormalQuality );
+	qualityGroup->addAction( actionHighQuality );
+	qualityGroup->addAction( actionFinestQuality );
+	mPimpl->mViewerActions.addActionGroup( qualityGroup );
+	mPimpl->mViewerActions.addSeparator();
 }
 
 void

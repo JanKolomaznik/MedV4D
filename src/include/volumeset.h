@@ -7,6 +7,8 @@
 #include <omp.h>
 #include <algorithm>
 #include <queue>
+#include <cstring>
+#include <ctime>
 
 #ifdef OPENCL
 
@@ -2563,7 +2565,7 @@ bool volGetLocalMinima(/*const*/ CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 				// found true minimum, paint found voxels with marker id
 				if(bMinimum) { 
 					totalFilled += (int)fillQueue.size();
-					std::list<WatershedCell<T> >::iterator itr;
+					typename std::list<WatershedCell<T> >::iterator itr;
 					for(itr = fillQueue.begin(); itr != fillQueue.end(); itr++) {
 						WatershedCell<T> cell = *itr;
 
@@ -2749,7 +2751,7 @@ void volCreateTestData(CVolumeSet<T> &dest) {
 	int width, height, depth;
 	dest.getSize(width, height, depth);
 	
-	srand(GetTickCount());
+	srand(time(NULL));
 
 	std::vector<SPoint3D<int> > centers;
 //	SPoint3D<int> center(width/2, height/2, depth/2);

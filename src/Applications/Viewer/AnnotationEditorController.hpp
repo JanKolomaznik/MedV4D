@@ -31,6 +31,8 @@ public:
 	bool mSelected;
 };*/
 
+class AnnotationSettingsDialog;
+
 class AnnotationBasicViewerController: public M4D::GUI::Viewer::AViewerController
 {
 public:
@@ -67,6 +69,25 @@ class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, pub
 {
 	Q_OBJECT;
 public:
+	struct AnnotationSettings {
+		//General
+		bool annotationsEnabled;
+
+		//Points
+		QColor pointColor;
+
+		//Lines
+
+		//Spheres
+		bool sphereContourVisible2D;
+		QColor sphereContourColor2D;
+		bool sphereFill2D;
+		QColor sphereFillColor2D;
+
+		QColor sphereColor3D;
+		bool sphereEnableShading3D;
+	};
+
 	enum AnnotationEditMode {
 		aemNONE,
 		aemPOINTS,
@@ -77,11 +98,13 @@ public:
 		aemSENTINEL //use for valid interval testing 
 	};
 
+	typedef QList<QAction *> QActionList;
 	typedef boost::shared_ptr< AnnotationEditorController > Ptr;
 	typedef M4D::GUI::Viewer::ViewerController ControllerPredecessor;
 	typedef M4D::GUI::Viewer::RenderingExtension RenderingExtPredecessor;
 
 	AnnotationEditorController();
+	~AnnotationEditorController();
 
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
@@ -113,7 +136,7 @@ public:
 	void
 	render3D();
 
-	QList<QAction *> &
+	QActionList &
 	getActions();
 
 public slots:
@@ -123,6 +146,8 @@ public slots:
 	void
 	abortEditInProgress();
 
+	void
+	showSettingsDialog();
 signals:
 	void
 	updateRequest();
@@ -133,6 +158,33 @@ protected slots:
 
 	void
 	updateActions();
+
+	void
+	applySettings();
+protected:
+	void
+	renderPoints2D();
+
+	void
+	renderSpheres2D();
+
+	void
+	renderLines2D();
+
+	void
+	renderAngles2D();
+
+	void
+	renderPoints3D();
+
+	void
+	renderSpheres3D();
+
+	void
+	renderLines3D();
+
+	void
+	renderAngles3D();
 public:
 
 	PointSet mPoints;
@@ -143,9 +195,15 @@ public:
 	bool mOverlay;
 	AnnotationEditMode mEditMode;
 
-	QList<QAction *> mActions;
+	QActionList mActions;
+
+	QActionList mChosenToolActions;
 
 	std::map< AnnotationEditMode, AnnotationBasicViewerController::Ptr > mAnnotationPrimitiveHandlers;
+
+	AnnotationSettings mSettings;
+
+	AnnotationSettingsDialog *mSettingsDialog;
 
 };
 

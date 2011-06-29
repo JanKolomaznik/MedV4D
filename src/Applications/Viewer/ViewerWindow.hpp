@@ -63,6 +63,9 @@ public slots:
 	void
 	dataLoaded();
 
+	void
+	selectedViewerSettingsChanged();
+
 #ifdef OIS_ENABLED
 	void
 	updateJoyControl();
@@ -82,6 +85,9 @@ protected:
 
 	AnnotationEditorController::Ptr mViewerController;
 	QMainWindow *mMainWin2;
+	
+	QLabel *mInfoLabel;
+
 
 	ProgressInfoDialog::Ptr mProgressDialog;
 	M4D::Dicom::DicomObjSetPtr mDicomObjSet;

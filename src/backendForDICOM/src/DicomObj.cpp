@@ -118,6 +118,14 @@ DicomObj::Init()
 	if( m_dataset == NULL)
 		throw ExceptionBase("No data available!");
 
+	// here should be solved all cases of pixelRepresentation (tag: 0x0028, 0x0103)
+	// it is connected in tranfer syntax etc. ...
+	//TODO better checking
+	OFCondition cond = m_dataset->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
+	if( !cond.good() ) {
+		throw ExceptionBase( "chooseRepresentation() failed");
+	}
+
 	// get image with & height
 	m_dataset->findAndGetUint16( DCM_Columns, m_width);
 	m_dataset->findAndGetUint16( DCM_Rows, m_height);
@@ -147,11 +155,20 @@ DicomObj::Init()
 	std::istringstream stream( str.substr(found+1).c_str());
 	stream >> m_orderInSet;
 
+
+	uint16 pixelRepresentation;
+	m_dataset->findAndGetUint16( DCM_PixelRepresentation, pixelRepresentation);
+	if( pixelRepresentation > 0) {
+		m_signed = true;
+	} else {
+		m_signed = false;
+	}
+
 	// try to get data
 	const uint16 *data;
 
 	// since we are using only implicit transfer syntax array are 16bit.
-	OFCondition cond = m_dataset->findAndGetUint16Array( DCM_PixelData, data, NULL );
+	cond = m_dataset->findAndGetUint16Array( DCM_PixelData, data, NULL );
 	if( cond.bad() ) {
 		D_PRINT( "Cannot obtain pixel data!");
 		m_status = Failed;
@@ -174,32 +191,17 @@ DicomObj::FlushIntoArray( const T *dest)
 	if( m_dataset == NULL)
 		throw ExceptionBase("No data available!");
 
-	uint16 bitsAllocated, highBit, pixelRepresentation, bitsStored;
+	uint16 bitsAllocated, highBit, bitsStored;
 	// get other needed pixel attribs
 	m_dataset->findAndGetUint16( DCM_BitsStored, bitsStored);
 	m_dataset->findAndGetUint16( DCM_BitsAllocated, bitsAllocated);
 	m_dataset->findAndGetUint16( DCM_HighBit, highBit);
-	m_dataset->findAndGetUint16( DCM_PixelRepresentation, pixelRepresentation);
 
-	if( pixelRepresentation > 0) {
-		m_signed = true;
-	} else {
-		m_signed = false;
-	}
-
-
-	// here should be solved all cases of pixelRepresentation (tag: 0x0028, 0x0103)
-	// it is connected in tranfer syntax etc. ...
-	//TODO better checking
-	OFCondition cond = m_dataset->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
-	if( !cond.good() ) {
-		throw ExceptionBase( "chooseRepresentation() failed");
-	}
 
 	const uint16 *data;
 	unsigned long itemCount;
 	// since we are using only implicit transfer syntax array are 16bit.
-	cond = m_dataset->findAndGetUint16Array( DCM_PixelData, data, &itemCount );
+	OFCondition cond = m_dataset->findAndGetUint16Array( DCM_PixelData, data, &itemCount );
 	if( !cond.good() || data == NULL ) {
 		throw ExceptionBase( "Cannot obtain pixel data!");
 	}

@@ -272,13 +272,14 @@ DcmProvider::CreateImageDataFromDICOM(
 		float32 tmp1 = 0.0;
 		float32 tmp2 = 1.0;
 		float32 tmp3 = 0.0;
-		(*dicomObjects)[0].GetSliceLocation( tmp1 );
-		(*dicomObjects)[1].GetSliceLocation( tmp2 );
-		if( dicomObjects->size() > 2 ) {
-			(*dicomObjects)[2].GetSliceLocation( tmp3 );
+		if( depth > 1 ) { //TODO handle 2D images properly
+			(*dicomObjects)[0].GetSliceLocation( tmp1 );
+			(*dicomObjects)[1].GetSliceLocation( tmp2 );
+			if( dicomObjects->size() > 2 ) {
+				(*dicomObjects)[2].GetSliceLocation( tmp3 );
+			}
+			voxelDepth = Max( Abs( tmp1 - tmp2 ), Abs( tmp2 - tmp3 ) );
 		}
-		voxelDepth = Max( Abs( tmp1 - tmp2 ), Abs( tmp2 - tmp3 ) );
-
 		if(voxelWidth <= 0.0f) voxelWidth = 1.0f;
 		if(voxelHeight <= 0.0f) voxelHeight = 1.0f;
 		if(voxelDepth <= 0.0f) voxelDepth = 1.0f;

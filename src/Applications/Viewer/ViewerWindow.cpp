@@ -150,8 +150,8 @@ ViewerWindow::ViewerWindow()
 
 	//*****************************************
 
-	QLabel *infoLabel = new QLabel();
-	statusbar->addWidget( infoLabel );
+	mInfoLabel = new QLabel();
+	statusbar->addWidget( mInfoLabel );
 
 
 	/*mColorTransformChooser = new QComboBox;
@@ -172,6 +172,8 @@ ViewerWindow::ViewerWindow()
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
+
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
 
 	// HH: OIS support
 #ifdef OIS_ENABLED
@@ -347,8 +349,28 @@ ViewerWindow::updateToolbars()
 }
 
 void
+ViewerWindow::selectedViewerSettingsChanged()
+{
+	M4D::GUI::Viewer::AGLViewer *pViewer;
+	pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+	QString text;
+	if(pGenViewer != NULL) {
+		if( pGenViewer->getViewType() == M4D::GUI::Viewer::vt2DAlignedSlices ) {
+			if( pGenViewer->getColorTransformType() == M4D::GUI::Renderer::ctLUTWindow ) {
+				Vector2f win = pGenViewer->getLUTWindow();
+				text = QString::number( win[0] ) + "/" + QString::number( win[1] );
+			}
+		}
+	}
+	mInfoLabel->setText( text );
+}
+
+void
 ViewerWindow::openFile()
 {
+	try {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
 
 	if ( !fileName.isEmpty() ) {
@@ -359,6 +381,12 @@ ViewerWindow::openFile()
 		} else {
 			openFile( fileName );
 		}
+	}
+	} catch ( std::exception &e ) {
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	}
+	catch (...) {
+		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
 	}
 }
 

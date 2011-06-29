@@ -180,7 +180,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 
 	mViewerState = BaseViewerState::Ptr( state );
 
-
+	setRenderingQuality( qmNormal );
 
 	setColorTransformType( M4D::GUI::Renderer::ctLUTWindow );
 
@@ -238,6 +238,7 @@ void
 GeneralViewer::switchToNextPlane()
 {
 	getViewerState().mSliceRenderConfig.plane = NextCartesianPlane( getViewerState().mSliceRenderConfig.plane );
+	zoomFit(); //TODO remove
 	notifyAboutSettingsChange();
 	update();
 }
@@ -246,6 +247,8 @@ void
 GeneralViewer::setCurrentViewPlane( CartesianPlanes aPlane )
 {
 	getViewerState().mSliceRenderConfig.plane = aPlane;
+	
+	zoomFit(); //TODO remove
 	notifyAboutSettingsChange();
 	update();
 }
@@ -498,6 +501,50 @@ GeneralViewer::resetView()
 	update();
 }
 
+QualityMode
+GeneralViewer::getRenderingQuality()
+{
+	return getViewerState().mQualityMode;
+}
+
+void
+GeneralViewer::setRenderingQuality( int aQualityMode )
+{
+	//TODO check
+	getViewerState().mQualityMode = static_cast< QualityMode >( aQualityMode );
+
+	switch ( getViewerState().mQualityMode ) {
+	case qmLow:
+		getViewerState().mVolumeRenderConfig.sampleCount = 90;
+		break;
+	case qmNormal:
+		getViewerState().mVolumeRenderConfig.sampleCount = 180;
+		break;
+	case qmHigh:
+		getViewerState().mVolumeRenderConfig.sampleCount = 450;
+		break;
+	case qmFinest:
+		getViewerState().mVolumeRenderConfig.sampleCount = 1000;
+		break;
+	}
+	notifyAboutSettingsChange();
+	update();
+}
+
+bool
+GeneralViewer::isBoundingBoxEnabled()const
+{
+	return getViewerState().mEnableVolumeBoundingBox;
+}
+
+void
+GeneralViewer::enableBoundingBox( bool aEnable )
+{
+	getViewerState().mEnableVolumeBoundingBox = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
 //********************************************************************************
 
 void
@@ -535,7 +582,6 @@ GeneralViewer::prepareForRenderingStep()
 		break;
 	case vt2DAlignedSlices:
 		{
-			zoomFit();
 			SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
 		}
 		break;
@@ -676,6 +722,7 @@ GeneralViewer::PrepareData()
 	resetView();
 
 	_prepared = true;
+	zoomFit(); //TODO remove
 	return true;
 }
 

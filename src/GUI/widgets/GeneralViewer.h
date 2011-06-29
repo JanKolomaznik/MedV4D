@@ -35,6 +35,12 @@ namespace Viewer
 {
 
 class GeneralViewer;
+enum QualityMode {
+		qmLow,
+		qmNormal,
+		qmHigh,
+		qmFinest
+	};
 
 class ViewerState : public BaseViewerState
 {
@@ -60,6 +66,7 @@ public:
 	M4D::GUI::Renderer::VolumeRenderer	mVolumeRenderer;
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
 	bool 					mEnableVolumeBoundingBox;
+	QualityMode				mQualityMode;
 	
 };
 
@@ -95,6 +102,7 @@ class ViewerController: public AViewerController
 	Q_OBJECT;
 public:
 	typedef boost::shared_ptr< ViewerController > Ptr;
+	
 	enum InteractionMode { 
 		imNONE,
 		imORBIT_CAMERA,
@@ -251,6 +259,12 @@ public:
 	
 	void
 	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension );
+	
+	bool
+	isBoundingBoxEnabled()const;
+
+	QualityMode
+	getRenderingQuality();
 public slots:
 	void
 	setViewType( int aViewType );
@@ -270,6 +284,11 @@ public slots:
 	void
 	enableJittering( bool aEnable );
 
+	void
+	setRenderingQuality( int aQualityMode );
+
+	void
+	enableBoundingBox( bool aEnable );
 	
 	void
 	resetView();

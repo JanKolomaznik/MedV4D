@@ -48,6 +48,29 @@ VectorToQString( const TVector & aVector )
 	return res;
 }
 
+
+template< typename TType >
+void
+synchronizeBoolAndChecked( TType &aObject, bool &aVariable, bool aFrom )
+{
+	if( aFrom ) {
+		aVariable = aObject.isChecked();
+	} else {
+		aObject.setChecked( aVariable );
+	}
+}
+
+template< typename TType >
+void
+synchronizeBoolAndEnabled( TType &aObject, bool &aVariable, bool aFrom )
+{
+	if( aFrom ) {
+		aVariable = aObject.isEnabled();
+	} else {
+		aObject.setEnabled( aVariable );
+	}
+}
+
 }//namespace GUI
 }//namespace M4D
 
