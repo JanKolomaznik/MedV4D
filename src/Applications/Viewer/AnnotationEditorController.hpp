@@ -32,6 +32,7 @@ public:
 };*/
 
 class AnnotationSettingsDialog;
+class AnnotationWidget;
 
 class AnnotationBasicViewerController: public M4D::GUI::Viewer::AViewerController
 {
@@ -61,9 +62,155 @@ public:
 	abortEditation(){}
 };
 
-typedef std::vector< M4D::Point3Df > PointSet;
+//typedef std::vector< M4D::Point3Df > PointSet;
 typedef std::vector< M4D::Line3Df > LineSet;
-typedef std::vector< M4D::Sphere3Df > SphereSet;
+//typedef std::vector< M4D::Sphere3Df > SphereSet;
+
+class PointSet : public QAbstractListModel, public std::vector< M4D::Point3Df >
+{
+	Q_OBJECT;
+public:
+	typedef std::vector< M4D::Point3Df > Container;
+	PointSet( QObject *parent = 0): QAbstractListModel(parent) 
+	{
+	
+	}
+
+	int 
+	rowCount(const QModelIndex &parent = QModelIndex()) const
+	{
+		return size();
+	}
+	int 
+	columnCount(const QModelIndex &parent = QModelIndex()) const
+	{
+		return 3;
+	}
+
+	QVariant 
+	data(const QModelIndex &index, int role) const
+	{
+		if (!index.isValid())
+			return QVariant();
+
+		if ( index.row() >= (int)size() || index.column() > 2 )
+			return QVariant();
+		
+		if (role == Qt::DisplayRole) {
+			return at( index.row() )[index.column()];
+		}
+		
+		return QVariant();
+	}
+
+	QVariant 
+	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
+	{
+		if (role != Qt::DisplayRole)
+			return QVariant();
+
+		if( orientation == Qt::Vertical ) {
+			return section;
+		}
+		switch( section ) {
+		case 0:
+			return QString("X");
+		case 1:
+			return QString("Y");
+		case 2:
+			return QString("Z");
+		default:
+			return QVariant();
+		}
+		return QVariant();
+	}
+
+	void
+	push_back( const value_type &aVal )
+	{
+		QAbstractListModel::beginInsertRows(QModelIndex(), size(), size() );
+		Container::push_back( aVal );
+		QAbstractListModel::endInsertRows();
+	}
+
+};
+
+class SphereSet : public QAbstractListModel, public std::vector< M4D::Sphere3Df >
+{
+	Q_OBJECT;
+public:
+	typedef std::vector< M4D::Sphere3Df > Container;
+	SphereSet( QObject *parent = 0): QAbstractListModel(parent) 
+	{
+	
+	}
+
+	int 
+	rowCount(const QModelIndex &parent = QModelIndex()) const
+	{
+		return size();
+	}
+	int 
+	columnCount(const QModelIndex &parent = QModelIndex()) const
+	{
+		return 4;
+	}
+
+	QVariant 
+	data(const QModelIndex &index, int role) const
+	{
+		if (!index.isValid())
+			return QVariant();
+
+		if ( index.row() >= (int)size() || index.column() > 3 )
+			return QVariant();
+		
+		if (role == Qt::DisplayRole) {
+			if( index.column() <= 2 ) {
+				return at( index.row() ).center()[index.column()];
+			} else {
+				return at( index.row() ).radius();
+			}
+		}
+		
+		return QVariant();
+	}
+
+	QVariant 
+	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
+	{
+		if (role != Qt::DisplayRole)
+			return QVariant();
+
+		if( orientation == Qt::Vertical ) {
+			return section;
+		}
+		switch( section ) {
+		case 0:
+			return QString("X");
+		case 1:
+			return QString("Y");
+		case 2:
+			return QString("Z");
+		case 3:
+			return QString("Radius");
+		default:
+			return QVariant();
+		}
+		return QVariant();
+	}
+
+	void
+	push_back( const value_type &aVal )
+	{
+		QAbstractListModel::beginInsertRows(QModelIndex(), size(), size() );
+		Container::push_back( aVal );
+		QAbstractListModel::endInsertRows();
+	}
+
+};
+
+
 
 class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -139,6 +286,9 @@ public:
 	QActionList &
 	getActions();
 
+	QWidget *
+	getAnnotationView();
+
 public slots:
 	void
 	setAnnotationEditMode( int aMode );
@@ -204,6 +354,8 @@ public:
 	AnnotationSettings mSettings;
 
 	AnnotationSettingsDialog *mSettingsDialog;
+
+	AnnotationWidget *mAnnotationView;
 
 };
 

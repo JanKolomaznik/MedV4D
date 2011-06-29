@@ -164,6 +164,13 @@ GL_TEXTURE_VECTOR_DEFINITION_MACRO( f, 4 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( d, 4 )
 //***************************************
 
+
+inline void
+GLColorFromQColor( const QColor &color )
+{
+	glColor4f( color.redF(), color.greenF(), color.blueF(), color.alphaF() );
+}
+
 template< typename T >
 struct M4DToGLType
 {

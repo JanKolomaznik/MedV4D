@@ -126,6 +126,9 @@ ViewerWindow::ViewerWindow()
 	*/
 
 	mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );
+	dockwidget = new MultiDockWidget( tr("Annotations" ) );
+	dockwidget->setWidget( mViewerController->getAnnotationView() );
+	dockwidget->addDockingWindow( Qt::RightDockWidgetArea, this );
 
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();

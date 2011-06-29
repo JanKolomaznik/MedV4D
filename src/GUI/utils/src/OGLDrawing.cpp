@@ -420,7 +420,7 @@ DrawCircle( float32 radius, size_t segCount )
 	Vector< float, 2 > v( radius, 0.0f );
 	glBegin( GL_TRIANGLE_FAN );
 	GLVertexVector( Vector2f() );
-	for( size_t i = 0; i < segCount-1; ++i ) {
+	for( size_t i = 0; i < segCount; ++i ) {
 		GLVertexVector( v );
 		v = Vector< float, 2 >( v[0] * cAlpha - v[1] * sAlpha, v[0] * sAlpha + v[1] * cAlpha );
 	}
@@ -443,6 +443,40 @@ DrawCircle( const Circlef &circle, size_t segCount )
 {
 	DrawCircle( circle.center(), circle.radius(), segCount );
 }
+
+void
+DrawCircleContour( float32 radius, size_t segCount )
+{
+	float sAlpha = sin( 2*PI / segCount );
+	float cAlpha = cos( 2*PI / segCount );
+
+	Vector< float, 2 > v( radius, 0.0f );
+	glBegin( GL_LINE_LOOP );
+	GLVertexVector( Vector2f() );
+	for( size_t i = 0; i < segCount; ++i ) {
+		GLVertexVector( v );
+		v = Vector< float, 2 >( v[0] * cAlpha - v[1] * sAlpha, v[0] * sAlpha + v[1] * cAlpha );
+	}
+	glEnd();
+}
+
+void
+DrawCircleContour( Vector2f center, float32 radius, size_t segCount )
+{
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glTranslatef( center[0], center[1], 0.0f );
+	DrawCircle( radius, segCount );
+	glPopMatrix();
+}
+
+void
+DrawCircleContour( const Circlef &circle, size_t segCount )
+{
+	DrawCircle( circle.center(), circle.radius(), segCount );
+}
+
+
 
 void
 DrawSphere( float32 radius )

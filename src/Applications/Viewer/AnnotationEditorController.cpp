@@ -1,6 +1,8 @@
 #include "AnnotationEditorController.hpp"
 #include "AnnotationSettingsDialog.hpp"
 
+#include "AnnotationWidget.hpp"
+
 
 
 
@@ -221,11 +223,26 @@ AnnotationEditorController::AnnotationEditorController()
 
 	mSettingsDialog = new AnnotationSettingsDialog();
 	QObject::connect( mSettingsDialog, SIGNAL( applied() ), this, SLOT( applySettings() ) );
+
+//*******************************
+	mAnnotationView = new AnnotationWidget( &mPoints, &mSpheres );
+
+
+	//Settings
+	mSettings.sphereFillColor2D = QColor( 255, 0, 0, 128 );
+	mSettings.sphereContourColor2D = QColor( 255, 255, 255 );
+	mSettings.sphereColor3D = QColor( 255, 0, 0 );
 }
 
 AnnotationEditorController::~AnnotationEditorController()
 {
 	delete mSettingsDialog;
+}
+
+QWidget *
+AnnotationEditorController::getAnnotationView()
+{
+	return mAnnotationView;
 }
 
 void
@@ -339,10 +356,13 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 
 	glBegin( GL_LINES );
 		for( size_t i = 0; i < mLines.size(); ++i ) {
-			//if ( IntervalTest( aInterval[0], aInterval[1], mPoints[i][aPlane] ) ) { 
-				M4D::GLVertexVector( VectorPurgeDimension( mLines[i].firstPoint(), aPlane ) );
-				M4D::GLVertexVector( VectorPurgeDimension( mLines[i].secondPoint(), aPlane ) );
-			//}
+			if ( (mLines[i].firstPoint()[aPlane] < aInterval[0] && mLines[i].secondPoint()[aPlane] < aInterval[0])
+				|| (mLines[i].firstPoint()[aPlane] > aInterval[1] && mLines[i].secondPoint()[aPlane] > aInterval[1]) )
+			{ 
+				continue;
+			}
+			M4D::GLVertexVector( VectorPurgeDimension( mLines[i].firstPoint(), aPlane ) );
+			M4D::GLVertexVector( VectorPurgeDimension( mLines[i].secondPoint(), aPlane ) );
 		}
 	glEnd();
 	glBegin( GL_POINTS );
@@ -356,9 +376,13 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 		}
 	glEnd();
 
+	GL_CHECKED_CALL( M4D::GLColorFromQColor( mSettings.sphereFillColor2D ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
-		Vector2f pos = VectorPurgeDimension( mSpheres[i].center(), aPlane );
-		M4D::DrawCircle( pos, mSpheres[i].radius() );
+		float r2 = Sqr( mSpheres[i].radius() ) - Sqr( mSpheres[i].center()[ aPlane ] - 0.5*(aInterval[0]+aInterval[1]) );
+		if ( r2 > 0.0f ) { 
+			Vector2f pos = VectorPurgeDimension( mSpheres[i].center(), aPlane );
+			M4D::DrawCircle( pos, Sqrt( r2 ) /*mSpheres[i].radius()*/ );
+		}
 	}
 
 	GL_CHECKED_CALL( glPopAttrib() );
@@ -445,7 +469,14 @@ AnnotationEditorController::renderSpheres3D()
 {
 	GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 	//GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
-	GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Vector4f( 1.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
+	GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, 
+				Vector4f( 
+					mSettings.sphereColor3D.redF(), 
+					mSettings.sphereColor3D.greenF(), 
+					mSettings.sphereColor3D.blueF(), 
+					mSettings.sphereColor3D.alphaF() 
+					).GetData() ) 
+			);
 	//GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, Vector4f( 3.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
 		M4D::DrawSphere( mSpheres[i] );

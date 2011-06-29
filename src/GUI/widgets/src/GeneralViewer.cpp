@@ -173,7 +173,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	state->viewerWindow = this;
 
 	//state->backgroundColor = QColor( 20, 10, 90);
-	state->backgroundColor = QColor( 0, 0, 0);
+	state->backgroundColor = QColor( 0, 0, 0, 0);
 
 	state->availableViewTypes = 5;
 	state->viewType = vt2DAlignedSlices;

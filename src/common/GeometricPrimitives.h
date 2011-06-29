@@ -23,13 +23,13 @@ public:
 	TType &
 	x() { return PredecessorType::template StaticGet< 0 >(); }
 
-	const TType &
+	TType
 	x() const { return PredecessorType::template StaticGet< 0 >(); }
 
 	TType &
 	y() { return PredecessorType::template StaticGet< 1 >(); }
 
-	const TType &
+	TType 
 	y() const { return PredecessorType::template StaticGet< 1 >(); }
 
 	Point2D&
@@ -66,19 +66,19 @@ public:
 	TType &
 	x() { return PredecessorType::template StaticGet< 0 >(); }
 
-	const TType &
+	TType
 	x() const { return PredecessorType::template StaticGet< 0 >(); }
 
 	TType &
 	y() { return PredecessorType::template StaticGet< 1 >(); }
 
-	const TType &
+	TType
 	y() const { return PredecessorType::template StaticGet< 1 >(); }
 
 	TType &
 	z() { return PredecessorType::template StaticGet< 2 >(); }
 
-	const TType &
+	TType
 	z() const { return PredecessorType::template StaticGet< 2 >(); }
 
 	Point3D&
@@ -115,25 +115,25 @@ public:
 	TType &
 	x() { return PredecessorType::template StaticGet< 0 >(); }
 
-	const TType &
+	TType
 	x() const { return PredecessorType::template StaticGet< 0 >(); }
 
 	TType &
 	y() { return PredecessorType::template StaticGet< 1 >(); }
 
-	const TType &
+	TType
 	y() const { return PredecessorType::template StaticGet< 1 >(); }
 
 	TType &
 	z() { return PredecessorType::template StaticGet< 2 >(); }
 
-	const TType &
+	TType 
 	z() const { return PredecessorType::template StaticGet< 2 >(); }
 
 	TType &
 	w() { return PredecessorType::template StaticGet< 3 >(); }
 
-	const TType &
+	TType 
 	w() const { return PredecessorType::template StaticGet< 3 >(); }
 
 	Point4D&

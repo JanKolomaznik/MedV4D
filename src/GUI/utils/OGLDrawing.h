@@ -154,6 +154,16 @@ void
 DrawCircle( const Circlef &circle, size_t segCount = 32 );
 
 void
+DrawCircleContour( float32 radius, size_t segCount = 32 );
+
+void
+DrawCircleContour( Vector2f center, float32 radius, size_t segCount = 32 );
+
+void
+DrawCircleContour( const Circlef &circle, size_t segCount = 32 );
+
+
+void
 DrawSphere( float32 radius );
 
 void

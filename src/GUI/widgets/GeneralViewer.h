@@ -332,6 +332,13 @@ protected:
 	MouseEventInfo
 	getMouseEventInfo( QMouseEvent * event );
 
+	void	
+	resizeGL ( int width, int height )
+	{
+		PredecessorType::resizeGL( width, height );
+		zoomFit();
+	}
+
 //******** TMP ************
 	bool
 	IsDataPrepared();
