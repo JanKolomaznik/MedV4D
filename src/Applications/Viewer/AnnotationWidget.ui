@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="annotationTabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pointsTab">
       <attribute name="title">
@@ -45,54 +45,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QTableWidget" name="tableWidget_3">
-         <attribute name="horizontalHeaderDefaultSectionSize">
-          <number>60</number>
-         </attribute>
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>true</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string>ID</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Length</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>X1</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Y1</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Z1</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>X2</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Y2</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Z2</string>
-          </property>
-         </column>
-        </widget>
+        <widget class="QTableView" name="linesTableView"/>
        </item>
       </layout>
      </widget>
@@ -147,9 +100,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="clearAllButton">
        <property name="text">
-        <string>PushButton</string>
+        <string>Clear All</string>
        </property>
       </widget>
      </item>
@@ -158,5 +111,42 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>AnnotationWidget</receiver>
+   <slot>exportCSV()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>27</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>AnnotationWidget</receiver>
+   <slot>clearAllAnnotations()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>354</x>
+     <y>276</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>364</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>exportCSV()</slot>
+  <slot>clearAllAnnotations()</slot>
+ </slots>
 </ui>

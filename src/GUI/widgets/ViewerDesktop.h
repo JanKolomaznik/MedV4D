@@ -50,6 +50,14 @@ public slots:
 	void
 	setLayoutOrganization( int cols, int rows );
 
+	void
+	updateAllViewers()
+	{
+		for ( ViewerList::iterator it = mViewers.begin(); it != mViewers.end(); ++it ) {
+			it->viewer->update();
+		}
+	}
+
 protected:
 	AGLViewer *
 	createViewer();

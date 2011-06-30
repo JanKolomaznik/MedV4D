@@ -63,29 +63,62 @@ public:
 };
 
 //typedef std::vector< M4D::Point3Df > PointSet;
-typedef std::vector< M4D::Line3Df > LineSet;
+//typedef std::vector< M4D::Line3Df > LineSet;
 //typedef std::vector< M4D::Sphere3Df > SphereSet;
+//
 
-class PointSet : public QAbstractListModel, public std::vector< M4D::Point3Df >
+class AVectorItemModel: public QAbstractListModel
 {
-	Q_OBJECT;
 public:
-	typedef std::vector< M4D::Point3Df > Container;
-	PointSet( QObject *parent = 0): QAbstractListModel(parent) 
-	{
-	
-	}
+	AVectorItemModel( QObject *parent = 0): QAbstractListModel(parent)
+	{}
+
+	virtual void clear()=0;
+};
+
+template< typename TType >
+class VectorItemModel:public AVectorItemModel, public std::vector< TType >
+{
+public:
+	typedef std::vector< TType > Container;
+
+	VectorItemModel( QObject *parent = 0): AVectorItemModel(parent)
+	{}
 
 	int 
 	rowCount(const QModelIndex &parent = QModelIndex()) const
 	{
-		return size();
+		return this->size();
 	}
+
+	void
+	push_back( const typename Container::value_type &aVal )
+	{
+		QAbstractListModel::beginInsertRows(QModelIndex(), this->size(), this->size() );
+		Container::push_back( aVal );
+		QAbstractListModel::endInsertRows();
+	}
+
+	void
+	clear()
+	{
+		QAbstractListModel::beginRemoveRows(QModelIndex(), 0, this->size()-1 );
+		Container::clear();
+		QAbstractListModel::endRemoveRows();
+	}
+};
+
+class PointSet : public VectorItemModel< M4D::Point3Df >
+{
+	Q_OBJECT;
+public:
+	
+	PointSet( QObject *parent = 0): VectorItemModel< M4D::Point3Df >(parent) 
+	{}
+
 	int 
 	columnCount(const QModelIndex &parent = QModelIndex()) const
-	{
-		return 3;
-	}
+	{return 3;}
 
 	QVariant 
 	data(const QModelIndex &index, int role) const
@@ -124,32 +157,17 @@ public:
 		}
 		return QVariant();
 	}
-
-	void
-	push_back( const value_type &aVal )
-	{
-		QAbstractListModel::beginInsertRows(QModelIndex(), size(), size() );
-		Container::push_back( aVal );
-		QAbstractListModel::endInsertRows();
-	}
-
 };
 
-class SphereSet : public QAbstractListModel, public std::vector< M4D::Sphere3Df >
+class SphereSet : public VectorItemModel< M4D::Sphere3Df >
 {
 	Q_OBJECT;
 public:
-	typedef std::vector< M4D::Sphere3Df > Container;
-	SphereSet( QObject *parent = 0): QAbstractListModel(parent) 
+	SphereSet( QObject *parent = 0): VectorItemModel< M4D::Sphere3Df >(parent) 
 	{
 	
 	}
 
-	int 
-	rowCount(const QModelIndex &parent = QModelIndex()) const
-	{
-		return size();
-	}
 	int 
 	columnCount(const QModelIndex &parent = QModelIndex()) const
 	{
@@ -199,15 +217,70 @@ public:
 		}
 		return QVariant();
 	}
+};
 
-	void
-	push_back( const value_type &aVal )
+class LineSet : public VectorItemModel<  M4D::Line3Df >
+{
+	Q_OBJECT;
+public:
+	LineSet( QObject *parent = 0): VectorItemModel<  M4D::Line3Df >(parent) 
 	{
-		QAbstractListModel::beginInsertRows(QModelIndex(), size(), size() );
-		Container::push_back( aVal );
-		QAbstractListModel::endInsertRows();
+	
 	}
 
+	int 
+	columnCount(const QModelIndex &parent = QModelIndex()) const
+	{
+		return 6;
+	}
+
+	QVariant 
+	data(const QModelIndex &index, int role) const
+	{
+		if (!index.isValid())
+			return QVariant();
+
+		if ( index.row() >= (int)size() || index.column() > 5 )
+			return QVariant();
+		
+		if (role == Qt::DisplayRole) {
+			if ( index.column() < 3 ) {
+				return at( index.row() ).firstPoint()[index.column()];
+			} else {
+				return at( index.row() ).secondPoint()[index.column()-3];
+			}
+		}
+		
+		return QVariant();
+	}
+
+	QVariant 
+	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
+	{
+		if (role != Qt::DisplayRole)
+			return QVariant();
+
+		if( orientation == Qt::Vertical ) {
+			return section;
+		}
+		switch( section ) {
+		case 0:
+			return QString("X1");
+		case 1:
+			return QString("Y1");
+		case 2:
+			return QString("Z1");
+		case 3:
+			return QString("X2");
+		case 4:
+			return QString("Y2");
+		case 5:
+			return QString("Z2");
+		default:
+			return QVariant();
+		}
+		return QVariant();
+	}
 };
 
 
@@ -219,6 +292,8 @@ public:
 	struct AnnotationSettings {
 		//General
 		bool annotationsEnabled;
+
+		bool overlayed;
 
 		//Points
 		QColor pointColor;
@@ -298,6 +373,13 @@ public slots:
 
 	void
 	showSettingsDialog();
+
+	void
+	setOverlay( bool aOverlay )
+	{
+		mSettings.overlayed = aOverlay;
+		emit updateRequest();
+	}
 signals:
 	void
 	updateRequest();

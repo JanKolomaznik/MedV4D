@@ -49,6 +49,9 @@ public slots:
 	updateToolbars();
 
 	void
+	updateGui();
+
+	void
 	changeViewerType( int aRendererType );
 
 	void

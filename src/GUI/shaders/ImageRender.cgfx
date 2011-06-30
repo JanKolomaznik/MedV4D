@@ -229,7 +229,11 @@ fp_WLWindow_3D(
 	//Disable interpolation
 	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
-	float value = ( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier;
+	float value = clamp( 
+			( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier,
+			0.0f,
+			1.0f
+			);
 		
 	OUT.color = float4( value.xxx, 1.0f );
 

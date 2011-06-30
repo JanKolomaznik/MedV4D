@@ -41,7 +41,7 @@ public:
 			mConnection->ConnectConsumer( viewer->InputPort()[0] );
 		}
 
-		viewer->setLUTWindow( Vector2f( 500.0f,1000.0f ) );
+		viewer->setLUTWindow( Vector2f( 1500.0f,100.0f ) );
 
 		//viewer->setBackgroundColor( QColor( 50,50,100 ) );
 		return viewer;
@@ -173,6 +173,8 @@ ViewerWindow::ViewerWindow()
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
 
 
+	QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), this, SLOT( updateGui() ), Qt::QueuedConnection );
+
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
 
@@ -240,14 +242,22 @@ ViewerWindow::changeColorMapType( const QString & aColorMapName )
 void
 ViewerWindow::testSlot()
 {
-	mViewerController->mOverlay = !mViewerController->mOverlay;
+	/*mViewerController->mOverlay = !mViewerController->mOverlay;
 	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->update(); }
+	if ( viewer ) { viewer->update(); }*/
+
+	updateGui();
 	
 	
 	
 	//QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
 	//label->setPixmap( QPixmap::fromImage( image ) );
+}
+
+void
+ViewerWindow::updateGui()
+{
+	mViewerDesktop->updateAllViewers();
 }
 
 

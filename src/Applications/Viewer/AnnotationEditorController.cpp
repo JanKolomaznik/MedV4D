@@ -214,7 +214,9 @@ AnnotationEditorController::AnnotationEditorController()
 	mActions.append( mChosenToolActions );
 	//****************************************
 	
-	action = new QAction( tr("Annotations Enabled"), this );
+	action = new QAction( tr("Annotations Overlayed"), this ); //TODO better
+	action->setCheckable( true );
+	QObject::connect( action, SIGNAL( toggled ( bool ) ), this, SLOT( setOverlay(bool) ) );
 	mActions.push_back( action );
 
 	action = new QAction( tr("Annotation Settings"), this );
@@ -225,10 +227,13 @@ AnnotationEditorController::AnnotationEditorController()
 	QObject::connect( mSettingsDialog, SIGNAL( applied() ), this, SLOT( applySettings() ) );
 
 //*******************************
-	mAnnotationView = new AnnotationWidget( &mPoints, &mSpheres );
-
+	mAnnotationView = new AnnotationWidget( &mPoints, &mSpheres, &mLines );
+	QObject::connect( mAnnotationView, SIGNAL( annotationsCleared() ), this, SIGNAL( updateRequest() ) );
+	
 
 	//Settings
+	mSettings.overlayed = false;
+
 	mSettings.sphereFillColor2D = QColor( 255, 0, 0, 128 );
 	mSettings.sphereContourColor2D = QColor( 255, 255, 255 );
 	mSettings.sphereColor3D = QColor( 255, 0, 0 );
@@ -391,7 +396,7 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 void
 AnnotationEditorController::preRender3D()
 {
-	if( !mOverlay ) {
+	if( !mSettings.overlayed ) {
 		render3D();
 	}
 }
@@ -399,7 +404,7 @@ AnnotationEditorController::preRender3D()
 void
 AnnotationEditorController::postRender3D()
 {
-	if( mOverlay ) {
+	if( mSettings.overlayed ) {
 		render3D();
 	}
 }
