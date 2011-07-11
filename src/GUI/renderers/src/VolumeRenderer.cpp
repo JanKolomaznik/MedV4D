@@ -201,6 +201,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
 
+	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
 
 	std::string techniqueName;
 	switch ( aConfig.colorTransform ) {

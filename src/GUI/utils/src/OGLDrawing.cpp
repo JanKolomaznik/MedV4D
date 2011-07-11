@@ -169,7 +169,7 @@ GLDrawVolumeSliceCenterSamples(
 		maxId	
 		);
 	
-	numberOfSteps = 4; //**************
+	numberOfSteps = 1; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
 	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {

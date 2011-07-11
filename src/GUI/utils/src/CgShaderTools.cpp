@@ -82,6 +82,10 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage3D &aImage )
 	SetParameter( TO_STRING( aName << ".size" ), aImage.GetSize() );
 
 	SetParameter( TO_STRING( aName << ".realSize" ), aImage.GetRealSize() );
+
+	SetParameter( TO_STRING( aName << ".realMinimum" ), aImage.GetMinimum() );
+
+	SetParameter( TO_STRING( aName << ".realMaximum" ), aImage.GetMaximum() );
 }
 
 

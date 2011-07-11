@@ -8,6 +8,8 @@ struct ImageData3D
 	sampler3D data;
 	int3 size;
 	float3 realSize;
+	float3 realMinimum;
+	float3 realMaximum;
 };
 
 struct FragmentOutput
@@ -68,7 +70,7 @@ sampler1D gColorMap;
 float gMaskAlpha;
 
 BoundingBox gBBox;
-uint gMinID;
+int gMinID;
 
 uint2
 GetBBoxEdgePoints( uint idx )
@@ -134,6 +136,13 @@ LinePlaneIntersection(
 	return result;
 }
 
+float3
+texCoordsFromPosition( float3 pos, ImageData3D image )
+{
+	float3 relPos = pos - image.realMinimum;
+
+	return float3( pos.x / image.realSize.x, pos.y / image.realSize.y, pos.z / image.realSize.z );
+}
 
 
 float3
@@ -212,6 +221,35 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 	return tex1D( aTransferFunction1D, remappedValue );
 }
 
+VertexOutput
+vertexPassThru
+	(
+		float4 position  : POSITION,
+		float4 color     : COLOR0,
+		float3 texCoord  : TEXCOORD0
+	)
+{
+	VertexOutput result;
+	result.position =position;
+	result.color    = color;
+	result.texCoord = texCoord;
+	return result;
+}
+
+VertexOutput
+vp_VertexPassPosAsTexCoords
+	(
+		float4 position  : POSITION
+	)
+{
+	VertexOutput result;
+	result.position = mul(gModelViewProj, position );
+	result.color    = float4( 1.0f, 0.0f, 0.0f, 1.0f );
+	result.texCoord = position.xyz;
+	return result;
+}
+
+
 FragmentOutput 
 fp_WLWindow_3D( 
 		float3 aTexCoord : TEXCOORD0, 
@@ -242,7 +280,7 @@ fp_WLWindow_3D(
 
 FragmentOutput 
 fp_TransferFunction1D_3D( 
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
@@ -251,7 +289,9 @@ fp_TransferFunction1D_3D(
 {
 	FragmentOutput OUT;
 
-	float3 coordinates = aTexCoord;
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//OUT.color = float4( coordinates, 1.0f );
+	//return OUT;
 	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
@@ -265,7 +305,7 @@ fp_TransferFunction1D_3D(
 
 FragmentOutput 
 fp_TransferFunction1DShading_3D( 
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
@@ -278,8 +318,8 @@ fp_TransferFunction1DShading_3D(
 {
 	FragmentOutput OUT;
 
-	float3 coordinates = aTexCoord;
-	float3 position = aTexCoord;
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float3 position = coordinates;
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float raw_value = tex3D( aTextureData.data, coordinates ).x;
 	float value = (raw_value * range) + aMappedIntervalBands[0];
@@ -318,7 +358,7 @@ fp_TransferFunction1DShading_3D(
 
 FragmentOutput 
 fp_TransferFunction1DJitter_3D( 
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
@@ -331,8 +371,8 @@ fp_TransferFunction1DJitter_3D(
 	FragmentOutput OUT;
 
 	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
-	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
-	float3 position = aTexCoord;
+	float3 position = texCoordsFromPosition( aPosition, aTextureData );
+	float3 coordinates = position + offset *aSliceNormalTexCoords;
 
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
@@ -344,7 +384,7 @@ fp_TransferFunction1DJitter_3D(
 
 FragmentOutput 
 fp_TransferFunction1DShadingJitter_3D( 
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
@@ -360,8 +400,8 @@ fp_TransferFunction1DShadingJitter_3D(
 	FragmentOutput OUT;
 
 	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
-	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
-	float3 position = aTexCoord;
+	float3 position = texCoordsFromPosition( aPosition, aTextureData );
+	float3 coordinates = position + offset *aSliceNormalTexCoords;
 
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
@@ -435,7 +475,7 @@ POINT TRIANGLE_OUT
 void gp_GenerateSlice( 
 			AttribArray<float4> position :POSITION,
 			uniform float3 aViewDirection,
-			uniform uint aMinID,
+			uniform int aMinID,
 			uniform BoundingBox aBBox
 			)
 {
@@ -443,7 +483,7 @@ void gp_GenerateSlice(
 	float4 vertices[6];
 	
 	float4 color = float4( 0.2f, 0.7f, 1.0f, 0.3f );
-	uint idx = 0;
+	int idx = 0;
 	float4 pos = position[0] / position[0].w;
 	IntersectionResult res;
 	for( uint i = 0; i < 12; ++i ) {
@@ -454,31 +494,23 @@ void gp_GenerateSlice(
 		}
 	
 	}
-	for( uint i = 0; i < idx; ++i ) {
+	/*for( uint i = 0; i < idx; ++i ) {
 		emitVertex( mul(gModelViewProj, vertices[i] ) : POSITION, color : COLOR, vertices[i].xyz : TEXCOORD0 );
 	}
-	emitVertex( mul(gModelViewProj, vertices[0] ) : POSITION, color : COLOR, vertices[0].xyz : TEXCOORD0 );
+	emitVertex( mul(gModelViewProj, vertices[0] ) : POSITION, color : COLOR, vertices[0].xyz : TEXCOORD0 );*/
+
+	for( int i = 1; i < idx-1; ++i ) {
+		emitVertex( mul(gModelViewProj, vertices[0] ) : POSITION, color : COLOR, vertices[0].xyz : TEXCOORD0 );
+		emitVertex( mul(gModelViewProj, vertices[i] ) : POSITION, color : COLOR, vertices[i].xyz : TEXCOORD0 );
+		emitVertex( mul(gModelViewProj, vertices[i+1] ) : POSITION, color : COLOR, vertices[i+1].xyz : TEXCOORD0 );
+	}
 }
 
 
 
 
 
-VertexOutput
-vertexPassThru
-	(
-		float4 position  : POSITION,
-		float4 color     : COLOR0,
-		float3 texCoord  : TEXCOORD0,
-		uniform float4x4 modelViewProj
-	)
-{
-	VertexOutput result;
-	result.position =position;
-	result.color    = color;
-	result.texCoord = texCoord;
-	return result;
-}
+
 
 
 technique WLWindow_3D {
@@ -496,6 +528,8 @@ technique WLWindow_3D {
 
 technique TransferFunction1D_3D {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+
 		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
@@ -533,6 +567,7 @@ technique TransferFunction1D_3DNoBlending {
 
 technique TransferFunction1DShading_3D {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
@@ -555,6 +590,7 @@ technique TransferFunction1DShading_3D {
 
 technique TransferFunction1DJitter_3D {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_TransferFunction1DJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
@@ -575,7 +611,8 @@ technique TransferFunction1DJitter_3D {
 
 technique TransferFunction1DShadingJitter_3D {
 	pass t0 {
-		//VertexProgram = compile gp4vp vertexPassThru(gModelViewProj);
+		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
+		//VertexProgram = compile gp4vp vertexPassThru();
 
 		//GeometryProgram = compile gp4gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
 
