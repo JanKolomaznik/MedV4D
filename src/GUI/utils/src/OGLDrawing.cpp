@@ -153,8 +153,6 @@ GLDrawVolumeSliceCenterSamples(
 		float		cutPlane
 		)
 {
-	Vector< float, 3> vertices[6];
-
 	float 				min = 0; 
 	float 				max = 0;
 	unsigned			minId = 0;	
@@ -169,30 +167,17 @@ GLDrawVolumeSliceCenterSamples(
 		maxId	
 		);
 	
-	numberOfSteps = 1; //**************
+	//numberOfSteps = 1; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
 	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
 		planePoint -= stepSize * camera.GetTargetDirection();
-		//Get n-gon as intersection of the current plane and bounding box
-		/*unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, camera.GetTargetDirection(), minId, vertices
-				);*/
-
 
 		glBegin( GL_POINTS );
 				GLVertexVector( planePoint );
-				//GLVertexVector( planePoint- Vector3f( 22.0f, 0.0f, 0.0f ) );
-				//GLVertexVector( planePoint- Vector3f( 0.0f, 0.0f, 22.0f ) );
 		glEnd();
-		/*glBegin( GL_TRIANGLE_FAN );
-			for( unsigned j = 0; j < count; ++j ) {
-				GLVertexVector( vertices[ j ] );
-			}
-		glEnd();*/
 	}
-
 }
 
 
