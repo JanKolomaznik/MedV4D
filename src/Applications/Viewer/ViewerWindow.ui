@@ -35,8 +35,15 @@
      <string>Viewer</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionSettings_list"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuViewer"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="viewerToolBar">
@@ -72,6 +79,11 @@
   <action name="actionTest">
    <property name="text">
     <string>Test</string>
+   </property>
+  </action>
+  <action name="actionSettings_list">
+   <property name="text">
+    <string>Settings list ...</string>
    </property>
   </action>
  </widget>
@@ -117,11 +129,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSettings_list</sender>
+   <signal>triggered()</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>showSettingsDialog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>490</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>applyTransferFunction()</slot>
   <slot>toggleInteractiveTransferFunction(bool)</slot>
   <slot>openFile()</slot>
   <slot>testSlot()</slot>
+  <slot>showSettingsDialog()</slot>
  </slots>
 </ui>

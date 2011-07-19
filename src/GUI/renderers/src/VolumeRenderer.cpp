@@ -98,12 +98,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		       	maxId	
 			);
 
-
-	LOG( "minId : " << minId );
-
-	glColor3f( 1.0f, 0.0f, 0.0f );
-	M4D::GLDrawBoundingBox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
-
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
 	mCgEffect.SetParameter( "gLightPosition", aConfig.lightPosition );
@@ -155,7 +149,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	M4D::SetVolumeTextureCoordinateGeneration( aConfig.imageData->GetMinimum(), aConfig.imageData->GetRealSize() );
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
@@ -166,7 +159,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				) 
 			); 
 
-	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
 }
 
@@ -235,7 +227,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	M4D::SetVolumeTextureCoordinateGeneration( aConfig.imageData->GetMinimum(), aConfig.imageData->GetRealSize() );
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices, 
@@ -246,7 +237,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				) 
 			); 
 
-	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
 }
 #endif

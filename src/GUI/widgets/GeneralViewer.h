@@ -36,10 +36,10 @@ namespace Viewer
 
 class GeneralViewer;
 enum QualityMode {
-		qmLow,
-		qmNormal,
-		qmHigh,
-		qmFinest
+		qmLow = 0,
+		qmNormal = 1,
+		qmHigh = 2,
+		qmFinest = 3
 	};
 
 class ViewerState : public BaseViewerState
@@ -265,6 +265,9 @@ public:
 
 	QualityMode
 	getRenderingQuality();
+
+	void
+	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );
 public slots:
 	void
 	setViewType( int aViewType );
@@ -352,6 +355,8 @@ protected:
 //******** TMP ************
 
 	RenderingExtension::Ptr mRenderingExtension;
+
+	Vector4i mSliceCountForRenderingQualities;
 private:
 	ViewerState &
 	getViewerState()

@@ -17,7 +17,7 @@ std::string inFilename;
 void
 processCommandLine( int argc, char** argv )
 {
-	TCLAP::CmdLine cmd( "Median filter.", ' ', "");
+	TCLAP::CmdLine cmd( "Viewer", ' ', "");
 	/*---------------------------------------------------------------------*/
 
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", false, "", "filename" );
@@ -43,18 +43,11 @@ main( int argc, char** argv )
 	appManager.initialize( argc, argv );
 
 	try {
-		processCommandLine( argc, argv );
-
-		std::cout << "Show window\n";
-		//ViewerWindow viewer( prodconn );
+		//processCommandLine( argc, argv );
 		ViewerWindow viewer;
-
-
-		viewer.show();
-		if ( !inFilename.empty() ) {
-			viewer.openFile( QString::fromStdString( inFilename ) );
-		}
-		//viewer.applyTransferFunction();
+		appManager.setMainWindow( viewer );
+		appManager.loadModules();
+		viewer.showMaximized();
 		return appManager.exec();
 	} catch ( std::exception &e )
 	{

@@ -7,6 +7,7 @@
 #include "Imaging/ImageFactory.h"
 #include "GUI/utils/CameraManipulator.h"
 #include "GUI/utils/ViewerManager.h"
+#include "GUI/utils/ApplicationManager.h"
 
 namespace M4D
 {
@@ -165,10 +166,11 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
 	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
-	state->mVolumeRenderConfig.sampleCount = 200;
 	state->mVolumeRenderConfig.shadingEnabled = true;
 	state->mVolumeRenderConfig.jitterEnabled = true;
 	state->mVolumeRenderConfig.lightPosition = Vector3f( 3000.0f, -3000.0f, 3000.0f );
+
+	state->mEnableVolumeBoundingBox = true;
 
 	state->viewerWindow = this;
 
@@ -184,6 +186,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 
 	setColorTransformType( M4D::GUI::Renderer::ctLUTWindow );
 
+	mSliceCountForRenderingQualities = Vector4i( 90, 180, 450, 1000 );
 }
 
 
@@ -508,25 +511,37 @@ GeneralViewer::getRenderingQuality()
 }
 
 void
+GeneralViewer::setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest )
+{
+	mSliceCountForRenderingQualities[qmLow] = aLow;
+	mSliceCountForRenderingQualities[qmNormal] = aNormal;
+	mSliceCountForRenderingQualities[qmHigh] = aHigh;
+	mSliceCountForRenderingQualities[qmFinest] = aFinest;
+}
+
+
+void
 GeneralViewer::setRenderingQuality( int aQualityMode )
 {
 	//TODO check
 	getViewerState().mQualityMode = static_cast< QualityMode >( aQualityMode );
 
-	switch ( getViewerState().mQualityMode ) {
+	getViewerState().mVolumeRenderConfig.sampleCount = mSliceCountForRenderingQualities[aQualityMode];
+
+	/*switch ( getViewerState().mQualityMode ) {
 	case qmLow:
-		getViewerState().mVolumeRenderConfig.sampleCount = 90;
+		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_low_quality", int, 90 );
 		break;
 	case qmNormal:
-		getViewerState().mVolumeRenderConfig.sampleCount = 180;
+		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_normal_quality", int, 180 );
 		break;
 	case qmHigh:
-		getViewerState().mVolumeRenderConfig.sampleCount = 450;
+		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_high_quality", int, 450 );
 		break;
 	case qmFinest:
-		getViewerState().mVolumeRenderConfig.sampleCount = 1000;
+		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_finest_quality", int, 1000 );
 		break;
-	}
+	}*/
 	notifyAboutSettingsChange();
 	update();
 }

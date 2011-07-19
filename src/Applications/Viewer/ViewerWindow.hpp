@@ -8,13 +8,15 @@
 #include "GUI/widgets/TransferFunction1DEditor.h"
 #include "AnnotationEditorController.hpp"
 #include "GUI/widgets/ProgressInfoDialog.h"
+#include "GUI/widgets/MainWindow.h"
+
 #include "backendForDICOM/DcmProvider.h"
 #ifdef OIS_ENABLED
 #include "JoyInput.h"
 #endif
 
 
-class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
+class ViewerWindow: public M4D::GUI::MainWindow, public Ui::ViewerWindow
 {
 	Q_OBJECT;
 public:
@@ -46,16 +48,7 @@ public slots:
 	toggleInteractiveTransferFunction( bool aChecked );
 
 	void
-	updateToolbars();
-
-	void
 	updateGui();
-
-	void
-	changeViewerType( int aRendererType );
-
-	void
-	changeColorMapType( const QString & aColorMapName );
 
 	void
 	testSlot();
@@ -68,6 +61,9 @@ public slots:
 
 	void
 	selectedViewerSettingsChanged();
+
+	void
+	showSettingsDialog();
 
 #ifdef OIS_ENABLED
 	void

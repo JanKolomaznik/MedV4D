@@ -8,7 +8,7 @@
 #include "GUI/widgets/MultiDockWidget.h"
 #include "GUI/utils/ViewerManager.h"
 #include "GUI/utils/ViewerAction.h"
-
+#include "GUI/widgets/SettingsDialog.h"
 #include <boost/thread.hpp>
 
 
@@ -42,6 +42,15 @@ public:
 		}
 
 		viewer->setLUTWindow( Vector2f( 1500.0f,100.0f ) );
+
+		viewer->enableShading( GET_SETTINGS( "gui.viewer.volume_rendering.shading_enabled", bool, true ) );
+
+		viewer->enableJittering( GET_SETTINGS( "gui.viewer.volume_rendering.jittering_enabled", bool, true ) );
+
+		viewer->setRenderingQuality( GET_SETTINGS( "gui.viewer.volume_rendering.rendering_quality", int, qmNormal ) );
+
+		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );
+
 
 		//viewer->setBackgroundColor( QColor( 50,50,100 ) );
 		return viewer;
@@ -86,49 +95,24 @@ ViewerWindow::ViewerWindow()
 	#endif
 
 	
-	MultiDockWidget * dockwidget = new MultiDockWidget( tr("Transfer Function" ) );
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
-	dockwidget->setWidget( mTransferFunctionEditor );
-	dockwidget->addDockingWindow( Qt::RightDockWidgetArea, this );
-
-	/*mMainWin2 = new QMainWindow();
-	mMainWin2->show();
-	dockwidget->addDockingWindow( mMainWin2 );*/
-
+	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
 
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 10 );
-	//addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
 #ifdef USE_PYTHON
-	dockwidget = new MultiDockWidget(tr("Python Terminal" ));
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
-	dockwidget->setWidget( mTerminal );
-	dockwidget->addDockingWindow( Qt::BottomDockWidgetArea, this );
-	//addDockWidget (Qt::BottomDockWidgetArea, dockwidget );
+	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal );
 #endif //USE_PYTHON
 
 
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
 
-	/*QActionGroup *viewerTypeSwitch = new QActionGroup( this );
-	QSignalMapper *viewerTypeSwitchSignalMapper = new QSignalMapper( this );
-	viewerTypeSwitch->setExclusive( true );
-	viewerTypeSwitch->addAction( action2D );
-	viewerTypeSwitch->addAction( action3D );
-	viewerTypeSwitchSignalMapper->setMapping( action2D, M4D::GUI::Viewer::vt2DAlignedSlices );
-	viewerTypeSwitchSignalMapper->setMapping( action3D, M4D::GUI::Viewer::vt3D );
-	QObject::connect( action2D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( action3D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
-	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
-	*/
-
 	mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );
-	dockwidget = new MultiDockWidget( tr("Annotations" ) );
-	dockwidget->setWidget( mViewerController->getAnnotationView() );
-	dockwidget->addDockingWindow( Qt::RightDockWidgetArea, this );
+	createDockWidget( tr("Annotations" ), Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );
 
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
@@ -156,13 +140,6 @@ ViewerWindow::ViewerWindow()
 	mInfoLabel = new QLabel();
 	statusbar->addWidget( mInfoLabel );
 
-
-	/*mColorTransformChooser = new QComboBox;
-	mColorTransformChooser->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	viewerToolBar->addWidget( mColorTransformChooser );
-	QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( changeColorMapType( const QString & ) ) );
-	//QObject::connect( mColorTransformChooser, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( updateToolbars() ) );
-	*/
 
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
@@ -194,9 +171,6 @@ ViewerWindow::ViewerWindow()
 void
 ViewerWindow::initAfterLoopStart()
 {
-	changeViewerType( M4D::GUI::Viewer::vt2DAlignedSlices );
-	updateToolbars();
-
 	toggleInteractiveTransferFunction( true );
 }
 
@@ -216,42 +190,11 @@ ViewerWindow::getSelectedViewer()
 }
 
 
-void
-ViewerWindow::changeViewerType( int aViewType )
-{
-	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->setViewType( aViewType ); }
-
-	updateToolbars();
-}
-
-void
-ViewerWindow::changeColorMapType( const QString & aColorMapName )
-{
-	static bool locked = false;
-	if ( locked ) return;
-	locked = true;
-
-	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->setColorTransformType( aColorMapName ); }
-	updateToolbars();
-
-	locked = false;
-}
 
 void
 ViewerWindow::testSlot()
 {
-	/*mViewerController->mOverlay = !mViewerController->mOverlay;
-	M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->update(); }*/
-
 	updateGui();
-	
-	
-	
-	//QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
-	//label->setPixmap( QPixmap::fromImage( image ) );
 }
 
 void
@@ -282,10 +225,7 @@ struct SetTransferFunctionFtor
 void
 ViewerWindow::applyTransferFunction()
 {
-	//D_PRINT( "Function updated" );
 	mViewerDesktop->forEachViewer( SetTransferFunctionFtor( mTransferFunctionEditor->GetTransferFunctionBuffer() ) );
-	/*M4D::GUI::Viewer::GeneralViewer * viewer = getSelectedViewer();
-	if ( viewer ) { viewer->setTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() ); }*/
 }
 
 void
@@ -350,16 +290,6 @@ ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
 	}
 }
 
-void
-ViewerWindow::updateToolbars()
-{
-	static bool locked = false;
-	if ( locked ) return;
-	locked = true;
-	
-
-	locked = false;
-}
 
 void
 ViewerWindow::selectedViewerSettingsChanged()
@@ -378,6 +308,14 @@ ViewerWindow::selectedViewerSettingsChanged()
 		}
 	}
 	mInfoLabel->setText( text );
+}
+
+void
+ViewerWindow::showSettingsDialog()
+{
+	SettingsDialog *dialog = new SettingsDialog( this );
+	dialog->showDialog( ApplicationManager::getInstance()->settings() );
+	delete dialog;
 }
 
 void

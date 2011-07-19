@@ -154,6 +154,16 @@ texCoordsFromPosition( float3 pos, ImageData3D image )
 	return float3( pos.x / image.realSize.x, pos.y / image.realSize.y, pos.z / image.realSize.z );
 }
 
+float3
+texCoordsFromPositionNoInterpolation( float3 pos, ImageData3D image )
+{
+	float3 elementSize = 1.0f / image.size;
+	float3 relPos = pos - image.realMinimum;
+
+	float3 texCoord = float3( pos.x / image.realSize.x, pos.y / image.realSize.y, pos.z / image.realSize.z );
+	return 0.5f * elementSize + round( texCoord / elementSize ) * elementSize;
+}
+
 
 float3
 PreventInterpolation( float3 aTexCoord, int3 aImageDataResolution3D )
@@ -262,7 +272,7 @@ vp_VertexPassPosAsTexCoords
 
 FragmentOutput 
 fp_WLWindow_3D( 
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData, 
 		uniform float3 aWLWindow
 		)
@@ -273,7 +283,7 @@ fp_WLWindow_3D(
 	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
 	float multiplier = aWLWindow.z;
 
-	float3 coordinates = aTexCoord;
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
 	//Disable interpolation
 	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
@@ -465,12 +475,12 @@ FragmentOutput fp_Test()
 
 FragmentOutput
 fp_SimpleRegionColorMap_3D(
-		float3 aTexCoord : TEXCOORD0, 
+		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
 		uniform float aRange )
 {
 	FragmentOutput OUT;
-	float3 coordinates = PreventInterpolation( aTexCoord, aTextureData.size );
+	float3 coordinates = texCoordsFromPositionNoInterpolation( aPosition, aTextureData );//PreventInterpolation( aTexCoord, aTextureData.size );
 	unsigned int value = round( tex3D( aTextureData.data, coordinates ).x * 4200000000 );
 
 	OUT.color.r = float(((value * 359) % 901) % 256) / 256;
@@ -651,6 +661,7 @@ technique TransferFunction1DShadingJitter_3D {
 
 technique WLWindowMIP_3D  {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_WLWindow_3D( 
 								gImageData3D, 
 								float3( 
@@ -659,8 +670,6 @@ technique WLWindowMIP_3D  {
 									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
 									) 
 								);
-		//GeometryProgram = compile glslg gp_GenerateSlice( gViewDirection );
-
 		DepthTestEnable = false;
 		DepthMask = true;
 		CullFaceEnable = false;

@@ -8,7 +8,7 @@ namespace GUI
 
 MainWindow::MainWindow()
 {
-	setupUi(this);
+//	setupUi(this);
 }
 
 
