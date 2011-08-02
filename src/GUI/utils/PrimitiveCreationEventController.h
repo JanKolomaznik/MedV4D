@@ -15,13 +15,7 @@ public:
 	{}
 
 	virtual void
-	activate()
-	{
-		mValid = false;
-	}
-
-	virtual void
-	deactivate()
+	cancel()
 	{
 		if( mValid ) {
 			cancelCreation();
@@ -33,6 +27,21 @@ public:
 	{
 		return mValid;
 	}
+
+	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool	
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
+
+	bool
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) { return false; }
 signals:
 	void
 	started();
@@ -55,6 +64,7 @@ protected:
 	{
 		ASSERT( mValid );
 		emit finished();
+		mValid = false;
 	}
 
 	virtual void
@@ -68,22 +78,78 @@ protected:
 };
 
 template< typename TPrimitive >
-class TemplatedPrimitiveCreationEventController: public APrimitiveCreationEventController
+class BaseTemplatedPrimitiveCreationEventController: public APrimitiveCreationEventController
 {
 public:
 	TPrimitive &
 	getPrimitive()
 	{
-		return mPrimitive;
+		return *mPrimitive;
+	}
+
+	void
+	cancel()
+	{
+		if( mValid && mPrimitive ) {
+			cancelPrimitive(mPrimitive);
+		}
 	}
 protected:
-	TemplatedPrimitiveCreationEventController(): mCurrentStage( 0 ) {}
+	BaseTemplatedPrimitiveCreationEventController(): mCurrentStage( 0 ) {}
 
-	TPrimitive mPrimitive;
+	virtual TPrimitive *
+	createPrimitive( const TPrimitive & aPrimitive )
+	{
+		return new TPrimitive( aPrimitive );
+	}
+
+	virtual void
+	primitiveFinished( TPrimitive *aPrimitive )
+	{
+		delete aPrimitive;
+	}
+
+	virtual void
+	disposePrimitive( TPrimitive *aPrimitive )
+	{
+		delete aPrimitive;
+	}
+	//*********************************************************
+	TPrimitive *
+	beginPrimitive( const TPrimitive & aPrimitive )
+	{
+		TPrimitive * primitive = createPrimitive( aPrimitive );
+		beginCreation();
+		return primitive;
+	}
+
+	void
+	endPrimitive( TPrimitive *aPrimitive )
+	{
+		ASSERT( aPrimitive );
+		endCreation();
+		primitiveFinished( aPrimitive );
+		mCurrentStage = 0;
+	}
+
+	void
+	cancelPrimitive( TPrimitive *aPrimitive )
+	{
+		ASSERT( aPrimitive );
+		cancelCreation();		//TODO check order
+		disposePrimitive( aPrimitive );
+		mCurrentStage = 0;
+	}
+
+	TPrimitive *mPrimitive;
 	size_t mCurrentStage;
 };
 
-class PointCreationEventController: public TemplatedPrimitiveCreationEventController< M4D::Point3Df >
+template< typename TPrimitive >
+class TemplatedPrimitiveCreationEventController;
+
+template<>
+class TemplatedPrimitiveCreationEventController< M4D::Point3Df >: public BaseTemplatedPrimitiveCreationEventController< M4D::Point3Df >
 {
 public:
 	bool
@@ -92,9 +158,8 @@ public:
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
 			
-			mPrimitive = M4D::Point3Df( aEventInfo.realCoordinates );
-			beginCreation();
-			endCreation();
+			mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.realCoordinates ) );
+			endPrimitive( mPrimitive );
 
 			state.viewerWindow->update();
 			return true;
@@ -103,7 +168,8 @@ public:
 	}
 };
 
-class LineCreationEventController: public TemplatedPrimitiveCreationEventController< M4D::Line3Df >
+template<>
+class TemplatedPrimitiveCreationEventController< M4D::Line3Df >: public BaseTemplatedPrimitiveCreationEventController< M4D::Line3Df >
 {
 public:
 	bool
@@ -113,7 +179,7 @@ public:
 		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
 			&& mCurrentStage > 0 ) 
 		{
-			mPrimitive.secondPoint() = aEventInfo.realCoordinates;
+			mPrimitive->secondPoint() = aEventInfo.realCoordinates;
 			state.viewerWindow->update();
 			return true;
 		}
@@ -128,20 +194,17 @@ public:
 			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = M4D::Line3Df( aEventInfo.realCoordinates, aEventInfo.realCoordinates );
-				beginCreation();
+				mPrimitive = this->beginPrimitive( M4D::Line3Df( aEventInfo.realCoordinates, aEventInfo.realCoordinates ) );
 				++mCurrentStage;
 			} else {
-				mPrimitive.secondPoint() = aEventInfo.realCoordinates;
-				endCreation();
-				mCurrentStage = 0;
+				mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+				this->endPrimitive( mPrimitive );
 			}
 			state.viewerWindow->update();
 			return true;
 		} 
 		if ( aEventInfo.event->button() == Qt::RightButton && mCurrentStage > 0 ) {
-			cancelCreation();
-			mCurrentStage = 0;
+			this->cancelPrimitive( mPrimitive );
 			return true;
 		}
 		return false;
@@ -149,7 +212,8 @@ public:
 protected:
 };
 
-class SphereCreationEventController: public TemplatedPrimitiveCreationEventController< M4D::Sphere3Df >
+template<>
+class TemplatedPrimitiveCreationEventController< M4D::Sphere3Df >: public BaseTemplatedPrimitiveCreationEventController< M4D::Sphere3Df >
 {
 public:
 	bool
@@ -159,7 +223,7 @@ public:
 		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
 			&& mCurrentStage > 0 ) 
 		{
-			mPrimitive.radius() = VectorSize(mPrimitive.center() - aEventInfo.realCoordinates);
+			mPrimitive->radius() = VectorSize(mPrimitive->center() - aEventInfo.realCoordinates);
 			state.viewerWindow->update();
 			return true;
 		}
@@ -174,20 +238,18 @@ public:
 			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = M4D::Sphere3Df( aEventInfo.realCoordinates, 0.0f );
-				beginCreation();
+				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( aEventInfo.realCoordinates, 0.0f ) );
 				++mCurrentStage;
 			} else {
-				mPrimitive.radius() = VectorSize(mPrimitive.center() - aEventInfo.realCoordinates);
-				endCreation();
+				mPrimitive->radius() = VectorSize(mPrimitive->center() - aEventInfo.realCoordinates);
+				this->endPrimitive( mPrimitive );
 				mCurrentStage = 0;
 			}
 			state.viewerWindow->update();
 			return true;
 		} 
 		if ( aEventInfo.event->button() == Qt::RightButton && mCurrentStage > 0 ) {
-			cancelCreation();
-			mCurrentStage = 0;
+			this->cancelPrimitive( mPrimitive );
 			return true;
 		}
 		return false;

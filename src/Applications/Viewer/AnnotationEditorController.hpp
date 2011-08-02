@@ -19,7 +19,7 @@ typedef VectorItemModel< M4D::Point3Df > PointSet;
 typedef VectorItemModel< M4D::Line3Df > LineSet;
 typedef VectorItemModel< M4D::Sphere3Df > SphereSet;
 
-class AnnotationBasicViewerController: public M4D::GUI::Viewer::AViewerController
+/*class AnnotationBasicViewerController: public M4D::GUI::Viewer::AViewerController
 {
 public:
 	typedef boost::shared_ptr< AnnotationBasicViewerController > Ptr;
@@ -45,6 +45,37 @@ public:
 
 	virtual void
 	abortEditation(){}
+};*/
+
+template<typename TPrimitive>
+class AnnotationPrimitiveController: public TemplatedPrimitiveCreationEventController< TPrimitive >
+{
+public:
+	typedef VectorItemModel< TPrimitive > PrimitiveSet;
+
+	AnnotationPrimitiveController( PrimitiveSet &aPrimitives ): mPrimitives( aPrimitives ) {}
+
+protected:
+
+	virtual TPrimitive *
+	createPrimitive( const TPrimitive & aPrimitive )
+	{
+		mPrimitives.push_back( aPrimitive );
+		return &(mPrimitives[mPrimitives.size()-1]);
+	}
+
+	virtual void
+	primitiveFinished( TPrimitive *aPrimitive )
+	{
+	}
+
+	virtual void
+	disposePrimitive( TPrimitive *aPrimitive )
+	{
+		mPrimitives.resize( mPrimitives.size()-1 );
+	}
+
+	PrimitiveSet &mPrimitives;
 };
 
 class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
@@ -193,7 +224,7 @@ public:
 
 	QActionList mChosenToolActions;
 
-	std::map< AnnotationEditMode, AnnotationBasicViewerController::Ptr > mAnnotationPrimitiveHandlers;
+	std::map< AnnotationEditMode, APrimitiveCreationEventController::Ptr > mAnnotationPrimitiveHandlers;
 
 	AnnotationSettings mSettings;
 

@@ -6,7 +6,7 @@
 
 
 
-class AnnotatePoints: public AnnotationBasicViewerController
+/*class AnnotatePoints: public AnnotationBasicViewerController
 {
 public:
 	typedef boost::shared_ptr< AnnotatePoints > Ptr;
@@ -166,7 +166,7 @@ public:
 			mSpheres.resize( mSpheres.size()-1 );
 		}
 	}
-};
+};*/
 
 //**************************************************************************
 //**************************************************************************
@@ -186,28 +186,28 @@ AnnotationEditorController::AnnotationEditorController()
 	action->setCheckable( true );
 	group->addAction( action );
 	mChosenToolActions.push_back( action );
-	mAnnotationPrimitiveHandlers[aemPOINTS] = AnnotationBasicViewerController::Ptr( new AnnotatePoints(mPoints) );
+	mAnnotationPrimitiveHandlers[aemPOINTS] = APrimitiveCreationEventController::Ptr( new AnnotationPrimitiveController< M4D::Point3Df >(mPoints) );
 
 	action = new QAction( tr( "Sphere" ), this );
 	action->setData( QVariant( aemSPHERES ) );
 	action->setCheckable( true );
 	group->addAction( action );
 	mChosenToolActions.push_back( action );
-	mAnnotationPrimitiveHandlers[aemSPHERES] = AnnotationBasicViewerController::Ptr( new AnnotateSpheres( mSpheres ) );
+	mAnnotationPrimitiveHandlers[aemSPHERES] = APrimitiveCreationEventController::Ptr( new AnnotationPrimitiveController< M4D::Sphere3Df >( mSpheres ) );
 
 	action = new QAction( tr( "Angle" ), this );
 	action->setData( QVariant( aemANGLES ) );
 	action->setCheckable( true );
 	group->addAction( action );
 	mChosenToolActions.push_back( action );
-	mAnnotationPrimitiveHandlers[aemANGLES] = AnnotationBasicViewerController::Ptr( new AnnotationBasicViewerController );
+	mAnnotationPrimitiveHandlers[aemANGLES] = APrimitiveCreationEventController::Ptr(/* new AnnotationBasicViewerController */);
 
 	action = new QAction( tr( "Line" ), this );
 	action->setData( QVariant( aemLINES ) );
 	action->setCheckable( true );
 	group->addAction( action );
 	mChosenToolActions.push_back( action );
-	mAnnotationPrimitiveHandlers[aemLINES] = AnnotationBasicViewerController::Ptr( new AnnotateLines( mLines ) );
+	mAnnotationPrimitiveHandlers[aemLINES] = APrimitiveCreationEventController::Ptr( new AnnotationPrimitiveController<M4D::Line3Df>( mLines ) );
 
 	QObject::connect( group, SIGNAL( triggered ( QAction * ) ), this, SLOT( editModeActionToggled( QAction * ) ) );
 
@@ -531,7 +531,7 @@ void
 AnnotationEditorController::abortEditInProgress()
 {
 	if ( mEditMode != aemNONE ) {
-		mAnnotationPrimitiveHandlers[ mEditMode ]->abortEditation();	
+		mAnnotationPrimitiveHandlers[ mEditMode ]->cancel();	
 		emit updateRequest();
 	}
 }

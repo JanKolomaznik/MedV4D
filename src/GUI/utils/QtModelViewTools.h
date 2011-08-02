@@ -98,10 +98,10 @@ struct TypeQtMVTraits< M4D::Line< TType, tDim > >
 	static QVariant 
 	headerData( int section )
 	{
-		if ( section > 2*tDim ) {
+		if ( section > (int)(2*tDim) ) {
 			return QVariant();
 		}
-		if (section < tDim ) {
+		if (section < (int)tDim ) {
 			switch( section ) {
 			case 0:
 				return QString("X1");
