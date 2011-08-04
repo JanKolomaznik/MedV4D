@@ -5,6 +5,8 @@
 #include <QtCore>
 #include "ui_ViewerWindow.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
+#include "GUI/utils/ProxyViewerController.h"
+#include "GUI/utils/ProxyRenderingExtension.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
 #include "AnnotationEditorController.hpp"
 #include "GUI/widgets/ProgressInfoDialog.h"
@@ -26,6 +28,12 @@ public:
 
 	M4D::GUI::Viewer::GeneralViewer *
 	getSelectedViewer();
+
+	void
+	addRenderingExtension( M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension );
+
+	void
+	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController );
 	
 public slots:
 
@@ -82,7 +90,8 @@ protected:
 
 	QComboBox *mColorTransformChooser;
 
-	AnnotationEditorController::Ptr mViewerController;
+	ProxyViewerController::Ptr mViewerController;
+	ProxyRenderingExtension::Ptr mRenderingExtension;
 	QMainWindow *mMainWin2;
 	
 	QLabel *mInfoLabel;

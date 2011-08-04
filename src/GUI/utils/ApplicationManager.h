@@ -7,6 +7,7 @@
 #include "GUI/utils/Module.h"
 #include "GUI/utils/Settings.h"
 #include "GUI/widgets/MainWindow.h"
+#include "common/IDGenerator.h"
 #include <QtCore>
 
 
@@ -71,6 +72,51 @@ public:
 		mMainWindow = &aMainWindow;
 	}
 
+	M4D::Common::IDNumber
+	addNewMode( M4D::GUI::Viewer::AViewerController::Ptr aViewerController, M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension )
+	{
+		M4D::Common::IDNumber id = mModeIdGenerator.NewID();
+		ModeInfo mode;
+		mode.id = id;
+		mode.viewerController = aViewerController;
+		mode.renderingExtension = aRenderingExtension;
+		mModes[id] = mode;
+		mMainWindow->addRenderingExtension( aRenderingExtension );
+
+		return id;
+	}
+
+	bool
+	activateMode( M4D::Common::IDNumber aId )
+	{
+		ModeMap::iterator it = mModes.find( aId );
+		if ( it == mModes.end() ) {
+			LOG( "Mode not found ID = " << aId << "\nmodes available : " << mModes.size() );
+			return false;
+		}
+
+		mMainWindow->setViewerController( it->second.viewerController );
+		LOG( "Mode ID = " << aId << " activated" );
+		return true;
+	}
+		
+	void
+	createDockWidget( const QString &aName, Qt::DockWidgetArea aArea, QWidget * aWidget )
+	{
+		ASSERT( mMainWindow );
+
+		mMainWindow->createDockWidget( aName, aArea, aWidget );
+	}
+
+	void
+	addToolBar( QToolBar * toolbar )
+	{
+		ASSERT( mMainWindow );
+
+		mMainWindow->addToolBar( toolbar );
+	}
+
+
 	Settings &
 	settings()
 	{
@@ -83,6 +129,16 @@ signals:
 	void
 	selectedViewerSettingsChanged();
 protected:
+	struct ModeInfo
+	{
+		M4D::Common::IDNumber id;
+		M4D::GUI::Viewer::AViewerController::Ptr viewerController;
+		M4D::GUI::Viewer::RenderingExtension::Ptr renderingExtension;
+	};
+	typedef std::map< M4D::Common::IDNumber, ModeInfo > ModeMap;
+	ModeMap mModes;
+	M4D::Common::IDGenerator mModeIdGenerator;
+
 	void
 	viewerSelectionChangedHelper();
 

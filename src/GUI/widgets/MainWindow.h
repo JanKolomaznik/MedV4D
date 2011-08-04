@@ -5,6 +5,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "GUI/widgets/MultiDockWidget.h"
+#include "GUI/widgets/GeneralViewer.h"
 
 namespace M4D
 {
@@ -27,6 +28,13 @@ public:
 		dockwidget->setWidget( aWidget );
 		dockwidget->addDockingWindow( aArea, this );
 	}
+
+	virtual void
+	addRenderingExtension( M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension ){}
+
+	virtual void
+	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController ){}
+	
 protected:
 
 private:

@@ -125,7 +125,10 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 
 	//int numDegrees = event->delta() / 8;
 	//int numSteps = numDegrees / 15;
-	
+	if( mInteractionMode == imORBIT_CAMERA ) { //prevent scale jumping during camera orbit
+		return false;
+	}
+
 	if ( state.viewType == vt3D ) {
 		float dollyRatio = 1.1f;
 		if ( event->delta() > 0 ) {

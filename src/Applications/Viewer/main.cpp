@@ -8,6 +8,8 @@
 #include "common/Common.h"
 #include "ViewerWindow.hpp"
 
+#include "AnnotationModule.hpp"
+
 #include "GUI/utils/ApplicationManager.h"
 
 #include <tclap/CmdLine.h>
@@ -46,6 +48,9 @@ main( int argc, char** argv )
 		//processCommandLine( argc, argv );
 		ViewerWindow viewer;
 		appManager.setMainWindow( viewer );
+
+		appManager.addModule( createModule< AnnotationModule >() );
+
 		appManager.loadModules();
 		viewer.showMaximized();
 		return appManager.exec();

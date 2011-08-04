@@ -11,6 +11,9 @@ class AModule
 public:
 	typedef boost::shared_ptr< AModule > Ptr;
 
+	AModule(): mLoaded( false )
+	{}
+
 	virtual void
 	load() = 0;
 
@@ -21,11 +24,24 @@ public:
 	isUnloadable() = 0;
 
 	virtual bool
-	isLoaded() = 0;
+	isLoaded()
+	{
+		return mLoaded;
+	}
 
 	virtual std::string
 	getName() = 0;
+protected:
+	bool mLoaded;
 };
+
+template< typename TModule >
+AModule::Ptr
+createModule()
+{
+	return AModule::Ptr( new TModule );
+}
+
 
 typedef std::map< std::string, AModule::Ptr > ModuleMap;
 

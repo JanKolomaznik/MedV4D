@@ -3,7 +3,7 @@
 
 #include "GUI/widgets/GeneralViewer.h"
 
-class APrimitiveCreationEventController: M4D::GUI::Viewer::AViewerController
+class APrimitiveCreationEventController: public M4D::GUI::Viewer::AViewerController
 {
 	Q_OBJECT;
 public:

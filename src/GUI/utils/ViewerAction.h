@@ -5,6 +5,7 @@
 #include "GUI/widgets/GeneralViewer.h"
 #include "GUI/utils/ViewerManager.h"
 #include "GUI/utils/ApplicationManager.h"
+#include "GUI/utils/QtM4DTools.h"
 //#include <boost/cast.hpp>
 #include "common/Functors.h"
 
@@ -81,15 +82,13 @@ protected:
 QToolBar *
 createToolBarFromViewerActionSet( ViewerActionSet &aActionSet, const QString &aName );
 
+
 template < typename TWidget >
 void
 addViewerActionSetToWidget( TWidget &aWidget, ViewerActionSet &aActionSet )
 {
 	QList<QAction *> &actions = aActionSet.getActions();
-	QList<QAction *>::iterator it;
-	for ( it = actions.begin(); it != actions.end(); ++it ) {
-		aWidget.addAction( *it );
-	}
+	M4D::GUI::addActionsToWidget( aWidget, actions );
 }
 
 class HelperViewerAction: public QAction, public HelperViewerActionInterface

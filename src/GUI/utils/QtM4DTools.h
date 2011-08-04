@@ -6,6 +6,8 @@
 #include <QPoint>
 #include <QSize>
 #include <QString>
+#include <QtGui>
+#include <QtCore>
 
 namespace M4D {
 namespace GUI {
@@ -70,6 +72,20 @@ synchronizeBoolAndEnabled( TType &aObject, bool &aVariable, bool aFrom )
 		aObject.setEnabled( aVariable );
 	}
 }
+
+template < typename TWidget >
+void
+addActionsToWidget( TWidget &aWidget, QList<QAction *> &actions )
+{
+	QList<QAction *>::iterator it;
+	for ( it = actions.begin(); it != actions.end(); ++it ) {
+		aWidget.addAction( *it );
+	}
+}
+
+QToolBar *
+createToolbarFromActions( const QString &aName, QList<QAction *> &actions );
+
 
 }//namespace GUI
 }//namespace M4D

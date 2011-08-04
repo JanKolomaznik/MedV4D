@@ -7,7 +7,9 @@
 #include "GUI/widgets/PythonTerminal.h"
 #include "GUI/widgets/MultiDockWidget.h"
 #include "GUI/utils/ViewerManager.h"
+#include "GUI/utils/ProxyRenderingExtension.h"
 #include "GUI/utils/ViewerAction.h"
+#include "GUI/utils/QtM4DTools.h"
 #include "GUI/widgets/SettingsDialog.h"
 #include <boost/thread.hpp>
 
@@ -97,6 +99,8 @@ ViewerWindow::ViewerWindow()
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
 
+	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
+	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
 	
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
@@ -105,17 +109,17 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 10 );
 
+	mTransFuncTimer.setInterval( 500 );
+	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
+
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal );
 #endif //USE_PYTHON
 
 
-	mTransFuncTimer.setInterval( 500 );
-	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
-
-	mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );
-	createDockWidget( tr("Annotations" ), Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );
+	//mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );				//************
+	//createDockWidget( tr("Annotations" ), Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );	//************
 
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
@@ -127,16 +131,9 @@ ViewerWindow::ViewerWindow()
 
 	//**********************************************
 	//************* ANNOTATION TOOLBAR *************	
-	QList<QAction*> annotationActions = mViewerController->getActions();
-	toolbar = new QToolBar( tr( "Annotations" ), this );
-	for ( QList<QAction*>::iterator it = annotationActions.begin(); it != annotationActions.end(); ++it )
-	{
-		toolbar->addAction( *it );
-	}
-	addToolBar( toolbar );
-
-	//addViewerActionSetToWidget( *menuViewer, actions );
-	//toolbar->addAction( "BLLLL" );
+	//QList<QAction*> &annotationActions = mViewerController->getActions();
+	//toolbar = M4D::GUI::createToolbarFromActions( tr("Annotations toolbar"), annotationActions );
+	//addToolBar( toolbar );
 
 	//*****************************************
 
@@ -146,14 +143,14 @@ ViewerWindow::ViewerWindow()
 
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
-	factory->setRenderingExtension( mViewerController );
+	factory->setRenderingExtension( mRenderingExtension );
 	factory->setInputConnection( mProdconn );
 
 	mViewerDesktop->setViewerFactory( factory );
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
 
 
-	QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), this, SLOT( updateGui() ), Qt::QueuedConnection );
+	//QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), this, SLOT( updateGui() ), Qt::QueuedConnection );
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
@@ -192,7 +189,17 @@ ViewerWindow::getSelectedViewer()
 	return NULL;
 }
 
+void
+ViewerWindow::addRenderingExtension( M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension )
+{
+	mRenderingExtension->addRenderingExtension( aRenderingExtension );
+}
 
+void
+ViewerWindow::setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController )
+{
+	mViewerController->setController( aViewerController );
+}
 
 void
 ViewerWindow::testSlot()

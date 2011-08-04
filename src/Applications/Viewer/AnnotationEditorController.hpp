@@ -11,6 +11,7 @@
 #include "GUI/utils/QtModelViewTools.h"
 #include "GUI/utils/PrimitiveCreationEventController.h"
 #include <algorithm>
+#include "GUI/utils/ApplicationManager.h"
 
 class AnnotationSettingsDialog;
 class AnnotationWidget;
@@ -120,6 +121,12 @@ public:
 
 	AnnotationEditorController();
 	~AnnotationEditorController();
+
+	void
+	setModeId( M4D::Common::IDNumber aId )
+	{
+		mModeId = aId;
+	}
 
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
@@ -231,6 +238,8 @@ public:
 	AnnotationSettingsDialog *mSettingsDialog;
 
 	AnnotationWidget *mAnnotationView;
+
+	M4D::Common::IDNumber mModeId;
 
 };
 
