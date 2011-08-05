@@ -1,7 +1,7 @@
-#include "AnnotationEditorController.hpp"
-#include "AnnotationSettingsDialog.hpp"
+#include "AnnotationModule/AnnotationEditorController.hpp"
+#include "AnnotationModule/AnnotationSettingsDialog.hpp"
 
-#include "AnnotationWidget.hpp"
+#include "AnnotationModule/AnnotationWidget.hpp"
 
 
 //**************************************************************************

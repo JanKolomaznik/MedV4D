@@ -8,6 +8,7 @@
 #include "GUI/utils/Settings.h"
 #include "GUI/widgets/MainWindow.h"
 #include "common/IDGenerator.h"
+#include "GUI/utils/ProxyViewerController.h"
 #include <QtCore>
 
 
@@ -73,7 +74,7 @@ public:
 	}
 
 	M4D::Common::IDNumber
-	addNewMode( M4D::GUI::Viewer::AViewerController::Ptr aViewerController, M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension )
+	addNewMode(ModeViewerController::Ptr aViewerController, M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension )
 	{
 		M4D::Common::IDNumber id = mModeIdGenerator.NewID();
 		ModeInfo mode;
@@ -94,8 +95,12 @@ public:
 			LOG( "Mode not found ID = " << aId << "\nmodes available : " << mModes.size() );
 			return false;
 		}
-
+		if( mCurrentMode ) {
+			mCurrentMode->viewerController->deactivated();
+		}
 		mMainWindow->setViewerController( it->second.viewerController );
+		mCurrentMode = &(it->second);
+		mCurrentMode->viewerController->activated();
 		LOG( "Mode ID = " << aId << " activated" );
 		return true;
 	}
@@ -122,6 +127,13 @@ public:
 	{
 		return mSettings;
 	}
+public slots:
+	void
+	updateGUIRequest()
+	{
+		ASSERT( mMainWindow );
+		mMainWindow->updateGui();
+	}
 signals:
 	void
 	viewerSelectionChanged();
@@ -132,7 +144,7 @@ protected:
 	struct ModeInfo
 	{
 		M4D::Common::IDNumber id;
-		M4D::GUI::Viewer::AViewerController::Ptr viewerController;
+		ModeViewerController::Ptr viewerController;
 		M4D::GUI::Viewer::RenderingExtension::Ptr renderingExtension;
 	};
 	typedef std::map< M4D::Common::IDNumber, ModeInfo > ModeMap;
@@ -148,6 +160,7 @@ protected:
 	M4D::GUI::MainWindow *mMainWindow;
 
 	ModuleMap	mModules;
+	ModeInfo	*mCurrentMode;
 
 	Settings	mSettings;
 };

@@ -12,7 +12,7 @@ ApplicationManager::getInstance()
 }
 
 ApplicationManager::ApplicationManager()
-	: OpenGLManager( static_cast<OpenGLManager*>( this ) ), ViewerManager( static_cast<ViewerManager*>( this ) ), mInitialized( false )
+	: OpenGLManager( static_cast<OpenGLManager*>( this ) ), ViewerManager( static_cast<ViewerManager*>( this ) ), mInitialized( false ), mCurrentMode( NULL )
 {
 	ASSERT( appManagerInstance == NULL )
 

@@ -34,7 +34,10 @@ public:
 
 	virtual void
 	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController ){}
-	
+public slots:
+	virtual void
+	updateGui()
+	{ update(); };
 protected:
 
 private:

@@ -5,7 +5,7 @@
 #include <QtCore>
 #include "GUI/utils/Module.h"
 #include "GUI/utils/ApplicationManager.h"
-#include "AnnotationEditorController.hpp"
+#include "AnnotationModule/AnnotationEditorController.hpp"
 #include "common/IDGenerator.h"
 
 class AnnotationModule: public AModule
@@ -21,7 +21,8 @@ public:
 
 		M4D::Common::IDNumber modeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
 		mViewerController->setModeId( modeId );
-
+		QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), appManager, SLOT( updateGUIRequest() ) );
+ 
 		appManager->createDockWidget( "Annotations", Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );
 
 		QList<QAction*> &annotationActions = mViewerController->getActions();

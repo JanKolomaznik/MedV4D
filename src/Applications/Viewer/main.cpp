@@ -8,7 +8,6 @@
 #include "common/Common.h"
 #include "ViewerWindow.hpp"
 
-#include "AnnotationModule.hpp"
 
 #include "GUI/utils/ApplicationManager.h"
 
@@ -30,6 +29,15 @@ processCommandLine( int argc, char** argv )
 	inFilename = inFilenameArg.getValue();
 }
 
+#include "AnnotationModule/AnnotationModule.hpp"
+void
+createModules()
+{
+	ApplicationManager *appManager = ApplicationManager::getInstance();
+	
+	appManager->addModule( createModule< AnnotationModule >() );
+}
+
 int
 main( int argc, char** argv )
 {
@@ -49,7 +57,7 @@ main( int argc, char** argv )
 		ViewerWindow viewer;
 		appManager.setMainWindow( viewer );
 
-		appManager.addModule( createModule< AnnotationModule >() );
+		createModules();
 
 		appManager.loadModules();
 		viewer.showMaximized();

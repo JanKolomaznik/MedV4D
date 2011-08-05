@@ -8,7 +8,6 @@
 #include "GUI/utils/ProxyViewerController.h"
 #include "GUI/utils/ProxyRenderingExtension.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
-#include "AnnotationEditorController.hpp"
 #include "GUI/widgets/ProgressInfoDialog.h"
 #include "GUI/widgets/MainWindow.h"
 

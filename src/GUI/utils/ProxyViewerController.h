@@ -2,6 +2,18 @@
 #define PROXY_VIEWER_CONTROLLER_H
 
 #include "GUI/widgets/GeneralViewer.h"
+class ModeViewerController: public M4D::GUI::Viewer::ViewerController
+{
+public:
+	typedef boost::shared_ptr< ModeViewerController > Ptr;
+
+	virtual void
+	activated() = 0;
+
+	virtual void
+	deactivated() = 0;
+
+};
 
 class ProxyViewerController: public M4D::GUI::Viewer::ViewerController
 {
@@ -57,18 +69,18 @@ public:
 	}
 
 	void
-	setController( AViewerController::Ptr aCurrentController )
+	setController( M4D::GUI::Viewer::AViewerController::Ptr aCurrentController )
 	{
 		mCurrentController = aCurrentController;
 	}
 
-	AViewerController::Ptr
+	M4D::GUI::Viewer::AViewerController::Ptr
 	getController()
 	{
 		return mCurrentController;
 	}
 protected:
-	AViewerController::Ptr mCurrentController;
+	M4D::GUI::Viewer::AViewerController::Ptr mCurrentController;
 };
 
 #endif /*PROXY_VIEWER_CONTROLLER_H*/

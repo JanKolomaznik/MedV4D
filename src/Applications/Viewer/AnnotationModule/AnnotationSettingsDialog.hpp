@@ -2,7 +2,7 @@
 #define ANNOTATION_SETTINGS_DIALOG_HPP
 
 #include "ui_AnnotationSettingsDialog.h"
-#include "AnnotationEditorController.hpp"
+#include "AnnotationModule/AnnotationEditorController.hpp"
 
 class AnnotationSettingsDialog: public QDialog, public Ui::AnnotationSettingsDialog
 {

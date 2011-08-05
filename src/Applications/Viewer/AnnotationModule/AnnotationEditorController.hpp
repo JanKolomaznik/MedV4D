@@ -11,7 +11,9 @@
 #include "GUI/utils/QtModelViewTools.h"
 #include "GUI/utils/PrimitiveCreationEventController.h"
 #include <algorithm>
+#include <boost/bind.hpp>
 #include "GUI/utils/ApplicationManager.h"
+#include "GUI/utils/ProxyViewerController.h"
 
 class AnnotationSettingsDialog;
 class AnnotationWidget;
@@ -79,7 +81,7 @@ protected:
 	PrimitiveSet &mPrimitives;
 };
 
-class AnnotationEditorController: public M4D::GUI::Viewer::ViewerController, public M4D::GUI::Viewer::RenderingExtension
+class AnnotationEditorController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
 	Q_OBJECT;
 public:
@@ -121,6 +123,18 @@ public:
 
 	AnnotationEditorController();
 	~AnnotationEditorController();
+
+	void
+	activated()
+	{
+
+	}
+
+	virtual void
+	deactivated()
+	{
+		std::for_each( mChosenToolActions.begin(), mChosenToolActions.end(), boost::bind( &QAction::setChecked, _1, false ) );
+	}
 
 	void
 	setModeId( M4D::Common::IDNumber aId )

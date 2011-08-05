@@ -3,7 +3,7 @@
 
 #include "common/Common.h"
 #include "ui_AnnotationWidget.h"
-#include "AnnotationEditorController.hpp"
+#include "AnnotationModule/AnnotationEditorController.hpp"
 #include <QtGui>
 #include <iostream>
 #include <fstream>

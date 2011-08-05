@@ -5,6 +5,8 @@
 #include <boost/bind.hpp>
 #include <algorithm>
 
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 class ProxyRenderingExtension: public M4D::GUI::Viewer::RenderingExtension
 {
@@ -14,7 +16,9 @@ public:
 	unsigned
 	getAvailableViewTypes()const
 	{
-
+		unsigned mask = 0; //TODO
+		//std::for_each( mExtensionList.begin(), mExtensionList.end(), boost::lambda::var(mask) |= boost::lambda::bind( &M4D::GUI::Viewer::RenderingExtension::getAvailableViewTypes, boost::lambda::_1 ) );
+		return mask;
 	}
 
 	void
