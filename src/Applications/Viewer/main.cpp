@@ -30,12 +30,14 @@ processCommandLine( int argc, char** argv )
 }
 
 #include "AnnotationModule/AnnotationModule.hpp"
+#include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
 void
 createModules()
 {
 	ApplicationManager *appManager = ApplicationManager::getInstance();
 	
 	appManager->addModule( createModule< AnnotationModule >() );
+	appManager->addModule( createModule< ShoulderMeasurementModule >() );
 }
 
 int

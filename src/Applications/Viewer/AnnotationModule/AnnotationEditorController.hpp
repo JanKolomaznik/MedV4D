@@ -130,7 +130,7 @@ public:
 
 	}
 
-	virtual void
+	void
 	deactivated()
 	{
 		std::for_each( mChosenToolActions.begin(), mChosenToolActions.end(), boost::bind( &QAction::setChecked, _1, false ) );
