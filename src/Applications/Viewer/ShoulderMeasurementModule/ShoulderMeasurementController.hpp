@@ -1,6 +1,14 @@
 #ifndef SHOULDER_MEASUREMENT_CONTROLLER_H
 #define SHOULDER_MEASUREMENT_CONTROLLER_H
 
+#include <QtCore>
+#include "GUI/widgets/GeneralViewer.h"
+#include "GUI/utils/ApplicationManager.h"
+#include "GUI/utils/ProxyViewerController.h"
+#include "GUI/utils/QtModelViewTools.h"
+#include "GUI/utils/PrimitiveCreationEventController.h"
+
+typedef VectorItemModel< M4D::Point3Df > PointSet;
 
 class ShoulderMeasurementController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -8,7 +16,8 @@ class ShoulderMeasurementController: public ModeViewerController, public M4D::GU
 public:
 	enum MeasurementMode {
 		mmNONE,
-
+		mmHUMERAL_HEAD,
+		
 		mmSENTINEL //use for valid interval testing 
 	};
 
@@ -17,8 +26,8 @@ public:
 	typedef M4D::GUI::Viewer::ViewerController ControllerPredecessor;
 	typedef M4D::GUI::Viewer::RenderingExtension RenderingExtPredecessor;
 
-	AnnotationEditorController();
-	~AnnotationEditorController();
+	ShoulderMeasurementController();
+	~ShoulderMeasurementController();
 
 	void
 	activated()
@@ -68,89 +77,32 @@ public:
 	void
 	render3D();
 
-	QActionList &
+	/*QActionList &
 	getActions();
 
 	QWidget *
-	getAnnotationView();
-
-public slots:
-	void
-	setAnnotationEditMode( int aMode );
-
-	void
-	abortEditInProgress();
-
-	void
-	showSettingsDialog();
-
-	void
-	setOverlay( bool aOverlay )
-	{
-		mSettings.overlayed = aOverlay;
-		emit updateRequest();
-	}
+	getAnnotationView();*/
 signals:
 	void
 	updateRequest();
 
-protected slots:
-	void
-	editModeActionToggled( QAction *aAction );
-
-	void
-	updateActions();
-
-	void
-	applySettings();
 protected:
-	void
-	renderPoints2D();
 
-	void
-	renderSpheres2D();
-
-	void
-	renderLines2D();
-
-	void
-	renderAngles2D();
-
-	void
-	renderPoints3D();
-
-	void
-	renderSpheres3D();
-
-	void
-	renderLines3D();
-
-	void
-	renderAngles3D();
 public:
 
 	PointSet mPoints;
-	LineSet mLines;
-	SphereSet mSpheres;
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	bool mOverlay;
-	AnnotationEditMode mEditMode;
+	MeasurementMode mMeasurementMode;
 
 	QActionList mActions;
 
 	QActionList mChosenToolActions;
 
-	std::map< AnnotationEditMode, APrimitiveCreationEventController::Ptr > mAnnotationPrimitiveHandlers;
-
-	AnnotationSettings mSettings;
-
-	AnnotationSettingsDialog *mSettingsDialog;
-
-	AnnotationWidget *mAnnotationView;
+	std::map< MeasurementMode, APrimitiveCreationEventController::Ptr > mMeasurementHandlers;
 
 	M4D::Common::IDNumber mModeId;
-
 };
 
 

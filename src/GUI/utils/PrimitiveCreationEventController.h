@@ -159,6 +159,9 @@ public:
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
 			
 			mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.realCoordinates ) );
+			if ( mPrimitive == NULL ) {
+				return true;
+			}
 			endPrimitive( mPrimitive );
 
 			state.viewerWindow->update();
@@ -195,6 +198,9 @@ public:
 		{
 			if ( mCurrentStage == 0 ) {
 				mPrimitive = this->beginPrimitive( M4D::Line3Df( aEventInfo.realCoordinates, aEventInfo.realCoordinates ) );
+				if ( mPrimitive == NULL ) {
+					return true;
+				}
 				++mCurrentStage;
 			} else {
 				mPrimitive->secondPoint() = aEventInfo.realCoordinates;
@@ -239,6 +245,9 @@ public:
 		{
 			if ( mCurrentStage == 0 ) {
 				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( aEventInfo.realCoordinates, 0.0f ) );
+				if ( mPrimitive == NULL ) {
+					return true;
+				}
 				++mCurrentStage;
 			} else {
 				mPrimitive->radius() = VectorSize(mPrimitive->center() - aEventInfo.realCoordinates);

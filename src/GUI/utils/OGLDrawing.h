@@ -175,6 +175,20 @@ DrawSphere( const Sphere3Df &sphere );
 void
 DrawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );
 
+template< typename TIterator >
+void
+DrawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
+{
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			if ( IntervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
+				M4D::GLVertexVector( VectorPurgeDimension( (*it)[aPlane], aPlane ) );
+			}
+		}
+	glEnd();
+}
+
+
 
 } /*namespace M4D*/
 
