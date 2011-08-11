@@ -5,6 +5,8 @@
 #include <QtCore>
 #include "GUI/utils/Module.h"
 #include "GUI/utils/ApplicationManager.h"
+#include "ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
+#include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
 #include "common/IDGenerator.h"
 
 class ShoulderMeasurementModule: public AModule
@@ -16,13 +18,13 @@ public:
 	{
 		ApplicationManager * appManager = ApplicationManager::getInstance();
 
-		//mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );
+		mViewerController = ShoulderMeasurementController::Ptr( new ShoulderMeasurementController );
 
-		//M4D::Common::IDNumber modeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
-		//mViewerController->setModeId( modeId );
-		//QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), appManager, SLOT( updateGUIRequest() ) );
+		M4D::Common::IDNumber modeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
+		mViewerController->setModeId( modeId );
+		QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), appManager, SLOT( updateGUIRequest() ) );
  
-		//appManager->createDockWidget( "Annotations", Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );
+		appManager->createDockWidget( "Shoulder Measurement", Qt::RightDockWidgetArea, new ShoulderMeasurementWidget( mViewerController ) );
 
 		//QList<QAction*> &annotationActions = mViewerController->getActions();
 		//QToolBar *toolbar = M4D::GUI::createToolbarFromActions( "Annotations toolbar", annotationActions );
@@ -49,7 +51,7 @@ public:
 		return "Shoulder Measurement Module";
 	}
 protected:
-	ModeViewerController::Ptr mViewerController;
+	ShoulderMeasurementController::Ptr mViewerController;
 };
 
 #endif /*SHOULDER_MEASUREMENT_MODULE_HPP*/

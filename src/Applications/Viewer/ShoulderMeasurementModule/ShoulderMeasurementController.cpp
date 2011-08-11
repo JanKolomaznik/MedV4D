@@ -36,7 +36,7 @@ protected:
 
 ShoulderMeasurementController::ShoulderMeasurementController()
 {
-	mMeasurementHandlers[mmHUMERAL_HEAD] = APrimitiveCreationEventController::Ptr( new PointGroupPrimitiveController(mPoints, 6) );
+	mMeasurementHandlers[mmHUMERAL_HEAD] = APrimitiveCreationEventController::Ptr( new PointGroupPrimitiveController(mHumeralHeadPoints, 6) );
 
 }
 

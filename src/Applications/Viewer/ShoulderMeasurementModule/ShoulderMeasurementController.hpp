@@ -82,6 +82,19 @@ public:
 
 	QWidget *
 	getAnnotationView();*/
+	
+	PointSet &
+	getPointModel()
+	{
+		return mHumeralHeadPoints;
+	}
+
+	void
+	setMeasurementMode( int aMode )
+	{
+		ASSERT( aMode < mmSENTINEL );
+		mMeasurementMode = static_cast< MeasurementMode >( aMode );
+	}
 signals:
 	void
 	updateRequest();
@@ -90,7 +103,7 @@ protected:
 
 public:
 
-	PointSet mPoints;
+	PointSet mHumeralHeadPoints;
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	bool mOverlay;
