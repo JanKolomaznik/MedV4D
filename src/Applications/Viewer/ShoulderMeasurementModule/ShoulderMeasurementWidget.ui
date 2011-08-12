@@ -35,7 +35,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QColumnView" name="pointsView"/>
+        <widget class="QTableView" name="pointsView">
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>60</number>
+         </attribute>
+        </widget>
        </item>
       </layout>
      </widget>

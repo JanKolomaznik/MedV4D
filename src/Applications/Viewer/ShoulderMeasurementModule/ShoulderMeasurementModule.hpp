@@ -9,49 +9,60 @@
 #include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
 #include "common/IDGenerator.h"
 
+
+
+
 class ShoulderMeasurementModule: public AModule
 {
 public:
 
 	void
-	load()
-	{
-		ApplicationManager * appManager = ApplicationManager::getInstance();
-
-		mViewerController = ShoulderMeasurementController::Ptr( new ShoulderMeasurementController );
-
-		M4D::Common::IDNumber modeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
-		mViewerController->setModeId( modeId );
-		QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), appManager, SLOT( updateGUIRequest() ) );
- 
-		appManager->createDockWidget( "Shoulder Measurement", Qt::RightDockWidgetArea, new ShoulderMeasurementWidget( mViewerController ) );
-
-		//QList<QAction*> &annotationActions = mViewerController->getActions();
-		//QToolBar *toolbar = M4D::GUI::createToolbarFromActions( "Annotations toolbar", annotationActions );
-		//appManager->addToolBar( toolbar );
-
-		mLoaded = true;
-	}
+	load();
 
 	void
-	unload()
-	{
-
-	}
+	unload();
 
 	bool
-	isUnloadable()
-	{
-		return false;
-	}
+	isUnloadable();
 
 	std::string
-	getName()
-	{
-		return "Shoulder Measurement Module";
-	}
+	getName();
+
+	void
+	startMeasurement();
+
+	void
+	stopMeasurement();
 protected:
 	ShoulderMeasurementController::Ptr mViewerController;
+	M4D::Common::IDNumber mModeId;
+};
+
+
+class StartMeasurementAction: public QAction
+{
+	Q_OBJECT;
+public:
+	StartMeasurementAction( ShoulderMeasurementModule &aModule, QObject *parent )
+		: QAction( "Shoulder measurement", parent ), mModule( aModule )
+	{
+		setCheckable( true );
+		setChecked( false );
+		QObject::connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleMeasurement(bool) ) );
+	}
+public slots:
+	void
+	toggleMeasurement( bool aToggle )
+	{
+		if( aToggle ) {
+			mModule.startMeasurement();
+		} else {
+			mModule.stopMeasurement();
+		}
+	}
+
+protected:
+	ShoulderMeasurementModule &mModule;
 };
 
 #endif /*SHOULDER_MEASUREMENT_MODULE_HPP*/
