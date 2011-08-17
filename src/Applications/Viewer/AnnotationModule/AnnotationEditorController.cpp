@@ -187,35 +187,9 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 	
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	glBegin( GL_POINTS );
-		for( size_t i = 0; i < mPoints.size(); ++i ) {
-			if ( IntervalTest( aInterval[0], aInterval[1], mPoints[i][aPlane] ) ) { 
-				M4D::GLVertexVector( VectorPurgeDimension( mPoints[i], aPlane ) );
-			}
-		}
-	glEnd();
+	DrawPointSet2D( mPoints.begin(), mPoints.end(), aInterval, aPlane );
 
-	glBegin( GL_LINES );
-		for( size_t i = 0; i < mLines.size(); ++i ) {
-			if ( (mLines[i].firstPoint()[aPlane] < aInterval[0] && mLines[i].secondPoint()[aPlane] < aInterval[0])
-				|| (mLines[i].firstPoint()[aPlane] > aInterval[1] && mLines[i].secondPoint()[aPlane] > aInterval[1]) )
-			{ 
-				continue;
-			}
-			M4D::GLVertexVector( VectorPurgeDimension( mLines[i].firstPoint(), aPlane ) );
-			M4D::GLVertexVector( VectorPurgeDimension( mLines[i].secondPoint(), aPlane ) );
-		}
-	glEnd();
-	glBegin( GL_POINTS );
-		for( size_t i = 0; i < mLines.size(); ++i ) {
-			if ( IntervalTest( aInterval[0], aInterval[1], mLines[i].firstPoint()[aPlane] ) ) { 
-				M4D::GLVertexVector( VectorPurgeDimension( mLines[i].firstPoint(), aPlane ) );
-			}
-			if ( IntervalTest( aInterval[0], aInterval[1], mLines[i].secondPoint()[aPlane] ) ) { 
-				M4D::GLVertexVector( VectorPurgeDimension( mLines[i].secondPoint(), aPlane ) );
-			}
-		}
-	glEnd();
+	DrawLineSet2D( mLines.begin(), mLines.end(), aInterval, aPlane );
 
 	GL_CHECKED_CALL( M4D::GLColorFromQColor( mSettings.sphereFillColor2D ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
@@ -297,12 +271,7 @@ AnnotationEditorController::renderPoints3D()
 	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	glBegin( GL_POINTS );
-		for( size_t i = 0; i < mPoints.size(); ++i ) {
-			M4D::GLVertexVector( mPoints[i] );
-		}
-		//std::for_each( mPoints.mPoints.begin(), mPoints.mPoints.end(), M4D::GLVertexVector );
-	glEnd();
+	DrawPointSet( mPoints.begin(), mPoints.end() );
 }
 
 void
@@ -327,18 +296,7 @@ AnnotationEditorController::renderSpheres3D()
 void
 AnnotationEditorController::renderLines3D()
 {
-	glBegin( GL_LINES );
-		for( size_t i = 0; i < mLines.size(); ++i ) {
-			M4D::GLVertexVector( mLines[i].firstPoint() );
-			M4D::GLVertexVector( mLines[i].secondPoint() );
-		}
-	glEnd();
-	glBegin( GL_POINTS );
-		for( size_t i = 0; i < mLines.size(); ++i ) {
-			M4D::GLVertexVector( mLines[i].firstPoint() );
-			M4D::GLVertexVector( mLines[i].secondPoint() );
-		}
-	glEnd();
+	DrawLineSet( mLines.begin(), mLines.end() );
 }
 
 void

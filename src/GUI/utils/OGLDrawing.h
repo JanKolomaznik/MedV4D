@@ -182,12 +182,67 @@ DrawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianP
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
 			if ( IntervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
-				M4D::GLVertexVector( VectorPurgeDimension( (*it)[aPlane], aPlane ) );
+				M4D::GLVertexVector( VectorPurgeDimension( *it, aPlane ) );
 			}
 		}
 	glEnd();
 }
 
+template< typename TIterator >
+void
+DrawLineSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
+{
+	glBegin( GL_LINES );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			if ( (it->firstPoint()[aPlane] < aInterval[0] && it->secondPoint()[aPlane] < aInterval[0])
+				|| (it->firstPoint()[aPlane] > aInterval[1] && it->secondPoint()[aPlane] > aInterval[1]) )
+			{ 
+				continue;
+			}
+			M4D::GLVertexVector( VectorPurgeDimension( it->firstPoint(), aPlane ) );
+			M4D::GLVertexVector( VectorPurgeDimension( it->secondPoint(), aPlane ) );
+		}
+	glEnd();
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			if ( IntervalTest( aInterval[0], aInterval[1], it->firstPoint()[aPlane] ) ) { 
+				M4D::GLVertexVector( VectorPurgeDimension( it->firstPoint(), aPlane ) );
+			}
+			if ( IntervalTest( aInterval[0], aInterval[1], it->secondPoint()[aPlane] ) ) { 
+				M4D::GLVertexVector( VectorPurgeDimension( it->secondPoint(), aPlane ) );
+			}
+		}
+	glEnd();
+}
+
+template< typename TIterator >
+void
+DrawPointSet( TIterator aBegin, TIterator aEnd )
+{
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			M4D::GLVertexVector( *it );
+		}
+	glEnd();
+}
+
+template< typename TIterator >
+void
+DrawLineSet( TIterator aBegin, TIterator aEnd )
+{
+	glBegin( GL_LINES );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			M4D::GLVertexVector( it->firstPoint() );
+			M4D::GLVertexVector( it->secondPoint() );
+		}
+	glEnd();
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			M4D::GLVertexVector( it->firstPoint() );
+			M4D::GLVertexVector( it->secondPoint() );
+		}
+	glEnd();
+}
 
 
 } /*namespace M4D*/

@@ -109,23 +109,53 @@ ShoulderMeasurementController::getAvailableViewTypes()const
 void
 ShoulderMeasurementController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, CartesianPlanes aPlane )
 {
+	GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
 
+	GL_CHECKED_CALL( glEnable( GL_POINT_SMOOTH ) );
+	GL_CHECKED_CALL( glEnable( GL_BLEND ) );
+	GL_CHECKED_CALL( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+	GL_CHECKED_CALL( glPointSize( 4.0f ) );
+
+	GL_CHECKED_CALL( glDisable( GL_DEPTH_TEST ) );
+	
+	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+
+	DrawPointSet2D( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end(), aInterval, aPlane );
+
+	GL_CHECKED_CALL( glPopAttrib() );
 }
 
 void
 ShoulderMeasurementController::preRender3D()
 {
-
+	if( !mOverlay ) {
+		render3D();
+	}
 }
 
 void
 ShoulderMeasurementController::postRender3D()
 {
-
+	if( mOverlay ) {
+		render3D();
+	}
 }
 
 void
 ShoulderMeasurementController::render3D()
 {
+	GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
 
+	GL_CHECKED_CALL( glEnable( GL_POINT_SMOOTH ) );
+	GL_CHECKED_CALL( glEnable( GL_BLEND ) );
+	GL_CHECKED_CALL( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+	GL_CHECKED_CALL( glPointSize( 4.0f ) );
+
+	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
+	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
+
+	DrawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
+
+	GL_CHECKED_CALL( glPopAttrib() );
 }
+
