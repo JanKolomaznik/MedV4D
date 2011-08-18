@@ -187,16 +187,16 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 	
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	DrawPointSet2D( mPoints.begin(), mPoints.end(), aInterval, aPlane );
+	drawPointSet2D( mPoints.begin(), mPoints.end(), aInterval, aPlane );
 
-	DrawLineSet2D( mLines.begin(), mLines.end(), aInterval, aPlane );
+	drawLineSet2D( mLines.begin(), mLines.end(), aInterval, aPlane );
 
 	GL_CHECKED_CALL( M4D::GLColorFromQColor( mSettings.sphereFillColor2D ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
 		float r2 = Sqr( mSpheres[i].radius() ) - Sqr( mSpheres[i].center()[ aPlane ] - 0.5*(aInterval[0]+aInterval[1]) );
 		if ( r2 > 0.0f ) { 
 			Vector2f pos = VectorPurgeDimension( mSpheres[i].center(), aPlane );
-			M4D::DrawCircle( pos, Sqrt( r2 ) /*mSpheres[i].radius()*/ );
+			M4D::drawCircle( pos, Sqrt( r2 ) /*mSpheres[i].radius()*/ );
 		}
 	}
 
@@ -229,6 +229,7 @@ AnnotationEditorController::render3D()
 	GL_CHECKED_CALL( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
 	GL_CHECKED_CALL( glPointSize( 4.0f ) );
 
+	//M4D::drawSphericalCap( 30.0f, 15.0f );
 	
 	renderPoints3D();
 
@@ -271,7 +272,7 @@ AnnotationEditorController::renderPoints3D()
 	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	DrawPointSet( mPoints.begin(), mPoints.end() );
+	drawPointSet( mPoints.begin(), mPoints.end() );
 }
 
 void
@@ -289,14 +290,14 @@ AnnotationEditorController::renderSpheres3D()
 			);
 	//GL_CHECKED_CALL( glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, Vector4f( 3.0f, 0.0f, 0.0f, 1.0f ).GetData() ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
-		M4D::DrawSphere( mSpheres[i] );
+		M4D::drawSphere( mSpheres[i] );
 	}
 }
 
 void
 AnnotationEditorController::renderLines3D()
 {
-	DrawLineSet( mLines.begin(), mLines.end() );
+	drawLineSet( mLines.begin(), mLines.end() );
 }
 
 void

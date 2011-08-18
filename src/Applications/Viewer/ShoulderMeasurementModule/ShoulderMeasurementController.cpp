@@ -120,7 +120,7 @@ ShoulderMeasurementController::render2DAlignedSlices( int32 aSliceIdx, Vector2f 
 	
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	DrawPointSet2D( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end(), aInterval, aPlane );
+	drawPointSet2D( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end(), aInterval, aPlane );
 
 	GL_CHECKED_CALL( glPopAttrib() );
 }
@@ -154,7 +154,7 @@ ShoulderMeasurementController::render3D()
 	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	DrawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
+	drawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
 
 	GL_CHECKED_CALL( glPopAttrib() );
 }

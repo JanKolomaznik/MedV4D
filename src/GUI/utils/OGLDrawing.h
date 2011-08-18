@@ -145,39 +145,51 @@ GLDrawMesh( const M4D::Imaging::Geometry::Mesh< VertexType, FaceType > &mesh );
 
 
 void
-DrawCircle( float32 radius, size_t segCount = 32 );
+drawCircle( float32 radius, size_t segCount = 32 );
 
 void
-DrawCircle( Vector2f center, float32 radius, size_t segCount = 32 );
+drawCircle( Vector2f center, float32 radius, size_t segCount = 32 );
 
 void
-DrawCircle( const Circlef &circle, size_t segCount = 32 );
+drawCircle( const Circlef &circle, size_t segCount = 32 );
 
 void
-DrawCircleContour( float32 radius, size_t segCount = 32 );
+drawCircleContour( float32 radius, size_t segCount = 32 );
 
 void
-DrawCircleContour( Vector2f center, float32 radius, size_t segCount = 32 );
+drawCircleContour( Vector2f center, float32 radius, size_t segCount = 32 );
 
 void
-DrawCircleContour( const Circlef &circle, size_t segCount = 32 );
-
-
-void
-DrawSphere( float32 radius );
+drawCircleContour( const Circlef &circle, size_t segCount = 32 );
 
 void
-DrawSphere( Vector3f center, float32 radius );
+drawSphere( float32 radius );
 
 void
-DrawSphere( const Sphere3Df &sphere );
+drawSphere( Vector3f center, float32 radius );
 
 void
-DrawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );
+drawSphere( const Sphere3Df &sphere );
+
+void
+drawSphericalCap( float aBaseRadius, float aHeight );
+
+void
+drawSphericalCap( Vector3f aBaseCenter, Vector3f aBaseNormal, float aBaseRadius, float aHeight );
+
+void
+drawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );
+
+void
+drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight );
+
+void
+drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight, float aStep = 10 );
+
 
 template< typename TIterator >
 void
-DrawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
+drawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
 {
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
@@ -190,7 +202,7 @@ DrawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianP
 
 template< typename TIterator >
 void
-DrawLineSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
+drawLineSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
 {
 	glBegin( GL_LINES );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
@@ -217,7 +229,7 @@ DrawLineSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPl
 
 template< typename TIterator >
 void
-DrawPointSet( TIterator aBegin, TIterator aEnd )
+drawPointSet( TIterator aBegin, TIterator aEnd )
 {
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
@@ -228,7 +240,7 @@ DrawPointSet( TIterator aBegin, TIterator aEnd )
 
 template< typename TIterator >
 void
-DrawLineSet( TIterator aBegin, TIterator aEnd )
+drawLineSet( TIterator aBegin, TIterator aEnd )
 {
 	glBegin( GL_LINES );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {

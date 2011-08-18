@@ -402,7 +402,7 @@ GLDrawBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 
 }
 
 void
-DrawCircle( float32 radius, size_t segCount )
+drawCircle( float32 radius, size_t segCount )
 {
 	float sAlpha = sin( 2*PI / segCount );
 	float cAlpha = cos( 2*PI / segCount );
@@ -419,23 +419,23 @@ DrawCircle( float32 radius, size_t segCount )
 }
 
 void
-DrawCircle( Vector2f center, float32 radius, size_t segCount )
+drawCircle( Vector2f center, float32 radius, size_t segCount )
 {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glTranslatef( center[0], center[1], 0.0f );
-	DrawCircle( radius, segCount );
+	drawCircle( radius, segCount );
 	glPopMatrix();
 }
 
 void
-DrawCircle( const Circlef &circle, size_t segCount )
+drawCircle( const Circlef &circle, size_t segCount )
 {
-	DrawCircle( circle.center(), circle.radius(), segCount );
+	drawCircle( circle.center(), circle.radius(), segCount );
 }
 
 void
-DrawCircleContour( float32 radius, size_t segCount )
+drawCircleContour( float32 radius, size_t segCount )
 {
 	float sAlpha = sin( 2*PI / segCount );
 	float cAlpha = cos( 2*PI / segCount );
@@ -451,25 +451,25 @@ DrawCircleContour( float32 radius, size_t segCount )
 }
 
 void
-DrawCircleContour( Vector2f center, float32 radius, size_t segCount )
+drawCircleContour( Vector2f center, float32 radius, size_t segCount )
 {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glTranslatef( center[0], center[1], 0.0f );
-	DrawCircle( radius, segCount );
+	drawCircle( radius, segCount );
 	glPopMatrix();
 }
 
 void
-DrawCircleContour( const Circlef &circle, size_t segCount )
+drawCircleContour( const Circlef &circle, size_t segCount )
 {
-	DrawCircle( circle.center(), circle.radius(), segCount );
+	drawCircle( circle.center(), circle.radius(), segCount );
 }
 
 
 
 void
-DrawSphere( float32 radius )
+drawSphere( float32 radius )
 {
 	GLUquadric* quadratic=gluNewQuadric();			
 	gluQuadricNormals(quadratic, GLU_SMOOTH);
@@ -481,23 +481,87 @@ DrawSphere( float32 radius )
 }
 
 void
-DrawSphere( Vector3f center, float32 radius )
+drawSphere( Vector3f center, float32 radius )
 {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glTranslatef( center[0], center[1], center[2] );
-	DrawSphere( radius );
+	drawSphere( radius );
 	glPopMatrix();
 }
 
 void
-DrawSphere( const Sphere3Df &sphere )
+drawSphere( const Sphere3Df &sphere )
 {
-	DrawSphere( sphere.center(), sphere.radius() );
+	drawSphere( sphere.center(), sphere.radius() );
 }
 
 void
-DrawArrow( float arrowHeight, float bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 )
+drawSphericalCap( float aBaseRadius, float aHeight )
+{
+	ASSERT( aBaseRadius > 0.0f && aHeight > 0.0f );
+
+	float radius = ( Sqr( aBaseRadius ) + Sqr( aHeight ) ) / ( 2 * aHeight );
+	float iRadius = 1.0f / radius;
+	const int latitudeSteps = 16;
+	const int longitudeSteps = 32;
+
+	//float minSin = (radius - aHeight)/radius;
+	
+	float lonSin = sin( 2*PI / longitudeSteps );
+	float lonCos = cos( 2*PI / longitudeSteps );
+
+	float latStep = aHeight / latitudeSteps;
+
+	float r = Sqrt( 2* radius * latStep - Sqr( latStep ) );
+	Vector3f tmp = Vector3f( r, 0.0f, aHeight - latStep );
+	glBegin( GL_TRIANGLE_FAN );
+		GLNormalVector( Vector3f( 0.0f, 0.0f, 1.0f ) );
+		GLVertexVector( Vector3f( 0.0f, 0.0f, aHeight ) );
+		for( int i = 0; i < longitudeSteps; ++i ) {
+			GLNormalVector( iRadius * (tmp + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+			GLVertexVector( tmp );
+			tmp = Vector3f( tmp[0] * lonCos - tmp[1] * lonSin, tmp[0] * lonSin + tmp[1] * lonCos, aHeight - latStep );
+		}
+		GLNormalVector( iRadius * (Vector3f( r, 0.0f, aHeight - latStep ) + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+		GLVertexVector( Vector3f( r, 0.0f, aHeight - latStep ) );
+	glEnd();
+
+	for( int j = 1; j < latitudeSteps; ++j ) {
+		float h1 = aHeight - j * latStep;
+		float h2 = aHeight - (j+1) * latStep;
+		float r1 = Sqrt( 2* radius * j * latStep - Sqr( j * latStep ) );
+		float r2 = Sqrt( 2* radius * (j+1) * latStep - Sqr( (j+1) * latStep ) );
+		Vector3f tmp1 = Vector3f( r1, 0.0f, h1 );
+		Vector3f tmp2 = Vector3f( r2, 0.0f, h2 );
+		glBegin( GL_TRIANGLE_STRIP );
+			GLVertexVector( tmp1 );
+			GLVertexVector( tmp2 );
+			for( int i = 0; i < longitudeSteps; ++i ) {
+				GLNormalVector( iRadius * (tmp1 + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+				GLVertexVector( tmp1 );
+				GLNormalVector( iRadius * (tmp2 + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+				GLVertexVector( tmp2 );
+				tmp1 = Vector3f( tmp1[0] * lonCos - tmp1[1] * lonSin, tmp1[0] * lonSin + tmp1[1] * lonCos, h1 );
+				tmp2 = Vector3f( tmp2[0] * lonCos - tmp2[1] * lonSin, tmp2[0] * lonSin + tmp2[1] * lonCos, h2 );
+			}
+			GLNormalVector( iRadius * (Vector3f( r1, 0.0f, h1 ) + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+			GLVertexVector( Vector3f( r1, 0.0f, h1 ) );
+			GLNormalVector( iRadius * (Vector3f( r2, 0.0f, h2 ) + Vector3f( 0.0f, 0.0f, radius - aHeight )) );
+			GLVertexVector( Vector3f( r2, 0.0f, h2 ) );
+		glEnd();
+	}
+}
+
+void
+drawSphericalCap( Vector3f aBaseCenter, Vector3f aBaseNormal, float aBaseRadius, float aHeight )
+{
+
+}
+
+
+void
+drawArrow( float arrowHeight, float bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 )
 {
 	assert( arrowHeight > bitHeight );
 	assert( bitRadius > bodyRadius1 );
@@ -515,6 +579,18 @@ DrawArrow( float arrowHeight, float bitHeight, float bitRadius, float bodyRadius
 
 	glPopMatrix();
 	gluDeleteQuadric(quadratic);
+}
+
+void
+drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight )
+{
+
+}
+
+void
+drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight, float aStep )
+{
+
 }
 
 
