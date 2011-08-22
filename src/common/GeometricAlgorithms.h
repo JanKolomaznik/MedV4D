@@ -4,6 +4,7 @@
 #include <cmath>
 #include "common/Common.h"
 #include "common/Vector.h"
+#include "common/MathTools.h"
 #include "common/GeometricPrimitives.h"
 #include <ostream>
 #include <iomanip>
@@ -29,6 +30,46 @@ VectorPerpDotProduct( const Vector< CoordType, 2 > &a, const Vector< CoordType, 
 {
 	return a[0] * b[1] - a[1] * b[0];
 }
+
+template< typename CoordType >
+inline Vector< CoordType, 3 >
+getSomePerpendicularVector( const Vector< CoordType, 3 > &v )
+{
+	size_t maxI = MaxIdx< CoordType, 3 >( v );
+	size_t minI = MinIdx< CoordType, 3 >( v );
+	Vector< CoordType, 3 > v2( v );
+	
+	if( maxI != minI ) {
+		v2[maxI] = v[minI];
+		v2[minI] = v[maxI];
+	} else {
+		v2[maxI] *= -1;
+	}
+
+	v2 = VectorProduct( v, v2 );
+	VectorNormalization( v2 );
+	return v2;
+}
+
+template< typename CoordType >
+inline double
+angleAndRotationAxisFromVectors( const Vector< CoordType, 3 > &a, const Vector< CoordType, 3 > &b, Vector< CoordType, 3 > &axis )
+{
+	Vector< CoordType, 3 > aN = a; //TODO
+	VectorNormalization( aN );
+	Vector< CoordType, 3 > bN = b;
+	VectorNormalization( bN );
+
+	double cAngle = static_cast< double >( aN * bN );
+	double angle = acos( cAngle );
+	axis = VectorProduct( aN, bN );
+	if( Abs( VectorSize( axis ) ) < Epsilon ) {
+		axis = getSomePerpendicularVector( aN );
+	}
+	VectorNormalization( axis );
+	return angle;
+}
+
 
 
 template< typename CoordType >

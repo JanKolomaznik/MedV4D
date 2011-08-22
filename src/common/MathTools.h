@@ -108,6 +108,18 @@ Max( const Vector< TNumType, tDim > &a ) {
 }
 
 template< typename TNumType, size_t tDim >
+inline size_t
+MaxIdx( const Vector< TNumType, tDim > &a ) {
+	size_t idx = 0;
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( a[idx] < a[(unsigned int)i] ) {
+			idx = i;
+		}
+	}
+	return idx;
+}
+
+template< typename TNumType, size_t tDim >
 inline TNumType
 Min( const Vector< TNumType, tDim > &a ) {
 	TNumType res = a[0];
@@ -117,6 +129,18 @@ Min( const Vector< TNumType, tDim > &a ) {
 		}
 	}
 	return res;
+}
+
+template< typename TNumType, size_t tDim >
+inline size_t
+MinIdx( const Vector< TNumType, tDim > &a ) {
+	size_t idx = 0;
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( a[idx] > a[(unsigned int)i] ) {
+			idx = i;
+		}
+	}
+	return idx;
 }
 
 template< typename TNumType, size_t tDim >

@@ -58,6 +58,12 @@ public:
 			return Vector<T,3>( this->R_component_2(), this->R_component_3(), this->R_component_4() );
 		}
 
+	/*void
+	getAngleAndAxis( T &angle, const Vector< T, 3 > &axis )
+	{
+
+	}*/
+
 protected:
 
 };

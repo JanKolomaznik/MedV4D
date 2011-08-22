@@ -229,7 +229,7 @@ AnnotationEditorController::render3D()
 	GL_CHECKED_CALL( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
 	GL_CHECKED_CALL( glPointSize( 4.0f ) );
 
-	//M4D::drawSphericalCap( 30.0f, 15.0f );
+	//M4D::drawSphericalCap( Vector3f(), Vector3f( 0.0f, 0.0f, -1.0f ), 30.0f, 15.0f );
 	
 	renderPoints3D();
 

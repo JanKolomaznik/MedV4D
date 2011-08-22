@@ -530,7 +530,7 @@ drawSphericalCap( float aBaseRadius, float aHeight )
 	for( int j = 1; j < latitudeSteps; ++j ) {
 		float h1 = aHeight - j * latStep;
 		float h2 = aHeight - (j+1) * latStep;
-		float r1 = Sqrt( 2* radius * j * latStep - Sqr( j * latStep ) );
+		float r1 = Sqrt( 2* radius * j * latStep - Sqr( j * latStep ) ); //TODO - optimize
 		float r2 = Sqrt( 2* radius * (j+1) * latStep - Sqr( (j+1) * latStep ) );
 		Vector3f tmp1 = Vector3f( r1, 0.0f, h1 );
 		Vector3f tmp2 = Vector3f( r2, 0.0f, h2 );
@@ -556,7 +556,16 @@ drawSphericalCap( float aBaseRadius, float aHeight )
 void
 drawSphericalCap( Vector3f aBaseCenter, Vector3f aBaseNormal, float aBaseRadius, float aHeight )
 {
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glTranslatef( aBaseCenter[0], aBaseCenter[1], aBaseCenter[2] );
+	
+	Vector3f axis;
+	float angle = angleAndRotationAxisFromVectors( Vector3f( 0.0f, 0.0f, 1.0f ), aBaseNormal, axis ) * 180.f / PI;
+	glRotatef( angle, axis[0], axis[1], axis[2] );
 
+	drawSphericalCap( aBaseRadius, aHeight );
+	glPopMatrix();
 }
 
 
