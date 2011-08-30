@@ -591,15 +591,79 @@ drawArrow( float arrowHeight, float bitHeight, float bitRadius, float bodyRadius
 }
 
 void
-drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight )
+drawStippledLine( const Vector3f &aStart, const Vector3f &aEnd )
+{
+	glEnable( GL_LINE_STIPPLE );
+	glLineStipple( 3,  0x7777 );
+	glBegin( GL_LINES );
+		GLVertexVector( aStart );
+		GLVertexVector( aEnd );
+	glEnd();
+	glLineStipple( 1,  0xFFFF );
+}
+
+void
+drawPlane( float aWidth, float aHeight )
+{
+	Vector< float32, 2 > point1( -0.5f*aWidth, -0.5f*aHeight );
+	Vector< float32, 2 > point3 = -point1;
+
+	Vector< float32, 2 > point2( point3[0], point1[1] );
+	Vector< float32, 2 > point4( point1[0], point3[1] );
+
+	glBegin( GL_QUADS );
+		GLVertexVector( point1 );
+
+		GLVertexVector( point2 );
+
+		GLVertexVector( point3 );
+
+		GLVertexVector( point4 );
+	glEnd();
+}
+
+void
+drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aWidth, float aHeight )
 {
 
 }
 
 void
-drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight, float aStep )
+drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aWidth, float aHeight, float aStep )
 {
+	Vector3f vSize = 0.5f*aWidth*aVDirection;
+	Vector3f wSize = 0.5f*aHeight*aWDirection;
+	glBegin( GL_LINE_LOOP );	
+		GLVertexVector( aCenter + vSize + wSize );
 
+		GLVertexVector( aCenter + vSize - wSize );
+
+		GLVertexVector( aCenter - vSize - wSize );
+
+		GLVertexVector( aCenter - vSize + wSize );
+	glEnd();
+
+	int vCount = static_cast<int>( 0.5f*aWidth / aStep );
+	int wCount = static_cast<int>( 0.5f*aHeight / aStep );
+	glBegin( GL_LINES );
+		for ( int i = -vCount; i <= vCount; ++i ) {
+			GLVertexVector( aCenter + i*aStep*aVDirection + wSize );
+			GLVertexVector( aCenter + i*aStep*aVDirection - wSize );
+		}
+		for ( int i = -wCount; i <= wCount; ++i ) {
+			GLVertexVector( aCenter + i*aStep*aWDirection + vSize );
+			GLVertexVector( aCenter + i*aStep*aWDirection - vSize );
+		}
+	glEnd();
+
+	GL_CHECKED_CALL( glLineWidth( 3.5f ) );
+	glBegin( GL_LINES );
+			GLVertexVector( aCenter + wSize );
+			GLVertexVector( aCenter - wSize );
+			GLVertexVector( aCenter + vSize );
+			GLVertexVector( aCenter - vSize );
+	glEnd();
+	GL_CHECKED_CALL( glLineWidth( 1.0f ) );
 }
 
 

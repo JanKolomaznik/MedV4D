@@ -528,11 +528,11 @@ VectorNormalization( Vector< CoordType, Dim > &v )
 	v *= size;
 }
 
-template< typename CoordType, unsigned Dim >
-Vector< CoordType, Dim >
-VectorProduct( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+template< typename CoordType >
+Vector< CoordType, 3 >
+VectorProduct( const Vector< CoordType, 3 > &a, const Vector< CoordType, 3 > &b )
 {
-	return Vector< CoordType, Dim >( a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0] );
+	return Vector< CoordType, 3 >( a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0] );
 }
 
 template< typename CoordType, unsigned Dim >

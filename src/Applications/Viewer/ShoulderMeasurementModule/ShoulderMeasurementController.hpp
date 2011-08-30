@@ -19,6 +19,8 @@ struct HeadMeasurementData
 
 	Vector3f point;
 	Vector3f normal;
+	Vector3f vDirection;
+	Vector3f wDirection;
 };
 
 class ShoulderMeasurementController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
@@ -131,6 +133,9 @@ public:
 	std::map< MeasurementMode, APrimitiveCreationEventController::Ptr > mMeasurementHandlers;
 
 	M4D::Common::IDNumber mModeId;
+
+
+	HeadMeasurementData mHeadMeasurementData;
 };
 
 

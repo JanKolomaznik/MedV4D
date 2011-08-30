@@ -181,11 +181,16 @@ void
 drawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );
 
 void
-drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight );
+drawPlane( float aWidth, float aHeight );
 
 void
-drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aLength, float aHeight, float aStep = 10 );
+drawPlane( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aWidth, float aHeight );
 
+void
+drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &aWDirection, float aWidth, float aHeight, float aStep = 10.0f );
+
+void
+drawStippledLine( const Vector3f &aStart, const Vector3f &aEnd );
 
 template< typename TIterator >
 void
