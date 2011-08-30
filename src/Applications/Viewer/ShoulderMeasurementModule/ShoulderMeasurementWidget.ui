@@ -41,6 +41,13 @@
          </attribute>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="analyseHumeralHeadButton">
+         <property name="text">
+          <string>Analyse</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
@@ -70,8 +77,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>analyseHumeralHeadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ShoulderMeasurementWidget</receiver>
+   <slot>analyseHumeralHead()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>213</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>startHumeralHeadPointDefining(bool)</slot>
+  <slot>analyseHumeralHead()</slot>
  </slots>
 </ui>

@@ -10,6 +10,17 @@
 
 typedef VectorItemModel< M4D::Point3Df > PointSet;
 
+struct HeadMeasurementData
+{
+	HeadMeasurementData(): available( false )
+	{}
+
+	bool available;
+
+	Vector3f point;
+	Vector3f normal;
+};
+
 class ShoulderMeasurementController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
 	Q_OBJECT;
@@ -98,6 +109,10 @@ public:
 signals:
 	void
 	updateRequest();
+
+public slots:
+	void
+	analyseHumeralHead();
 
 protected:
 

@@ -159,3 +159,9 @@ ShoulderMeasurementController::render3D()
 	GL_CHECKED_CALL( glPopAttrib() );
 }
 
+
+void
+ShoulderMeasurementController::analyseHumeralHead()
+{
+
+}

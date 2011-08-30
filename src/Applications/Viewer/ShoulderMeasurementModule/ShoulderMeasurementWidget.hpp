@@ -29,6 +29,12 @@ public slots:
 			mController->setMeasurementMode( ShoulderMeasurementController::mmNONE );
 		}	
 	}
+
+	void
+	analyseHumeralHead()
+	{
+		mController->analyseHumeralHead();
+	}
 protected:
 	ShoulderMeasurementController::Ptr mController;
 };

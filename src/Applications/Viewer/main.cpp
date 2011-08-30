@@ -36,7 +36,7 @@ createModules()
 {
 	ApplicationManager *appManager = ApplicationManager::getInstance();
 	
-	appManager->addModule( createModule< AnnotationModule >() );
+	//appManager->addModule( createModule< AnnotationModule >() );
 	appManager->addModule( createModule< ShoulderMeasurementModule >() );
 }
 
