@@ -58,9 +58,9 @@ public:
 		unsigned gradientCount = 0;
 		float32 gradientNorms[3];
 
-		bool doImageGradient = Abs(_imageEnergyBalance) > Epsilon;
-		bool doInternalGradient = Abs(_internalEnergyBalance) > Epsilon;
-		bool doConstrainGradient = Abs(_constrainEnergyBalance) > Epsilon;
+		bool doImageGradient = abs(_imageEnergyBalance) > Epsilon;
+		bool doInternalGradient = abs(_internalEnergyBalance) > Epsilon;
+		bool doConstrainGradient = abs(_constrainEnergyBalance) > Epsilon;
 		//******** ImageEnergy ***********************************
 		GradientType imageEnergyGradient;
 		float32 imageEnergyGradientNorm = 0.0f;
@@ -69,7 +69,7 @@ public:
 			imageEnergyGradientNorm = ImageEnergy::GetParametersGradient( curve, imageEnergyGradient );
 
 			//check if gradient is considerable and set normalization factor multiplied by balance
-			if( (doImageGradient = (Abs(imageEnergyGradientNorm) > Epsilon)) ) { 
+			if( (doImageGradient = (abs(imageEnergyGradientNorm) > Epsilon)) ) { 
 				imageEnergyGradientNorm = _imageEnergyBalance / imageEnergyGradientNorm;
 
 				gradientNorms[ gradientCount ] = imageEnergyGradientNorm;
@@ -85,7 +85,7 @@ public:
 			internalEnergyGradientNorm = InternalEnergy::GetParametersGradient( curve, internalEnergyGradient );
 		
 			//check if gradient is considerable and set normalization factor multiplied by balance
-			if( (doInternalGradient = (Abs(internalEnergyGradientNorm) > Epsilon)) ) { 
+			if( (doInternalGradient = (abs(internalEnergyGradientNorm) > Epsilon)) ) { 
 				internalEnergyGradientNorm = _internalEnergyBalance / internalEnergyGradientNorm;
 
 				gradientNorms[ gradientCount ] = internalEnergyGradientNorm;
@@ -101,7 +101,7 @@ public:
 			constrainEnergyGradientNorm = InternalEnergy::GetParametersGradient( curve, constrainEnergyGradient );
 
 			//check if gradient is considerable and set normalization factor multiplied by balance
-			if( (doConstrainGradient = (Abs(constrainEnergyGradientNorm) > Epsilon)) ) { 
+			if( (doConstrainGradient = (abs(constrainEnergyGradientNorm) > Epsilon)) ) { 
 				constrainEnergyGradientNorm = _constrainEnergyBalance / constrainEnergyGradientNorm;
 
 				gradientNorms[ gradientCount ] = constrainEnergyGradientNorm;
@@ -331,8 +331,8 @@ private:
 	ComputeIntegral( int32 k, int32 i, ContourType &curve, ValuesAtSamplesBuffer &valBuffer )
 	{
 		float32 result = 0.0f;
-		int32 L = Max( k, i ) - Degree;
-		int32 U = Min( k, i ) + 1;
+		int32 L = max( k, i ) - Degree;
+		int32 U = min( k, i ) + 1;
 		int32 sampleCount = curve.GetSamplePoints().Size();
 
 		for( int32 j = L*_sampleFrequency; j < U*_sampleFrequency; ++j ) {
@@ -481,8 +481,8 @@ private:
 	ComputeIntegral( int32 k, int32 i, ContourType &curve )
 	{
 		float32 result = 0.0f;
-		int32 L = Max( k, i ) - Degree;
-		int32 U = Min( k, i ) + 1;
+		int32 L = max( k, i ) - Degree;
+		int32 U = min( k, i ) + 1;
 		int32 sampleCount = curve.GetSamplePoints().Size();
 
 
@@ -657,8 +657,8 @@ private:
 					float32 h1Result = 0.0f;
 					
 					if( l >= -2 && l <= 3 && m >= -2 && m <= 3 && n >= -2 && n <= 3 ) {
-						int32 tmpBoundUp = Min( 1, - Max( l, m, n ) + 1 );
-						int32 tmpBoundDown = Max( -3, - Min( l, m, n ) -3 );
+						int32 tmpBoundUp = min( 1, - max( l, m, n ) + 1 );
+						int32 tmpBoundDown = max( -3, - min( l, m, n ) -3 );
 						for( int32 s = tmpBoundDown * SampleFrequency ; s < tmpBoundUp * SampleFrequency; ++s ) {
 							int32 pomt = MOD(s, SampleFrequency );
 							int32 pomDt = s / SampleFrequency;
@@ -676,8 +676,8 @@ private:
 			}
 			float32 h2Result = 0.0f;
 			if( l >= -2 && l <= 3 ) {
-				int32 tmpBoundUp = Min( 1, -l + 1 );
-				int32 tmpBoundDown = Max( -3, -l -3 );
+				int32 tmpBoundUp = min( 1, -l + 1 );
+				int32 tmpBoundDown = max( -3, -l -3 );
 				for( int32 s = tmpBoundDown * SampleFrequency ; s < tmpBoundUp * SampleFrequency; ++s ) {
 					int32 pomt = MOD(s, SampleFrequency );
 					int32 pomDt = s / SampleFrequency;

@@ -9,7 +9,7 @@ class AABox
 {
 public:
 	typedef Vector< TCoordType, taDim > PositionType;
-	AABox( const PositionType &aFirstCorner, const PositionType &aSecondCorner ): mFirstCorner( Min( aFirstCorner, aSecondCorner ) ), mSecondCorner( Max( aFirstCorner, aSecondCorner ) )
+	AABox( const PositionType &aFirstCorner, const PositionType &aSecondCorner ): mFirstCorner( min( aFirstCorner, aSecondCorner ) ), mSecondCorner( max( aFirstCorner, aSecondCorner ) )
 	{}
 
 protected:
@@ -22,7 +22,7 @@ class Box
 {
 public:
 	typedef Vector< TCoordType, taDim > PositionType;
-	Box( const PositionType &aFirstCorner, const PositionType &aSecondCorner ): mFirstCorner( Min( aFirstCorner, aSecondCorner ) ), mSecondCorner( Max( aFirstCorner, aSecondCorner ) )
+	Box( const PositionType &aFirstCorner, const PositionType &aSecondCorner ): mFirstCorner( min( aFirstCorner, aSecondCorner ) ), mSecondCorner( max( aFirstCorner, aSecondCorner ) )
 	{}
 
 protected:

@@ -8,6 +8,9 @@
 	#undef RGB
 #endif /*RGB*/
 
+namespace M4D
+{
+
 template < typename TChannelType >
 class RGB: public Vector< TChannelType, 3 >
 {
@@ -242,10 +245,10 @@ RgbToHsv( const RGBf &aRgb )
 	ASSERT( ValidateColor( aRgb ) ); 
 
 	HSVf hsv;
-	float maxRgb = Max< float, 3>( aRgb );
-	float minRgb = Min< float, 3>( aRgb );
+	float maxRgb = max< float, 3>( aRgb );
+	float minRgb = min< float, 3>( aRgb );
 
-	if ( EpsilonTest( maxRgb ) ) {
+	if ( epsilonTest( maxRgb ) ) {
 		hsv.Hue() = hsv.Saturation() = hsv.Value() = 0.0f;
 	return hsv;
 	} 
@@ -256,11 +259,11 @@ RgbToHsv( const RGBf &aRgb )
 	tmpRgb.Red() /= maxRgb;
 	tmpRgb.Green() /= maxRgb;
 	tmpRgb.Blue() /= maxRgb;
-	maxRgb = Max< float, 3>( tmpRgb );
-	minRgb = Min< float, 3>( tmpRgb );
+	maxRgb = max< float, 3>( tmpRgb );
+	minRgb = min< float, 3>( tmpRgb );
 	float diffRgb = maxRgb - minRgb;
 
-	if ( EpsilonTest( diffRgb ) ) {
+	if ( epsilonTest( diffRgb ) ) {
 		hsv.Saturation() = 0.0f;
 		hsv.Hue() = 0.0f;
 		return hsv;
@@ -271,8 +274,8 @@ RgbToHsv( const RGBf &aRgb )
 	tmpRgb.Red() = ( tmpRgb.Red() - minRgb ) / diffRgb;
 	tmpRgb.Green() = ( tmpRgb.Green() - minRgb ) / diffRgb;
 	tmpRgb.Blue() = ( tmpRgb.Blue() - minRgb ) / diffRgb;
-	maxRgb = Max< float, 3>( tmpRgb );
-	minRgb = Min< float, 3>( tmpRgb );
+	maxRgb = max< float, 3>( tmpRgb );
+	minRgb = min< float, 3>( tmpRgb );
 
 	/* Compute hue */
 	if (maxRgb == tmpRgb.Red() ) {
@@ -290,6 +293,7 @@ RgbToHsv( const RGBf &aRgb )
 
 
 
+}//namespace M4D
 
 
 #endif /*_COLOR_H*/

@@ -5,6 +5,9 @@
 #include "common/Vector.h"
 #include <cmath>
 
+namespace M4D
+{
+
 enum Direction { 
 	dE	= 0, 
 	dNE	= 1, 
@@ -60,6 +63,7 @@ VectorDirection( const Vector< T, 2 > &v )
 	return QuantizeDirectionRadian( atan2( v[1], v[0] ) );
 }
 
+}//namespace M4D
 
 
 #endif /*DIRECTION_H*/

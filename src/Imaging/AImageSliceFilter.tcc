@@ -45,8 +45,8 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
-			int32 minZ = Max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
+			int32 minZ = max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
+			int32 maxZ = min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
 			ImageRegion< InputImageType, 3 > region = 
 				this->in->GetSubRegion(	
 					this->in->GetDimensionExtents( 0 ).minimum,
@@ -193,8 +193,8 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
-			int32 minZ = Max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
+			int32 minZ = max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
+			int32 maxZ = min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
 
 			ImageRegion< InputElementType, 3 > region1 = 
 				this->in->GetSubRegion( 

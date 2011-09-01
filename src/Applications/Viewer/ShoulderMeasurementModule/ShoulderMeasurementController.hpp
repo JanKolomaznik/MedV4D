@@ -7,21 +7,8 @@
 #include "GUI/utils/ProxyViewerController.h"
 #include "GUI/utils/QtModelViewTools.h"
 #include "GUI/utils/PrimitiveCreationEventController.h"
+#include "ShoulderMeasurementModule/Computations.hpp"
 
-typedef VectorItemModel< M4D::Point3Df > PointSet;
-
-struct HeadMeasurementData
-{
-	HeadMeasurementData(): available( false )
-	{}
-
-	bool available;
-
-	Vector3f point;
-	Vector3f normal;
-	Vector3f vDirection;
-	Vector3f wDirection;
-};
 
 class ShoulderMeasurementController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -30,7 +17,8 @@ public:
 	enum MeasurementMode {
 		mmNONE,
 		mmHUMERAL_HEAD,
-		
+		mmPROXIMAL_SHAFT,
+
 		mmSENTINEL //use for valid interval testing 
 	};
 
@@ -102,6 +90,12 @@ public:
 		return mHumeralHeadPoints;
 	}
 
+	PointSet &
+	getProximalShaftPointModel()
+	{
+		return mProximalShaftPoints;
+	}
+
 	void
 	setMeasurementMode( int aMode )
 	{
@@ -116,11 +110,15 @@ public slots:
 	void
 	analyseHumeralHead();
 
+	void
+	analyseProximalShaftOfHumerus();
+
 protected:
 
 public:
 
 	PointSet mHumeralHeadPoints;
+	PointSet mProximalShaftPoints;
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	bool mOverlay;
@@ -136,6 +134,7 @@ public:
 
 
 	HeadMeasurementData mHeadMeasurementData;
+	ProximalShaftMeasurementData mProximalShaftMeasurementData;
 };
 
 

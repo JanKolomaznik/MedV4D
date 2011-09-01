@@ -5,6 +5,7 @@
 
 #include "common/Common.h"
 #include "common/GeometricPrimitives.h"
+#include "common/Sphere.h"
 
 
 class AVectorItemModel: public QAbstractListModel

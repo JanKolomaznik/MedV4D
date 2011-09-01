@@ -302,13 +302,13 @@ BSpline< VectorType >
 
 	if( segment < 0 ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ Max(segment+i,0) ]);
+			result += values[i]*(this->_points[ max(segment+i,0) ]);
 		}
 		return result;
 	} 
 	if( segment >= (count-CurveBasis::Degree) ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ Min(segment+i,count-1) ]);
+			result += values[i]*(this->_points[ min(segment+i,count-1) ]);
 		}
 		return result;
 	} 

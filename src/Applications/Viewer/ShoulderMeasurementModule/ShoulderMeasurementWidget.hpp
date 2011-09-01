@@ -18,6 +18,8 @@ public:
 		setupUi( this );
 
 		pointsView->setModel( &(aController->getPointModel()) );
+
+		proximalShaftPointsView->setModel( &(aController->getProximalShaftPointModel()) );
 	}
 public slots:
 	void
@@ -31,9 +33,25 @@ public slots:
 	}
 
 	void
+	startProximalShaftPointDefining( bool aStart )
+	{
+		if( aStart ) {
+			mController->setMeasurementMode( ShoulderMeasurementController::mmPROXIMAL_SHAFT );
+		} else {
+			mController->setMeasurementMode( ShoulderMeasurementController::mmNONE );
+		}	
+	}
+
+	void
 	analyseHumeralHead()
 	{
 		mController->analyseHumeralHead();
+	}
+
+	void
+	analyseProximalShaftOfHumerus()
+	{
+		mController->analyseProximalShaftOfHumerus();
 	}
 protected:
 	ShoulderMeasurementController::Ptr mController;

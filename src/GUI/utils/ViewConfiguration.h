@@ -5,6 +5,8 @@
 #include "common/Log.h"
 #include "common/Types.h"
 
+namespace M4D
+{
 
 struct ViewConfiguration2D
 {
@@ -48,5 +50,7 @@ GetOptimalViewConfiguration( const Vector2f &regionMin, const Vector2f &regionMa
 
 Vector2f
 GetRealCoordinatesFromScreen( const Vector2f &aScreenPos, const Vector< uint32, 2 > &windowSize, const ViewConfiguration2D &aConfig );
+
+}/*namespace M4D*/
 
 #endif /*_VIEW_CONFIGURATION_H*/

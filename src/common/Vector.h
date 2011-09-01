@@ -103,6 +103,29 @@ public:
 			_coordinates[2] = z; 
 			_coordinates[3] = w; 
 		}
+
+	Vector( CoordType p0, CoordType p1, CoordType p2, CoordType p3, CoordType p4 )
+		{
+			BOOST_STATIC_ASSERT( Dim == 5 );
+
+			_coordinates[0] = p0; 
+			_coordinates[1] = p1; 
+			_coordinates[2] = p2; 
+			_coordinates[3] = p3; 
+			_coordinates[4] = p4; 
+		}
+
+	Vector( CoordType p0, CoordType p1, CoordType p2, CoordType p3, CoordType p4, CoordType p5 )
+		{
+			BOOST_STATIC_ASSERT( Dim == 6 );
+
+			_coordinates[0] = p0; 
+			_coordinates[1] = p1; 
+			_coordinates[2] = p2; 
+			_coordinates[3] = p3; 
+			_coordinates[4] = p4; 
+			_coordinates[5] = p5; 
+		}
 	
 
 	template< typename CType >
@@ -515,7 +538,7 @@ void
 VectorAbs( Vector< CoordType, Dim > &v )
 {
 	for( unsigned i=0; i < Dim; ++i ) {
-		v[ i ] = Abs( v[ i ] );
+		v[ i ] = abs( v[ i ] );
 	}
 }
 
@@ -543,7 +566,7 @@ VectorSize( const Vector< CoordType, Dim > &v )
 	for( unsigned i=1; i < Dim; ++i ) {
 		size += v[ i ] * v[ i ];
 	}
-	size = Sqrt( size );
+	size = sqrt( size );
 	return size;
 }
 

@@ -26,7 +26,7 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 	for( it = mTransferFunctionBuffer->Begin(); it != mTransferFunctionBuffer->End(); ++it ) {
 		*it = RGBAf( r, g, b, a );
 		++i;
-		float intensity = ClampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width); 
+		float intensity = clampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width); 
 		r = intensity;
 		g = intensity;
 		b = intensity;
@@ -184,13 +184,13 @@ TransferFunction1DEditor::mouseMoveEvent ( QMouseEvent * event )
 	if ( mLastPoint.x() < mCurrentPoint.x() ) {
 		left = mLastPoint.x() - mPixelSize.x() * 0.5f;
 		right = mCurrentPoint.x() + mPixelSize.x() * 0.5f;
-		leftVal = ClampToInterval( 0.0f, 1.0f, (float)mLastPoint.y() );
-		rightVal = ClampToInterval( 0.0f, 1.0f, (float)mCurrentPoint.y() );
+		leftVal = clampToInterval( 0.0f, 1.0f, (float)mLastPoint.y() );
+		rightVal = clampToInterval( 0.0f, 1.0f, (float)mCurrentPoint.y() );
 	} else {
 		left = mCurrentPoint.x() - mPixelSize.x() * 0.5f;
 		right = mLastPoint.x() + mPixelSize.x() * 0.5f;
-		leftVal = ClampToInterval( 0.0f, 1.0f, (float)mCurrentPoint.y() );
-		rightVal = ClampToInterval( 0.0f, 1.0f, (float)mLastPoint.y() );
+		leftVal = clampToInterval( 0.0f, 1.0f, (float)mCurrentPoint.y() );
+		rightVal = clampToInterval( 0.0f, 1.0f, (float)mLastPoint.y() );
 	}
 	
 	FillTransferFunctionValues( left, leftVal, right, rightVal );
@@ -231,9 +231,9 @@ TransferFunction1DEditor::wheelEvent ( QWheelEvent * event )
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 15;
 	if ( event->delta() > 0 ) {
-		mHistogramScaling = ClampToInterval( 0.05f, 1.0f, mHistogramScaling * 0.75f );
+		mHistogramScaling = clampToInterval( 0.05f, 1.0f, mHistogramScaling * 0.75f );
 	} else {
-		mHistogramScaling = ClampToInterval( 0.05f, 1.0f, mHistogramScaling * 1.333f );
+		mHistogramScaling = clampToInterval( 0.05f, 1.0f, mHistogramScaling * 1.333f );
 	}
 	event->accept();
 	this->update();

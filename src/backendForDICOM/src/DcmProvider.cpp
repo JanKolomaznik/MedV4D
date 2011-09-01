@@ -31,6 +31,11 @@
 using namespace M4D::Dicom;
 using namespace M4D::Imaging;
 
+namespace M4D
+{
+namespace Dicom
+{
+
 ///////////////////////////////////////////////////////////////////////
 FindService *g_findService;
 LocalService g_localService;
@@ -278,7 +283,7 @@ DcmProvider::CreateImageDataFromDICOM(
 			if( dicomObjects->size() > 2 ) {
 				(*dicomObjects)[2].GetSliceLocation( tmp3 );
 			}
-			voxelDepth = Max( Abs( tmp1 - tmp2 ), Abs( tmp2 - tmp3 ) );
+			voxelDepth = max( abs( tmp1 - tmp2 ), abs( tmp2 - tmp3 ) );
 		}
 		if(voxelWidth <= 0.0f) voxelWidth = 1.0f;
 		if(voxelHeight <= 0.0f) voxelHeight = 1.0f;
@@ -442,6 +447,10 @@ DcmProvider::LoadSerieThatFileBelongsTo(
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+}//namespace Dicom
+}//namespace M4D
+
 
 /** @} */
 

@@ -71,14 +71,14 @@ public:
 		secondGradient.Resize( gradient.Size() );
 		
 		firstGradientNorm = FirstEnergyModel::GetParametersGradient( curve, firstGradient );
-		if( Abs(firstGradientNorm) > Epsilon ) {
+		if( abs(firstGradientNorm) > Epsilon ) {
 			firstGradientNorm = _alpha / firstGradientNorm;
 		} else {
 			firstGradientNorm = 0.0f;
 		}
 
 		secondGradientNorm = SecondEnergyModel::GetParametersGradient( curve, secondGradient );
-		if( Abs(secondGradientNorm) > Epsilon ) {
+		if( abs(secondGradientNorm) > Epsilon ) {
 			secondGradientNorm = (1.0f - _alpha) / secondGradientNorm;
 		} else {
 			secondGradientNorm = 0.0f;

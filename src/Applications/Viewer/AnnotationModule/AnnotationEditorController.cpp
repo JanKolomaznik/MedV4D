@@ -193,10 +193,10 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 
 	GL_CHECKED_CALL( M4D::GLColorFromQColor( mSettings.sphereFillColor2D ) );
 	for( size_t i = 0; i < mSpheres.size(); ++i ) {
-		float r2 = Sqr( mSpheres[i].radius() ) - Sqr( mSpheres[i].center()[ aPlane ] - 0.5*(aInterval[0]+aInterval[1]) );
+		float r2 = M4D::sqr( mSpheres[i].radius() ) - M4D::sqr( mSpheres[i].center()[ aPlane ] - 0.5*(aInterval[0]+aInterval[1]) );
 		if ( r2 > 0.0f ) { 
 			Vector2f pos = VectorPurgeDimension( mSpheres[i].center(), aPlane );
-			M4D::drawCircle( pos, Sqrt( r2 ) /*mSpheres[i].radius()*/ );
+			M4D::drawCircle( pos, sqrt( r2 ) /*mSpheres[i].radius()*/ );
 		}
 	}
 

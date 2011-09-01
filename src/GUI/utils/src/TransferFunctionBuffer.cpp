@@ -51,7 +51,7 @@ TransferFunctionBuffer1D::End()const
 TransferFunctionBuffer1D::Iterator
 TransferFunctionBuffer1D::GetNearest( float32 aValue )
 {
-	int idx = Round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
+	int idx = round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
 	if ( idx < 0 || idx >= (int)mSize ) {
 		return End();
 	}
@@ -62,7 +62,7 @@ TransferFunctionBuffer1D::GetNearest( float32 aValue )
 TransferFunctionBuffer1D::ConstIterator
 TransferFunctionBuffer1D::GetNearest( float32 aValue )const
 {
-	int idx = Round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
+	int idx = round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
 	if ( idx < 0 || idx >= (int)mSize ) {
 		return End();
 	}
@@ -73,7 +73,7 @@ TransferFunctionBuffer1D::GetNearest( float32 aValue )const
 int
 TransferFunctionBuffer1D::GetNearestIndex( float32 aValue )const
 {
-	int idx = Round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
+	int idx = round( ( aValue - mMappedInterval[0] ) / ( mMappedInterval[1] - mMappedInterval[0] ) * (float)mSize );
 	if ( idx < 0 ) {
 		return -1;
 	}

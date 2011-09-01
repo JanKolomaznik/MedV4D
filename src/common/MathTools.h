@@ -4,6 +4,13 @@
 #include <cmath>
 #include "common/Vector.h"
 
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
+#include <cmath>
+
+namespace M4D
+{
+
 extern const float32 Epsilon;
 extern const float32 PI;
 extern const float32 PIx2;
@@ -63,9 +70,11 @@ MOD( int64 a, int64 b )
 	return a % b;
 }*/
 
+
 template< typename NType >
 inline NType
-Max( NType a, NType b ) {
+max( NType a, NType b ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
 	if( a<b ) return b;
 
 	return a;
@@ -73,15 +82,17 @@ Max( NType a, NType b ) {
 
 template< typename NType >
 inline NType
-Max( NType a, NType b, NType c ) {
-	if( a<b ) return Max( b, c );
+max( NType a, NType b, NType c ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
+	if( a<b ) return max( b, c );
 
-	return Max( a, c );
+	return max( a, c );
 }
 
 template< typename NType >
 inline NType
-Min( NType a, NType b ) {
+min( NType a, NType b ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
 	if( a>b ) return b;
 
 	return a;
@@ -89,15 +100,16 @@ Min( NType a, NType b ) {
 
 template< typename NType >
 inline NType
-Min( NType a, NType b, NType c ) {
-	if( a>b ) return Min( b, c );
+min( NType a, NType b, NType c ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
+	if( a>b ) return min( b, c );
 
-	return Min( a, c );
+	return min( a, c );
 }
 
 template< typename TNumType, size_t tDim >
 inline TNumType
-Max( const Vector< TNumType, tDim > &a ) {
+max( const Vector< TNumType, tDim > &a ) {
 	TNumType res = a[0];
 	for( size_t i = 1; i < tDim; ++i ) {
 		if ( res < a[(unsigned int)i] ) {
@@ -107,9 +119,31 @@ Max( const Vector< TNumType, tDim > &a ) {
 	return res;
 }
 
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+max( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = max( a[i], b[i] );
+	}
+	return res;
+}
+
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+min( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = min( a[i], b[i] );
+	}
+	return res;
+}
+
 template< typename TNumType, size_t tDim >
 inline size_t
-MaxIdx( const Vector< TNumType, tDim > &a ) {
+maxIdx( const Vector< TNumType, tDim > &a ) {
 	size_t idx = 0;
 	for( size_t i = 1; i < tDim; ++i ) {
 		if ( a[idx] < a[(unsigned int)i] ) {
@@ -121,7 +155,7 @@ MaxIdx( const Vector< TNumType, tDim > &a ) {
 
 template< typename TNumType, size_t tDim >
 inline TNumType
-Min( const Vector< TNumType, tDim > &a ) {
+min( const Vector< TNumType, tDim > &a ) {
 	TNumType res = a[0];
 	for( size_t i = 1; i < tDim; ++i ) {
 		if ( res > a[(unsigned int)i] ) {
@@ -133,7 +167,7 @@ Min( const Vector< TNumType, tDim > &a ) {
 
 template< typename TNumType, size_t tDim >
 inline size_t
-MinIdx( const Vector< TNumType, tDim > &a ) {
+minIdx( const Vector< TNumType, tDim > &a ) {
 	size_t idx = 0;
 	for( size_t i = 1; i < tDim; ++i ) {
 		if ( a[idx] > a[(unsigned int)i] ) {
@@ -143,30 +177,9 @@ MinIdx( const Vector< TNumType, tDim > &a ) {
 	return idx;
 }
 
-template< typename TNumType, size_t tDim >
-inline Vector< TNumType, tDim >
-Max( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
-	Vector< TNumType, tDim > res;
-	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = Max( a[i], b[i] );
-	}
-	return res;
-}
-
-
-template< typename TNumType, size_t tDim >
-inline Vector< TNumType, tDim >
-Min( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
-	Vector< TNumType, tDim > res;
-	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = Min( a[i], b[i] );
-	}
-	return res;
-}
-
 template< typename NType >
 inline NType
-Abs( NType a ) {
+abs( NType a ) {
 	if( (a)<0 ) return -1 * a;
 
 	return a;
@@ -174,19 +187,19 @@ Abs( NType a ) {
 
 template< typename NType >
 inline NType
-Sqr( NType a ) {
+sqr( NType a ) {
 	return a*a;
 }
 
-template< typename NType >
+/*template< typename NType >
 inline NType
-Sqrt( NType a ) {
+sqrt( NType a ) {
 	return sqrt( a );
-}
+}*/
 
 template< typename NType >
 inline int32
-Sgn( NType a ) {
+sgn( NType a ) {
 	if( a < 0 ) {
 		return -1;
 	} 
@@ -198,40 +211,40 @@ Sgn( NType a ) {
 }
 
 inline int32
-Round( float32 aValue )
+round( float32 aValue )
 {
 	return (int)ceil( aValue + 0.5f );
 }
 
-inline int32
-Round( float64 aValue )
+/*inline int32
+round( float64 aValue )
 {
 	return (int)ceil( aValue + 0.5 );
-}
+}*/
 
 template< size_t tDim >
 inline Vector< int32, tDim >
-Round( const Vector< float32, tDim > &a ) {
+round( const Vector< float32, tDim > &a ) {
 	Vector< int32, tDim > res;
 	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = Round( a[i] );
+		res[i] = round( a[i] );
 	}
 	return res;
 }
 
 template< size_t tDim >
 inline Vector< int32, tDim >
-Round( const Vector< float64, tDim > &a ) {
+round( const Vector< float64, tDim > &a ) {
 	Vector< int32, tDim > res;
 	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = Round( a[i] );
+		res[i] = round( a[i] );
 	}
 	return res;
 }
 
 template< typename NType >
 inline NType
-ClampToInterval( NType a, NType b, NType val ) {
+clampToInterval( NType a, NType b, NType val ) {
 	if( val < a ) {
 		return a;
 	} 
@@ -244,7 +257,7 @@ ClampToInterval( NType a, NType b, NType val ) {
 
 template< typename NType >
 inline bool
-IntervalTest( NType a, NType b, NType val ) {
+intervalTest( NType a, NType b, NType val ) {
 	if( val < a ) {
 		return false;
 	} 
@@ -256,17 +269,18 @@ IntervalTest( NType a, NType b, NType val ) {
 }
 
 inline bool
-EpsilonTest( float32 &aValue, float32 aEpsilon = Epsilon )
+epsilonTest( float32 &aValue, float32 aEpsilon = Epsilon )
 {
-	return Abs( aValue ) < aEpsilon;
+	return abs( aValue ) < aEpsilon;
 }
 
 inline bool
-EpsilonTest( float64 &aValue, float64 aEpsilon = Epsilon )
+epsilonTest( float64 &aValue, float64 aEpsilon = Epsilon )
 {
-	return Abs( aValue ) < aEpsilon;
+	return abs( aValue ) < aEpsilon;
 }
 
+}//namespace M4D
 
 
 #endif /*MATH_TOOLS_H*/

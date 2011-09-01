@@ -211,7 +211,7 @@ public:
 	 **/
 	unsigned
 	GetNormalSegmentCount() const
-		{ return Max( 0, static_cast<int>( this->Size() - CurveBasis::Degree ) ); }
+		{ return max( 0, static_cast<int>( this->Size() - CurveBasis::Degree ) ); }
 	/**
 	 * Returns number of uniform spline segments, which make it cyclical.
 	 **/
@@ -300,7 +300,7 @@ CheckSegmentIntersection( BSpline< Vector< CoordType, 2 > > &curve, int32 segmen
 
 	if( segment1 == 0 && segment2 == (int32)curve.GetSegmentCount() - 1 ) {
 		for( unsigned i = segment1 * frq; i < (segment1+1) * frq; ++i ) {
-			for( unsigned j = Max(i+2, segment2 * frq); j < (segment2+1) * frq -1; ++j ) {
+			for( unsigned j = max(i+2, segment2 * frq); j < (segment2+1) * frq -1; ++j ) {
 				if( LineIntersectionTest( samples.GetPointCyclic(i), samples.GetPointCyclic(i+1), samples.GetPointCyclic(j), samples.GetPointCyclic(j+1) ) ) {
 					return true;
 				}
@@ -310,7 +310,7 @@ CheckSegmentIntersection( BSpline< Vector< CoordType, 2 > > &curve, int32 segmen
 	}
 
 	for( unsigned i = segment1 * frq; i < (segment1+1) * frq; ++i ) {
-		for( unsigned j = Max(i+2, segment2 * frq); j < (segment2+1) * frq; ++j ) {
+		for( unsigned j = max(i+2, segment2 * frq); j < (segment2+1) * frq; ++j ) {
 			if( LineIntersectionTest( samples.GetPointCyclic(i), samples.GetPointCyclic(i+1), samples.GetPointCyclic(j), samples.GetPointCyclic(j+1) ) ) {
 				return true;
 			}

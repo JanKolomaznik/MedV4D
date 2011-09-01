@@ -5,6 +5,9 @@
 #include "GUI/utils/Camera.h"
 #include "GUI/utils/ViewConfiguration.h"
 
+namespace M4D
+{
+
 /*class IntCheckedSignalTransition : public QSignalTransition
 {
 public:
@@ -152,5 +155,6 @@ protected:
 	CartesianPlanes				*mPlane;
 };
 
+}/*namespace M4D*/
 
 #endif /*CAMERA_MANIPULATOR_H*/

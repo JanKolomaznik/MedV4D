@@ -3,6 +3,9 @@
 #include "common/Log.h"
 #include <algorithm>
 
+namespace M4D
+{
+
 ViewConfiguration2D 
 GetOptimalViewConfiguration( const Vector< float32, 2 > &regionSize, const Vector< uint32, 2 > &windowSize, ZoomType zoomType )
 {	
@@ -22,7 +25,7 @@ GetOptimalViewConfiguration( const Vector2f &regionMin, const Vector2f &regionMa
 	float32 zoom = 1.0f;
 	switch( zoomType ) {
 	case ztFIT:
-		zoom = Min( tmp[0], tmp[1] );
+		zoom = min( tmp[0], tmp[1] );
 		break;
 	case ztWIDTH_FIT:
 		zoom = tmp[0];
@@ -54,3 +57,6 @@ GetRealCoordinatesFromScreen( const Vector2f &aScreenPos, const Vector< uint32, 
 
 	return min + VectorMemberProduct( ratio, max - min );
 }
+
+
+}/*namespace M4D*/

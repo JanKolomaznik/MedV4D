@@ -109,8 +109,8 @@ Compute2DConvolution(
 		firstBorder[1] = hheight - coords[1];
 		secondBorder[1] = mask.size[1];
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
-			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
-			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
+			firstBorder[0] = max( static_cast<int32>(hwidth - coords[0]), 0 );
+			secondBorder[0] = min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
 			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
@@ -126,8 +126,8 @@ Compute2DConvolution(
 		firstBorder[1] = 0;
 		secondBorder[1] = inRegion.GetSize(1) - coords[1]+hheight;
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
-			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
-			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
+			firstBorder[0] = max( static_cast<int32>(hwidth - coords[0]), 0 );
+			secondBorder[0] = min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
 			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
@@ -210,8 +210,8 @@ Compute2DConvolutionPostProcess(
 		firstBorder[1] = hheight - coords[1];
 		secondBorder[1] = mask.size[1];
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
-			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
-			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
+			firstBorder[0] = max( static_cast<int32>(hwidth - coords[0]), 0 );
+			secondBorder[0] = min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
 			result = addition + ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -227,8 +227,8 @@ Compute2DConvolutionPostProcess(
 		firstBorder[1] = 0;
 		secondBorder[1] = inRegion.GetSize(1) - coords[1]+hheight;
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
-			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
-			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
+			firstBorder[0] = max( static_cast<int32>(hwidth - coords[0]), 0 );
+			secondBorder[0] = min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
 			result = addition + ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 

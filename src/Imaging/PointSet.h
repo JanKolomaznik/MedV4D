@@ -85,13 +85,13 @@ public:
 	PointType &
 	GetPointACyclic( int32 idx ) 
 		{ 
-			return _points[ Max( Min( idx, (int32)_pointCount-1 ), 0 ) ]; 
+			return _points[ max( min( idx, (int32)_pointCount-1 ), 0 ) ]; 
 		}
 
 	const PointType &
 	GetPointACyclic( int32 idx ) const
 		{ 
-			return _points[ Max( Min( idx, (int32)_pointCount-1 ), 0 ) ]; 
+			return _points[ max( min( idx, (int32)_pointCount-1 ), 0 ) ]; 
 		}
 
 	size_t

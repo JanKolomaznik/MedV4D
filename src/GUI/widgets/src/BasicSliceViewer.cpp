@@ -173,7 +173,7 @@ BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFun
 void
 BasicSliceViewer::SetCurrentSlice( int32 slice )
 {
-	mSliceRenderConfig.currentSlice[ mSliceRenderConfig.plane ] = Max( Min( _regionMax[mSliceRenderConfig.plane]-1, slice ), _regionMin[mSliceRenderConfig.plane] );
+	mSliceRenderConfig.currentSlice[ mSliceRenderConfig.plane ] = max( min( _regionMax[mSliceRenderConfig.plane]-1, slice ), _regionMin[mSliceRenderConfig.plane] );
 }
 
 void	

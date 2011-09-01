@@ -46,8 +46,8 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 		mTmpViewer = &(state.getViewerWindow< GeneralViewer >());
 		mPositive = speed > 0;
 		if( speed != 0 ) {
-			float ms = 1000.0f / Abs(speed);
-			mTimer.setInterval( Max<int>( static_cast<int>( ms ), 10 ) );
+			float ms = 1000.0f / abs(speed);
+			mTimer.setInterval( max<int>( static_cast<int>( ms ), 10 ) );
 			mTimer.start();
 			timerCall();
 		} else {
@@ -233,8 +233,8 @@ void
 GeneralViewer::setCurrentSlice( int32 slice )
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = Max( 
-								Min( getViewerState()._regionMax[plane]-1, slice ), 
+	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = max( 
+								min( getViewerState()._regionMax[plane]-1, slice ), 
 								getViewerState()._regionMin[plane] );
 	notifyAboutSettingsChange();
 	update();

@@ -1,5 +1,8 @@
 #include "GUI/utils/CameraManipulator.h"
 
+namespace M4D
+{
+
 CameraManipulator::CameraManipulator( Camera *aCamera )
 	: mInteractionMode( imNONE ), mCamera( aCamera )
 {
@@ -60,4 +63,5 @@ CameraManipulator::wheelEvent ( QSize aWinSize, QWheelEvent * event )
 	return true;
 }
 
+}/*namespace M4D*/
 

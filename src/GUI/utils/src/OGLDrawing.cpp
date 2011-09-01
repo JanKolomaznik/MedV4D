@@ -185,15 +185,15 @@ GLDrawVolumeSliceCenterSamples(
 
 void
 GLDrawVolumeSlice(
-		const Vector< float32, 3 > 	&min, 
-		const Vector< float32, 3 > 	&max,
+		const Vector< float32, 3 > 	&aMin, 
+		const Vector< float32, 3 > 	&aMax,
 		float32				sliceCoord,
 		CartesianPlanes			plane
 		)
 {
-	//float32 sliceTexCoord = (sliceCoord - min[plane]) / (max[plane] - min[plane]);
-	Vector< float32, 2 > point1 = VectorPurgeDimension( min, plane );
-	Vector< float32, 2 > point3 = VectorPurgeDimension( max, plane );
+	//float32 sliceTexCoord = (sliceCoord - aMin[plane]) / (aMax[plane] - aMin[plane]);
+	Vector< float32, 2 > point1 = VectorPurgeDimension( aMin, plane );
+	Vector< float32, 2 > point3 = VectorPurgeDimension( aMax, plane );
 
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
@@ -226,12 +226,12 @@ GLDrawVolumeSlice(
 
 void
 GLDraw2DImage(
-		const Vector< float32, 2 > 	&min, 
-		const Vector< float32, 2 > 	&max
+		const Vector< float32, 2 > 	&aMin, 
+		const Vector< float32, 2 > 	&aMax
 		)
 {
-	Vector< float32, 2 > point1 = min;
-	Vector< float32, 2 > point3 = max;
+	Vector< float32, 2 > point1 = aMin;
+	Vector< float32, 2 > point3 = aMax;
 
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
@@ -497,11 +497,38 @@ drawSphere( const Sphere3Df &sphere )
 }
 
 void
+drawCylinder( float radius, float height )
+{
+	GLUquadric* quadratic=gluNewQuadric();			
+	gluQuadricNormals(quadratic, GLU_SMOOTH);
+	gluQuadricTexture(quadratic, GL_TRUE);
+
+	gluCylinder(quadratic,radius,radius,height,32,2);
+
+	gluDeleteQuadric(quadratic);
+}
+
+void
+drawCylinder( Vector3f aBaseCenter, Vector3f aBaseNormal, float radius, float height )
+{
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glTranslatef( aBaseCenter[0], aBaseCenter[1], aBaseCenter[2] );
+	
+	Vector3f axis;
+	float angle = angleAndRotationAxisFromVectors( Vector3f( 0.0f, 0.0f, 1.0f ), aBaseNormal, axis ) * 180.f / PI;
+	glRotatef( angle, axis[0], axis[1], axis[2] );
+
+	drawCylinder( radius, height );
+	glPopMatrix();
+}
+
+void
 drawSphericalCap( float aBaseRadius, float aHeight )
 {
 	ASSERT( aBaseRadius > 0.0f && aHeight > 0.0f );
 
-	float radius = ( Sqr( aBaseRadius ) + Sqr( aHeight ) ) / ( 2 * aHeight );
+	float radius = ( M4D::sqr( aBaseRadius ) + M4D::sqr( aHeight ) ) / ( 2 * aHeight );
 	float iRadius = 1.0f / radius;
 	const int latitudeSteps = 16;
 	const int longitudeSteps = 32;
@@ -513,7 +540,7 @@ drawSphericalCap( float aBaseRadius, float aHeight )
 
 	float latStep = aHeight / latitudeSteps;
 
-	float r = Sqrt( 2* radius * latStep - Sqr( latStep ) );
+	float r = sqrt( 2* radius * latStep - M4D::sqr( latStep ) );
 	Vector3f tmp = Vector3f( r, 0.0f, aHeight - latStep );
 	glBegin( GL_TRIANGLE_FAN );
 		GLNormalVector( Vector3f( 0.0f, 0.0f, 1.0f ) );
@@ -530,8 +557,8 @@ drawSphericalCap( float aBaseRadius, float aHeight )
 	for( int j = 1; j < latitudeSteps; ++j ) {
 		float h1 = aHeight - j * latStep;
 		float h2 = aHeight - (j+1) * latStep;
-		float r1 = Sqrt( 2* radius * j * latStep - Sqr( j * latStep ) ); //TODO - optimize
-		float r2 = Sqrt( 2* radius * (j+1) * latStep - Sqr( (j+1) * latStep ) );
+		float r1 = sqrt( 2* radius * j * latStep - M4D::sqr( j * latStep ) ); //TODO - optimize
+		float r2 = sqrt( 2* radius * (j+1) * latStep - M4D::sqr( (j+1) * latStep ) );
 		Vector3f tmp1 = Vector3f( r1, 0.0f, h1 );
 		Vector3f tmp2 = Vector3f( r2, 0.0f, h2 );
 		glBegin( GL_TRIANGLE_STRIP );

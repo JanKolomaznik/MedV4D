@@ -17,7 +17,7 @@ AddRegionToHistogram( THistogram &aHistogram, const TImageRegion &aRegion )
 	int32 max = aHistogram.GetMax();
 	typename TImageRegion::Iterator it = aRegion.GetIterator();
 	while ( !it.IsEnd() ) {
-		aHistogram.FastIncCell( ClampToInterval( min, max, (int32)*it ) );
+		aHistogram.FastIncCell( clampToInterval( min, max, (int32)*it ) );
 		++it;
 	}
 }
@@ -31,7 +31,7 @@ AddArrayToHistogram( THistogram &aHistogram, const TElementType *aArray, size_t 
 	int32 max = aHistogram.GetMax();
 	const TElementType *end = aArray + aSize;
 	while ( aArray < end ) {
-		aHistogram.FastIncCell( ClampToInterval( min, max, (int32)*aArray ) );
+		aHistogram.FastIncCell( clampToInterval( min, max, (int32)*aArray ) );
 		++aArray;
 	}
 }
@@ -46,8 +46,8 @@ PrepareHistogramForArray( const TElementType *aArray, size_t aSize )
 	TElementType minimum = TypeTraits< TElementType >::Max;
 	TElementType maximum = TypeTraits< TElementType >::Min;
 	while ( ptr < end ) {
-		minimum = Min( minimum, *ptr );
-		maximum = Max( maximum, *ptr );
+		minimum = min( minimum, *ptr );
+		maximum = max( maximum, *ptr );
 		++ptr;
 	}
 

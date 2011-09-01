@@ -172,6 +172,12 @@ void
 drawSphere( const Sphere3Df &sphere );
 
 void
+drawCylinder( float radius, float height );
+
+void
+drawCylinder( Vector3f aBaseCenter, Vector3f aBaseNormal, float radius, float height );
+
+void
 drawSphericalCap( float aBaseRadius, float aHeight );
 
 void
@@ -198,7 +204,7 @@ drawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianP
 {
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
-			if ( IntervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
+			if ( intervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
 				M4D::GLVertexVector( VectorPurgeDimension( *it, aPlane ) );
 			}
 		}
@@ -222,10 +228,10 @@ drawLineSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPl
 	glEnd();
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
-			if ( IntervalTest( aInterval[0], aInterval[1], it->firstPoint()[aPlane] ) ) { 
+			if ( intervalTest( aInterval[0], aInterval[1], it->firstPoint()[aPlane] ) ) { 
 				M4D::GLVertexVector( VectorPurgeDimension( it->firstPoint(), aPlane ) );
 			}
-			if ( IntervalTest( aInterval[0], aInterval[1], it->secondPoint()[aPlane] ) ) { 
+			if ( intervalTest( aInterval[0], aInterval[1], it->secondPoint()[aPlane] ) ) { 
 				M4D::GLVertexVector( VectorPurgeDimension( it->secondPoint(), aPlane ) );
 			}
 		}

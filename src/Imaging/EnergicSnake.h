@@ -337,7 +337,7 @@ EnergicSnake< ContourType, EnergyModel, ConvergenceCriterion >
 	if( _stats._stepCount > 1 && _gradients[0].Size() == _gradients[1].Size() ) {
 		float32 product = GradientScalarProduct( _gradients[0], _gradients[1] );
 		_parameters._stepScale *= _parameters._stepScaleAlpha + _parameters._stepScaleBeta * product;
-		_parameters._stepScale = Min( _parameters._maxStepScale, _parameters._stepScale );
+		_parameters._stepScale = min( _parameters._maxStepScale, _parameters._stepScale );
 		//_stepScale = 10;
 		DL_PRINT(5, "EnergicSnake ->    Compute step scale : " << _parameters._stepScale << "; Product : " << product );
 	}

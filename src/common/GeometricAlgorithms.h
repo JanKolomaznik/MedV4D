@@ -35,8 +35,8 @@ template< typename CoordType >
 inline Vector< CoordType, 3 >
 getSomePerpendicularVector( const Vector< CoordType, 3 > &v )
 {
-	size_t maxI = MaxIdx< CoordType, 3 >( v );
-	size_t minI = MinIdx< CoordType, 3 >( v );
+	size_t maxI = maxIdx< CoordType, 3 >( v );
+	size_t minI = minIdx< CoordType, 3 >( v );
 	Vector< CoordType, 3 > v2( v );
 	
 	if( maxI != minI ) {
@@ -63,7 +63,7 @@ angleAndRotationAxisFromVectors( const Vector< CoordType, 3 > &a, const Vector< 
 	double cAngle = static_cast< double >( aN * bN );
 	double angle = acos( cAngle );
 	axis = VectorProduct( aN, bN );
-	if( Abs( VectorSize( axis ) ) < Epsilon ) {
+	if( abs( VectorSize( axis ) ) < Epsilon ) {
 		axis = getSomePerpendicularVector( aN );
 	}
 	VectorNormalization( axis );
@@ -235,7 +235,11 @@ PerpendicularVectorToVector( const Vector< CoordType, 2 > &v )
 	return Vector< CoordType, 2 >( -v[1], v[0] );
 }
 
-
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
 template< typename CoordType >
 inline CoordType
 PointLineDistanceSquared( 
@@ -250,6 +254,11 @@ PointLineDistanceSquared(
 	return sizeTmp / (norm * norm);
 }
 
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
 template< typename CoordType >
 inline float32
 PointLineDistance( 
@@ -261,6 +270,48 @@ PointLineDistance(
 	return sqrt( PointLineDistanceSquared( point, A, v ) );
 }
 
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
+template< typename CoordType >
+inline float32
+PointLineDistanceSquared( 
+		const Vector< CoordType, 3 > &point,
+		const Vector< CoordType, 3 > &A, 
+		const Vector< CoordType, 3 > &v
+		)
+{
+	Vector< CoordType, 3 > B = A + v;
+
+	Vector< CoordType, 3 > prod = VectorProduct( point - A, point - B );
+
+	return (prod*prod)/(v*v);
+}
+
+
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
+template< typename CoordType >
+inline float32
+PointLineDistance( 
+		const Vector< CoordType, 3 > &point,
+		const Vector< CoordType, 3 > &A, 
+		const Vector< CoordType, 3 > &v
+		)
+{
+	return sqrt( PointLineDistanceSquared( point, A, v ) );
+}
+
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
 template< typename CoordType >
 inline CoordType
 PointLineSegmentDistanceSquared( 
@@ -273,15 +324,20 @@ PointLineSegmentDistanceSquared(
 	Vector< CoordType, 2 > B = A + v;
 	CoordType p1 = PointLinePositionPointVector( point, A, perp );
 	CoordType p2 = PointLinePositionPointVector( point, B, perp );
-	if( Sgn(p1) != Sgn(p2) ) {
+	if( M4D::sgn(p1) != M4D::sgn(p2) ) {
 		return PointLineDistanceSquared( point, A, v );
 	}
-	return Min( 
+	return min( 
 			(point-A)*(point-A), 
 			(point-B)*(point-B) 
 		  );
 }
 
+/**
+ * \param point Measured point
+ * \param A One point on line
+ * \param v Direction vector of line
+ **/
 template< typename CoordType >
 inline float32
 PointLineSegmentDistance( 
@@ -314,8 +370,8 @@ LinePlaneIntersection(
 	CoordType D = planeNormal * u;
 	CoordType N = -planeNormal * w;
 
-	if ( Abs(D) < Epsilon ) {          // segment is parallel to plane
-		if ( Abs(N) < Epsilon ) {                   // segment lies in plane
+	if ( abs(D) < Epsilon ) {          // segment is parallel to plane
+		if ( abs(N) < Epsilon ) {                   // segment lies in plane
 		    return ie_WHOLE_INSIDE;
 		} else {
 		    return ie_NO_INTERSECTION;                   // no intersection
@@ -330,6 +386,35 @@ LinePlaneIntersection(
 
 	intersection = lineA + sI * u;                 // compute segment intersect point
 	return ie_UNIQUE_INTERSECTION;
+}
+
+
+template< typename CoordType >
+bool
+lineAABBIntersections( 
+		const Vector< CoordType, 3 > &aMin, 
+		const Vector< CoordType, 3 > &aMax, 
+		const Vector< CoordType, 3 > &A, 
+		const Vector< CoordType, 3 > &v,
+		Vector< CoordType, 3 > &aIntersection1, 
+		Vector< CoordType, 3 > &aIntersection2
+	       	)
+{
+	//TODO
+	Vector< CoordType, 3 > v1 = A - aMin;
+	Vector< CoordType, 3 > v2 = A - aMax;
+
+	Vector< CoordType, 3 > t1 = VectorMemberDivision( v1, v );
+	Vector< CoordType, 3 > t2 = VectorMemberDivision( v2, v );
+	Vector< CoordType, 3 > minTs = M4D::min< CoordType, 3 >( t1, t2 );
+	Vector< CoordType, 3 > maxTs = M4D::max< CoordType, 3 >( t1, t2 );
+
+	float minT = M4D::max< CoordType, 3 >( minTs );
+	float maxT = M4D::min< CoordType, 3 >( maxTs );
+
+	aIntersection1 = A + v * minT;
+	aIntersection2 = A + v * maxT;
+	return true;
 }
 
 
