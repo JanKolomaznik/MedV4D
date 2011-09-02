@@ -299,6 +299,37 @@ fp_WLWindow_3D(
 }
 
 FragmentOutput 
+fp_WLWindowBasic_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData, 
+		uniform float3 aWLWindow,
+		uniform float aRenderingSliceThickness
+		)
+{
+	FragmentOutput OUT;
+
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = aWLWindow.z;
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//Disable interpolation
+	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
+	float value = clamp( 
+			( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier,
+			0.0f,
+			1.0f
+			);
+		
+	OUT.color = value.xxxx;
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+
+	return OUT;
+}
+
+
+FragmentOutput 
 fp_TransferFunction1D_3D( 
 		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
@@ -680,6 +711,28 @@ technique WLWindowMIP_3D  {
 		DepthFunc = LEqual;
 	}
 }
+
+technique WLWindowBasic_3D  {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_WLWindowBasic_3D( 
+								gImageData3D, 
+								float3( 
+									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+									gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+									),
+								gRenderingSliceThickness 
+								);
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}
+
 
 technique SimpleRegionColorMap_3D {
 	pass t0 {

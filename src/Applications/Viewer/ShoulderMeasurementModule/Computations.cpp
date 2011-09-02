@@ -142,19 +142,19 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 	Vector3f maximum;
 	Eigen::Matrix3f covarianceMatrix;
 
-	//if ( !aProximalShaftMeasurementData.available ) {
+
+	minimum = aPoints[0];
+	maximum = aPoints[0];
+	for ( size_t i = 1; i < aPoints.size(); ++i ) {
+		minimum = M4D::min< float, 3 >( static_cast< const Vector3f &>( minimum ), static_cast< const Vector3f &>( aPoints[i] ) );
+		maximum = M4D::max< float, 3 >( static_cast< const Vector3f &>( maximum ), static_cast< const Vector3f &>( aPoints[i] ) );
+		/*D_PRINT( "point : " << aPoints[i] );
+		D_PRINT( "min : " << minimum );
+		D_PRINT( "max : " << maximum << "\n" );*/
+	}
+
+	if ( !aProximalShaftMeasurementData.available ) {
 		computeCovarianceMatrixFromPointSet( aPoints, center, covarianceMatrix );
-
-		minimum = aPoints[0];
-		maximum = aPoints[0];
-		for ( size_t i = 1; i < aPoints.size(); ++i ) {
-			minimum = M4D::min< float, 3 >( static_cast< const Vector3f &>( minimum ), static_cast< const Vector3f &>( aPoints[i] ) );
-			maximum = M4D::max< float, 3 >( static_cast< const Vector3f &>( maximum ), static_cast< const Vector3f &>( aPoints[i] ) );
-			/*D_PRINT( "point : " << aPoints[i] );
-			D_PRINT( "min : " << minimum );
-			D_PRINT( "max : " << maximum << "\n" );*/
-		}
-
 		typedef Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> Solver;
 		Solver eigensolver(covarianceMatrix);
 
@@ -165,12 +165,10 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 
 		v1 = Vector3f( eigenVectors(0,2), eigenVectors(1,2), eigenVectors(2,2) );
 
-	/*} else {
+	} else {
 		center = aProximalShaftMeasurementData.centerPoint;
 		v1 = aProximalShaftMeasurementData.direction;
-		minimum = aProximalShaftMeasurementData.minimum;
-		maximum = aProximalShaftMeasurementData.maximum;
-	}*/
+	}
 	//********************************************************************
 	float d = 0.15f;
 	float d2 = 5.0f;
@@ -182,13 +180,14 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 		CylinderMaximumFillFtor( aPoints )
 		);
 
-	center[0] = result[0];
-	center[1] = result[1];
-	center[2] = result[2];
-	v1[0] = result[3];
-	v1[1] = result[4];
-	v1[2] = result[5];
+	center = result.GetSubVector< 0, 3 >();
+	v1 = result.GetSubVector< 3, 6 >();
+	LOG( "Result : " << result );
+	LOG( "center : " << center );
+	LOG( "v1 : " << v1 );
+
 	VectorNormalization( v1 );
+
 	//********************************************************************
 
 
@@ -199,6 +198,10 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 			intersection1, intersection2
 			);
 	
+	v1 = intersection2 - intersection1;
+	VectorNormalization( v1 );
+
+
 	/*D_PRINT( "minT = " << minT );
 	D_PRINT( "maxT = " << maxT );
 	D_PRINT( "diffT = " << diffT );*/
@@ -208,10 +211,16 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 		minDistance = M4D::min( minDistance, tmp );
 	}
 
-	aProximalShaftMeasurementData.point = intersection1;//center + minT * v1;
+	float height = VectorSize( intersection2 - intersection1 );
+
+	aProximalShaftMeasurementData.point = intersection1 - v1 * (0.1f * height);//center + minT * v1;
+	aProximalShaftMeasurementData.bboxP1 = intersection1;
+	aProximalShaftMeasurementData.bboxP2 = intersection2;
+
+
 	aProximalShaftMeasurementData.centerPoint = center;
 	aProximalShaftMeasurementData.direction = v1;
-	aProximalShaftMeasurementData.height = VectorSize( intersection2 - intersection1 );
+	aProximalShaftMeasurementData.height = height * 1.2;
 	aProximalShaftMeasurementData.radius = minDistance;
 	aProximalShaftMeasurementData.available = true;
 	aProximalShaftMeasurementData.minimum = minimum;

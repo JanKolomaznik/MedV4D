@@ -179,6 +179,18 @@ public:
 			return _coordinates[ tIdx ];
 		}
 
+	template< uint32 tBegin, uint32 tEnd >
+	Vector< CoordinateType, tEnd - tBegin >
+	GetSubVector() const
+	{
+		BOOST_STATIC_ASSERT( tBegin < tEnd );
+		BOOST_STATIC_ASSERT( Dimension >= tEnd );
+		Vector< CoordinateType, tEnd - tBegin > tmp;
+		for( unsigned i = tBegin; i < tEnd; ++i ) {
+			tmp[i-tBegin] = _coordinates[i];
+		}
+		return tmp;
+	}
 
 	CoordinateType &
 	Get( unsigned idx )

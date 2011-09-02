@@ -16,6 +16,7 @@ enum ColorTransform
 	ctLUTWindow,
 	ctTransferFunction1D,
 	ctMaxIntensityProjection,
+	ctBasic,
 	ctSimpleColorMap
 };
 

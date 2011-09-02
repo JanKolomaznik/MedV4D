@@ -90,7 +90,10 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			return true;
 		}
 	}
-	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow || state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection ) {
+	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow 
+		|| state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection 
+		|| state.colorTransform == M4D::GUI::Renderer::ctBasic ) 
+	{
 		if( aEventInfo.event->button() == mLUTSetMouseButton ) {
 			mInteractionMode = imLUT_SETTING;
 			return true;

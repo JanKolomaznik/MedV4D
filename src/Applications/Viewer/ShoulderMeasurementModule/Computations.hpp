@@ -37,6 +37,10 @@ struct ProximalShaftMeasurementData
 	float height;
 	float radius;
 
+
+	Vector3f bboxP1;
+	Vector3f bboxP2;
+
 	Vector3f minimum;
 	Vector3f maximum;
 };

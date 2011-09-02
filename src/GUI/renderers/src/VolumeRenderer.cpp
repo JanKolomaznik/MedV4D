@@ -46,6 +46,7 @@ VolumeRenderer::Initialize()
 	//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
 }
 
 void
@@ -221,6 +222,12 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		{
 			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
 			techniqueName = "WLWindowMIP_3D";
+		}
+		break;
+	case ctBasic:
+		{
+			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
+			techniqueName = "WLWindowBasic_3D";
 		}
 		break;
 	default:

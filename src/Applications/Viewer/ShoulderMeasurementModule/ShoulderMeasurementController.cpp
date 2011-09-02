@@ -176,6 +176,18 @@ ShoulderMeasurementController::render3D()
 	if ( mProximalShaftMeasurementData.available ) {
 		GL_CHECKED_CALL( glColor4f( 0.0f, 1.0f, 1.0f, 1.0f ) );
 		M4D::GLDrawBoundingBox( mProximalShaftMeasurementData.minimum, mProximalShaftMeasurementData.maximum );
+		/*glBegin( GL_QUADS );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( 30.0f, 10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( -30.0f, 10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( -30.0f, -10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( 30.0f, -10.0f, 0.0f ) );
+
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP2 + Vector3f( 30.0f, 10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP2 + Vector3f( -30.0f, 10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP2 + Vector3f( -30.0f, -10.0f, 0.0f ) );
+			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP2 + Vector3f( 30.0f, -10.0f, 0.0f ) );
+			//M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP2 );
+		glEnd();*/
 
 		GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 		M4D::drawCylinder( mProximalShaftMeasurementData.point, mProximalShaftMeasurementData.direction, mProximalShaftMeasurementData.radius, mProximalShaftMeasurementData.height );

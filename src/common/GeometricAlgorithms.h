@@ -412,8 +412,8 @@ lineAABBIntersections(
 	float minT = M4D::max< CoordType, 3 >( minTs );
 	float maxT = M4D::min< CoordType, 3 >( maxTs );
 
-	aIntersection1 = A + v * minT;
-	aIntersection2 = A + v * maxT;
+	aIntersection1 = A - v * minT;
+	aIntersection2 = A - v * maxT;
 	return true;
 }
 
