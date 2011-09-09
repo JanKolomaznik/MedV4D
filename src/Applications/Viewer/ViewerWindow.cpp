@@ -11,6 +11,7 @@
 #include "GUI/utils/ViewerAction.h"
 #include "GUI/utils/QtM4DTools.h"
 #include "GUI/widgets/SettingsDialog.h"
+#include "GUI/widgets/ViewerControls.h"
 #include <boost/thread.hpp>
 
 
@@ -117,6 +118,11 @@ ViewerWindow::ViewerWindow()
 	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal );
 #endif //USE_PYTHON
 
+	ViewerControls *mViewerControls = new ViewerControls;
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), mViewerControls, SLOT( updateControls() ) );
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
+	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls );
+
 
 	//mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );				//************
 	//createDockWidget( tr("Annotations" ), Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );	//************
@@ -155,6 +161,7 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
 
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
 
 	// HH: OIS support

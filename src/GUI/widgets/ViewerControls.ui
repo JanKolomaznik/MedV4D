@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ViewerControls</class>
+ <widget class="QWidget" name="ViewerControls">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>347</width>
+    <height>192</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Window</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Center</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="windowCenterSpinBox">
+          <property name="minimum">
+           <number>-4000</number>
+          </property>
+          <property name="maximum">
+           <number>4000</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Width</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="windowWidthSpinBox">
+          <property name="minimum">
+           <number>-4000</number>
+          </property>
+          <property name="maximum">
+           <number>4000</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>View volume restrictions</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>X interval</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Y interval</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Z interval</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>doubleSpinBox_6</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>168</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>200</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>191</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_4</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>208</x>
+     <y>157</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_5</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>99</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_2</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>123</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_3</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>157</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>153</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>windowCenterSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>windowChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>117</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>136</x>
+     <y>-11</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>windowWidthSpinBox</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>windowChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>33</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>-7</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>windowChanged()</slot>
+  <slot>volumeRestrictionsChanged()</slot>
+ </slots>
+</ui>

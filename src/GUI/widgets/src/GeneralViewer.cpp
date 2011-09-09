@@ -195,6 +195,11 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	mSliceCountForRenderingQualities = Vector4i( 90, 180, 450, 1000 );
 }
 
+void
+GeneralViewer::setLUTWindow( float32 center, float32 width )
+{
+	setLUTWindow( Vector2f( center, width ) );
+}
 
 void
 GeneralViewer::setLUTWindow( Vector2f window )
