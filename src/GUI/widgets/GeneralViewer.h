@@ -107,7 +107,8 @@ public:
 		imNONE,
 		imORBIT_CAMERA,
 		imLUT_SETTING,
-		imFAST_SLICE_CHANGE
+		imFAST_SLICE_CHANGE,
+		imCUT_PLANE
 	};
 
 	ViewerController();
@@ -135,6 +136,8 @@ protected:
 	Qt::MouseButton	mCameraOrbitButton;
 	Qt::MouseButton	mLUTSetMouseButton;
 	Qt::MouseButton	mFastSliceChangeMouseButton;
+
+	Qt::KeyboardModifiers mCutPlaneKeyboardModifiers;
 
 	InteractionMode mInteractionMode;
 	MouseTrackInfo	mTrackInfo;
@@ -214,6 +217,21 @@ public:
 	bool
 	isColorTransformAvailable( unsigned aTransformType );
 
+	void
+	setVolumeRestrictions( const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ );
+
+	void
+	setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ );
+
+	void
+	setCutPlane( const Planef &aCutPlane );
+
+	Planef
+	getCutPlane()const;
+
+	void
+	getVolumeRestrictions( Vector2f &aX, Vector2f &aY, Vector2f &aZ )const;
+
 	/*int
 	GetRendererType()
 	{
@@ -238,6 +256,12 @@ public:
 
 	bool
 	isJitteringEnabled() const;
+
+	bool
+	isVolumeRestrictionEnabled() const;
+
+	bool
+	isCutPlaneEnabled() const;
 
 	void
 	cameraOrbit( Vector2f aAngles );
@@ -266,6 +290,18 @@ public:
 	QualityMode
 	getRenderingQuality();
 
+	Vector3f
+	getCameraTargetPosition()const
+	{
+		return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
+	}
+
+	Vector3f
+	getCameraTargetDirection()const
+	{
+		return getViewerState().mVolumeRenderConfig.camera.GetTargetDirection();
+	}
+
 	void
 	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );
 public slots:
@@ -286,6 +322,12 @@ public slots:
 
 	void
 	enableJittering( bool aEnable );
+
+	void
+	enableVolumeRestrictions( bool aEnable );
+
+	void
+	enableCutPlane( bool aEnable );
 
 	void
 	setRenderingQuality( int aQualityMode );

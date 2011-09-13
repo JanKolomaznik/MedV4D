@@ -43,6 +43,12 @@ struct BoundingBox
 	float3	vertices[8];
 };
 
+struct Plane
+{
+	float3 point;
+	float3 normal;
+};
+
 
 ImageData3D gImageData3D;
 
@@ -68,6 +74,9 @@ float gRenderingSliceThickness;
 float2 gWLWindow;
 sampler1D gColorMap;
 float gMaskAlpha;
+
+bool gEnableCutPlane;
+Plane gCutPlane;
 
 BoundingBox gBBox;
 int gMinID;
@@ -106,6 +115,16 @@ struct IntersectionResult
 	uint resultType;
 	float3 intersection;
 };
+
+bool
+pointPlaneRelativePos( Plane aPlane, float3 aPoint )
+{
+	float3 tmp = aPoint - aPlane.point;
+	return dot( tmp, aPlane.normal ) > 0.0;
+}
+
+#define CUT_PLANE_TEST( POINT )\
+	if ( gEnableCutPlane && pointPlaneRelativePos( gCutPlane, POINT ) > 0.0f ) discard;
 
 IntersectionResult
 LinePlaneIntersection( 
@@ -277,6 +296,7 @@ fp_WLWindow_3D(
 		uniform float3 aWLWindow
 		)
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
@@ -306,6 +326,7 @@ fp_WLWindowBasic_3D(
 		uniform float aRenderingSliceThickness
 		)
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
@@ -338,6 +359,7 @@ fp_TransferFunction1D_3D(
 		uniform float aRenderingSliceThickness,
 		uniform float2 aMappedIntervalBands )
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
@@ -367,6 +389,7 @@ fp_TransferFunction1DShading_3D(
 		uniform	float3 aEyePosition
 		)
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
@@ -419,6 +442,7 @@ fp_TransferFunction1DJitter_3D(
 		float3 aWinPos : WPOS
  )
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
@@ -448,6 +472,7 @@ fp_TransferFunction1DShadingJitter_3D(
 		float3 aWinPos : WPOS
 		)
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
 	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
@@ -510,6 +535,7 @@ fp_SimpleRegionColorMap_3D(
 		uniform ImageData3D aTextureData,
 		uniform float aRange )
 {
+	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 	float3 coordinates = texCoordsFromPositionNoInterpolation( aPosition, aTextureData );//PreventInterpolation( aTexCoord, aTextureData.size );
 	unsigned int value = round( tex3D( aTextureData.data, coordinates ).x * 4200000000 );

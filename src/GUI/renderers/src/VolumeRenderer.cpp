@@ -8,6 +8,23 @@ namespace Renderer
 {
 
 void
+applyVolumeRestrictionsOnBoundingBox( M4D::BoundingBox3D &aBBox, const VolumeRestrictions &aVolumeRestrictions )
+{
+	Vector3f corner1 = aBBox.getMin();
+	Vector3f corner2 = aBBox.getMax();
+	Vector3f size = corner2 - corner1;
+	
+	Vector3f i1, i2;
+	aVolumeRestrictions.get3D( i1, i2 );
+
+	//LOG( "Restrictions : " << i1 << " - " << i2 );
+
+	corner2 = corner1 + VectorMemberProduct( i2, size );
+	corner1 += VectorMemberProduct( i1, size );
+	aBBox = M4D::BoundingBox3D( corner1, corner2 );
+}
+
+void
 VolumeRenderer::Initialize()
 {
 	InitializeCg();
@@ -84,7 +101,10 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
 
-	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() ); 
+	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
+	if ( aConfig.enableVolumeRestrictions ) {
+		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
+	}
 	float 				min = 0; 
 	float 				max = 0;
 	unsigned			minId = 0;	
@@ -115,6 +135,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+
+	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
+	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
 
 	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
 	
@@ -181,6 +204,13 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
+	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
+	if ( aConfig.enableVolumeRestrictions ) {
+		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
+	}
+
+	//aConfig.enableCutPlane = true;
+	//aConfig.cutPlane = Planef( bbox.getCenter(), Vector3f( 0.3f, 0.45f, 0.1f ) );
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
@@ -193,6 +223,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+
+	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
+	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
 
 	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
 
@@ -237,7 +270,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices, 
-				M4D::BoundingBox3D( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() ),
+				bbox,
 				aConfig.camera,
 				sliceCount,
 				1.0f

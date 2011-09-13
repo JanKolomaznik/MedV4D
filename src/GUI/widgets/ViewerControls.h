@@ -17,6 +17,23 @@ public:
 	}
 
 public slots:
+
+	void
+	resetVolumeRestrictions()
+	{
+		M4D::GUI::Viewer::AGLViewer *pViewer;
+		pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+		if(pGenViewer != NULL) {
+			pGenViewer->setVolumeRestrictions( 
+					Vector2f( 0.0f, 1.0f ), 
+					Vector2f( 0.0f, 1.0f ), 
+					Vector2f( 0.0f, 1.0f ) 
+					);
+		}
+	}
+
 	void
 	updateControls()
 	{
@@ -29,6 +46,14 @@ public slots:
 			Vector2f win = pGenViewer->getLUTWindow();
 			windowCenterSpinBox->setValue( win[0] );
 			windowWidthSpinBox->setValue( win[1] );
+
+			Vector2f x, y, z;
+			pGenViewer->getVolumeRestrictions(x,y,z);
+			xIntervalASpinBox->setValue(x[0]); xIntervalBSpinBox->setValue(x[1]);
+			yIntervalASpinBox->setValue(y[0]); yIntervalBSpinBox->setValue(y[1]);
+			zIntervalASpinBox->setValue(z[0]); zIntervalBSpinBox->setValue(z[1]);
+
+			volumeRestrictionsGroupBox->setChecked( pGenViewer->isVolumeRestrictionEnabled() );		
 		} else {
 			setEnabled( false );
 		}
@@ -49,7 +74,18 @@ public slots:
 	void
 	volumeRestrictionsChanged()
 	{
+		M4D::GUI::Viewer::AGLViewer *pViewer;
+		pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
+		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+		if(pGenViewer != NULL) {
+			pGenViewer->setVolumeRestrictions( 
+					volumeRestrictionsGroupBox->isChecked(),
+					Vector2f( static_cast<float>(xIntervalASpinBox->value()), static_cast<float>(xIntervalBSpinBox->value()) ), 
+					Vector2f( static_cast<float>(yIntervalASpinBox->value()), static_cast<float>(yIntervalBSpinBox->value()) ), 
+					Vector2f( static_cast<float>(zIntervalASpinBox->value()), static_cast<float>(zIntervalBSpinBox->value()) ) 
+					);
+		}
 	}
 
 };

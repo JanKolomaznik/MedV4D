@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>347</width>
-    <height>192</height>
+    <height>222</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,7 +68,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="volumeRestrictionsGroupBox">
      <property name="title">
       <string>View volume restrictions</string>
      </property>
@@ -87,14 +87,14 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+       <widget class="QDoubleSpinBox" name="xIntervalASpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+       <widget class="QDoubleSpinBox" name="xIntervalBSpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -111,14 +111,14 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="yIntervalASpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+       <widget class="QDoubleSpinBox" name="yIntervalBSpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -135,19 +135,26 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+       <widget class="QDoubleSpinBox" name="zIntervalASpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+       <widget class="QDoubleSpinBox" name="zIntervalBSpinBox">
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
         <property name="value">
          <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QPushButton" name="volumeRestrictionsResetButton">
+        <property name="text">
+         <string>Reset</string>
         </property>
        </widget>
       </item>
@@ -159,8 +166,8 @@
  <resources/>
  <connections>
   <connection>
-   <sender>doubleSpinBox_6</sender>
-   <signal>editingFinished()</signal>
+   <sender>xIntervalASpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -175,8 +182,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <sender>yIntervalASpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -191,8 +198,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox_4</sender>
-   <signal>editingFinished()</signal>
+   <sender>zIntervalASpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -207,8 +214,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox_5</sender>
-   <signal>editingFinished()</signal>
+   <sender>xIntervalBSpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -223,8 +230,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox_2</sender>
-   <signal>editingFinished()</signal>
+   <sender>yIntervalBSpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -239,8 +246,8 @@
    </hints>
   </connection>
   <connection>
-   <sender>doubleSpinBox_3</sender>
-   <signal>editingFinished()</signal>
+   <sender>zIntervalBSpinBox</sender>
+   <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
    <slot>volumeRestrictionsChanged()</slot>
    <hints>
@@ -256,7 +263,7 @@
   </connection>
   <connection>
    <sender>windowCenterSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
    <slot>windowChanged()</slot>
    <hints>
@@ -266,13 +273,13 @@
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
-     <y>-11</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>windowWidthSpinBox</sender>
-   <signal>editingFinished()</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
    <slot>windowChanged()</slot>
    <hints>
@@ -282,7 +289,39 @@
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
-     <y>-7</y>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>volumeRestrictionsGroupBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>volumeRestrictionsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>76</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>volumeRestrictionsResetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>resetVolumeRestrictions()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>194</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>100</x>
+     <y>220</y>
     </hint>
    </hints>
   </connection>
@@ -290,5 +329,6 @@
  <slots>
   <slot>windowChanged()</slot>
   <slot>volumeRestrictionsChanged()</slot>
+  <slot>resetVolumeRestrictions()</slot>
  </slots>
 </ui>

@@ -22,6 +22,8 @@ ViewerController::ViewerController()
 	mLUTSetMouseButton = Qt::RightButton;
 	mFastSliceChangeMouseButton = Qt::MidButton;
 
+	mCutPlaneKeyboardModifiers = Qt::ControlModifier | Qt::MetaModifier;
+
 	mTimer.setSingleShot( false );
 	QObject::connect( &mTimer, SIGNAL(timeout()), this, SLOT( timerCall() ) );
 }
@@ -32,8 +34,16 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
 	QPoint diff = mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
+	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
+		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+		return true;
+	}
 	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+		state.getViewerWindow< GeneralViewer >().setCutPlane( 
+						Planef( state.getViewerWindow< GeneralViewer >().getCameraTargetPosition(),
+							-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection() ) 
+						);
 		return true;
 	}
 	if ( mInteractionMode == imLUT_SETTING ) {
@@ -80,7 +90,18 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 	mTrackInfo.startTracking( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
 	if ( state.viewType == vt3D ) {
 		if( aEventInfo.event->button() == mCameraOrbitButton ) {
-			mInteractionMode = imORBIT_CAMERA;
+			//LOG( aEventInfo.event->modifiers() );
+			if ( aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers /*&& state.mVolumeRenderConfig.enableCutPlane*/ ) {
+				mInteractionMode = imCUT_PLANE;
+				state.getViewerWindow< GeneralViewer >().setCutPlane( 
+						Planef( state.getViewerWindow< GeneralViewer >().getCameraTargetPosition(),
+							-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection() ) 
+						);
+				state.getViewerWindow< GeneralViewer >().enableCutPlane( true );
+				//LOG( "ENABLING CUTPLANE" );
+			} else {
+				mInteractionMode = imORBIT_CAMERA;
+			}
 			return true;
 		}
 	}
@@ -108,6 +129,7 @@ ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const M
 {
 	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 	if ( (mInteractionMode == imORBIT_CAMERA && aEventInfo.event->button() == mCameraOrbitButton)
+	  || (mInteractionMode == imCUT_PLANE && aEventInfo.event->button() == mCameraOrbitButton)
 	  || (mInteractionMode == imLUT_SETTING && aEventInfo.event->button() == mLUTSetMouseButton) ) 
 	{
 		mInteractionMode = imNONE;
@@ -294,6 +316,48 @@ GeneralViewer::changeCurrentSlice( int32 diff )
 	setCurrentSlice( diff + getCurrentSlice() );
 }
 
+void
+GeneralViewer::setVolumeRestrictions( const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
+{
+	//TODO test if valid values
+	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
+{
+	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
+	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::setCutPlane( const Planef &aCutPlane )
+{
+	getViewerState().mVolumeRenderConfig.cutPlane = aCutPlane;
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+Planef
+GeneralViewer::getCutPlane()const
+{
+	return getViewerState().mVolumeRenderConfig.cutPlane;
+}
+
+void
+GeneralViewer::getVolumeRestrictions( Vector2f &aX, Vector2f &aY, Vector2f &aZ )const
+{
+	//TODO test if valid values
+	getViewerState().mVolumeRenderConfig.volumeRestrictions.get( aX, aY, aZ );
+}
+
 int
 GeneralViewer::getColorTransformType()
 {
@@ -345,6 +409,18 @@ bool
 GeneralViewer::isJitteringEnabled() const
 {
 	return getViewerState().mVolumeRenderConfig.jitterEnabled;
+}
+
+bool
+GeneralViewer::isVolumeRestrictionEnabled() const
+{
+	return getViewerState().mVolumeRenderConfig.enableVolumeRestrictions;
+}
+
+bool
+GeneralViewer::isCutPlaneEnabled() const
+{
+	return getViewerState().mVolumeRenderConfig.enableCutPlane;
 }
 
 void
@@ -501,6 +577,22 @@ void
 GeneralViewer::enableJittering( bool aEnable )
 {
 	getViewerState().mVolumeRenderConfig.jitterEnabled = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::enableVolumeRestrictions( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::enableCutPlane( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.enableCutPlane = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }

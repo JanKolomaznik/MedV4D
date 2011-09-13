@@ -21,6 +21,25 @@ struct BoundingBox3D
 		vertices[7] = Vector3f( corner1[0], corner2[1], corner2[2] );
 	}
 
+	Vector3f
+	getMin()const
+	{
+		return vertices[0];
+	}
+
+	Vector3f
+	getMax()const
+	{
+		return vertices[6];
+	}
+
+	Vector3f
+	getCenter()const
+	{
+		return 0.5f * (vertices[0] + vertices[6]);
+	}
+
+
 	Vector< float, 3 >	vertices[VertexCount];
 };
 

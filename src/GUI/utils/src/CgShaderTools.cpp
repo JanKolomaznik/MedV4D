@@ -162,6 +162,14 @@ CgEffect::SetParameter( std::string aName, const int *aValue, size_t aCount )
 	cgSetParameterValueir( cgParameter, aCount, aValue );
 }
 
+void
+CgEffect::SetParameter( std::string aName, const M4D::Planef aPlane )
+{
+	SetParameter( TO_STRING( aName << ".point" ), static_cast< const Vector3f &>( aPlane.point() ) );
+
+	SetParameter( TO_STRING( aName << ".normal" ), aPlane.normal() );
+}
+
 
 void
 CgEffect::SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform )

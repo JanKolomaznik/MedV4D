@@ -220,6 +220,44 @@ typedef Line< double, 2 > Line2Dd;
 typedef Line< float, 3 > Line3Df;
 typedef Line< double, 3 > Line3Dd;
 
+template< typename TType >
+class Plane
+{
+public:
+	typedef Vector< TType, 3 > Vec;
+	typedef typename PointTypes< TType, 3 >::Type Point;
+
+	Plane()
+	{}
+	Plane( const Point &aPoint, const Vec &aNormal ): mPoint( aPoint ), mNormal( aNormal )
+	{}
+
+	Plane( const Vec &aPoint, const Vec &aNormal ): mPoint( aPoint ), mNormal( aNormal )
+	{}
+
+	Point&
+	point()
+	{ return mPoint; }
+
+	const Point&
+	point()const
+	{ return mPoint; }
+
+	Vec&
+	normal()
+	{ return mNormal; }
+
+	const Vec&
+	normal()const
+	{ return mNormal; }
+protected:
+	Point mPoint;
+	Vec mNormal;
+};
+
+typedef Plane< float > Planef;
+typedef Plane< double > Planed;
+
 }//M4D
 
 #endif /*GEOMETRIC_PRIMITIVES_H*/

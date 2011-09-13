@@ -8,6 +8,7 @@
 #include <Cg/cgGL.h>
 #include <string>
 #include "common/Common.h"
+#include "common/GeometricPrimitives.h"
 #include "GUI/utils/DrawingTools.h"
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/Camera.h"
@@ -97,6 +98,9 @@ public:
 
 	void
 	SetTextureParameter( std::string aName, GLuint aTexture );
+
+	void
+	SetParameter( std::string aName, const M4D::Planef aPlane );
 
 	void
 	SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform );
