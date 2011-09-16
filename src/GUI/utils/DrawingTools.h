@@ -2,6 +2,7 @@
 #define DRAWING_TOOLS_H
 
 #include "common/Common.h"
+#include "common/GeometricPrimitives.h"
 namespace M4D
 {
 	
@@ -61,6 +62,21 @@ GetPlaneVerticesInBoundingBox(
 		const Vector< float, 3 > 	&planePoint, 
 		const Vector< float,3 > 	&planeNormal,
 		unsigned			minId,
+	       	Vector< float,3 > 		vertices[]
+		);
+
+unsigned
+GetPlaneVerticesInBoundingBox( 
+		const BoundingBox3D		&bbox, 
+		const Planef			&plane,
+		unsigned			minId,
+	       	Vector< float,3 > 		vertices[]
+		);
+
+unsigned
+GetPlaneVerticesInBoundingBox( 
+		const BoundingBox3D		&bbox, 
+		const Planef			&plane,
 	       	Vector< float,3 > 		vertices[]
 		);
 

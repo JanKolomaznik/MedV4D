@@ -113,6 +113,9 @@ void
 GLDrawPointSetLines( const M4D::Imaging::Geometry::PointSet< VectorType > &pointset, bool closed = false );
 
 void
+GLDrawBoundingBox( const BoundingBox3D &aBBox );
+
+void
 GLDrawBoundingBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 );
 
 void

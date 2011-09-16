@@ -21,6 +21,7 @@ ViewerController::ViewerController()
 	mCameraOrbitButton = Qt::MidButton;
 	mLUTSetMouseButton = Qt::RightButton;
 	mFastSliceChangeMouseButton = Qt::MidButton;
+	mCutPlaneOffsetButton = Qt::RightButton;
 
 	mCutPlaneKeyboardModifiers = Qt::ControlModifier | Qt::MetaModifier;
 
@@ -34,11 +35,11 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 
 	QPoint diff = mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
-	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
+	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
 		return true;
 	}
-	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
+	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
 		state.getViewerWindow< GeneralViewer >().setCutPlane( 
 						Planef( state.getViewerWindow< GeneralViewer >().getCameraTargetPosition(),
@@ -49,6 +50,11 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	if ( mInteractionMode == imLUT_SETTING ) {
 		Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
 		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
+		return true;
+	}
+	if ( mInteractionMode == imCUT_PLANE_OFFSET ) {
+		float oldVal = state.mVolumeRenderConfig.cutPlaneCameraTargetOffset;
+		state.getViewerWindow< GeneralViewer >().setCutPlaneCameraTargetOffset( oldVal + diff.x() );
 		return true;
 	}
 	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
@@ -64,6 +70,10 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 			mTimer.stop();
 		}
 		return true;
+	}
+
+	if ( state.viewType == vt2DAlignedSlices ) {
+		state.getViewerWindow< GeneralViewer >().updateMouseInfo( aEventInfo.realCoordinates );
 	}
 	return false;
 }
@@ -104,6 +114,10 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			}
 			return true;
 		}
+		if( (aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers) && (aEventInfo.event->button() == mCutPlaneOffsetButton) ) {
+			mInteractionMode = imCUT_PLANE_OFFSET;
+			return true;
+		}
 	}
 	if ( state.viewType == vt2DAlignedSlices ) {
 		if( aEventInfo.event->button() == mFastSliceChangeMouseButton ) {
@@ -130,6 +144,7 @@ ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const M
 	//ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
 	if ( (mInteractionMode == imORBIT_CAMERA && aEventInfo.event->button() == mCameraOrbitButton)
 	  || (mInteractionMode == imCUT_PLANE && aEventInfo.event->button() == mCameraOrbitButton)
+	  || (mInteractionMode == imCUT_PLANE_OFFSET && aEventInfo.event->button() == mCutPlaneOffsetButton)
 	  || (mInteractionMode == imLUT_SETTING && aEventInfo.event->button() == mLUTSetMouseButton) ) 
 	{
 		mInteractionMode = imNONE;
@@ -150,7 +165,7 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 
 	//int numDegrees = event->delta() / 8;
 	//int numSteps = numDegrees / 15;
-	if( mInteractionMode == imORBIT_CAMERA ) { //prevent scale jumping during camera orbit
+	if( mInteractionMode == imORBIT_CAMERA || mInteractionMode == imCUT_PLANE ) { //prevent scale jumping during camera orbit
 		return false;
 	}
 
@@ -340,6 +355,9 @@ void
 GeneralViewer::setCutPlane( const Planef &aCutPlane )
 {
 	getViewerState().mVolumeRenderConfig.cutPlane = aCutPlane;
+	//Vector3f point = aCutPlane.point();
+///***********************************************************************************************************************
+	//getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = aOffset;
 
 	notifyAboutSettingsChange();
 	update();
@@ -349,6 +367,57 @@ Planef
 GeneralViewer::getCutPlane()const
 {
 	return getViewerState().mVolumeRenderConfig.cutPlane;
+}
+
+void
+GeneralViewer::setCutPlaneCameraTargetOffset( float aOffset )
+{
+	Vector3f normal = getViewerState().mVolumeRenderConfig.cutPlane.normal();
+	Planef plane( getCameraTargetPosition() + aOffset * normal, normal );
+	getViewerState().mVolumeRenderConfig.cutPlane = plane;
+	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = aOffset;
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::updateMouseInfo( Vector3f aDataCoords )
+{
+	QString info = GetVoxelInfo( aDataCoords );//TODO predelat
+
+	//LOG( "updating mouse pos info " << info.toStdString() );
+	emit MouseInfoUpdate( info );
+}
+
+QString
+GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
+{
+	//TODO improve
+	try {
+		TryGetAndLockAllInputs();
+	} catch (...) {
+		return QString("NONE");
+	}
+	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0] );
+	QString result;
+
+	try {
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
+			Vector3f extents = typedImage->GetElementExtents();
+			Vector3i coords = round<3>( VectorMemberDivision( aDataCoords, extents ) );
+			result += VectorToQString( coords );
+			result += " : ";
+			result += QString::number( typedImage->GetElement( coords ) );
+			);
+
+	} catch (...) {
+		result = QString("NONE");
+	}
+	ReleaseAllInputs();
+	return result;
 }
 
 void
@@ -714,11 +783,28 @@ GeneralViewer::render()
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
+			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), 
+						getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
 			glEnable( GL_DEPTH_TEST );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
-				M4D::GLDrawBoundingBox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
+				M4D::GLDrawBoundingBox( bbox );
 			}
+			if ( getViewerState().mVolumeRenderConfig.enableCutPlane ) {
+				const Planef &cutPlane = getViewerState().mVolumeRenderConfig.cutPlane;
+				glColor3f( 0.0f, 1.0f, 0.0f );
+				Vector< float, 3> vertices[6];
+				
+				unsigned count = M4D::GetPlaneVerticesInBoundingBox( bbox, cutPlane, vertices );
+
+				//Render n-gon
+				glBegin( GL_LINE_LOOP );
+					for( unsigned j = 0; j < count; ++j ) {
+						GLVertexVector( vertices[ j ] );
+					}
+				glEnd();
+			}
+		
 			GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_AMBIENT, Vector4f( 0.25f, 0.25f, 0.25f, 1.0f ).GetData() ) );

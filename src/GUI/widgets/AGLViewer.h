@@ -119,6 +119,9 @@ public slots:
 signals:
 	void
 	viewerSelected();
+
+	void
+	MouseInfoUpdate( const QString &aInfo );
 protected:
 //**************************************************************
 	virtual void

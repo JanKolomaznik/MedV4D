@@ -27,6 +27,16 @@ SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 TARGET_MEDV4D_PROGRAM( Viewer ${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/Viewer )
 
 
+#SET(VIEWER_SRC_ROOT_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/Viewer" )
+#SET(VIEWER_SRC_DIR_LIST 
+#	"${VIEWER_SRC_ROOT_DIR}"
+#	"${VIEWER_SRC_ROOT_DIR}/ShoulderMeasurementModule"
+#	"${VIEWER_SRC_ROOT_DIR}/AnnotationModule"
+#	)
+
+#TARGET_MEDV4D_PROGRAM_DIRS( Viewer VIEWER_SRC_DIR_LIST )
+
+
 ###############################
 ## OIS
 IF(OIS_ENABLED)

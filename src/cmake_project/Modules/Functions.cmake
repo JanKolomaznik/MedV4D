@@ -60,6 +60,15 @@ MACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES arg_input arg_output)
 	ENDFOREACH(currentName) 
 ENDMACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES)
 
+#MACRO(TARGET_MEDV4D_PROGRAM_DIRS prog_name source_dirs )
+#message( "prog_name ${prog_name}" )
+#message( "source_dir ${${source_dirs}}" )
+#FOREACH(currentName ${${source_dirs}} )
+#message( "${currentName}" )
+#
+#ENDFOREACH(currentName)
+#ENDMACRO(TARGET_MEDV4D_PROGRAM_DIRS)
+
 FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SET(SRC_DIR ${source_dir})
 	SET(OUTPUT_NAME ${prog_name})

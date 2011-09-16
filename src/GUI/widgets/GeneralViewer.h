@@ -108,7 +108,8 @@ public:
 		imORBIT_CAMERA,
 		imLUT_SETTING,
 		imFAST_SLICE_CHANGE,
-		imCUT_PLANE
+		imCUT_PLANE,
+		imCUT_PLANE_OFFSET
 	};
 
 	ViewerController();
@@ -136,6 +137,7 @@ protected:
 	Qt::MouseButton	mCameraOrbitButton;
 	Qt::MouseButton	mLUTSetMouseButton;
 	Qt::MouseButton	mFastSliceChangeMouseButton;
+	Qt::MouseButton	mCutPlaneOffsetButton;
 
 	Qt::KeyboardModifiers mCutPlaneKeyboardModifiers;
 
@@ -230,6 +232,9 @@ public:
 	getCutPlane()const;
 
 	void
+	setCutPlaneCameraTargetOffset( float aOffset );
+
+	void
 	getVolumeRestrictions( Vector2f &aX, Vector2f &aY, Vector2f &aZ )const;
 
 	/*int
@@ -304,6 +309,13 @@ public:
 
 	void
 	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );
+
+	void
+	updateMouseInfo( Vector3f aDataCoords );
+
+	QString
+	GetVoxelInfo( Vector3f aDataCoords );
+
 public slots:
 	void
 	setViewType( int aViewType );
@@ -351,8 +363,6 @@ signals:
 	void
 	ColorTransformTypeChanged( int aColorTransform );
 
-	void
-	MouseInfoUpdate( const QString &aInfo );
 
 
 protected:

@@ -74,7 +74,6 @@ GetBBoxMinMaxDistance(
 
 }
 
-
 unsigned
 GetPlaneVerticesInBoundingBox( 
 		const BoundingBox3D		&bbox, 
@@ -94,10 +93,62 @@ GetPlaneVerticesInBoundingBox(
 		  ) {
 			++idx;
 			center += vertices[idx];
-			ASSERT( idx <= 6 ) //plane and box edges can have 6 intersections maximally
+			if( idx == 6 ) break;
 		}
 	}
+	ASSERT( idx <= 6 ) //plane and box edges can have 6 intersections maximally
 	return idx;
+}
+
+unsigned
+GetPlaneVerticesInBoundingBox( 
+		const BoundingBox3D		&bbox, 
+		const Planef			&plane,
+		unsigned			minId,
+	       	Vector< float,3 > 		vertices[]
+		)
+{
+	return GetPlaneVerticesInBoundingBox(
+			bbox,
+			plane.point(),
+			plane.normal(),
+			minId,
+			vertices
+			);
+
+}
+
+unsigned
+GetPlaneVerticesInBoundingBox( 
+		const BoundingBox3D		&bbox, 
+		const Planef			&plane,
+	       	Vector< float,3 > 		vertices[]
+		)
+{
+	unsigned maxId = 0;
+	Vector< float,3 > vec = VectorProjection( plane.normal(), bbox.vertices[0] - plane.point() );
+	float maxSize = VectorSize( vec );
+	int multiplier = sgn( vec * plane.normal() );
+	if( multiplier == 0 ) { multiplier = 1; }
+	for( unsigned i=1; i<8; ++i ) {
+		vec = VectorProjection( plane.normal(), bbox.vertices[i] - plane.point() );
+		if ( static_cast<float>( multiplier ) * (vec * plane.normal()) > 0.0f ) {
+			float tmpSize = VectorSize( vec );
+			if( tmpSize > maxSize ) {
+				maxSize = tmpSize;
+				maxId = i;
+			}
+		}
+	}
+	ASSERT( maxId < 8 );
+	return GetPlaneVerticesInBoundingBox(
+			bbox,
+			plane.point(),
+			plane.normal(),
+			maxId,
+			vertices
+			);
+
 }
 
 }/*namespace M4D*/

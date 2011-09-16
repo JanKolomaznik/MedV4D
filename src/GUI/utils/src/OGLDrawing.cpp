@@ -332,6 +332,34 @@ GLDrawTexturedQuad( const Vector< float, 2 > &point1, const Vector< float, 2 > &
 }
 
 void
+GLDrawBoundingBox( const BoundingBox3D &aBBox )
+{
+	glBegin( GL_LINE_LOOP );
+		GLVertexVector( aBBox.vertices[0] );
+		GLVertexVector( aBBox.vertices[1] );
+		GLVertexVector( aBBox.vertices[2] );
+		GLVertexVector( aBBox.vertices[3] );
+		GLVertexVector( aBBox.vertices[7] );
+		GLVertexVector( aBBox.vertices[6] );
+		GLVertexVector( aBBox.vertices[5] );
+		GLVertexVector( aBBox.vertices[4] );
+	glEnd();
+	glBegin( GL_LINES );
+		GLVertexVector( aBBox.vertices[0] );
+		GLVertexVector( aBBox.vertices[3] );
+
+		GLVertexVector( aBBox.vertices[1] );
+		GLVertexVector( aBBox.vertices[5] );
+
+		GLVertexVector( aBBox.vertices[2] );
+		GLVertexVector( aBBox.vertices[6] );
+
+		GLVertexVector( aBBox.vertices[4] );
+		GLVertexVector( aBBox.vertices[7] );
+	glEnd();
+}
+
+void
 GLDrawBoundingBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 )
 {
 	Vector< float, 3 > v1( corner1 );

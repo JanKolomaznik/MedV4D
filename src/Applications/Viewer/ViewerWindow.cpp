@@ -154,7 +154,7 @@ ViewerWindow::ViewerWindow()
 
 	mViewerDesktop->setViewerFactory( factory );
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
-
+	QObject::connect( mViewerDesktop, SIGNAL( updateInfo( const QString & ) ), this, SLOT( updateInfoInStatusBar( const QString & ) ), Qt::QueuedConnection );
 
 	//QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), this, SLOT( updateGui() ), Qt::QueuedConnection );
 
@@ -188,6 +188,12 @@ ViewerWindow::~ViewerWindow()
 	mJoyInput.destroy();
 #endif
 
+}
+
+void
+ViewerWindow::updateInfoInStatusBar( const QString &aInfo )
+{
+	statusbar->showMessage( aInfo ) ;
 }
 
 M4D::GUI::Viewer::GeneralViewer *
@@ -378,14 +384,14 @@ ViewerWindow::openFile( const QString &aPath )
 		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
 	);*/ 
 
-	M4D::Imaging::Histogram64::Ptr histogram;
+/*	M4D::Imaging::Histogram64::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
-	
+*/	
 
 	applyTransferFunction();
 }

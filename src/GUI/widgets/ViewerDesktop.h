@@ -58,6 +58,10 @@ public slots:
 		}
 	}
 
+signals:
+	void
+	updateInfo( const QString & aInfo );
+
 protected:
 	AGLViewer *
 	createViewer();

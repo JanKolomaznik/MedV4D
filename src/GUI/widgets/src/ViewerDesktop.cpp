@@ -31,6 +31,7 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 		{
 			ViewerInfo info;
 			info.viewer = createViewer();
+			QObject::connect( info.viewer, SIGNAL( MouseInfoUpdate( const QString & ) ), this, SIGNAL( updateInfo( const QString & ) ) );
 			mViewers.push_back( info );
 		}
 	}

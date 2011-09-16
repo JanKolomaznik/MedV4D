@@ -76,7 +76,8 @@ public slots:
 	void
 	updateJoyControl();
 #endif
-
+	void
+	updateInfoInStatusBar( const QString &aInfo );
 signals:
 	void
 	callInitAfterLoopStart();
