@@ -236,14 +236,14 @@ public:
 	}
 
 	// loads volumeset from disk
-	void loadFromDisk(const char *wsFilename, CInfoDialog *info) {
+	bool loadFromDisk(const char *wsFilename, CInfoDialog *info) {
 		FILE *fr;
 		if(NULL == (fr = fopen(wsFilename, "rb"))) {
 /*			std::wstring errstr;
 			errstr = std::wstring(L"Could not open file: ") + std::wstring(wsFilename);
 			if(info)
 				info->setMessage(errstr);*/
-			return;
+			return false;
 		}
 
 		unsigned char header[3];
@@ -255,7 +255,7 @@ public:
 			if(info)
 				info->setMessage(errstr);
 			fclose(fr);*/
-			return;
+			return false;
 		}
 
 		unsigned int size[3];
@@ -273,7 +273,7 @@ public:
 			if(info)
 				info->setMessage(errstr);*/
 			fclose(fr);
-			return;
+			return false;
 		}
 
 		this->realloc(width, height, depth);
@@ -284,6 +284,8 @@ public:
 		}
 
 		fclose(fr);
+
+		return true;
 	}
 
 	// makes this volumeset the same size as different volumeset
@@ -2459,7 +2461,14 @@ void volGradientSizeApprox(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const 
 	}
 }
 
+// returns a set of indices from -1 to 1 for a 3D neighbourhood
 void getNeighbourIndices(std::vector<SPoint3D<int> > &destIndices) {
+	for(int z = -1; z <= 1; z++)
+		for(int y = -1; y <= 1; y++)
+			for(int x = -1; x <= 1; x++) {
+				if(x != 0 || y != 0 || z != 0)
+					destIndices.push_back(SPoint3D<int>(x,y,z));
+			}
 	destIndices.push_back(SPoint3D<int>(-1,-1,-1));
 	destIndices.push_back(SPoint3D<int>( 0,-1,-1));
 	destIndices.push_back(SPoint3D<int>( 1,-1,-1));

@@ -100,7 +100,6 @@ main( int argc, char** argv )
 		TCLAP::ValueArg<int> argMethod("m", "method", "Denoising method \n\t1 = Classic NLM on GPU (default); \n\t2 = Optimized NLM on GPU; \n\t3 = Blockwise NLM on CPU; \n\t4 = Classic NLM on CPU; \n\t5 = Optimized NLM on CPU", false, 1, (TCLAP::Constraint<int> *) &csrMethod, cmd);
 		TCLAP::SwitchArg argVerbose("v", "verbose", "Print parameters", cmd);
 
-
 		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "source", "Input image filename", true, "", "source" );
 		TCLAP::SwitchArg argPrintOCL("l", "print_ocl_list", "Print list of OpenCL devices");
 		TCLAP::SwitchArg argAdvancedOCL("a", "print_ocl_adv", "Print advanced info about OpenCL devices");
@@ -231,7 +230,7 @@ main( int argc, char** argv )
 		break;
 	case 5:
 		retval = true;
-		volFRes.volNLMeans(volF, dBeta, radius, neighbourhood, &progress);
+		volFRes.volNLMeans(volF, (float)dBeta, radius, neighbourhood, &progress);
 		break;
 	default:
 		std::cout << "Method " << iMethod << " not implemented.\n";

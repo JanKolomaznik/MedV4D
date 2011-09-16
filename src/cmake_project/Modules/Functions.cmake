@@ -117,6 +117,63 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	ENDIF( DCMTK_OPTIONS )
 ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 
+FUNCTION(TARGET_MEDV4D_PROGRAM_NONRECURSIVE prog_name source_dir )
+	SET(SRC_DIR ${source_dir})
+	SET(OUTPUT_NAME ${prog_name})
+	SET( mocinput )
+	SET( mocoutput )
+	SET( rccinput )
+	SET( rccoutput )
+	SET( uiinput )
+	SET( uioutput )
+	
+	MESSAGE( STATUS "Preparing build system for ${prog_name} (source directory : ${SRC_DIR})" )
+	
+	#AUX_SOURCE_DIRECTORY( ${SRC_DIR} sources )
+	FILE( GLOB sources "${SRC_DIR}/*.cpp" )
+	FILE( GLOB rccinput "${SRC_DIR}/*.qrc" )
+	FILE( GLOB uiinput "${SRC_DIR}/*.ui" )
+	FILE( GLOB header_files "${SRC_DIR}/*.h" "${SRC_DIR}/*.hpp" )
+	FILE( GLOB tcc_files "${SRC_DIR}/*.tcc" )
+	
+	
+	
+	SET_SOURCE_FILES_PROPERTIES(${tcc_files} PROPERTIES HEADER_FILE_ONLY TRUE)
+	FILTER_HEADERS_FOR_MOC( "${header_files}" mocinput )
+	
+	
+	#message( "++++++++++++++ ${moc_options}" )
+	QT4_WRAP_CPP(mocoutput ${mocinput})
+	QT4_ADD_RESOURCES(rccoutput ${rccinput} )
+	QT4_WRAP_UI(uioutput ${uiinput} )
+	
+	#message( "++++Sources: ${sources}" )
+	#message( "++++Rccinput: ${rccinput}" )
+	#message( "++++Mocinput: ${mocinput}" )
+	#message( "++++UIinput: ${uiinput}" )
+	#message( "++++HeaderFiles: ${header_files}" )
+	#message( "++++TCCFiles: ${tcc_files}" )
+	#message( "++++Rccoutput: ${rccoutput}" )
+	#message( "++++UIoutput: ${uioutput}" )
+	
+	ADD_DEFINITIONS( ${MEDV4D_COMPILE_DEFINITIONS} )
+	
+	SOURCE_GROUP( ${prog_name}_Sources FILES "" ${sources} )
+	SOURCE_GROUP( ${prog_name}_Header FILES  "" ${header_files} ${tcc_files} )
+	SOURCE_GROUP( ${prog_name}_UI FILES  "" ${uiinput})
+	SOURCE_GROUP( ${prog_name}_Resources FILES  "" ${rccinput} )
+	SOURCE_GROUP( ${prog_name}_Generated FILES "" ${mocoutput} ${rccoutput} ${uioutput} )
+	
+	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
+	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
+
+	ADD_DEPENDENCIES(${OUTPUT_NAME} ${MEDV4D_LIB_TARGETS})
+	IF( DCMTK_OPTIONS )
+		SET_TARGET_PROPERTIES( ${OUTPUT_NAME} PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )	
+	ENDIF( DCMTK_OPTIONS )
+ENDFUNCTION(TARGET_MEDV4D_PROGRAM_NONRECURSIVE prog_name source_dir)
+
 MACRO(MEDV4D_LIBRARY_TARGET_PREPARATION libName libSrcDir libHeaderDir)
 
 	FILE( GLOB SrcFiles "${libSrcDir}/*.cpp" )
