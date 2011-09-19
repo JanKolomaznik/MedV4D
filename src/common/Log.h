@@ -66,6 +66,8 @@ public:
 #define LOG_CONT( ARGs )	\
 	LOUT << ARGs; LOUT.flush();
 
+#define LOG_ERR(args) LOG("Error: " << args)
+
 /** @} */
 
 #endif /*__LOG_H_*/

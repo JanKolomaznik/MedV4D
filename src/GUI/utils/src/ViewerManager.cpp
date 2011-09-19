@@ -88,6 +88,25 @@ ViewerManager::initialize()
 	mPimpl->mViewerActions.addAction( actionEnableBoundingBox );
 	mPimpl->mViewerActions.addSeparator();
 	//****************************	
+	QAction *actionEnableCutPlane = createGeneralViewerAction( 
+			QString( "Cut Plane" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableCutPlane, _1, _2 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isCutPlaneEnabled, _1 ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true 
+			);
+	mPimpl->mViewerActions.addAction( actionEnableCutPlane );
+	//****************************	
+	QAction *actionEnableVolumeRestriction = createGeneralViewerAction( 
+			QString( "Volume Restriction" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableVolumeRestrictions, _1, _2 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isVolumeRestrictionEnabled, _1 ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true 
+			);
+	mPimpl->mViewerActions.addAction( actionEnableVolumeRestriction );
+	mPimpl->mViewerActions.addSeparator();
+	//****************************	
 	QAction *actionXY = createGeneralViewerAction( 
 			QString( "XY" ), 
 			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, XY_PLANE ), 

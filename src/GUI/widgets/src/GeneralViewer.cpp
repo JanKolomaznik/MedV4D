@@ -41,10 +41,9 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
-		state.getViewerWindow< GeneralViewer >().setCutPlane( 
-						Planef( state.getViewerWindow< GeneralViewer >().getCameraTargetPosition(),
-							-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection() ) 
-						);
+		Vector3f dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
+		Vector3f pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+		state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
 		return true;
 	}
 	if ( mInteractionMode == imLUT_SETTING ) {
@@ -54,7 +53,7 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 	if ( mInteractionMode == imCUT_PLANE_OFFSET ) {
 		float oldVal = state.mVolumeRenderConfig.cutPlaneCameraTargetOffset;
-		state.getViewerWindow< GeneralViewer >().setCutPlaneCameraTargetOffset( oldVal + diff.x() );
+		state.getViewerWindow< GeneralViewer >().setCutPlaneCameraTargetOffset( oldVal + 0.3*(diff.x() + diff.y()) );
 		return true;
 	}
 	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
@@ -103,10 +102,9 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			//LOG( aEventInfo.event->modifiers() );
 			if ( aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers /*&& state.mVolumeRenderConfig.enableCutPlane*/ ) {
 				mInteractionMode = imCUT_PLANE;
-				state.getViewerWindow< GeneralViewer >().setCutPlane( 
-						Planef( state.getViewerWindow< GeneralViewer >().getCameraTargetPosition(),
-							-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection() ) 
-						);
+				Vector3f dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
+				Vector3f pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+				state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
 				state.getViewerWindow< GeneralViewer >().enableCutPlane( true );
 				//LOG( "ENABLING CUTPLANE" );
 			} else {
@@ -355,9 +353,13 @@ void
 GeneralViewer::setCutPlane( const Planef &aCutPlane )
 {
 	getViewerState().mVolumeRenderConfig.cutPlane = aCutPlane;
-	//Vector3f point = aCutPlane.point();
-///***********************************************************************************************************************
-	//getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = aOffset;
+	Vector3f point = aCutPlane.point();
+	Vector3f dir = VectorProjection(aCutPlane.normal(), point - getCameraTargetPosition());
+	float offset = VectorSize( dir );
+	if( dir * aCutPlane.normal() < 0.0f ) {
+		offset *= -1.0f;
+	}
+	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = offset;
 
 	notifyAboutSettingsChange();
 	update();
@@ -408,9 +410,13 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
 			Vector3f extents = typedImage->GetElementExtents();
 			Vector3i coords = round<3>( VectorMemberDivision( aDataCoords, extents ) );
-			result += VectorToQString( coords );
-			result += " : ";
-			result += QString::number( typedImage->GetElement( coords ) );
+			if( coords >= typedImage->GetMinimum() &&  coords < typedImage->GetMaximum() ) {
+				result += VectorToQString( coords );
+				result += " : ";
+				result += QString::number( typedImage->GetElement( coords ) );
+			} else {
+				result = QString("NONE");
+			}
 			);
 
 	} catch (...) {

@@ -102,27 +102,27 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 	GLuint texName;
 
 	// opengl texture setup functions
-	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
 	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glGenTextures( 1, &texName );
+	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
+	GL_CHECKED_CALL( glGenTextures( 1, &texName ) );
 
-	glBindTexture ( GL_TEXTURE_3D, texName );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_3D, texName ) );
+	GL_ERROR_CLEAR_AFTER_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
 
 	//glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST );
+	GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) );
+	GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) );
+	GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE ) );
+	GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST ) );
+	GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST ) );
 
 
-	glEnable( GL_TEXTURE_3D );
+	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_3D ) ); //Opengl 3.3 throws error
 	
-	glBindTexture( GL_TEXTURE_3D, texName );
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_3D, texName ) );
 
-	glTexImage3D(	GL_TEXTURE_3D, 
+	GL_CHECKED_CALL( glTexImage3D(	GL_TEXTURE_3D, 
 			0, 
 			M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal, 
 			size[0], 
@@ -132,7 +132,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 			GL_RED, 
 			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
 			image.GetPointer() 
-			);
+			) );
 
 	M4D::CheckForGLError( "OGL building texture : " );
 	D_PRINT( "3D texture created id = " << texName );

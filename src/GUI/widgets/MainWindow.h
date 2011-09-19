@@ -19,7 +19,7 @@ public:
 	MainWindow();
 
 	void
-	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget )
+	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget, bool aShow = true )
 	{
 		if ( aWidget == NULL ) {
 			_THROW_ M4D::ErrorHandling::ENULLPointer();
@@ -27,6 +27,7 @@ public:
 		MultiDockWidget *dockwidget = new MultiDockWidget( aName );
 		dockwidget->setWidget( aWidget );
 		dockwidget->addDockingWindow( aArea, this );
+		dockwidget->setVisible(aShow);
 	}
 
 	virtual void

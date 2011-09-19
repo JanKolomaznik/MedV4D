@@ -115,7 +115,7 @@ ViewerWindow::ViewerWindow()
 
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
-	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal );
+	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal, false );
 #endif //USE_PYTHON
 
 	ViewerControls *mViewerControls = new ViewerControls;

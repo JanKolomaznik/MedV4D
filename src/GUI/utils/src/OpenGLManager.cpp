@@ -1,5 +1,22 @@
 #include "GUI/utils/OpenGLManager.h"
 
+class DummyOGLWidget: public QGLWidget
+{
+public:
+	DummyOGLWidget(const QGLFormat & format ):QGLWidget( format )
+	{
+		makeCurrent();
+		M4D::InitOpenGL();
+		doneCurrent();
+	}
+protected:
+	void 
+	initializeGL()
+	{
+	}
+};
+
+
 struct TextureRecord
 	{
 		M4D::GLTextureImage::Ptr texture;
@@ -41,7 +58,13 @@ OpenGLManager::initialize()
 {
 	mPimpl = new OpenGLManagerPimpl;
 
-	mPimpl->widget = new QGLWidget();
+	QGLFormat glformat = QGLFormat::defaultFormat();
+	glformat.setVersion( 3, 1 );
+
+	mPimpl->widget = new DummyOGLWidget(glformat);
+	glformat = mPimpl->widget->format();
+	LOG( "OpenGL version : " << glformat.majorVersion() << "." << glformat.minorVersion() );
+
 	mPimpl->context = const_cast< QGLContext * >( mPimpl->widget->context() );
 }
 
@@ -87,7 +110,15 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 
 	makeCurrent();
 	TextureRecord rec;
-	rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
+	try {
+		rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
+	} catch ( M4D::GLException &e) {
+		LOG_ERR( e.what() );
+		throw;
+	} catch ( ... ) {
+		LOG_ERR( "Problem with texture creation" );
+		throw;
+	}
 	rec.sourceTimeStamp = timestamp;
 	mPimpl->textureStorage[ id ] = rec;
 	doneCurrent();	

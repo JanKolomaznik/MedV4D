@@ -142,7 +142,75 @@ GLDrawVolumeSlices(
 			}
 		glEnd();
 	}
+}
 
+void
+GLDrawVolumeSlices2(
+		BoundingBox3D	bbox,
+		Camera		camera,
+		unsigned 	numberOfSteps,
+		float		cutPlane/*,
+		Vector3f	*vertices,
+		unsigned	*indices*/
+		)
+{
+	Vector3f *vertices = new Vector3f[ (numberOfSteps+1) * 6 ];
+	unsigned *indices = new unsigned[ (numberOfSteps+1) * 7 ];
+	unsigned primitiveRestart = numberOfSteps * 20;
+
+	ASSERT( GL_VERSION_3_1 );
+	ASSERT( glPrimitiveRestartIndex != NULL );
+	GL_CHECKED_CALL( glEnable(GL_PRIMITIVE_RESTART) );
+	GL_CHECKED_CALL( glPrimitiveRestartIndex(primitiveRestart) );
+	
+	ASSERT( vertices );
+	ASSERT( indices );
+
+	float 				min = 0; 
+	float 				max = 0;
+	unsigned			minId = 0;	
+	unsigned			maxId = 0;	
+	GetBBoxMinMaxDistance( 
+		bbox, 
+		camera.GetEyePosition(), 
+		camera.GetTargetDirection(), 
+		min, 
+		max,
+		minId,	
+		maxId	
+		);
+	
+	float stepSize = cutPlane * (max - min) / numberOfSteps;
+	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
+
+	Vector3f *currentVertexPtr = vertices;
+	unsigned *currentIndexPtr = indices;
+	size_t primitiveStartIndex = 0;
+	size_t indicesSize = 0;
+	for( unsigned i = 0; i < numberOfSteps; ++i ) {
+		//Obtain intersection of the optical axis and the currently rendered plane
+		planePoint -= stepSize * camera.GetTargetDirection();
+		//Get n-gon as intersection of the current plane and bounding box
+		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
+				bbox, planePoint, camera.GetTargetDirection(), minId, currentVertexPtr
+				);
+
+		currentVertexPtr += count;
+		primitiveStartIndex += count;
+		for( unsigned j = 0; j < count; ++j ) {
+			*(currentIndexPtr++) = primitiveStartIndex + j;
+		}
+		*(currentIndexPtr++) = primitiveRestart;
+		indicesSize += count+1;
+	}
+	GL_CHECKED_CALL( glEnableClientState(GL_VERTEX_ARRAY) );
+	GL_CHECKED_CALL( glVertexPointer( 3, GL_FLOAT, 0, vertices ) );
+	GL_CHECKED_CALL( glDrawElements(GL_TRIANGLE_FAN, indicesSize, GL_UNSIGNED_INT, indices) );
+	GL_CHECKED_CALL( glDisableClientState(GL_VERTEX_ARRAY) );
+	GL_CHECKED_CALL( glDisable(GL_PRIMITIVE_RESTART) );
+
+	delete [] vertices;
+	delete [] indices;
 }
 
 void
@@ -179,9 +247,6 @@ GLDrawVolumeSliceCenterSamples(
 		glEnd();
 	}
 }
-
-
-
 
 void
 GLDrawVolumeSlice(
