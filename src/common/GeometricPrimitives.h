@@ -14,7 +14,8 @@ public:
 
 	Point2D(){}
 
-	explicit Point2D( const PredecessorType &aVec ): PredecessorType( aVec )
+	template< typename TCType  >
+	explicit Point2D( const Vector< TCType, 2 > &aVec ): PredecessorType( aVec )
 	{}
 
 	Point2D( const TType &aX, const TType &aY ): PredecessorType( aX, aY )
@@ -57,7 +58,8 @@ public:
 
 	Point3D(){}
 
-	explicit Point3D( const PredecessorType &aVec ): PredecessorType( aVec )
+	template< typename TCType  >
+	explicit Point3D( const Vector< TCType, 3 > &aVec ): PredecessorType( aVec )
 	{}
 
 	Point3D( const TType &aX, const TType &aY, const TType &aZ ): PredecessorType( aX, aY, aZ )
@@ -106,7 +108,8 @@ public:
 
 	Point4D(){}
 
-	explicit Point4D( const PredecessorType &aVec ): PredecessorType( aVec )
+	template< typename TCType  >
+	explicit Point4D( const Vector< TCType, 4 > &aVec ): PredecessorType( aVec )
 	{}
 
 	Point4D( const TType &aX, const TType &aY, const TType &aZ, const TType &aW ): PredecessorType( aX, aY, aZ, aW )

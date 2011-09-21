@@ -54,6 +54,7 @@ ImageData3D gImageData3D;
 
 float3 gSliceNormalTexCoords;
 sampler2D gNoiseMap;
+float gJitterStrength = 1.0f;
 float2 gNoiseMapSize;
 
 float4x4 gModelViewProj;// : glstate.matrix.modelview[0];
@@ -226,6 +227,12 @@ float3 SymmetricDifference( sampler3D aTextureData, float3 aTexCoord, float3 aSt
 	sample2.z = tex3D( aTextureData, coordinates + half3( 0.0, 0.0, aStep.z ) ).x;
 	return sample1 - sample2;
 }
+
+#define COMPUTE_GRADIENT( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+	GRADIENT.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
+	GRADIENT.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
+	GRADIENT.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
+	GRADIENT -= CENTRAL_VALUE.xxx
 
 #define SYMMETRIC_DIFFERENCE( SAMPLE1, SAMPLE2, TEX_DATA, COORDINATES )\
 	SAMPLE1.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
@@ -400,15 +407,9 @@ fp_TransferFunction1DShading_3D(
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
 	if( OUT.color.a > THRESHOLD ) {
-		//float3 symDiff = Difference( aTextureData.data, coordinates, float3( DELTA, DELTA, DELTA ), tex3D( aTextureData.data, coordinates ).x );
-		//float3 symDiff = SymmetricDifference( aTextureData.data, coordinates, float3( DELTA, DELTA, DELTA ) );
-		//float3 N = normalize( symDiff );
-
-		float3 sample1, sample2;
- 		SYMMETRIC_DIFFERENCE( sample1, sample2, aTextureData.data, coordinates );	
-		//DIFFERENCE( sample1, aTextureData.data, coordinates );
-		//sample2 = float3( raw_value, raw_value, raw_value );
-		float3 N = normalize( sample2 - sample1 );
+		float3 gradient;
+		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
+		float3 N = normalize( gradient );
 
 
 		float3 L = normalize( aLightPosition - position );
@@ -445,7 +446,7 @@ fp_TransferFunction1DJitter_3D(
 	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
 	float3 position = texCoordsFromPosition( aPosition, aTextureData );
 	float3 coordinates = position + offset *aSliceNormalTexCoords;
 
@@ -475,7 +476,7 @@ fp_TransferFunction1DShadingJitter_3D(
 	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
 	float3 position = texCoordsFromPosition( aPosition, aTextureData );
 	float3 coordinates = position + offset *aSliceNormalTexCoords;
 
@@ -484,10 +485,9 @@ fp_TransferFunction1DShadingJitter_3D(
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
 	if( OUT.color.a > THRESHOLD ) {
-		float3 sample1, sample2;
- 		SYMMETRIC_DIFFERENCE( sample1, sample2, aTextureData.data, coordinates );	
-
-		float3 N = normalize( sample2 - sample1 );
+		float3 gradient;
+		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
+		float3 N = normalize( gradient );
 
 		float3 L = normalize( aLightPosition - position );
 		float3 V = normalize( aEyePosition - position );

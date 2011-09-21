@@ -657,6 +657,14 @@ GeneralViewer::enableJittering( bool aEnable )
 }
 
 void
+GeneralViewer::setJitterStrength( float aValue )
+{
+	getViewerState().mVolumeRenderConfig.jitterStrength = abs(aValue);
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
 GeneralViewer::enableVolumeRestrictions( bool aEnable )
 {
 	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
@@ -760,9 +768,9 @@ void
 GeneralViewer::prepareForRenderingStep()
 {
 	glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
@@ -771,6 +779,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mVolumeRenderConfig.camera.SetAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
 			SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
+			updateGLViewSetupInfo();
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -863,7 +872,16 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
-			return MouseEventInfo( event, vt3D );
+			Point3Df point; 
+			Vector3f direction;
+			getPointAndDirectionFromScreenCoordinates(
+				       	Vector2f( event->posF().x(), event->posF().y() ), 
+					mGLViewSetup, 
+					point, 
+					direction 
+					);				
+			
+			return MouseEventInfo( event, vt3D, point, direction );
 		}
 		break;
 	case vt2DAlignedSlices:

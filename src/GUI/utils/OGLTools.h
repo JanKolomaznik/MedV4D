@@ -2,6 +2,7 @@
 #define OGL_TOOLS_H
 
 #include "common/Common.h"
+#include "common/GeometricPrimitives.h"
 
 #ifdef _MSC_VER
 # define WIN32_LEAN_AND_MEAN 1
@@ -38,6 +39,18 @@ public:
 	~GLException() throw(){}
 };
 
+struct GLViewSetup
+{
+	GLdouble model[16];
+	GLdouble proj[16];
+	GLint view[4];
+};
+
+void 
+getCurrentGLSetup( GLViewSetup &aSetup );
+
+void
+getPointAndDirectionFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, Point3Df &point, Vector3f &direction );
 
 
 void 

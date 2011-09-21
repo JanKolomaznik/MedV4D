@@ -167,6 +167,19 @@ public:
 			state.viewerWindow->update();
 			return true;
 		} 
+
+		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt3D ) {
+			
+			LOG( "ADDING PRIMITIVE IN 3D" );
+			mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.point ) );
+			if ( mPrimitive == NULL ) {
+				return true;
+			}
+			endPrimitive( mPrimitive );
+
+			state.viewerWindow->update();
+			return true;
+		}
 		return false;
 	}
 };

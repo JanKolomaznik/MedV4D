@@ -114,7 +114,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		reallocateArrays( sliceCount );
 	}
 
-	float renderingSliceThickness = 1.0f;
 
 	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
@@ -133,6 +132,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		       	minId,	
 		       	maxId	
 			);
+	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
@@ -221,11 +221,24 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-	float renderingSliceThickness = 1.0f;
 	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
+	float 				min = 0; 
+	float 				max = 0;
+	unsigned			minId = 0;	
+	unsigned			maxId = 0;
+	GetBBoxMinMaxDistance( 
+			bbox, 
+			aConfig.camera.GetEyePosition(), 
+			aConfig.camera.GetTargetDirection(), 
+			min, 
+			max, 
+		       	minId,	
+		       	maxId	
+			);
+	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
 	//aConfig.enableCutPlane = true;
 	//aConfig.cutPlane = Planef( bbox.getCenter(), Vector3f( 0.3f, 0.45f, 0.1f ) );
@@ -241,6 +254,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+	mCgEffect.SetParameter( "gJitterStrength", aConfig.jitterStrength  );
 
 	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
 	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );

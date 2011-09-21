@@ -103,7 +103,7 @@ struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
 		: imageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
-		transferFunction( NULL ), jitterEnabled( true ), shadingEnabled( true ), 
+		transferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
 		sampleCount( 150 ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
 	{ }
 	const GLTextureImage3D			*imageData;
@@ -113,6 +113,7 @@ struct VolumeRenderer::RenderingConfiguration
 	Vector2f				lutWindow;
 	Camera					camera;
 	bool					jitterEnabled;
+	float					jitterStrength;
 	bool					shadingEnabled;
 	size_t					sampleCount;				
 

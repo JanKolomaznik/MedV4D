@@ -32,6 +32,9 @@ struct MouseEventInfo
 	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Vector3f aPos ): event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
 		{ }
 
+	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, Vector3f aDirection ): event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+		{ }
+
 	QMouseEvent *event;
 	ViewType viewType;
 
@@ -40,6 +43,8 @@ struct MouseEventInfo
 
 	//3D section
 	
+	Point3Df point; 
+	Vector3f direction;
 	//HalfAxis axis;
 
 };
@@ -105,6 +110,11 @@ public:
 		//TODO check
 		mViewerController = aController;
 	}
+	const GLViewSetup &
+	getCurrentGLViewSetup()const
+	{
+		return mGLViewSetup;
+	}
 public slots:
 	void
 	select();
@@ -143,6 +153,11 @@ protected:
 	getMouseEventInfo( QMouseEvent * event ) = 0;
 
 //**************************************************************
+	void
+	updateGLViewSetupInfo()
+	{
+		getCurrentGLSetup( mGLViewSetup );
+	}
 
 	void	
 	initializeGL ();
@@ -181,6 +196,8 @@ protected:
 	FrameBufferObject	mFrameBufferObject;
 	BaseViewerState::Ptr	mViewerState;
 	AViewerController::Ptr	mViewerController;
+
+	GLViewSetup mGLViewSetup;
 
 	bool mSelected;
 };

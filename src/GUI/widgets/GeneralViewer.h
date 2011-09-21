@@ -336,6 +336,9 @@ public slots:
 	enableJittering( bool aEnable );
 
 	void
+	setJitterStrength( float aValue );
+
+	void
 	enableVolumeRestrictions( bool aEnable );
 
 	void

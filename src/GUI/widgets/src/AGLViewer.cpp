@@ -72,6 +72,7 @@ AGLViewer::paintGL()
 		
 		//****************************************
 		prepareForRenderingStep();
+		updateGLViewSetupInfo();
 
 		render();
 

@@ -11,6 +11,57 @@ namespace M4D
 {
 
 void 
+getCurrentGLSetup( GLViewSetup &aSetup )
+{
+	glGetDoublev( GL_PROJECTION_MATRIX, aSetup.model );
+	glGetDoublev( GL_MODELVIEW_MATRIX, aSetup.proj );
+	glGetIntegerv( GL_VIEWPORT, aSetup.view );
+	CheckForGLError( "getCurrentGLSetup()" );
+};
+
+void
+getPointAndDirectionFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, Point3Df &point, Vector3f &direction )
+{
+	Vector3d objCoords1;
+	Vector3d objCoords2;
+	GLint res = gluUnProject(
+			aScreenCoords[0],  
+			aScreenCoords[1],  
+			0.2,  
+			aViewSetup.model,  
+			aViewSetup.proj,  
+			aViewSetup.view,  
+			&(objCoords1[0]),  
+			&(objCoords1[1]),  
+			&(objCoords1[2])
+			);
+	if( res == GLU_FALSE ) {
+		_THROW_ GLException( "Cannot unproject screen coordinates" );
+	}
+	res = gluUnProject(
+			aScreenCoords[0],  
+			aScreenCoords[1],  
+			0.95,  
+			aViewSetup.model,  
+			aViewSetup.proj,  
+			aViewSetup.view,  
+			&(objCoords2[0]),  
+			&(objCoords2[1]),  
+			&(objCoords2[2])
+			);
+	if( res == GLU_FALSE ) {
+		_THROW_ GLException( "Cannot unproject screen coordinates" );
+	}
+	
+	LOG( "screen : " << aScreenCoords );
+	LOG( "coords1 : " << objCoords1 );
+	LOG( "coords2 : " << objCoords2 );
+	point = objCoords1;
+	direction = objCoords2-objCoords1;
+}
+
+
+void 
 CheckForGLError( const std::string &situation  )
 {
 	GLenum errorCode = glGetError();
