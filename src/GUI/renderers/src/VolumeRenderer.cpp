@@ -30,6 +30,24 @@ VolumeRenderer::Initialize()
 	InitializeCg();
 	mCgEffect.Initialize( "ImageRender.cgfx" );
 
+	initJitteringTexture();
+
+	mMaxSampleCount = 0;
+	mVertices = NULL;
+	mIndices = NULL;
+
+	mAvailableColorTransforms.clear();
+	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
+	//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
+}
+
+void
+VolumeRenderer::initJitteringTexture()
+{
+	//TODO make better - destroy
 	int size = 32;
 	uint8 * buf = new uint8[size*size];
 	srand( (unsigned)time(NULL) );
@@ -57,13 +75,6 @@ VolumeRenderer::Initialize()
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	delete buf;
-
-	mAvailableColorTransforms.clear();
-	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
-	//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
-	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
-	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
-	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
 }
 
 void
@@ -99,6 +110,10 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	glMatrixMode(GL_MODELVIEW);
 	
 	unsigned sliceCount = aConfig.sampleCount;
+	if( sliceCount > mMaxSampleCount ) {
+		reallocateArrays( sliceCount );
+	}
+
 	float renderingSliceThickness = 1.0f;
 
 	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
@@ -203,6 +218,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	glMatrixMode(GL_MODELVIEW);
 	
 	unsigned sliceCount = aConfig.sampleCount;
+	if( sliceCount > mMaxSampleCount ) {
+		reallocateArrays( sliceCount );
+	}
 	float renderingSliceThickness = 1.0f;
 	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
@@ -269,13 +287,25 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
+				bbox,
+				aConfig.camera,
+				sliceCount,
+				mVertices,
+				mIndices,
+				1.0f
+				) 
+			); 
+
+	/*mCgEffect.ExecuteTechniquePass(
+			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices, 
 				bbox,
 				aConfig.camera,
 				sliceCount,
 				1.0f
 				) 
-			); 
+			); */
 
 	M4D::CheckForGLError( "OGL error : " );
 }

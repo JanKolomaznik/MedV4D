@@ -70,12 +70,33 @@ public:
 		return mAvailableColorTransforms;
 	}
 protected:
+	void
+	initJitteringTexture();
+
+	void
+	reallocateArrays( unsigned aNewMaxSampleCount )
+	{
+		if( mVertices ) {
+			delete [] mVertices;
+		}
+		if( mIndices ) {
+			delete [] mIndices;
+		}
+
+		mVertices = new Vector3f[ (aNewMaxSampleCount+1) * 6 ];
+		mIndices = new unsigned[ (aNewMaxSampleCount+1) * 7 ];
+		mMaxSampleCount = aNewMaxSampleCount;
+	}
 
 	CGcontext   				mCgContext;
 	CgEffect				mCgEffect;
 	GLuint					mNoiseMap;
 
 	ColorTransformNameIDList		mAvailableColorTransforms;
+
+	Vector3f	*mVertices;
+	unsigned	*mIndices;
+	unsigned	mMaxSampleCount;
 };
 
 struct VolumeRenderer::RenderingConfiguration

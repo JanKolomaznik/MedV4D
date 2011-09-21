@@ -40,6 +40,16 @@ GLDrawVolumeSlices(
 		);
 
 void
+GLDrawVolumeSlices_Buffered(
+		BoundingBox3D	bbox,
+		Camera		camera,
+		unsigned 	numberOfSteps,
+		Vector3f	*vertices,
+		unsigned	*indices,
+		float		cutPlane = 1.0f
+		);
+
+void
 GLDrawVolumeSliceCenterSamples(
 		BoundingBox3D	bbox,
 		Camera		camera,

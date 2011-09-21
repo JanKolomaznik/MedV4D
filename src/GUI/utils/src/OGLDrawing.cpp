@@ -145,17 +145,17 @@ GLDrawVolumeSlices(
 }
 
 void
-GLDrawVolumeSlices2(
+GLDrawVolumeSlices_Buffered(
 		BoundingBox3D	bbox,
 		Camera		camera,
 		unsigned 	numberOfSteps,
-		float		cutPlane/*,
 		Vector3f	*vertices,
-		unsigned	*indices*/
+		unsigned	*indices,
+		float		cutPlane
 		)
 {
-	Vector3f *vertices = new Vector3f[ (numberOfSteps+1) * 6 ];
-	unsigned *indices = new unsigned[ (numberOfSteps+1) * 7 ];
+	//Vector3f *vertices = new Vector3f[ (numberOfSteps+1) * 6 ];
+	//unsigned *indices = new unsigned[ (numberOfSteps+1) * 7 ];
 	unsigned primitiveRestart = numberOfSteps * 20;
 
 	ASSERT( GL_VERSION_3_1 );
@@ -209,8 +209,8 @@ GLDrawVolumeSlices2(
 	GL_CHECKED_CALL( glDisableClientState(GL_VERTEX_ARRAY) );
 	GL_CHECKED_CALL( glDisable(GL_PRIMITIVE_RESTART) );
 
-	delete [] vertices;
-	delete [] indices;
+	//delete [] vertices;
+	//delete [] indices;
 }
 
 void
