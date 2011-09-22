@@ -296,6 +296,12 @@ public:
 	getRenderingQuality();
 
 	Vector3f
+	getCameraPosition()const
+	{
+		return getViewerState().mVolumeRenderConfig.camera.GetEyePosition();
+	}
+
+	Vector3f
 	getCameraTargetPosition()const
 	{
 		return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();

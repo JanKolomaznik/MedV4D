@@ -35,6 +35,9 @@ struct MouseEventInfo
 	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, Vector3f aDirection ): event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
 		{ }
 
+	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Vector3f aPoint, Vector3f aDirection ): event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+		{ }
+
 	QMouseEvent *event;
 	ViewType viewType;
 

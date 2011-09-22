@@ -40,6 +40,7 @@
 #include "common/TimeStamp.h"
 #include "common/DefinitionMacros.h"
 #include "common/TimeMeasurement.h"
+#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <boost/filesystem.hpp>

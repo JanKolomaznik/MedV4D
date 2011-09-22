@@ -417,6 +417,37 @@ lineAABBIntersections(
 	return true;
 }
 
+template< typename CoordType >
+bool
+closestPointsOnTwoLines(
+		const Vector< CoordType, 3 > &A1, 
+		const Vector< CoordType, 3 > &v1,
+		const Vector< CoordType, 3 > &A2, 
+		const Vector< CoordType, 3 > &v2,
+		CoordType &t1,
+		CoordType &t2
+		)
+{
+	Vector< CoordType, 3 > u = A1 - A2;
+	Vector< CoordType, 3 > v1sq = v1*v1;
+	Vector< CoordType, 3 > v2sq = v2*v2;
+	Vector< CoordType, 3 > v1v2 = v1*v2;
+	Vector< CoordType, 3 > v1u = v1*u;
+	Vector< CoordType, 3 > v2u = v2*u;
+
+	CoordType detA = v1sq * v2sq - v1v2*v1v2;
+	if ( detA < Epsilon ) {
+		t1 = t2 = static_cast<CoordType>(0);
+		return false;
+	}
+	CoordType det1 = -v1u*v2sq + v1v2*v2u;
+	CoordType det2 = -v1sq*v2u + v1u*v1v2;
+
+	t1 = det1/detA;
+	t2 = det2/detA;
+
+	return true;
+}
 
 /** @} */
 

@@ -872,16 +872,15 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
-			Point3Df point; 
 			Vector3f direction;
-			getPointAndDirectionFromScreenCoordinates(
-				       	Vector2f( event->posF().x(), event->posF().y() ), 
+			//LOG( mGLViewSetup );
+			direction = getDirectionFromScreenCoordinatesAndCameraPosition(
+				       	Vector2f( event->posF().x(), mGLViewSetup.view[3] - event->posF().y() ), 
 					mGLViewSetup, 
-					point, 
-					direction 
+					getCameraPosition()					 
 					);				
 			
-			return MouseEventInfo( event, vt3D, point, direction );
+			return MouseEventInfo( event, vt3D, getCameraPosition(), direction );
 		}
 		break;
 	case vt2DAlignedSlices:

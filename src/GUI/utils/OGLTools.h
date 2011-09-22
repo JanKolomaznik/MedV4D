@@ -46,11 +46,14 @@ struct GLViewSetup
 	GLint view[4];
 };
 
+std::ostream &
+operator<<( std::ostream & stream, const GLViewSetup &setup );
+
 void 
 getCurrentGLSetup( GLViewSetup &aSetup );
 
-void
-getPointAndDirectionFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, Point3Df &point, Vector3f &direction );
+Vector3f
+getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, const Vector3f aCameraPos );
 
 
 void 

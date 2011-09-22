@@ -153,6 +153,19 @@ class TemplatedPrimitiveCreationEventController< M4D::Point3Df >: public BaseTem
 {
 public:
 	bool
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{ 
+		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
+		if ( state.viewType ==M4D::GUI::Viewer::vt3D && mCurrentStage > 0 ) 
+		{
+			//mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+			//state.viewerWindow->update();
+			return true;
+		}
+		return false; 
+	}
+
+	bool
 	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
 	{ 
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
@@ -171,17 +184,25 @@ public:
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt3D ) {
 			
 			LOG( "ADDING PRIMITIVE IN 3D" );
-			mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.point ) );
-			if ( mPrimitive == NULL ) {
-				return true;
+			if ( mCurrentStage == 0 ) {
+				mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.point ) );
+				if ( mPrimitive == NULL ) {
+					return true;
+				}
+				//endPrimitive( mPrimitive );
+				++mCurrentStage;
+			} else {
+				//mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+				this->endPrimitive( mPrimitive );
 			}
-			endPrimitive( mPrimitive );
-
 			state.viewerWindow->update();
 			return true;
 		}
 		return false;
 	}
+
+	Vector3f mPoint;
+	Vector3f mDirection;
 };
 
 template<>

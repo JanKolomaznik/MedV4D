@@ -13,21 +13,48 @@ namespace M4D
 void 
 getCurrentGLSetup( GLViewSetup &aSetup )
 {
-	glGetDoublev( GL_PROJECTION_MATRIX, aSetup.model );
-	glGetDoublev( GL_MODELVIEW_MATRIX, aSetup.proj );
+	glGetDoublev( GL_PROJECTION_MATRIX, aSetup.proj );
+	glGetDoublev( GL_MODELVIEW_MATRIX, aSetup.model );
 	glGetIntegerv( GL_VIEWPORT, aSetup.view );
 	CheckForGLError( "getCurrentGLSetup()" );
 };
 
-void
-getPointAndDirectionFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, Point3Df &point, Vector3f &direction )
+std::ostream &
+operator<<( std::ostream & stream, const GLViewSetup &setup )
+{
+	stream << "Model:\n[";
+	for( unsigned i = 0; i < 16; ++i ) {
+		if (i%4 == 0 && i != 0 ) {
+			stream << ";\n";
+		}
+		stream << "\t" << std::setw(9) << setup.model[i];
+		if( i %4 != 3 ) {
+			 stream << ",";
+		}
+	}
+	stream << "]\nProj:\n[";
+	for( unsigned i = 0; i < 16; ++i ) {
+		if (i%4 == 0 && i != 0 ) {
+			stream << ";\n";
+		}
+		stream << "\t"<< std::setw(9) << setup.proj[i];
+		if( i %4 != 3 ) {
+			 stream << ",";
+		}
+	}
+	stream << "]";
+	return stream;
+}
+
+Vector3f
+getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, const Vector3f aCameraPos )
 {
 	Vector3d objCoords1;
-	Vector3d objCoords2;
+	Vector3f direction;
 	GLint res = gluUnProject(
 			aScreenCoords[0],  
 			aScreenCoords[1],  
-			0.2,  
+			0.0,  
 			aViewSetup.model,  
 			aViewSetup.proj,  
 			aViewSetup.view,  
@@ -38,26 +65,12 @@ getPointAndDirectionFromScreenCoordinates( Vector2f aScreenCoords, const GLViewS
 	if( res == GLU_FALSE ) {
 		_THROW_ GLException( "Cannot unproject screen coordinates" );
 	}
-	res = gluUnProject(
-			aScreenCoords[0],  
-			aScreenCoords[1],  
-			0.95,  
-			aViewSetup.model,  
-			aViewSetup.proj,  
-			aViewSetup.view,  
-			&(objCoords2[0]),  
-			&(objCoords2[1]),  
-			&(objCoords2[2])
-			);
-	if( res == GLU_FALSE ) {
-		_THROW_ GLException( "Cannot unproject screen coordinates" );
-	}
-	
-	LOG( "screen : " << aScreenCoords );
-	LOG( "coords1 : " << objCoords1 );
-	LOG( "coords2 : " << objCoords2 );
-	point = objCoords1;
-	direction = objCoords2-objCoords1;
+		
+	//LOG( "screen : " << aScreenCoords );
+	//LOG( "coords1 : " << objCoords1 );
+	direction = objCoords1 - Vector3d(aCameraPos);
+	VectorNormalization( direction );
+	return direction;
 }
 
 
