@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "tmp/ui_ViewerControls.h"
+#include "ui_ViewerControls.h"
 #include "GUI/utils/ApplicationManager.h"
 
 class ViewerControls: public QWidget, public Ui::ViewerControls

@@ -1,7 +1,7 @@
 #ifndef SETTINGS_DIALOG_H
 #define SETTINGS_DIALOG_H
 
-#include "tmp/ui_SettingsDialog.h"
+#include "ui_SettingsDialog.h"
 #include "common/Common.h"
 #include "GUI/utils/Settings.h"
 

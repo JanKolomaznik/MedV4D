@@ -116,7 +116,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SOURCE_GROUP( ${prog_name}_Resources FILES  "" ${rccinput} )
 	SOURCE_GROUP( ${prog_name}_Generated FILES "" ${mocoutput} ${rccoutput} ${uioutput} )
 	
-	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${MEDV4D_TMP_DIR} )
 	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
 	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
 
@@ -173,7 +173,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM_NONRECURSIVE prog_name source_dir )
 	SOURCE_GROUP( ${prog_name}_Resources FILES  "" ${rccinput} )
 	SOURCE_GROUP( ${prog_name}_Generated FILES "" ${mocoutput} ${rccoutput} ${uioutput} )
 	
-	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${MEDV4D_TMP_DIR} )
 	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
 	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
 

@@ -1,7 +1,7 @@
 #ifndef PROGRESS_INFO_DIALOG_H
 #define PROGRESS_INFO_DIALOG_H
 
-#include "tmp/ui_ProgressInfoDialog.h"
+#include "ui_ProgressInfoDialog.h"
 #include "common/ProgressNotifier.h"
 #include "common/Common.h"
 
