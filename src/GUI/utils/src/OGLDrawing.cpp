@@ -103,10 +103,10 @@ DisableVolumeTextureCoordinateGeneration()
 
 void
 GLDrawVolumeSlices(
-		BoundingBox3D	bbox,
-		Camera		camera,
-		unsigned 	numberOfSteps,
-		float		cutPlane
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
+		unsigned 		numberOfSteps,
+		float			cutPlane
 		)
 {
 	Vector< float, 3> vertices[6];
@@ -146,12 +146,12 @@ GLDrawVolumeSlices(
 
 void
 GLDrawVolumeSlices_Buffered(
-		BoundingBox3D	bbox,
-		Camera		camera,
-		unsigned 	numberOfSteps,
-		Vector3f	*vertices,
-		unsigned	*indices,
-		float		cutPlane
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
+		unsigned 		numberOfSteps,
+		Vector3f		*vertices,
+		unsigned		*indices,
+		float			cutPlane
 		)
 {
 	//Vector3f *vertices = new Vector3f[ (numberOfSteps+1) * 6 ];
@@ -163,7 +163,9 @@ GLDrawVolumeSlices_Buffered(
 	GL_CHECKED_CALL( glEnable(GL_PRIMITIVE_RESTART) );
 	GL_CHECKED_CALL( glPrimitiveRestartIndex(primitiveRestart) );
 	
-	ASSERT( vertices );
+	size_t indicesSize = fillPlaneBBoxIntersectionBufferFill( bbox, camera, numberOfSteps, vertices, indices, cutPlane, primitiveRestart	);
+
+	/*ASSERT( vertices );
 	ASSERT( indices );
 
 	float 				min = 0; 
@@ -202,7 +204,7 @@ GLDrawVolumeSlices_Buffered(
 		}
 		*(currentIndexPtr++) = primitiveRestart;
 		indicesSize += count+1;
-	}
+	}*/
 	GL_CHECKED_CALL( glEnableClientState(GL_VERTEX_ARRAY) );
 	GL_CHECKED_CALL( glVertexPointer( 3, GL_FLOAT, 0, vertices ) );
 	GL_CHECKED_CALL( glDrawElements(GL_TRIANGLE_FAN, indicesSize, GL_UNSIGNED_INT, indices) );
@@ -215,8 +217,8 @@ GLDrawVolumeSlices_Buffered(
 
 void
 GLDrawVolumeSliceCenterSamples(
-		BoundingBox3D	bbox,
-		Camera		camera,
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
 		unsigned 	numberOfSteps,
 		float		cutPlane
 		)

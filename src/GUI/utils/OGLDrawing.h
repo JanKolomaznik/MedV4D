@@ -33,16 +33,16 @@ DisableVolumeTextureCoordinateGeneration();
 
 void
 GLDrawVolumeSlices(
-		BoundingBox3D	bbox,
-		Camera		camera,
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
 		unsigned 	numberOfSteps,
 		float		cutPlane = 1.0f
 		);
 
 void
 GLDrawVolumeSlices_Buffered(
-		BoundingBox3D	bbox,
-		Camera		camera,
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
 		unsigned 	numberOfSteps,
 		Vector3f	*vertices,
 		unsigned	*indices,
@@ -51,8 +51,8 @@ GLDrawVolumeSlices_Buffered(
 
 void
 GLDrawVolumeSliceCenterSamples(
-		BoundingBox3D	bbox,
-		Camera		camera,
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
 		unsigned 	numberOfSteps,
 		float		cutPlane
 		);

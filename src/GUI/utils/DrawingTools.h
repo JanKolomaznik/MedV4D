@@ -3,6 +3,8 @@
 
 #include "common/Common.h"
 #include "common/GeometricPrimitives.h"
+
+class Camera;
 namespace M4D
 {
 	
@@ -79,6 +81,18 @@ GetPlaneVerticesInBoundingBox(
 		const Planef			&plane,
 	       	Vector< float,3 > 		vertices[]
 		);
+
+size_t
+fillPlaneBBoxIntersectionBufferFill(
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
+		unsigned 		numberOfSteps,
+		Vector3f		*vertices,
+		unsigned		*indices,
+		float			cutPlane,
+		unsigned		primitiveRestart
+		);
+
 
 }/*namespace M4D*/
 
