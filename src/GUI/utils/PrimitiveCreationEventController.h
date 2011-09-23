@@ -156,10 +156,16 @@ public:
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 	{ 
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( state.viewType ==M4D::GUI::Viewer::vt3D && mCurrentStage > 0 ) 
+		if ( (aEventInfo.event->buttons() == Qt::NoButton) && (state.viewType == M4D::GUI::Viewer::vt3D) && (mCurrentStage > 0) ) 
 		{
+			float t1, t2;
+			if ( closestPointsOnTwoLines( mPoint, mDirection, aEventInfo.point, aEventInfo.direction, t1, t2 ) ) {
+				Vector3f point = mPoint + (t1 * mDirection);
+				*mPrimitive = M4D::Point3Df( point );
+			}
+
 			//mPrimitive->secondPoint() = aEventInfo.realCoordinates;
-			//state.viewerWindow->update();
+			state.viewerWindow->update();
 			return true;
 		}
 		return false; 
@@ -185,6 +191,8 @@ public:
 			
 			LOG( "ADDING PRIMITIVE IN 3D" );
 			if ( mCurrentStage == 0 ) {
+				mPoint = aEventInfo.point;
+				mDirection = aEventInfo.direction;
 				mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.point ) );
 				if ( mPrimitive == NULL ) {
 					return true;

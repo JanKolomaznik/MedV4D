@@ -429,11 +429,11 @@ closestPointsOnTwoLines(
 		)
 {
 	Vector< CoordType, 3 > u = A1 - A2;
-	Vector< CoordType, 3 > v1sq = v1*v1;
-	Vector< CoordType, 3 > v2sq = v2*v2;
-	Vector< CoordType, 3 > v1v2 = v1*v2;
-	Vector< CoordType, 3 > v1u = v1*u;
-	Vector< CoordType, 3 > v2u = v2*u;
+	CoordType v1sq = v1*v1;
+	CoordType v2sq = v2*v2;
+	CoordType v1v2 = v1*v2;
+	CoordType v1u = v1*u;
+	CoordType v2u = v2*u;
 
 	CoordType detA = v1sq * v2sq - v1v2*v1v2;
 	if ( detA < Epsilon ) {

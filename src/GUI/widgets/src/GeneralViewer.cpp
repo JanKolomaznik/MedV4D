@@ -779,7 +779,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mVolumeRenderConfig.camera.SetAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
 			SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
-			updateGLViewSetupInfo();
+			//updateGLViewSetupInfo();
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -802,6 +802,7 @@ GeneralViewer::render()
 						getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
 			glEnable( GL_DEPTH_TEST );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
+				GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				M4D::GLDrawBoundingBox( bbox );
 			}
