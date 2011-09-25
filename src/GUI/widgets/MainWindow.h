@@ -18,7 +18,7 @@ class MainWindow: public QMainWindow
 public:
 	MainWindow();
 
-	void
+	MultiDockWidget *
 	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget, bool aShow = true )
 	{
 		if ( aWidget == NULL ) {
@@ -26,8 +26,9 @@ public:
 		}
 		MultiDockWidget *dockwidget = new MultiDockWidget( aName );
 		dockwidget->setWidget( aWidget );
-		dockwidget->addDockingWindow( aArea, this );
+		//dockwidget->addDockingWindow( aArea, this );
 		dockwidget->setVisible(aShow);
+		return dockwidget;
 	}
 
 	virtual void

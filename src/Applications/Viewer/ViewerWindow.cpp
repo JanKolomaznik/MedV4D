@@ -104,6 +104,10 @@ ViewerWindow::ViewerWindow()
 
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
+//***********************************************************
+	std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
+	mTFEditingSystem = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this, dataCT1D));
+	mTFEditingSystem->setupDefault();
 	
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
@@ -114,7 +118,7 @@ ViewerWindow::ViewerWindow()
 
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
-
+//***********************************************************
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal, false );

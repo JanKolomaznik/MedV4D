@@ -82,18 +82,20 @@ AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/ogl/src WidgetsOg
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/src WidgetsUtilsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/src UtilsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/renderers/src RenderersSrc )
+AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/TF/src TFSrc )
 
 IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 	AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/src WidgetsComponentsSrc )
 ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 
 FILE( GLOB rccinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src/*.qrc )
-FILE( GLOB uiinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.ui )
+FILE( GLOB uiinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.ui ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/TF/*.ui )
 FILE( GLOB GUI_header_files 
 	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h 
 	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h 
 	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h 
 	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h 
+	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/TF/*.h 
 	)
 
 IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF"  )
@@ -112,12 +114,12 @@ QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
 QT4_WRAP_UI(uioutput ${uiinput} )
 
 
-SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${RenderersSrc} ${WidgetsComponentsSrc} )
+SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${RenderersSrc} ${TFSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
 SOURCE_GROUP( GUI_Generated FILES  ${mocoutput} ${rccoutput} ${uioutput} )
 SOURCE_GROUP( GUI_Headers FILES ${GUI_header_files} )
 
-ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${RenderersSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
+ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${RenderersSrc} ${TFSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
 ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM ${VTK_INTEGRATION_TARGET} )
 SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES DEBUG_POSTFIX ${MEDV4D_DEBUG_POSTFIX} ) 
 SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES RELEASE_POSTFIX ${MEDV4D_RELEASE_POSTFIX} ) 

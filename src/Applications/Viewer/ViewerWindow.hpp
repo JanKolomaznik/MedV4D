@@ -16,6 +16,8 @@
 #include "JoyInput.h"
 #endif
 
+#include "GUI/TF/TFPalette.h"
+#include "GUI/TF/TFFunctionInterface.h"
 
 class ViewerWindow: public M4D::GUI::MainWindow, public Ui::ViewerWindow
 {
@@ -105,6 +107,8 @@ protected:
 	JoyInput mJoyInput;
 	QTimer mJoyTimer;
 #endif 
+
+	M4D::GUI::TFPalette::Ptr mTFEditingSystem;
 
 private:
 
