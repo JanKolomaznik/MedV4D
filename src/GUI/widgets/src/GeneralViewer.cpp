@@ -875,11 +875,15 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 		{
 			Vector3f direction;
 			//LOG( mGLViewSetup );
-			direction = getDirectionFromScreenCoordinatesAndCameraPosition(
+			try{
+				direction = getDirectionFromScreenCoordinatesAndCameraPosition(
 				       	Vector2f( event->posF().x(), mGLViewSetup.view[3] - event->posF().y() ), 
 					mGLViewSetup, 
 					getCameraPosition()					 
 					);				
+			} catch (...){
+				LOG( "Unprojecting of screen coordinates failed" );
+			}
 			
 			return MouseEventInfo( event, vt3D, getCameraPosition(), direction );
 		}

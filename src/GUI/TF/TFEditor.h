@@ -42,30 +42,59 @@ public:
 
 	virtual ~TFEditor();
 
-	bool load(TF::XmlReaderInterface* reader, bool& sideError);
-	bool loadFunction(TF::XmlReaderInterface* reader);
-	bool save();
-	bool saveFunction();
-	bool close();
+	bool 
+	load(TF::XmlReaderInterface* reader, bool& sideError);
 
-	virtual void setup(QMainWindow* mainWindow, const int index = -1) = 0;
-	void setHistogram(TF::HistogramInterface::Ptr histogram);
-	void setDataStructure(const std::vector<TF::Size>& dataStructure);
+	bool 
+	loadFunction(TF::XmlReaderInterface* reader);
 
-	TF::Size getIndex();
-	std::string getName();
-	Attributes getAttributes();
-	bool hasAttribute(const Attribute attribute);
+	bool 
+	save();
 
-	TF::Size getDimension();
-	TFFunctionInterface::Const getFunction();
+	bool 
+	saveFunction();
 
-	QDockWidget* getDockWidget() const;
+	bool 
+	close();
 
-	virtual void setActive(const bool active);
-	virtual void setAvailable(const bool available){}
+	virtual void 
+	setup(QMainWindow* mainWindow, const int index = -1) = 0;
 
-	Common::TimeStamp lastChange();
+	void 
+	setHistogram(TF::HistogramInterface::Ptr histogram);
+
+	void 
+	setDataStructure(const std::vector<TF::Size>& dataStructure);
+
+	TF::Size 
+	getIndex();
+
+	std::string 
+	getName();
+
+	Attributes 
+	getAttributes();
+
+	bool 
+	hasAttribute(const Attribute attribute);
+
+	TF::Size 
+	getDimension();
+
+	TFFunctionInterface::Const 
+	getFunction();
+
+	QDockWidget* 
+	getDockWidget() const;
+
+	virtual void 
+	setActive(const bool active);
+
+	virtual void 
+	setAvailable(const bool available){}
+
+	Common::TimeStamp 
+	lastChange();
 
 signals:
 

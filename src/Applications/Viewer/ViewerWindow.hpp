@@ -19,6 +19,28 @@
 #include "GUI/TF/TFPalette.h"
 #include "GUI/TF/TFFunctionInterface.h"
 
+#include "GUI/utils/TransferFunctionBuffer.h"
+
+struct TransferFunctionBufferInfo
+{
+	/*TransferFunctionBufferInfo( M4D::Common::IDNumber aId, M4D::GUI::GLTransferFunctionBuffer1D::Ptr aTfGLBuffer, M4D::GUI::TransferFunctionBuffer1D::Ptr aTfBuffer ):
+		id(aId), tfGLBuffer( aTfGLBuffer ), tfBuffer( aTfBuffer )
+	{ }*/
+
+	M4D::Common::IDNumber id;
+	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
+	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
+};
+struct TransferFunctionBufferUsageRecord
+{
+	TransferFunctionBufferInfo info;
+	std::list< M4D::GUI::Viewer::GeneralViewer * > viewers;
+};
+typedef std::map< M4D::Common::IDNumber, TransferFunctionBufferUsageRecord > TransferBufferUsageMap;
+
+
+
+
 class ViewerWindow: public M4D::GUI::MainWindow, public Ui::ViewerWindow
 {
 	Q_OBJECT;
@@ -72,6 +94,18 @@ public slots:
 	selectedViewerSettingsChanged();
 
 	void
+	changedViewerSelection();
+
+	void
+	transferFunctionAdded( M4D::GUI::TF::Size idx );
+
+	void
+	changedTransferFunctionSelection();
+
+	void
+	transferFunctionModified( M4D::GUI::TF::Size idx );
+
+	void
 	showSettingsDialog();
 
 #ifdef OIS_ENABLED
@@ -109,6 +143,7 @@ protected:
 #endif 
 
 	M4D::GUI::TFPalette::Ptr mTFEditingSystem;
+	TransferBufferUsageMap mTFUsageMap;
 
 private:
 

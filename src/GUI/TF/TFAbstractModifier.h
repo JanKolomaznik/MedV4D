@@ -25,23 +25,41 @@ public:
 
 	typedef boost::shared_ptr<TFAbstractModifier> Ptr;
 
-	virtual ~TFAbstractModifier(){}
+	virtual 
+	~TFAbstractModifier(){}
 
-	virtual void setDataStructure(const std::vector<TF::Size>& dataStructure) = 0;
+	virtual void 
+	setDataStructure(const std::vector<TF::Size>& dataStructure) = 0;
 
-	void setHistogram(const TF::HistogramInterface::Ptr histogram);
+	void 
+	setHistogram(const TF::HistogramInterface::Ptr histogram);
 
-	QWidget* getTools();
-	TF::Size getDimension();
-	TFFunctionInterface::Const getFunction();
+	QWidget* 
+	getTools();
 
-	bool changed();
-	M4D::Common::TimeStamp getTimeStamp();
+	TF::Size 
+	getDimension();
 
-	virtual void save(TF::XmlWriterInterface* writer);
-	void saveFunction(TF::XmlWriterInterface* writer);
-	bool load(TF::XmlReaderInterface* reader, bool& sideError);
-	bool loadFunction(TF::XmlReaderInterface* reader);
+	TFFunctionInterface::Const 
+	getFunction();
+
+	bool 
+	changed();
+
+	M4D::Common::TimeStamp 
+	getTimeStamp();
+
+	virtual void 
+	save(TF::XmlWriterInterface* writer);
+
+	void 
+	saveFunction(TF::XmlWriterInterface* writer);
+
+	bool 
+	load(TF::XmlReaderInterface* reader, bool& sideError);
+
+	bool 
+	loadFunction(TF::XmlReaderInterface* reader);
 
 protected:
 

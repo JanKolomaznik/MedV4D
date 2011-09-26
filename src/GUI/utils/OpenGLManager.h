@@ -13,10 +13,29 @@
 
 struct OpenGLManagerPimpl;
 
+struct CurrentContext
+{
+
+};
+
+
 class OpenGLManager
 {
 public:
-	
+	struct CurrentContext
+	{
+		CurrentContext( OpenGLManager &aManager ): manager( aManager )
+		{
+			manager.makeCurrent();
+		}
+
+		~CurrentContext()
+		{
+			manager.doneCurrent();
+		}
+
+		OpenGLManager &manager;
+	};	
 
 	static OpenGLManager *
 	getInstance();
@@ -35,6 +54,18 @@ public:
 
 	virtual M4D::GLTextureImage::Ptr
 	getTextureFromImage( const M4D::Imaging::AImage &aImage );
+
+	template< typename TFtor >
+	TFtor
+	doGL( TFtor ftor )
+	{
+		CurrentContext curr( *this );
+		//makeCurrent();
+		ftor();
+		M4D::CheckForGLError( "OpenGL manager - doGL() call" );
+		//doneCurrent();
+		return ftor;
+	}
 
 protected:
 	void

@@ -6,14 +6,15 @@ namespace GUI {
 TFPalette::TFPalette(QMainWindow* parent, const std::vector<TF::Size>& dataStructure):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
-	layout_(new QGridLayout()),
 	mainWindow_(parent),
-	activeEditor_(emptyPalette),
+	layout_(new QGridLayout()),
 	colModulator_(1),
-	activeChanged_(false),
-	previewEnabled_(true),
 	dataStructure_(dataStructure),
-	creator_(parent, this, dataStructure){
+	activeChanged_(false),
+	activeEditor_(emptyPalette),
+	creator_(parent, this, dataStructure),
+	previewEnabled_(true)
+{
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -28,6 +29,10 @@ TFPalette::TFPalette(QMainWindow* parent, const std::vector<TF::Size>& dataStruc
 
 	previewUpdater_.setInterval(500);
 	previewUpdater_.start();
+
+	QObject::connect(&mChangeDetectionTimer, SIGNAL(timeout()), this, SLOT(detectChanges()));
+	mChangeDetectionTimer.setInterval(550);
+	mChangeDetectionTimer.start();
 }
 
 TFPalette::~TFPalette(){
@@ -35,11 +40,13 @@ TFPalette::~TFPalette(){
 	delete ui_;
 }
 
-void TFPalette::setupDefault(){
+void TFPalette::setupDefault()
+{
 	//default palette functions
 }
 
-void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure){
+void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure)
+{
 
 	dataStructure_ = dataStructure;
 	creator_.setDataStructure(dataStructure_);
@@ -69,7 +76,8 @@ void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure){
 	if(findNewActive) activeEditor_ = noFunctionAvailable;
 }
 
-void TFPalette::setPreview(const QImage& preview, const int index){
+void TFPalette::setPreview(const QImage& preview, const int index)
+{
 
 	TF::Size editorIndex = activeEditor_;
 	if(index >= 0) editorIndex = index;
@@ -81,7 +89,9 @@ void TFPalette::setPreview(const QImage& preview, const int index){
 	editor->second->previewUpdate = editor->second->editor->lastChange();
 }
 
-QImage TFPalette::getPreview(const int index){
+QImage 
+TFPalette::getPreview(const int index)
+{
 
 	TF::Size editorIndex = activeEditor_;
 	if(index >= 0) editorIndex = index;
@@ -92,12 +102,16 @@ QImage TFPalette::getPreview(const int index){
 	return editor->second->button->getPreview();
 }
 
-QSize TFPalette::getPreviewSize(){
+QSize 
+TFPalette::getPreviewSize()
+{
 
 	return QSize(TFPaletteButton::previewWidth, TFPaletteButton::previewHeight);
 }
 
-void TFPalette::update_previews(){
+void 
+TFPalette::update_previews()
+{
 
 	if(!previewEnabled_) return;
 
@@ -117,7 +131,24 @@ void TFPalette::update_previews(){
 	}
 }
 
-TFFunctionInterface::Const TFPalette::getTransferFunction(const int index){
+void
+TFPalette::detectChanges()
+{
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		M4D::Common::TimeStamp lastChange(it->second->editor->lastChange());
+		if( lastChange != it->second->lastDetectedChange ) {
+			it->second->lastDetectedChange = lastChange;
+			emit transferFunctionModified( it->second->editor->getIndex() );
+		}
+	}
+}
+
+TFFunctionInterface::Const 
+TFPalette::getTransferFunction(const int index)
+{
 
 	TF::Size editorIndex = activeEditor_;
 	if(index >= 0) editorIndex = index;
@@ -138,18 +169,24 @@ TFFunctionInterface::Const TFPalette::getTransferFunction(const int index){
 	return palette_.find(editorIndex)->second->editor->getFunction();
 }
 	
-TF::Size TFPalette::getDimension(){
+TF::Size 
+TFPalette::getDimension()
+{
 
 	return dataStructure_.size();
 }
 
-TF::Size TFPalette::getDomain(const TF::Size dimension){
+TF::Size 
+TFPalette::getDomain(const TF::Size dimension)
+{
 
 	if(dimension > dataStructure_.size() || dimension == 0) return 0;
 	return dataStructure_[dimension-1];
 }
 
-TFPalette::Editors& TFPalette::getEditors(){
+TFPalette::Editors& 
+TFPalette::getEditors()
+{
 
 	Editors editors;
 
@@ -162,7 +199,9 @@ TFPalette::Editors& TFPalette::getEditors(){
 	return editors;
 }
 
-bool TFPalette::setHistogram(const TF::HistogramInterface::Ptr histogram){
+bool 
+TFPalette::setHistogram(const TF::HistogramInterface::Ptr histogram)
+{
 
 	TF::Size histDim = histogram->getDimension();
 	if(histDim != dataStructure_.size()) return false;
@@ -182,9 +221,11 @@ bool TFPalette::setHistogram(const TF::HistogramInterface::Ptr histogram){
 	return true;
 }
 
-M4D::Common::TimeStamp TFPalette::lastChange(){
-
-	if(activeEditor_ == emptyPalette ||	activeEditor_ == noFunctionAvailable)
+M4D::Common::TimeStamp 
+TFPalette::lastChange()
+{
+	ASSERT( false ) //TODO Modify for different usage
+	if(activeEditor_ == emptyPalette || activeEditor_ == noFunctionAvailable)
 	{
 		if(activeChanged_) ++lastChange_;
 		activeChanged_ = false;
@@ -205,13 +246,16 @@ M4D::Common::TimeStamp TFPalette::lastChange(){
 	return lastChange_;
 }
 	
-M4D::Common::TimeStamp TFPalette::lastPaletteChange(){
+M4D::Common::TimeStamp 
+TFPalette::lastPaletteChange()
+{
 
 	return lastPaletteChange_;
 }
 
-void TFPalette::addToPalette_(TFEditor* editor){
-	
+void 
+TFPalette::addToPalette_(TFEditor* editor)
+{
 	TF::Size addedIndex = idGenerator_.NewID();
 
 	editor->setup(mainWindow_, addedIndex);
@@ -249,10 +293,13 @@ void TFPalette::addToPalette_(TFEditor* editor){
 	reformLayout_(true);
 
 	++lastPaletteChange_;
+
+	emit transferFunctionAdded( addedIndex );
 }
 
-void TFPalette::removeFromPalette_(const TF::Size index){
-
+void 
+TFPalette::removeFromPalette_(const TF::Size index)
+{
 	HolderMapIt toRemoveIt = palette_.find(index);
 	if(index == activeEditor_) activateNext_(toRemoveIt);
 
@@ -269,8 +316,9 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	++lastPaletteChange_;
 }
 
-void TFPalette::activateNext_(HolderMapIt it){
-	
+void 
+TFPalette::activateNext_(HolderMapIt it)
+{
 	if(palette_.size() == 1)
 	{
 		activeEditor_ = emptyPalette;
@@ -356,6 +404,8 @@ void TFPalette::change_activeHolder(TF::Size index){
 	active->editor->setActive(true);
 
 	activeChanged_ = true;
+
+	emit changedTransferFunctionSelection( index );
 }
 
 void TFPalette::on_addButton_clicked(){

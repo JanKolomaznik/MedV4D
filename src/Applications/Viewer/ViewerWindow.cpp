@@ -90,6 +90,36 @@ protected:
 } /*namespace GUI*/
 } /*namespace M4D*/
 
+
+bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBuffer1D::Ptr& buffer){
+
+	if(!function) return false;
+
+	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
+	if(!buffer || buffer->Size() != domain)
+	{
+		buffer = M4D::GUI::TransferFunctionBuffer1D::Ptr(new M4D::GUI::TransferFunctionBuffer1D(domain, M4D::GUI::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
+	}
+
+	M4D::GUI::TF::Coordinates coords(1);
+	M4D::GUI::TF::Color color;
+	for(M4D::GUI::TF::Size i = 0; i < domain; ++i)
+	{
+		coords[0] = i;
+		color = function.getRGBfColor(coords);
+
+		(*buffer)[i] = M4D::GUI::TransferFunctionBuffer1D::value_type(
+			color.component1,
+			color.component2,
+			color.component3,
+			color.alpha);
+	}
+	return true;
+}
+
+
+
+
 ViewerWindow::ViewerWindow()
 {
 	setupUi( this );
@@ -139,25 +169,12 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls );
 
-
-	//mViewerController = AnnotationEditorController::Ptr( new AnnotationEditorController );				//************
-	//createDockWidget( tr("Annotations" ), Qt::RightDockWidgetArea, mViewerController->getAnnotationView() );	//************
-
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
 	QToolBar *toolbar = createToolBarFromViewerActionSet( actions, "Viewer settings" );
 	addToolBar( toolbar );
 
 	addViewerActionSetToWidget( *menuViewer, actions );
-	//toolbar->addAction( "BLLLL" );
-
-	//**********************************************
-	//************* ANNOTATION TOOLBAR *************	
-	//QList<QAction*> &annotationActions = mViewerController->getActions();
-	//toolbar = M4D::GUI::createToolbarFromActions( tr("Annotations toolbar"), annotationActions );
-	//addToolBar( toolbar );
-
-	//*****************************************
 
 	mInfoLabel = new QLabel();
 	statusbar->addWidget( mInfoLabel );
@@ -172,13 +189,10 @@ ViewerWindow::ViewerWindow()
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
 	QObject::connect( mViewerDesktop, SIGNAL( updateInfo( const QString & ) ), this, SLOT( updateInfoInStatusBar( const QString & ) ), Qt::QueuedConnection );
 
-	//QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), this, SLOT( updateGui() ), Qt::QueuedConnection );
-
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
 
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
+
 
 	// HH: OIS support
 #ifdef OIS_ENABLED
@@ -189,6 +203,15 @@ ViewerWindow::ViewerWindow()
 		mJoyTimer.start();
 	}
 #endif
+
+
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
+
+	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
+
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( M4D::GUI::TF::Size ) ), this, SLOT( transferFunctionAdded( M4D::GUI::TF::Size ) ) );
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( M4D::GUI::TF::Size ) ), this, SLOT( changedTransferFunctionSelection() ) );
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( M4D::GUI::TF::Size )), this, SLOT( transferFunctionModified( M4D::GUI::TF::Size ) ) );
 }
 
 void
@@ -333,7 +356,7 @@ ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
 void
 ViewerWindow::selectedViewerSettingsChanged()
 {
-	M4D::GUI::Viewer::AGLViewer *pViewer;
+	/*M4D::GUI::Viewer::AGLViewer *pViewer;
 	pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
 	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
@@ -346,8 +369,76 @@ ViewerWindow::selectedViewerSettingsChanged()
 			}
 		}
 	}
-	mInfoLabel->setText( text );
+	mInfoLabel->setText( text );*/
+	LOG( __FUNCTION__ );
 }
+
+
+void
+ViewerWindow::changedViewerSelection()
+{
+	LOG( __FUNCTION__ );
+}
+
+struct CreateGLTFBuffer
+{
+	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
+	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
+
+	void
+	operator()()
+	{
+		 tfGLBuffer = CreateGLTransferFunctionBuffer1D( *tfBuffer );
+	}
+};
+
+void
+ViewerWindow::transferFunctionAdded( M4D::GUI::TF::Size idx )
+{
+	LOG( __FUNCTION__ );
+
+	TransferFunctionBufferInfo info;
+	info.id = idx;
+
+	if( fillBufferFromTF( mTFEditingSystem->getTransferFunction(idx), info.tfBuffer ) ) {
+		CreateGLTFBuffer ftor;
+		ftor.tfBuffer = info.tfBuffer;
+		ftor = OpenGLManager::getInstance()->doGL( ftor );
+		info.tfGLBuffer = ftor.tfGLBuffer;
+
+		TransferFunctionBufferUsageRecord record;
+		record.info = info;
+		mTFUsageMap[idx] = record;
+	} else { 
+		D_PRINT( "TF buffer not created" );
+	}
+}
+
+void
+ViewerWindow::changedTransferFunctionSelection()
+{
+	LOG( __FUNCTION__ );
+}
+
+void
+ViewerWindow::transferFunctionModified( M4D::GUI::TF::Size idx )
+{
+	TransferBufferUsageMap::iterator it = mTFUsageMap.find( idx );
+	if ( it != mTFUsageMap.end() ) {
+		TransferFunctionBufferUsageRecord &rec = it->second;
+		if( fillBufferFromTF( mTFEditingSystem->getTransferFunction(idx), rec.info.tfBuffer ) ) {
+			CreateGLTFBuffer ftor;
+			ftor.tfBuffer = rec.info.tfBuffer;
+			ftor = OpenGLManager::getInstance()->doGL( ftor );
+			rec.info.tfGLBuffer = ftor.tfGLBuffer;
+		}else {
+			D_PRINT( "TF buffer not created" );
+		}
+	} else {
+		D_PRINT( "Modified function not found" );
+	}
+}
+
 
 void
 ViewerWindow::showSettingsDialog()

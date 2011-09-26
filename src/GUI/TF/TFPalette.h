@@ -77,6 +77,15 @@ signals:
 	void 
 	UpdatePreview(M4D::GUI::TF::Size index);
 
+	void
+	transferFunctionAdded( M4D::GUI::TF::Size idx );
+
+	void
+	transferFunctionModified( M4D::GUI::TF::Size idx );
+
+	void
+	changedTransferFunctionSelection( M4D::GUI::TF::Size index );
+
 private slots:
 
 	void 
@@ -94,6 +103,9 @@ private slots:
 	void 
 	on_previewsCheck_toggled(bool enable);
 
+	void
+	detectChanges();
+
 protected:
 
 	void 
@@ -109,6 +121,8 @@ private:
 		TFPaletteButton* button;
 		M4D::Common::TimeStamp change;
 		M4D::Common::TimeStamp previewUpdate;
+
+		M4D::Common::TimeStamp lastDetectedChange;
 
 		Editor(): editor(NULL),	button(NULL)
 		{ }
@@ -149,6 +163,8 @@ private:
 
 	QTimer previewUpdater_;
 	bool previewEnabled_;
+
+	QTimer mChangeDetectionTimer;
 
 	void 
 	addToPalette_(TFEditor* editor);

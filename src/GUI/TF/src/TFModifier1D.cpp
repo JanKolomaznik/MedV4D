@@ -11,7 +11,8 @@ TFModifier1D::TFModifier1D(
 	simpleWidget_(new QWidget),
 	activeView_(Active1),
 	inputHelper_(),
-	leftMousePressed_(false){
+	leftMousePressed_(false)
+{
 
 	simpleTools_->setupUi(simpleWidget_);
 
@@ -27,12 +28,15 @@ TFModifier1D::TFModifier1D(
 	firstOnly_ = (names.size() < 3);
 }
 
-TFModifier1D::~TFModifier1D(){
+TFModifier1D::~TFModifier1D()
+{
 
 	delete simpleTools_;
 }
 
-void TFModifier1D::createTools_(){
+void 
+TFModifier1D::createTools_()
+{
 
     QFrame* separator = new QFrame();
     separator->setFrameShape(QFrame::HLine);
@@ -47,18 +51,21 @@ void TFModifier1D::createTools_(){
 	toolsWidget_->setLayout(layout);
 }
 
-void TFModifier1D::computeInput_(){
+void 
+TFModifier1D::computeInput_()
+{
 
 	workCopy_->resize(1, inputArea_.width());
 }
 
-std::vector<int> TFModifier1D::computeZoomMoveIncrements_(const int moveX, const int moveY){
-
+std::vector<int> 
+TFModifier1D::computeZoomMoveIncrements_(const int moveX, const int moveY)
+{
 	return std::vector<int>(1, moveX);
 }
 
-void TFModifier1D::activeView_changed(int index){
-
+void TFModifier1D::activeView_changed(int index)
+{
 	switch(index)
 	{
 		case 0:
@@ -96,8 +103,8 @@ void TFModifier1D::activeView_changed(int index){
 	}
 }
 
-void TFModifier1D::mousePressEvent(QMouseEvent *e){
-
+void TFModifier1D::mousePressEvent(QMouseEvent *e)
+{
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y());
 	if(relativePoint == ignorePoint_) return;
 
@@ -115,8 +122,8 @@ void TFModifier1D::mousePressEvent(QMouseEvent *e){
 	TFViewModifier::mousePressEvent(e);
 }
 
-void TFModifier1D::mouseReleaseEvent(QMouseEvent *e){
-
+void TFModifier1D::mouseReleaseEvent(QMouseEvent *e)
+{
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y(), leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
 
@@ -127,8 +134,8 @@ void TFModifier1D::mouseReleaseEvent(QMouseEvent *e){
 	TFViewModifier::mouseReleaseEvent(e);
 }
 
-void TFModifier1D::mouseMoveEvent(QMouseEvent *e){
-	
+void TFModifier1D::mouseMoveEvent(QMouseEvent *e)
+{
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y(), leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
 
@@ -142,8 +149,8 @@ void TFModifier1D::mouseMoveEvent(QMouseEvent *e){
 	TFViewModifier::mouseMoveEvent(e);
 }
 
-void TFModifier1D::addPoint_(const int x, const int y){
-
+void TFModifier1D::addPoint_(const int x, const int y)
+{
 	float yValue = y/(float)inputArea_.height();
 	
 	coords_[0] = x;
@@ -179,13 +186,13 @@ void TFModifier1D::addPoint_(const int x, const int y){
 	++stamp_;
 }
 
-void TFModifier1D::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
-	
+void TFModifier1D::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end)
+{
 	addLine_(begin.x, begin.y, end.x, end.y);
 }
 
-void TFModifier1D::addLine_(int x1, int y1, int x2, int y2){
-	
+void TFModifier1D::addLine_(int x1, int y1, int x2, int y2)
+{
 	if(x1==x2 && y1==y2) addPoint_(x1,y1);
 
 	int D, ax, ay, sx, sy;

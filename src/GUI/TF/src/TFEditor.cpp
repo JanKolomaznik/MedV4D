@@ -19,16 +19,20 @@ TFEditor::TFEditor(TFAbstractModifier::Ptr modifier,
 	index_(0),
 	name_(name),
 	structure_(structure),
-	attributes_(attributes){
+	attributes_(attributes)
+{
 }
 
-TFEditor::~TFEditor(){
+TFEditor::~TFEditor()
+{
 
 	if(toolsDock_) toolsDock_->close();
 	delete writer_;
 }
 	
-bool TFEditor::save(){
+bool 
+TFEditor::save()
+{
 	
 	if(fileName_.isEmpty())
 	{
