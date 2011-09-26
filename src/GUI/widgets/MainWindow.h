@@ -24,8 +24,9 @@ public:
 		if ( aWidget == NULL ) {
 			_THROW_ M4D::ErrorHandling::ENULLPointer();
 		}
-		MultiDockWidget *dockwidget = new MultiDockWidget( aName );
+		MultiDockWidget *dockwidget = new MultiDockWidget( aName, this );
 		dockwidget->setWidget( aWidget );
+		addDockWidget( aArea, dockwidget );
 		//dockwidget->addDockingWindow( aArea, this );
 		dockwidget->setVisible(aShow);
 		return dockwidget;

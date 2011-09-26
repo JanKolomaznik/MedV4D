@@ -108,6 +108,16 @@ ViewerWindow::ViewerWindow()
 	std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
 	mTFEditingSystem = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this, dataCT1D));
 	mTFEditingSystem->setupDefault();
+
+	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
+	
+	dockWidget->setWidget( &(*mTFEditingSystem) );
+	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
+	
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+	dockWidget->setFloating(true);
+//*****************
 	
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
