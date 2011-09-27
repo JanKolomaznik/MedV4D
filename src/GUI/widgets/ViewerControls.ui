@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>347</width>
-    <height>222</height>
+    <height>231</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,6 +88,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="xIntervalASpinBox">
+        <property name="minimum">
+         <double>-2.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -95,6 +101,9 @@
       </item>
       <item row="0" column="2">
        <widget class="QDoubleSpinBox" name="xIntervalBSpinBox">
+        <property name="maximum">
+         <double>3.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -112,6 +121,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="yIntervalASpinBox">
+        <property name="minimum">
+         <double>-2.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -119,6 +134,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QDoubleSpinBox" name="yIntervalBSpinBox">
+        <property name="maximum">
+         <double>3.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -136,6 +154,12 @@
       </item>
       <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="zIntervalASpinBox">
+        <property name="minimum">
+         <double>-2.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>
@@ -143,6 +167,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QDoubleSpinBox" name="zIntervalBSpinBox">
+        <property name="maximum">
+         <double>3.000000000000000</double>
+        </property>
         <property name="singleStep">
          <double>0.050000000000000</double>
         </property>

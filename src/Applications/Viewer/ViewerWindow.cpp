@@ -149,7 +149,7 @@ ViewerWindow::ViewerWindow()
 	//dockWidget->setFloating(true);
 //*****************
 	
-	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
+	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
 
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
@@ -157,7 +157,7 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetBorderWidth( 10 );
 
 	mTransFuncTimer.setInterval( 500 );
-	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
+	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );*/
 //***********************************************************
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
@@ -523,7 +523,7 @@ ViewerWindow::openFile( const QString &aPath )
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
 */	
 
-	applyTransferFunction();
+	//applyTransferFunction();
 }
 
 void 
@@ -583,5 +583,5 @@ ViewerWindow::dataLoaded()
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
 	
 
-	applyTransferFunction();
+	//applyTransferFunction();
 }

@@ -53,6 +53,10 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 		break;
 	case ctTransferFunction1D:
 		{
+			if ( !aConfig.transferFunction ) {
+				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
+			}
+
 			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
 			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
 			techniqueName = "TransferFunction1D_3DNoBlending";

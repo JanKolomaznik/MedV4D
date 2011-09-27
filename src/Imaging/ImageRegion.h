@@ -254,7 +254,7 @@ public:
 			for( unsigned i=0; i<_sourceDimension; ++i ) {
 				pom[i] = _pointerCoordinatesInSource[i];
 			}
-			pom[ _dimOrder[perpAxis] ] += sliceCoord * Sgn(_strides[perpAxis]);
+			pom[ _dimOrder[perpAxis] ] += sliceCoord * sgn(_strides[perpAxis]);
 
 			Vector<unsigned, Dimension-1> size;
 			Vector<int, Dimension-1> strides;

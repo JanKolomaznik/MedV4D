@@ -115,6 +115,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
+	//LOG( bbox );
 	float 				min = 0; 
 	float 				max = 0;
 	unsigned			minId = 0;	
@@ -157,6 +158,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
+			if ( !aConfig.transferFunction ) {
+				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
+			}
 			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
 			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
 
@@ -191,7 +195,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	mCgEffect.ExecuteTechniquePass(
+	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
 				bbox,
@@ -201,9 +205,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				mIndices,
 				1.0f
 				) 
-			); 
+			); */
 
-	/*mCgEffect.ExecuteTechniquePass(
+	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices, 
 				bbox,
@@ -211,7 +215,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				sliceCount,
 				1.0f
 				) 
-			); */
+			); 
 
 	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 

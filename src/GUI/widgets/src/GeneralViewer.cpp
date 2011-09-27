@@ -852,7 +852,11 @@ GeneralViewer::render()
 				mRenderingExtension->preRender3D();	
 			}
 
-			getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
+			try {
+				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
+			}catch( std::exception &e ) {
+				LOG( e.what() );
+			}
 
 			glClear( GL_DEPTH_BUFFER_BIT );
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
@@ -862,7 +866,11 @@ GeneralViewer::render()
 		break;
 	case vt2DAlignedSlices:
 		{
-			getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
+			try {
+				getViewerState().mSliceRenderer.Render( getViewerState().mSliceRenderConfig, false );
+			}catch( std::exception &e ) {
+				LOG( e.what() );
+			}
 
 			glClear( GL_DEPTH_BUFFER_BIT );
 			if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {

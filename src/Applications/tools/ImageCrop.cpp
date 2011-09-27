@@ -31,8 +31,8 @@ CropImage( typename ImageType::Ptr image, const std::vector<int> &firstCorner, c
 	CornerType p2(0);
 
 	for( unsigned i = 0; i < ImageTraits< ImageType >::Dimension; ++i ) {
-		p1[i] = Min( firstCorner[i], secondCorner[i] );
-		p2[i] = Max( firstCorner[i], secondCorner[i] );
+		p1[i] = min( firstCorner[i], secondCorner[i] );
+		p2[i] = max( firstCorner[i], secondCorner[i] );
 	}
 
 	return image->GetRestrictedImage( image->GetSubRegion( p1, p2 ) );

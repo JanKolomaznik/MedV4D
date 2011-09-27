@@ -171,7 +171,7 @@ texCoordsFromPosition( float3 pos, ImageData3D image )
 {
 	float3 relPos = pos - image.realMinimum;
 
-	return float3( pos.x / image.realSize.x, pos.y / image.realSize.y, pos.z / image.realSize.z );
+	return float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
 }
 
 float3
@@ -180,7 +180,7 @@ texCoordsFromPositionNoInterpolation( float3 pos, ImageData3D image )
 	float3 elementSize = 1.0f / image.size;
 	float3 relPos = pos - image.realMinimum;
 
-	float3 texCoord = float3( pos.x / image.realSize.x, pos.y / image.realSize.y, pos.z / image.realSize.z );
+	float3 texCoord = float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
 	return 0.5f * elementSize + round( texCoord / elementSize ) * elementSize;
 }
 
@@ -228,11 +228,16 @@ float3 SymmetricDifference( sampler3D aTextureData, float3 aTexCoord, float3 aSt
 	return sample1 - sample2;
 }
 
-#define COMPUTE_GRADIENT( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+#define COMPUTE_GRADIENT2( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
 	GRADIENT.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
 	GRADIENT.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
 	GRADIENT.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
 	GRADIENT -= CENTRAL_VALUE.xxx
+
+#define COMPUTE_GRADIENT( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+	GRADIENT.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x - tex3D( TEX_DATA, COORDINATES + half3( DELTA, 0.0, 0.0 ) ).x;\
+	GRADIENT.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x - tex3D( TEX_DATA, COORDINATES + half3( 0.0, DELTA, 0.0 ) ).x;\
+	GRADIENT.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x - tex3D( TEX_DATA, COORDINATES + half3( 0.0, 0.0, DELTA ) ).x;
 
 #define SYMMETRIC_DIFFERENCE( SAMPLE1, SAMPLE2, TEX_DATA, COORDINATES )\
 	SAMPLE1.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\

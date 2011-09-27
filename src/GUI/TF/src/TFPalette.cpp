@@ -281,6 +281,7 @@ TFPalette::addToPalette_(TFEditor* editor)
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockHolder->setAllowedAreas(Qt::AllDockWidgetAreas);
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
+	dockHolder->move( 100, 100 );
 	dockHolder->setFloating(true);
 	
 	bool dimMatch = (editor->getDimension() == dataStructure_.size());

@@ -46,6 +46,12 @@ struct BoundingBox3D
 	Vector< float, 3 >	vertices[VertexCount];
 };
 
+inline std::ostream &
+operator<<( std::ostream & s, const BoundingBox3D &bbox )
+{
+	s << "BBox3d[ " << bbox.getMin() << "; "  << bbox.getMin() << " ]";
+	return s;
+}
 
 void
 GetBBoxMinMaxDistance( 
