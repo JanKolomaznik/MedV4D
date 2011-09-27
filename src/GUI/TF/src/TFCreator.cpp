@@ -17,6 +17,9 @@
 #include "GUI/TF/TFRGBaPainter1D.h"
 #include "GUI/TF/TFHSVaPainter1D.h"
 
+#include "common/Common.h"
+#include "common/Debug.h"
+
 namespace M4D {
 namespace GUI {
 
@@ -63,7 +66,9 @@ TFAbstractPainter* TFCreator::createPainter_(TFEditor::Attributes& attributes){
 	return new TFRGBaPainter1D();
 }
 
-TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes){
+TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
+{
+	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	
 	switch(structure_[mode_].modifier)
 	{
@@ -103,8 +108,9 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 
 }
 
-TFEditor* TFCreator::createEditor_(){
-
+TFEditor* TFCreator::createEditor_()
+{
+	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	TFEditor::Attributes attributes;
 	TFAbstractModifier::Ptr modifier(createModifier_(attributes));
 

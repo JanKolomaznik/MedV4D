@@ -1,6 +1,8 @@
 #include "GUI/TF/TFEditorGUI.h"
 
 #include "GUI/TF/TFQtXmlReader.h"
+#include "common/Common.h"
+#include "common/Debug.h"
 
 namespace M4D{
 namespace GUI{
@@ -10,7 +12,9 @@ TFEditorGUI::TFEditorGUI(TFAbstractModifier::Ptr modifier,
 						 Attributes attributes,
 						 std::string name):
 	TFEditor(modifier, structure, attributes, name),
-	ui_(new Ui::TFEditorGUI){
+	ui_(new Ui::TFEditorGUI)
+{
+	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 }
 
 TFEditorGUI::~TFEditorGUI(){
@@ -18,8 +22,10 @@ TFEditorGUI::~TFEditorGUI(){
 	delete ui_;
 }
 
-void TFEditorGUI::setup(QMainWindow* mainWindow, const int index){
+void TFEditorGUI::setup(QMainWindow* mainWindow, const int index)
+{
 
+	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	if(index >= 0) index_ = index;
 
 	ui_->setupUi(this);

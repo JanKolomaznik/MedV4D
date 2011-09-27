@@ -4,6 +4,8 @@
 #include "GUI/TF/TFEditor.h"
 
 #include <QtGui/QMessageBox>
+#include "common/Common.h"
+#include "common/Debug.h"
 
 namespace M4D {
 namespace GUI {
@@ -22,7 +24,7 @@ TFCompositeModifier::TFCompositeModifier(
 	editors_(palette->getEditors()),
 	managing_(false)
 {
-
+	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	compositeTools_->setupUi(compositeWidget_);
 
 	bool compositionEnabled = false;
