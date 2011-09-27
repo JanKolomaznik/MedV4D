@@ -111,6 +111,17 @@ private:
 GLTransferFunctionBuffer1D::Ptr
 CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
 
+struct TransferFunctionBufferInfo
+{
+	/*TransferFunctionBufferInfo( M4D::Common::IDNumber aId, M4D::GUI::GLTransferFunctionBuffer1D::Ptr aTfGLBuffer, M4D::GUI::TransferFunctionBuffer1D::Ptr aTfBuffer ):
+		id(aId), tfGLBuffer( aTfGLBuffer ), tfBuffer( aTfBuffer )
+	{ }*/
+
+	M4D::Common::IDNumber id;
+	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
+	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
+};
+
 
 } /*namespace GUI*/
 } /*namespace M4D*/

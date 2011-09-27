@@ -209,9 +209,9 @@ ViewerWindow::ViewerWindow()
 
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
 
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( M4D::GUI::TF::Size ) ), this, SLOT( transferFunctionAdded( M4D::GUI::TF::Size ) ) );
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( M4D::GUI::TF::Size ) ), this, SLOT( changedTransferFunctionSelection() ) );
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( M4D::GUI::TF::Size )), this, SLOT( transferFunctionModified( M4D::GUI::TF::Size ) ) );
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( int ) ), this, SLOT( changedTransferFunctionSelection() ), Qt::QueuedConnection );
+	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
 }
 
 void
@@ -393,11 +393,9 @@ struct CreateGLTFBuffer
 };
 
 void
-ViewerWindow::transferFunctionAdded( M4D::GUI::TF::Size idx )
+ViewerWindow::transferFunctionAdded( int idx )
 {
-	LOG( __FUNCTION__ );
-
-	TransferFunctionBufferInfo info;
+	M4D::GUI::TransferFunctionBufferInfo info;
 	info.id = idx;
 
 	if( fillBufferFromTF( mTFEditingSystem->getTransferFunction(idx), info.tfBuffer ) ) {
@@ -412,16 +410,37 @@ ViewerWindow::transferFunctionAdded( M4D::GUI::TF::Size idx )
 	} else { 
 		D_PRINT( "TF buffer not created" );
 	}
+	LOG( __FUNCTION__ );
 }
 
 void
 ViewerWindow::changedTransferFunctionSelection()
 {
+	M4D::GUI::Viewer::AGLViewer *pViewer;
+	pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+	if(pGenViewer != NULL) {
+		M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
+		M4D::GUI::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
+		
+		TransferBufferUsageMap::iterator it = mTFUsageMap.find( oldInfo.id );
+		if ( it != mTFUsageMap.end() ) {
+			it->second.viewers.remove( pGenViewer );
+		}
+		it = mTFUsageMap.find( idx );
+		if ( it != mTFUsageMap.end() ) {
+			pGenViewer->setTransferFunctionBufferInfo( it->second.info );
+			it->second.viewers.push_back( pGenViewer );
+		} else {
+			LOG( "Function not found" );
+		}
+	}
 	LOG( __FUNCTION__ );
 }
 
 void
-ViewerWindow::transferFunctionModified( M4D::GUI::TF::Size idx )
+ViewerWindow::transferFunctionModified( int idx )
 {
 	TransferBufferUsageMap::iterator it = mTFUsageMap.find( idx );
 	if ( it != mTFUsageMap.end() ) {
@@ -430,13 +449,17 @@ ViewerWindow::transferFunctionModified( M4D::GUI::TF::Size idx )
 			CreateGLTFBuffer ftor;
 			ftor.tfBuffer = rec.info.tfBuffer;
 			ftor = OpenGLManager::getInstance()->doGL( ftor );
-			rec.info.tfGLBuffer = ftor.tfGLBuffer;
+			rec.info.tfGLBuffer = ftor.tfGLBuffer;	
+			for (ViewerList::iterator it = rec.viewers.begin(); it != rec.viewers.end(); ++it ) {
+				(*it)->setTransferFunctionBufferInfo( rec.info );
+			}
 		}else {
 			D_PRINT( "TF buffer not created" );
 		}
 	} else {
 		D_PRINT( "Modified function not found" );
 	}
+	LOG( __FUNCTION__ );
 }
 
 

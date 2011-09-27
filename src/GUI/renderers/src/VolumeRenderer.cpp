@@ -82,8 +82,7 @@ VolumeRenderer::Finalize()
 {
 	//TODO
 }
-//#define HHHHAAAA
-#ifdef HHHHAAAA
+
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
 {
@@ -100,7 +99,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
 	};
 
-
 	if( aSetupView ) {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -113,8 +111,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-
-
 	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
@@ -145,110 +141,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "edgeOrder", edgeOrder, 8*12 );
 	mCgEffect.SetParameter( "gMinID", (int)minId );
 	mCgEffect.SetParameter( "gBBox", bbox );
-
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetSize() );
-	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
-	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
-	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
-
-	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
-	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
-
-	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
-	
-	std::string techniqueName;
-	switch ( aConfig.colorTransform ) {
-	case ctTransferFunction1D:
-		{
-			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
-			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
-
-			if ( aConfig.jitterEnabled ) {
-				if ( aConfig.shadingEnabled ) {
-					techniqueName = "TransferFunction1DShadingJitter_3D";
-				} else {
-					techniqueName = "TransferFunction1DJitter_3D";
-				}
-			} else {
-				if ( aConfig.shadingEnabled ) {
-					techniqueName = "TransferFunction1DShading_3D";
-				} else {
-					techniqueName = "TransferFunction1D_3D";
-				}
-			}
-		}
-		break;
-	case ctMaxIntensityProjection:
-		{
-			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
-			techniqueName = "WLWindowMIP_3D";
-		}
-		break;
-	default:
-		ASSERT( false );
-	}
-	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	mCgEffect.ExecuteTechniquePass(
-			techniqueName, 
-			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
-				bbox,
-				aConfig.camera,
-				sliceCount,
-				1.0f
-				) 
-			); 
-
-	M4D::CheckForGLError( "OGL error : " );
-}
-
-#else
-
-void
-VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
-{
-	ASSERT( aConfig.imageData != NULL );
-
-
-	if( aSetupView ) {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		//Set viewing parameters
-		M4D::SetViewAccordingToCamera( aConfig.camera );
-	}
-	glMatrixMode(GL_MODELVIEW);
-	
-	unsigned sliceCount = aConfig.sampleCount;
-	if( sliceCount > mMaxSampleCount ) {
-		reallocateArrays( sliceCount );
-	}
-	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
-	if ( aConfig.enableVolumeRestrictions ) {
-		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
-	}
-	float 				min = 0; 
-	float 				max = 0;
-	unsigned			minId = 0;	
-	unsigned			maxId = 0;
-	GetBBoxMinMaxDistance( 
-			bbox, 
-			aConfig.camera.GetEyePosition(), 
-			aConfig.camera.GetTargetDirection(), 
-			min, 
-			max, 
-		       	minId,	
-		       	maxId	
-			);
-	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
-
-	//aConfig.enableCutPlane = true;
-	//aConfig.cutPlane = Planef( bbox.getCenter(), Vector3f( 0.3f, 0.45f, 0.1f ) );
-
-	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
-	mCgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
-	mCgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
-	mCgEffect.SetParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
-	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
 	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetSize() );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
@@ -321,9 +213,18 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				) 
 			); */
 
+	/*mCgEffect.ExecuteTechniquePass(
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
+				bbox,
+				aConfig.camera,
+				sliceCount,
+				1.0f
+				) 
+			); */
+
 	M4D::CheckForGLError( "OGL error : " );
 }
-#endif
 
 }//Renderer
 }//GUI

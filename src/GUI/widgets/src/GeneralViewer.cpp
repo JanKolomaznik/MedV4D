@@ -259,17 +259,38 @@ GeneralViewer::setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFuncti
 	if ( !aTFunctionBuffer ) {
 		_THROW_ ErrorHandling::EBadParameter();
 	}
-	getViewerState().mTFunctionBuffer = aTFunctionBuffer;
+	getViewerState().mTransferFunctionBufferInfo.id = 0;
+	getViewerState().mTransferFunctionBufferInfo.tfBuffer = aTFunctionBuffer;
+	//getViewerState().mTFunctionBuffer = aTFunctionBuffer;
 	
 	makeCurrent();
-	getViewerState().mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
+	getViewerState().mTransferFunctionBufferInfo.tfGLBuffer = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );	
+	//getViewerState().mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
 	doneCurrent();
 
-	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionTexture.get();
-	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionTexture.get();
+	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
+	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
 
 	notifyAboutSettingsChange();
 	update();
+}
+
+void
+GeneralViewer::setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunctionBufferInfo )
+{
+	getViewerState().mTransferFunctionBufferInfo = aTFunctionBufferInfo;
+
+	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
+	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+TransferFunctionBufferInfo
+GeneralViewer::getTransferFunctionBufferInfo()const
+{
+
 }
 
 void

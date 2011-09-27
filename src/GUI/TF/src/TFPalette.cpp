@@ -256,6 +256,7 @@ TFPalette::lastPaletteChange()
 void 
 TFPalette::addToPalette_(TFEditor* editor)
 {
+	bool oldBlock = blockSignals( true );
 	TF::Size addedIndex = idGenerator_.NewID();
 
 	editor->setup(mainWindow_, addedIndex);
@@ -294,7 +295,9 @@ TFPalette::addToPalette_(TFEditor* editor)
 
 	++lastPaletteChange_;
 
+	blockSignals( oldBlock );
 	emit transferFunctionAdded( addedIndex );
+	emit changedTransferFunctionSelection( addedIndex );
 }
 
 void 

@@ -66,6 +66,12 @@ public:
 	TFFunctionInterface::Const 
 	getTransferFunction(const int index = -1);
 
+	Common::IDNumber
+	getActiveEditorId()const
+	{
+		return activeEditor_;
+	}
+
 	Common::TimeStamp 
 	lastChange();
 	
@@ -78,13 +84,13 @@ signals:
 	UpdatePreview(M4D::GUI::TF::Size index);
 
 	void
-	transferFunctionAdded( M4D::GUI::TF::Size idx );
+	transferFunctionAdded( int idx );
 
 	void
-	transferFunctionModified( M4D::GUI::TF::Size idx );
+	transferFunctionModified( int idx );
 
 	void
-	changedTransferFunctionSelection( M4D::GUI::TF::Size index );
+	changedTransferFunctionSelection( int index );
 
 private slots:
 

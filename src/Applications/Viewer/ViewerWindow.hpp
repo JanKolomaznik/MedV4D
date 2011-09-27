@@ -21,20 +21,11 @@
 
 #include "GUI/utils/TransferFunctionBuffer.h"
 
-struct TransferFunctionBufferInfo
-{
-	/*TransferFunctionBufferInfo( M4D::Common::IDNumber aId, M4D::GUI::GLTransferFunctionBuffer1D::Ptr aTfGLBuffer, M4D::GUI::TransferFunctionBuffer1D::Ptr aTfBuffer ):
-		id(aId), tfGLBuffer( aTfGLBuffer ), tfBuffer( aTfBuffer )
-	{ }*/
-
-	M4D::Common::IDNumber id;
-	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
-	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
-};
+typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord
 {
-	TransferFunctionBufferInfo info;
-	std::list< M4D::GUI::Viewer::GeneralViewer * > viewers;
+	M4D::GUI::TransferFunctionBufferInfo info;
+	ViewerList viewers;
 };
 typedef std::map< M4D::Common::IDNumber, TransferFunctionBufferUsageRecord > TransferBufferUsageMap;
 
@@ -97,13 +88,13 @@ public slots:
 	changedViewerSelection();
 
 	void
-	transferFunctionAdded( M4D::GUI::TF::Size idx );
+	transferFunctionAdded( int idx );
 
 	void
 	changedTransferFunctionSelection();
 
 	void
-	transferFunctionModified( M4D::GUI::TF::Size idx );
+	transferFunctionModified( int idx );
 
 	void
 	showSettingsDialog();

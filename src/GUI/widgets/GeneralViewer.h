@@ -57,8 +57,9 @@ public:
 	Vector< int32, 3 > 			_regionMin;
 	Vector< int32, 3 >			_regionMax;
 
-	TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
-	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
+	//TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
+	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
+	TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
@@ -194,6 +195,12 @@ public:
 
 	void
 	setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
+
+	void
+	setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunctionBufferInfo );
+
+	TransferFunctionBufferInfo
+	getTransferFunctionBufferInfo()const;
 
 	void
 	setCurrentSlice( int32 slice );
