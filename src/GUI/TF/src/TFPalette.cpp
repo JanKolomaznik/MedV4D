@@ -254,7 +254,7 @@ TFPalette::lastPaletteChange()
 }
 
 void 
-TFPalette::addToPalette_(TFEditor* editor)
+TFPalette::addToPalette_(TFEditor* editor, bool visible )
 {
 	bool oldBlock = blockSignals( true );
 	TF::Size addedIndex = idGenerator_.NewID();
@@ -282,6 +282,7 @@ TFPalette::addToPalette_(TFEditor* editor)
 	dockHolder->setAllowedAreas(Qt::AllDockWidgetAreas);
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
 	dockHolder->move( 100, 100 );
+	dockHolder->setVisible( visible );
 	dockHolder->setFloating(true);
 	
 	bool dimMatch = (editor->getDimension() == dataStructure_.size());
@@ -385,13 +386,15 @@ void TFPalette::reformLayout_(bool forceReform){
 	}
 }
 
-void TFPalette::close_triggered(TF::Size index){
+void TFPalette::close_triggered(TF::Size index)
+{
 
 	removeFromPalette_(index);
 }
 
-void TFPalette::change_activeHolder(TF::Size index){
-
+void TFPalette::change_activeHolder(TF::Size index)
+{
+	LOG( "index " << index << "; activeEditor " << activeEditor_ );
 	if(index == activeEditor_) return;
 
 	Editor* active;
@@ -406,6 +409,7 @@ void TFPalette::change_activeHolder(TF::Size index){
 		active = it->second;
 		active->button->setActive(false);
 		active->editor->setActive(false);
+		activeEditor_ = -1;
 	}
 
 	it = palette_.find(index);

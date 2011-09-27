@@ -117,7 +117,26 @@ bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::T
 	return true;
 }
 
+void
+loadAllSavedTFEditorsIntoPalette( M4D::GUI::TFPalette &palette, boost::filesystem::path dirName )
+{
+	if (!boost::filesystem::exists(dirName)) {
+		LOG( "Directory \'" << dirName << "\' doesn't exist!" );
+		return;
+	}
+	if (!boost::filesystem::is_directory(dirName) ){
+		LOG( "\'" << dirName << "\' is not a directory!" );
+		return;
+	}
 
+	boost::filesystem::directory_iterator dirIt(dirName);
+	boost::filesystem::directory_iterator end;
+	for ( ;dirIt != end; ++dirIt ) {
+		LOG( "Found TFE file :" << *dirIt );
+		boost::filesystem::path p = dirIt->path();
+		palette.loadTFFromFile( QString( p.string().data() ), false );
+	}
+}
 
 
 ViewerWindow::ViewerWindow()
@@ -147,6 +166,8 @@ ViewerWindow::ViewerWindow()
 	
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
 	//dockWidget->setFloating(true);
+	
+	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./TF" ) ) );
 //*****************
 	
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
@@ -440,6 +461,10 @@ ViewerWindow::changedTransferFunctionSelection()
 			it->second.viewers.remove( pGenViewer );
 		}
 		it = mTFUsageMap.find( idx );
+		if( it == mTFUsageMap.end() ) {
+			transferFunctionAdded( idx );
+		}
+		it = mTFUsageMap.find( idx );
 		if ( it != mTFUsageMap.end() ) {
 			pGenViewer->setTransferFunctionBufferInfo( it->second.info );
 			it->second.viewers.push_back( pGenViewer );
@@ -512,7 +537,7 @@ ViewerWindow::openFile( const QString &aPath )
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	mProdconn.PutDataset( image );
 	
-	M4D::Common::Clock clock;
+	//M4D::Common::Clock clock;
 	
 	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
 	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
@@ -535,6 +560,38 @@ ViewerWindow::openFile( const QString &aPath )
 */	
 
 	//applyTransferFunction();
+	//
+	typedef M4D::Imaging::Histogram64 Histogram;
+	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
+
+	statusbar->showMessage("Computing histogram...");
+	M4D::Common::Clock clock;
+
+	Histogram::Ptr histogram;
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+	);
+
+	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
+
+	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
+
+	M4D::GUI::TF::Coordinates coords(1, histogram->GetMin());
+	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
+	{
+		tfHistogram->set(coords, *it);
+		++coords[0];
+	}
+	tfHistogram->seal();
+
+	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+
+	LOG( "Histogram computed in " << clock.SecondsPassed() );
+
+	//statusbar->showMessage("Applying transfer function...");
+	//applyTransferFunction();
+
+	statusbar->clearMessage();
 }
 
 void 

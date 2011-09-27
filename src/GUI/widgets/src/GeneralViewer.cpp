@@ -290,7 +290,7 @@ GeneralViewer::setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunct
 TransferFunctionBufferInfo
 GeneralViewer::getTransferFunctionBufferInfo()const
 {
-
+	return getViewerState().mTransferFunctionBufferInfo;
 }
 
 void

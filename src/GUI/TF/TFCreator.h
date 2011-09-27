@@ -37,7 +37,11 @@ public:
 	TFCreator(QMainWindow* mainWindow, TFPalette* palette, const std::vector<TF::Size>& dataStructure);
 	~TFCreator();
 
-	TFEditor* createEditor();
+	TFEditor* 
+	createEditor();
+
+	TFEditor*
+	loadEditorFromFile( QString fileName );
 
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 

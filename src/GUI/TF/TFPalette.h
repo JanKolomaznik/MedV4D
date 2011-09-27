@@ -85,6 +85,16 @@ public slots:
 		change_activeHolder( idx );
 	}
 
+	void
+	loadTFFromFile( QString fileName, bool showGui = true )
+	{
+		TFEditor* created = creator_.loadEditorFromFile( fileName );
+
+		if(!created) return;
+		
+		addToPalette_(created, showGui);
+	}
+
 signals:
 
 	void 
@@ -180,7 +190,8 @@ private:
 	QTimer mChangeDetectionTimer;
 
 	void 
-	addToPalette_(TFEditor* editor);
+	addToPalette_(TFEditor* editor, bool visible = true );
+
 	void 
 	removeFromPalette_(const TF::Size index);
 

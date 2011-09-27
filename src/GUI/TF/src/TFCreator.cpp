@@ -172,6 +172,34 @@ TFEditor* TFCreator::createEditor(){
 	name_ = TF::convert<TF::Types::Predefined, std::string>(structure_[mode_].predefined);
 	return createEditor_();	
 }
+
+TFEditor*
+TFCreator::loadEditorFromFile( QString fileName )
+{
+	TFEditor* loaded = NULL; //TODO improve
+
+	if(fileName.isEmpty()) return loaded;
+
+	if(!reader_->begin(fileName.toLocal8Bit().data()))
+	{
+		LOG_ERR( reader_->errorMessage());
+		return loaded;
+	}
+
+	bool error;
+	loaded = load_(reader_, error);
+
+	if(!loaded)
+	{ 
+		LOG_ERR( "File \""<< fileName.toLocal8Bit().data() << " is corrupted." );
+	}else if(error)
+	{
+		LOG_ERR("Transfer Function Loading Error");
+		LOG_ERR("Error while reading additional data.\nSome settings are set to default.");
+	}
+	reader_->end();
+	return loaded;
+}
 	
 TFEditor* TFCreator::loadEditor_(){
 

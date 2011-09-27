@@ -33,7 +33,7 @@ inline To convert(const From &s){
 	{
         return d;
 	}
-    return NULL;
+    return To();
 }
 
 template <typename XType, typename YType>
