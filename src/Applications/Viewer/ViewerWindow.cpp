@@ -146,7 +146,7 @@ ViewerWindow::ViewerWindow()
 	dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-	dockWidget->setFloating(true);
+	//dockWidget->setFloating(true);
 //*****************
 	
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
