@@ -141,7 +141,7 @@ CgEffect::SetParameter( std::string aName, const float *aValue, size_t aCount )
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
 //	ASSERT( )	TODO check type;
 
-	cgSetParameterValuefr( cgParameter, aCount, aValue );
+	cgSetParameterValuefr( cgParameter, static_cast<int>(aCount), aValue );
 }
 
 void
@@ -150,7 +150,7 @@ CgEffect::SetParameter( std::string aName, const double *aValue, size_t aCount )
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
 //	ASSERT( )	TODO check type;
 
-	cgSetParameterValuedr( cgParameter, aCount, aValue );
+	cgSetParameterValuedr( cgParameter, static_cast<int>(aCount), aValue );
 }
 
 void
@@ -159,7 +159,7 @@ CgEffect::SetParameter( std::string aName, const int *aValue, size_t aCount )
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
 //	ASSERT( )	TODO check type;
 
-	cgSetParameterValueir( cgParameter, aCount, aValue );
+	cgSetParameterValueir( cgParameter, static_cast<int>(aCount), aValue );
 }
 
 void

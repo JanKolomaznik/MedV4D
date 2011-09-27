@@ -79,13 +79,13 @@ protected slots:
 	void
 	changeMaximumSlot()
 	{
-		phaseProgressBar->setMaximum( mStepCount );
+		phaseProgressBar->setMaximum( static_cast<int>(mStepCount) );
 		//LOG( "Current StepCOunt " << mStepCount );
 	}
 	void
 	updateProgressSlot()
 	{
-		phaseProgressBar->setValue( mCurrentStep );
+		phaseProgressBar->setValue( static_cast<int>(mCurrentStep) );
 		//LOG( "CurrentStep " << mCurrentStep );
 	}
 };

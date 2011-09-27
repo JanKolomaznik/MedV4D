@@ -107,7 +107,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	}
 	glMatrixMode(GL_MODELVIEW);
 	
-	unsigned sliceCount = aConfig.sampleCount;
+	size_t sliceCount = aConfig.sampleCount;
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}

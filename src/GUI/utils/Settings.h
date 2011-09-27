@@ -33,7 +33,7 @@ public:
 	int 
 	rowCount(const QModelIndex &parent = QModelIndex()) const
 	{
-		return mValues.size();
+		return static_cast<int>(mValues.size());
 	}
 
 	int 

@@ -74,7 +74,7 @@ protected:
 	initJitteringTexture();
 
 	void
-	reallocateArrays( unsigned aNewMaxSampleCount )
+	reallocateArrays( size_t aNewMaxSampleCount )
 	{
 		if( mVertices ) {
 			delete [] mVertices;
@@ -96,7 +96,7 @@ protected:
 
 	Vector3f	*mVertices;
 	unsigned	*mIndices;
-	unsigned	mMaxSampleCount;
+	size_t		mMaxSampleCount;
 };
 
 struct VolumeRenderer::RenderingConfiguration

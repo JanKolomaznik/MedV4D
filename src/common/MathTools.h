@@ -170,7 +170,7 @@ inline size_t
 minIdx( const Vector< TNumType, tDim > &a ) {
 	size_t idx = 0;
 	for( size_t i = 1; i < tDim; ++i ) {
-		if ( a[idx] > a[(unsigned int)i] ) {
+		if ( a[idx] > a[i] ) {
 			idx = i;
 		}
 	}

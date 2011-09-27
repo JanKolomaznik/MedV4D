@@ -78,7 +78,7 @@ TransferFunctionBuffer1D::GetNearestIndex( float32 aValue )const
 		return -1;
 	}
 	if( idx >= (int)mSize ) {
-		return mSize;
+		return static_cast<int>(mSize);
 	}
 	return idx;
 }
@@ -154,7 +154,7 @@ CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 				GL_TEXTURE_1D, 
 				0, 
 				GL_RGBA, 
-				aTransferFunction.Size(), 
+				static_cast<GLsizei>(aTransferFunction.Size()), 
 				0, 
 				GL_RGBA, 
 				GL_FLOAT, 

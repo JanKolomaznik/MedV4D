@@ -12,6 +12,7 @@
 #include "GUI/utils/QtM4DTools.h"
 #include "GUI/widgets/SettingsDialog.h"
 #include "GUI/widgets/ViewerControls.h"
+#include "common/MathTools.h"
 #include <boost/thread.hpp>
 
 
@@ -341,20 +342,20 @@ ViewerWindow::updateJoyControl()
 
 		int iOffset = 512;
 		int iInputValue = mJoyInput.getSlider(0, 0);
-		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0);
+		iInputValue = (iInputValue < 0)? M4D::min(iInputValue + iOffset, int(0)): M4D::max(iInputValue - iOffset, int(0));
 		beta = (beta) * (1-fConstant) + fConstant * (-iInputValue * M_PI / 32768);
 		iInputValue = mJoyInput.getAxis(0, 0);
-		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0);
+		iInputValue = (iInputValue < 0)? M4D::min(iInputValue + iOffset, 0): M4D::max(iInputValue - iOffset, 0);
 		alpha = (alpha) * (1-fConstant) + fConstant * (iInputValue * M_PI / 32768);
 		pGenViewer->cameraOrbit(Vector2f(alpha*0.05f, beta*0.05f));
 
 		float camZ1 = 0;
 		iInputValue = mJoyInput.getAxis(0, 1);
-		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0); // right stick Y
+		iInputValue = (iInputValue < 0)? M4D::min(iInputValue + iOffset, 0): M4D::max(iInputValue - iOffset, 0); // right stick Y
 		camZ1 = fConstant * iInputValue / 65535.0f;
 		float camZ2 = 0;
 		iInputValue = mJoyInput.getAxis(0, 4);
-		iInputValue = (iInputValue < 0)?Min(iInputValue + iOffset, 0):Max(iInputValue - iOffset, 0); // left stick Y
+		iInputValue = (iInputValue < 0)? M4D::min(iInputValue + iOffset, 0): M4D::max(iInputValue - iOffset, 0); // left stick Y
 		camZ2 = fConstant * iInputValue / 65535.0f;
 		pGenViewer->cameraDolly(1.0f + camZ1 + camZ2);		
 	}
