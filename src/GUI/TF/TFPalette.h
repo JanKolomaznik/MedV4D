@@ -78,6 +78,13 @@ public:
 	Common::TimeStamp 
 	lastPaletteChange();
 
+public slots:
+	void
+	selectTransferFunction( int idx )
+	{
+		change_activeHolder( idx );
+	}
+
 signals:
 
 	void 

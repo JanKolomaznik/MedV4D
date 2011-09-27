@@ -377,6 +377,14 @@ ViewerWindow::selectedViewerSettingsChanged()
 void
 ViewerWindow::changedViewerSelection()
 {
+	M4D::GUI::Viewer::AGLViewer *pViewer;
+	pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+	if(pGenViewer != NULL) {
+		M4D::GUI::TransferFunctionBufferInfo info = pGenViewer->getTransferFunctionBufferInfo();
+		mTFEditingSystem->selectTransferFunction( info.id );
+	}
 	LOG( __FUNCTION__ );
 }
 
@@ -424,6 +432,9 @@ ViewerWindow::changedTransferFunctionSelection()
 		M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
 		M4D::GUI::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
 		
+		if ( idx == oldInfo.id ) {
+			return; //No change
+		}
 		TransferBufferUsageMap::iterator it = mTFUsageMap.find( oldInfo.id );
 		if ( it != mTFUsageMap.end() ) {
 			it->second.viewers.remove( pGenViewer );
@@ -574,13 +585,13 @@ ViewerWindow::dataLoaded()
 		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
 	);*/ 
 
-	M4D::Imaging::Histogram64::Ptr histogram;
+	/*M4D::Imaging::Histogram64::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
+	mTransferFunctionEditor->SetBackgroundHistogram( histogram );*/
 	
 
 	//applyTransferFunction();

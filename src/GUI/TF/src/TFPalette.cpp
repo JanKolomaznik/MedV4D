@@ -395,15 +395,26 @@ void TFPalette::change_activeHolder(TF::Size index){
 	if(index == activeEditor_) return;
 
 	Editor* active;
+	HolderMapIt it;
 	if(activeEditor_ >= 0)
 	{
-		active = palette_.find(activeEditor_)->second;
+		it = palette_.find(activeEditor_);
+		if ( it == palette_.end() ) {
+			D_PRINT( "Couldn't find active TF editor - id = " << activeEditor_ );
+			return;
+		}
+		active = it->second;
 		active->button->setActive(false);
 		active->editor->setActive(false);
 	}
 
+	it = palette_.find(index);
+	if ( it == palette_.end() ) {
+		D_PRINT( "Couldn't select new active TF editor - id = " << activeEditor_ );
+		return;
+	}
 	activeEditor_ = index;
-	active = palette_.find(activeEditor_)->second;
+	active = it->second;
 	active->button->setActive(true);
 	active->editor->setActive(true);
 

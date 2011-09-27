@@ -28,16 +28,19 @@ processCommandLine( int argc, char** argv )
 
 	inFilename = inFilenameArg.getValue();
 }
-
+#ifdef EXTENSION_MODULES_ENABLED
 #include "AnnotationModule/AnnotationModule.hpp"
 #include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
+#endif
 void
 createModules()
 {
 	ApplicationManager *appManager = ApplicationManager::getInstance();
-	
-	//appManager->addModule( createModule< AnnotationModule >() );
+
+#ifdef EXTENSION_MODULES_ENABLED	
+	appManager->addModule( createModule< AnnotationModule >() );
 	appManager->addModule( createModule< ShoulderMeasurementModule >() );
+#endif
 }
 
 int

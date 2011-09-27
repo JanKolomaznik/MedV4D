@@ -91,6 +91,19 @@ SaveTextureToImageFile( uint32 aWidth, uint32 aHeight, GLuint aTexture, std::str
 void
 InitOpenGL();
 
+struct GLPushAtribs
+{
+	GLPushAtribs()
+	{
+		GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
+	}
+	~GLPushAtribs()
+	{
+		glPopAttrib();
+	}
+};
+
+
 //*******************************************************************************************************************
 //*******************************************************************************************************************
 //GLenum

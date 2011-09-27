@@ -8,12 +8,12 @@ namespace GUI {
 
 TFCompositionDialog::TFCompositionDialog(QWidget* parent):
 	QDialog(parent),
+	previewEnabled_(false),
 	ui_(new Ui::TFCompositionDialog),
 	layout_(new QGridLayout()),
 	colModulator_(1),
-	selectionChanged_(false),
-	previewEnabled_(false){
-
+	selectionChanged_(false)
+{
 	ui_->setupUi(this);
 
 	layout_->setContentsMargins(10,10,10,10);

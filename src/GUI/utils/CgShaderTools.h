@@ -116,7 +116,7 @@ template< typename TGeometryRenderFunctor >
 void
 CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry )
 {
-	GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
+	M4D::GLPushAtribs pushAttribs; // GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
 
 	prepareState();
 	
@@ -138,7 +138,7 @@ CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunct
 	}
 	CheckForGLError( "After effect application :" );
 
-	GL_CHECKED_CALL( glPopAttrib() );
+	//GL_CHECKED_CALL( glPopAttrib() );
 }
 
 template< unsigned Dim >
