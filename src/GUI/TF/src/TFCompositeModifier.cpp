@@ -16,15 +16,16 @@ TFCompositeModifier::TFCompositeModifier(
 		TFPalette* palette
 		):
 	TFModifier1D(function, painter),
-	compositeTools_(new Ui::TFCompositeModifier),
-	compositeWidget_(new QWidget),
-	layout_(new QVBoxLayout),
-	pushUpSpacer_(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding)),
 	palette_(palette),
 	editors_(palette->getEditors()),
 	managing_(false)
 {
-	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	compositeTools_ = new Ui::TFCompositeModifier;
+	compositeWidget_ = new QWidget;
+	layout_ = new QVBoxLayout;
+	pushUpSpacer_ = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
 	compositeTools_->setupUi(compositeWidget_);
 
 	bool compositionEnabled = false;
@@ -190,7 +191,8 @@ void TFCompositeModifier::change_check(){
 	if(lastPaletteChange_ != lastChange)
 	{
 		lastPaletteChange_ = lastChange;
-		editors_.swap(palette_->getEditors());
+		editors_ = palette_->getEditors();
+		//editors_.swap(palette_->getEditors());
 		
 		bool compositionEnabled = false;
 		Composition newComposition;

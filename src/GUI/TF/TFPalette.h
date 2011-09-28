@@ -60,7 +60,7 @@ public:
 	TF::Size 
 	getDimension();	
 
-	Editors &
+	Editors 
 	getEditors();	
 	
 	TFFunctionInterface::Const 

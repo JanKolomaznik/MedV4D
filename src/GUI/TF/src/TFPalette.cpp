@@ -184,7 +184,7 @@ TFPalette::getDomain(const TF::Size dimension)
 	return dataStructure_[dimension-1];
 }
 
-TFPalette::Editors& 
+TFPalette::Editors 
 TFPalette::getEditors()
 {
 

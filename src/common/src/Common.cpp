@@ -125,10 +125,14 @@ GetByteCountFromNTID( int16 ntid )
 void
 Medv4DInit()
 {
-	#ifdef USE_DEVIL
+#ifdef USE_DEVIL
 	ilInit();
 	iluInit();
-	#endif /*USE_DEVIL*/	
+#endif /*USE_DEVIL*/	
+
+#ifdef USE_TBB
+
+#endif /*USE_TBB*/
 
 }
 

@@ -68,7 +68,7 @@ TFAbstractPainter* TFCreator::createPainter_(TFEditor::Attributes& attributes){
 
 TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 {
-	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	
 	switch(structure_[mode_].modifier)
 	{
@@ -92,11 +92,10 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 		{
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			attributes.insert(TFEditor::Composition);
-			return new TFCompositeModifier(
-				TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes))),
-				palette_
-			);
+			TFFunctionInterface::Ptr func = TFFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>());
+			TFPainter1D::Ptr painter = TFPainter1D::Ptr(dynamic_cast<TFPainter1D*>(createPainter_(attributes)));
+			TFCompositeModifier *modifier = new TFCompositeModifier( func, painter, palette_ );
+			return modifier; 
 		}
 	}
 
@@ -110,7 +109,7 @@ TFAbstractModifier* TFCreator::createModifier_(TFEditor::Attributes& attributes)
 
 TFEditor* TFCreator::createEditor_()
 {
-	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	TFEditor::Attributes attributes;
 	TFAbstractModifier::Ptr modifier(createModifier_(attributes));
 

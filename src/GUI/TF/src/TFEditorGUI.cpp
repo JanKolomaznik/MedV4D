@@ -14,7 +14,7 @@ TFEditorGUI::TFEditorGUI(TFAbstractModifier::Ptr modifier,
 	TFEditor(modifier, structure, attributes, name),
 	ui_(new Ui::TFEditorGUI)
 {
-	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 }
 
 TFEditorGUI::~TFEditorGUI(){
@@ -25,7 +25,7 @@ TFEditorGUI::~TFEditorGUI(){
 void TFEditorGUI::setup(QMainWindow* mainWindow, const int index)
 {
 
-	D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
+	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	if(index >= 0) index_ = index;
 
 	ui_->setupUi(this);

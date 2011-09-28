@@ -20,7 +20,7 @@ ApplicationManager::ApplicationManager()
 }
 
 void
-ApplicationManager::initialize( int argc, char** argv )
+ApplicationManager::initialize( int &argc, char** argv )
 {
 	Medv4DInit();
 	mApp = new QApplication(argc, argv);

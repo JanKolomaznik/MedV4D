@@ -159,16 +159,19 @@ ViewerWindow::ViewerWindow()
 	mTFEditingSystem = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this, dataCT1D));
 	mTFEditingSystem->setupDefault();
 
-	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
+	createDockWidget( tr("Transfer Function Palette"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
+	/*QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 	
 	dockWidget->setWidget( &(*mTFEditingSystem) );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 	
-	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);*/
 	//dockWidget->setFloating(true);
 	
 	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./TF" ) ) );
+
+	LOG( "TF framework initialized" );
 //*****************
 	
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
@@ -184,12 +187,14 @@ ViewerWindow::ViewerWindow()
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal, false );
+	LOG( "Python terminal initialized" );
 #endif //USE_PYTHON
 
 	ViewerControls *mViewerControls = new ViewerControls;
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), mViewerControls, SLOT( updateControls() ) );
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls );
+	LOG( "Viewer controls GUI initialized" );
 
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
@@ -197,6 +202,7 @@ ViewerWindow::ViewerWindow()
 	addToolBar( toolbar );
 
 	addViewerActionSetToWidget( *menuViewer, actions );
+	LOG( "Viewer control actions created and added to GUI" );
 
 	mInfoLabel = new QLabel();
 	statusbar->addWidget( mInfoLabel );
@@ -206,8 +212,9 @@ ViewerWindow::ViewerWindow()
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mRenderingExtension );
 	factory->setInputConnection( mProdconn );
-
 	mViewerDesktop->setViewerFactory( factory );
+	LOG( "Viewer factory initialized" );
+
 	mViewerDesktop->setLayoutOrganization( 2, 1 );
 	QObject::connect( mViewerDesktop, SIGNAL( updateInfo( const QString & ) ), this, SLOT( updateInfoInStatusBar( const QString & ) ), Qt::QueuedConnection );
 
@@ -224,6 +231,7 @@ ViewerWindow::ViewerWindow()
 		QObject::connect( &mJoyTimer, SIGNAL( timeout() ), this, SLOT( updateJoyControl() ) );
 		mJoyTimer.start();
 	}
+	LOG( "OIS initialized" );
 #endif
 
 
@@ -234,12 +242,14 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( int ) ), this, SLOT( changedTransferFunctionSelection() ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
+
+	LOG( "Basic signals/slots connected" );
 }
 
 void
 ViewerWindow::initAfterLoopStart()
 {
-	toggleInteractiveTransferFunction( true );
+	//toggleInteractiveTransferFunction( true );
 }
 
 
@@ -392,7 +402,7 @@ ViewerWindow::selectedViewerSettingsChanged()
 		}
 	}
 	mInfoLabel->setText( text );*/
-	LOG( __FUNCTION__ );
+	//LOG( __FUNCTION__ );
 }
 
 
@@ -407,7 +417,7 @@ ViewerWindow::changedViewerSelection()
 		M4D::GUI::TransferFunctionBufferInfo info = pGenViewer->getTransferFunctionBufferInfo();
 		mTFEditingSystem->selectTransferFunction( info.id );
 	}
-	LOG( __FUNCTION__ );
+	//LOG( __FUNCTION__ );
 }
 
 struct CreateGLTFBuffer
@@ -440,7 +450,7 @@ ViewerWindow::transferFunctionAdded( int idx )
 	} else { 
 		D_PRINT( "TF buffer not created" );
 	}
-	LOG( __FUNCTION__ );
+	//LOG( __FUNCTION__ );
 }
 
 void
@@ -473,7 +483,7 @@ ViewerWindow::changedTransferFunctionSelection()
 			LOG( "Function not found" );
 		}
 	}
-	LOG( __FUNCTION__ );
+	//LOG( __FUNCTION__ );
 }
 
 void
@@ -496,7 +506,7 @@ ViewerWindow::transferFunctionModified( int idx )
 	} else {
 		D_PRINT( "Modified function not found" );
 	}
-	LOG( __FUNCTION__ );
+	//LOG( __FUNCTION__ );
 }
 
 

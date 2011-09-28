@@ -12,7 +12,7 @@ class MultiDockWidget: public QDockWidget
 	Q_OBJECT;
 public:
 	MultiDockWidget ( const QString & aTitle, QWidget * parent = 0 ):
-		QDockWidget( parent )/*, mWidget(NULL ), mTitle( aTitle ), mCurrentMainWindow( NULL ), mCurrentDockWidget( NULL )*/
+		QDockWidget( aTitle, parent )/*, mWidget(NULL ), mTitle( aTitle ), mCurrentMainWindow( NULL ), mCurrentDockWidget( NULL )*/
 	{
 		//QObject::connect( this, SIGNAL( continueInDrag( QWidget *, QPoint ) ), this, SLOT( continueInDragSlot( QWidget *, QPoint ) ), Qt::QueuedConnection );
 		//mCurrentDockWidget = new DockWidgetPrivate( mTitle );

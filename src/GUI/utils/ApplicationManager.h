@@ -11,6 +11,11 @@
 #include "GUI/utils/ProxyViewerController.h"
 #include <QtCore>
 
+#ifdef USE_TBB
+#include <tbb/tbb.h>
+#endif
+
+
 
 #define GET_SETTINGS( NAME, TYPE, DEFAULT ) \
 	ApplicationManager::getInstance()->settings().get<TYPE>( NAME, DEFAULT )
@@ -28,7 +33,7 @@ public:
 	ApplicationManager();
 
 	virtual void
-	initialize( int argc, char** argv );
+	initialize( int &argc, char** argv );
 
 	virtual void
 	finalize();
@@ -163,6 +168,10 @@ protected:
 	ModeInfo	*mCurrentMode;
 
 	Settings	mSettings;
+
+#ifdef USE_TBB
+	tbb::task_scheduler_init mTBBScheduler;
+#endif /*USE_TBB*/
 };
 
 #endif /*APPLICATION_MANAGER_H*/

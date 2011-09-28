@@ -21,6 +21,13 @@ public:
 };
 
 template< typename CellType >
+class Histogram;
+
+template< typename CellType >
+void
+swap( Histogram< CellType > &histA, Histogram< CellType > &histB );
+
+template< typename CellType >
 class Histogram
 {
 public:
@@ -28,6 +35,8 @@ public:
 
 	typedef CellType* Iterator;
 	typedef Iterator iterator;
+
+	friend void swap< CellType >( Histogram< CellType > &histA, Histogram< CellType > &histB );
 
 	Histogram( int32 min, int32 max, bool storeOutliers = true ) : _cells( NULL ),
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
@@ -38,7 +47,11 @@ public:
 	Histogram( const Histogram &histogram ) :
 		 _cells( NULL ), _minCell( histogram._minCell ), 
 		 _maxCell( histogram._maxCell ), _storeOutliers( histogram._storeOutliers ), _sum( histogram._sum )
-	{ /*TODO - copy cells*/ }
+	{ 
+		Resize( _minCell, _maxCell );
+		//_cells = histogram._cells;
+		std::copy( histogram._cells, histogram._size, _cells ); 
+	}
 
 
 	~Histogram()
@@ -66,12 +79,13 @@ public:
 	const Histogram&
 	operator=( const Histogram &histogram )
 		{ 
-			_cells = histogram._cells;
 			_minCell = histogram._minCell; 
 		 	_maxCell = histogram._maxCell;
 			_storeOutliers = histogram._storeOutliers;
 			_sum = histogram._sum;
-			
+			Resize( _minCell, _maxCell );
+			//_cells = histogram._cells;
+			std::copy( histogram._cells, histogram._size, _cells );
 			return *this;
 		}
 
@@ -82,12 +96,12 @@ public:
 				_THROW_	EIncompatibleHistograms();
 			}
 			CellType sum = 0;	
-			for( unsigned i = 0; i < _cells.size(); ++i ) {
+			for( unsigned i = 0; i < _size; ++i ) {
 				_cells[i] += histogram._cells[i];
 				sum += _cells[i];
 			}
 			if( !_storeOutliers ) {
-				sum -= _cells[0] + _cells[ _cells.size()-1 ]; 
+				sum -= _cells[0] + _cells[ _size-1 ]; 
 			}
 			_sum = sum;
 		}
@@ -249,6 +263,19 @@ protected:
 	CellType	_sum;
 	size_t		_size;
 };
+
+template< typename CellType >
+void
+swap( Histogram< CellType > &histA, Histogram< CellType > &histB )
+{
+	std::swap( histA._cells,  histB._cells );
+	std::swap( histA._minCell,  histB._minCell );
+	std::swap( histA._maxCell,  histB._maxCell );
+	std::swap( histA._storeOutliers,  histB._storeOutliers );
+	std::swap( histA._sum,  histB._sum );
+	std::swap( histA._size,  histB._size );
+}
+
 
 typedef Histogram< uint32 > Histogram32;
 typedef Histogram< uint64 > Histogram64;
