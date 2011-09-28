@@ -136,6 +136,7 @@ protected:
 	M4D::GUI::TFPalette::Ptr mTFEditingSystem;
 	TransferBufferUsageMap mTFUsageMap;
 
+	QFileDialog	*mOpenDialog;
 private:
 
 };

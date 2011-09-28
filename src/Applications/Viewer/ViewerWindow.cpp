@@ -51,7 +51,7 @@ public:
 
 		viewer->enableJittering( GET_SETTINGS( "gui.viewer.volume_rendering.jittering_enabled", bool, true ) );
 
-		viewer->setJitterStrength( GET_SETTINGS( "gui.viewer.volume_rendering.jitter_strength", double, 2.0 ) );
+		viewer->setJitterStrength( GET_SETTINGS( "gui.viewer.volume_rendering.jitter_strength", double, 1.0 ) );
 
 		viewer->setRenderingQuality( GET_SETTINGS( "gui.viewer.volume_rendering.rendering_quality", int, qmNormal ) );
 
@@ -244,6 +244,10 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
 
 	LOG( "Basic signals/slots connected" );
+
+	mOpenDialog = new QFileDialog( this, tr("Open Image") );
+	mOpenDialog->setFileMode(QFileDialog::ExistingFile);
+	//mOpenDialog->setOption(QFileDialog::DontUseNativeDialog, false);
 }
 
 void
@@ -522,7 +526,15 @@ void
 ViewerWindow::openFile()
 {
 	try {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
+	QStringList fileNames;
+	QString fileName;
+	if ( mOpenDialog->exec() ) {
+		fileNames = mOpenDialog->selectedFiles();
+		if (!fileNames.isEmpty()) {
+			fileName = fileNames[0];
+		}
+	}
+	//QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
 
 	if ( !fileName.isEmpty() ) {
 		QFileInfo pathInfo( fileName );
