@@ -22,6 +22,10 @@ AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
 
 AGLViewer::~AGLViewer()
 {
+	makeCurrent();
+	mFrameBufferObject.Finalize();
+	doneCurrent();
+
 	deselect();
 }
 

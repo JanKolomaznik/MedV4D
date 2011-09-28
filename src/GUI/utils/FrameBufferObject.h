@@ -40,6 +40,17 @@ public:
 	}
 
 	void
+	Finalize()
+	{
+		if ( mInitialized ) {
+			GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
+			GL_CHECKED_CALL( glDeleteTextures( 1, &mColorTexture ) );
+			GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
+		}
+		mInitialized = false;
+	}
+
+	void
 	Render()
 	{
 		GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
