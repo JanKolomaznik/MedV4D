@@ -24,10 +24,13 @@ createToolBarFromViewerActionSet( ViewerActionSet &aActionSet, const QString &aN
 
 
 
-HelperViewerAction::HelperViewerAction( QString aName, QObject *parent ): QAction( aName, parent )
+HelperViewerAction::HelperViewerAction( const QString & text, QObject *parent ): QAction( text, parent )
 {
 	QObject::connect( this, SIGNAL( triggered( bool ) ), this, SLOT( callAction() ) );
 }
 
-
+HelperViewerAction::HelperViewerAction ( const QIcon & icon, const QString & text, QObject * parent ): QAction( icon, text, parent )
+{
+	QObject::connect( this, SIGNAL( triggered( bool ) ), this, SLOT( callAction() ) );
+}
 

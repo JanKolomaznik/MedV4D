@@ -95,7 +95,8 @@ class HelperViewerAction: public QAction, public HelperViewerActionInterface
 {
 	Q_OBJECT;
 public:
-	HelperViewerAction( QString aName, QObject *parent );
+	HelperViewerAction( const QString & text, QObject *parent );
+	HelperViewerAction ( const QIcon & icon, const QString & text, QObject * parent );
 
 public slots:
 	void
@@ -111,8 +112,15 @@ template< typename TViewer, typename TOnClick, typename TCheckState, typename TC
 class ViewerAction: public HelperViewerAction
 {
 public:
-	ViewerAction( QString aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
+	ViewerAction( const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
 		: HelperViewerAction( aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
+	{
+		//setCheckable( tCheckable );		
+		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
+	}
+
+	ViewerAction( const QIcon & icon, const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
+		: HelperViewerAction( icon, aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
 	{
 		//setCheckable( tCheckable );		
 		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
@@ -157,9 +165,9 @@ protected:
 
 template< typename TOnClick, typename TCheckState, typename TCheckEnabled >
 QAction *
-createGeneralViewerAction( QString aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, bool checkable, QObject *parent = NULL )
+createGeneralViewerAction( const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, bool checkable, const QIcon &icon = QIcon(), QObject *parent = NULL )
 {
-	HelperViewerAction *action = new ViewerAction< M4D::GUI::Viewer::GeneralViewer, TOnClick, TCheckState, TCheckEnabled >( aName, aOnClick, aCheckState, aCheckEnabled, parent );
+	HelperViewerAction *action = new ViewerAction< M4D::GUI::Viewer::GeneralViewer, TOnClick, TCheckState, TCheckEnabled >( icon, aName, aOnClick, aCheckState, aCheckEnabled, parent );
 	action->setCheckable( checkable );
 	action->callCheckState();
 	return action;
@@ -167,9 +175,9 @@ createGeneralViewerAction( QString aName, TOnClick aOnClick, TCheckState aCheckS
 
 template< typename TOnClick, typename TCheckState >
 QAction *
-createGeneralViewerAction( QString aName, TOnClick aOnClick, TCheckState aCheckState, bool checkable, QObject *parent = NULL)
+createGeneralViewerAction( const QString &aName, TOnClick aOnClick, TCheckState aCheckState, bool checkable, const QIcon &icon = QIcon(), QObject *parent = NULL)
 {
-	return createGeneralViewerAction( aName, aOnClick, aCheckState, M4D::Functors::PredicateAlwaysTrue(), checkable, parent );
+	return createGeneralViewerAction( aName, aOnClick, aCheckState, M4D::Functors::PredicateAlwaysTrue(), checkable, icon, parent );
 }
 //**************************************************************
 class HelperViewerWidgetAction: public QWidgetAction, public HelperViewerActionInterface

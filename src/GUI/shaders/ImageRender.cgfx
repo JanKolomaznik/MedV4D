@@ -355,7 +355,7 @@ fp_WLWindowBasic_3D(
 			1.0f
 			);
 		
-	OUT.color = float4( 0.5f, 0.5f, 0.5f, value.x );
+	OUT.color = float4( 0.9f, 0.9f, 0.9f, 0.5f*value.x );
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 
 	return OUT;

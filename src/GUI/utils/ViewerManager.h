@@ -57,6 +57,9 @@ public:
 protected:
 	virtual void
 	viewerSelectionChangedHelper() = 0;
+	
+	virtual void
+	createViewerActions();
 
 
 	ViewerManager( ViewerManager *aInstance );

@@ -7,6 +7,7 @@
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/utils/ProxyViewerController.h"
 #include "GUI/utils/ProxyRenderingExtension.h"
+#include "GUI/utils/DatasetManager.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
 #include "GUI/widgets/ProgressInfoDialog.h"
 #include "GUI/widgets/MainWindow.h"
@@ -126,6 +127,7 @@ protected:
 
 	ProgressInfoDialog::Ptr mProgressDialog;
 	M4D::Dicom::DicomObjSetPtr mDicomObjSet;
+	DatasetID mDatasetId;
 
 #ifdef OIS_ENABLED
 	// OIS

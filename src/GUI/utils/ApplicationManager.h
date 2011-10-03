@@ -4,6 +4,7 @@
 
 #include "GUI/utils/OpenGLManager.h"
 #include "GUI/utils/ViewerManager.h"
+#include "GUI/utils/DatasetManager.h"
 #include "GUI/utils/Module.h"
 #include "GUI/utils/Settings.h"
 #include "GUI/widgets/MainWindow.h"
@@ -23,7 +24,7 @@
 
 class QApplication;
 
-class ApplicationManager: public QObject, public OpenGLManager, public ViewerManager
+class ApplicationManager: public QObject, public OpenGLManager, public ViewerManager, public DatasetManager
 {
 	Q_OBJECT
 public:
@@ -132,6 +133,9 @@ public:
 	{
 		return mSettings;
 	}
+
+	QIcon 
+	getIcon( QString name )const;
 public slots:
 	void
 	updateGUIRequest()
@@ -159,6 +163,9 @@ protected:
 	void
 	viewerSelectionChangedHelper();
 
+	void
+	loadIcons();
+
 	bool	mInitialized;
 	QApplication *mApp;
 
@@ -168,6 +175,9 @@ protected:
 	ModeInfo	*mCurrentMode;
 
 	Settings	mSettings;
+
+	typedef std::map< QString, QIcon > IconMap;
+	IconMap mIconMap;
 
 #ifdef USE_TBB
 	tbb::task_scheduler_init mTBBScheduler;

@@ -235,6 +235,16 @@ public:
 			DicomObjSet &result,
 			ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
 			);
+	static void
+	LoadSerieThatFileBelongsTo(
+			boost::filesystem::path fileName,
+			boost::filesystem::path folder, 
+			DicomObjSet &result,
+			ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
+			)
+	{
+		LoadSerieThatFileBelongsTo( fileName.string(), folder.string(), result,	aProgressNotifier );
+	}
 
 private:
 	static bool	_useRemotePart;

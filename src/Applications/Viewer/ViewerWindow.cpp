@@ -536,7 +536,7 @@ ViewerWindow::openFile()
 	}
 	//QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
 
-	if ( !fileName.isEmpty() ) {
+	/*if ( !fileName.isEmpty() ) {
 		QFileInfo pathInfo( fileName );
 		QString ext = pathInfo.suffix();
 		if ( ext.toLower() == "dcm" ) {
@@ -544,6 +544,17 @@ ViewerWindow::openFile()
 		} else {
 			openFile( fileName );
 		}
+	}*/
+
+	if ( !fileName.isEmpty() ) {
+		if( !mProgressDialog ) {
+			mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
+			QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
+		}
+
+		mDatasetId = DatasetManager::getInstance()->openFileNonBlocking( std::string( fileName.toLocal8Bit().data() ), mProgressDialog );
+
+		mProgressDialog->show();
 	}
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
@@ -633,14 +644,14 @@ ViewerWindow::openDicom( const QString &aPath )
 		mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
 		QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
 	}
-	boost::thread th = boost::thread( 
+	/*boost::thread th = boost::thread( 
 			&M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo,  
 			std::string( pathInfo.absoluteFilePath().toLocal8Bit().data() ), 
 			std::string( pathInfo.absolutePath().toLocal8Bit().data() ), 
 			boost::ref( *mDicomObjSet ),
 			mProgressDialog
 			);
-	th.detach();
+	th.detach();*/
 	mProgressDialog->show();
 	//th.join();
 }
@@ -648,11 +659,22 @@ ViewerWindow::openDicom( const QString &aPath )
 void
 ViewerWindow::dataLoaded()
 {
-	M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
+	//M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
+	D_PRINT( "Loaded dataset ID = " << mDatasetId );
+	ADatasetRecord::Ptr rec = DatasetManager::getInstance()->getDatasetInfo( mDatasetId );
+	if ( !rec ) {
+		D_PRINT( "Loaded dataset record not available" );
+		return;
+	}
+	ImageRecord * iRec = dynamic_cast< ImageRecord * >( rec.get() );
+	if ( !iRec ) {
+		D_PRINT( "Loaded dataset isn't image" );
+	}
+	M4D::Imaging::AImage::Ptr image = iRec->image;
 
 	mProdconn.PutDataset( image );
 	
-	M4D::Common::Clock clock;
+	//M4D::Common::Clock clock;
 	
 	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
 	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
@@ -675,4 +697,36 @@ ViewerWindow::dataLoaded()
 	
 
 	//applyTransferFunction();
+	
+	typedef M4D::Imaging::Histogram64 Histogram;
+	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
+
+	statusbar->showMessage("Computing histogram...");
+	M4D::Common::Clock clock;
+
+	Histogram::Ptr histogram;
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+	);
+
+	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
+
+	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
+
+	M4D::GUI::TF::Coordinates coords(1, histogram->GetMin());
+	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
+	{
+		tfHistogram->set(coords, *it);
+		++coords[0];
+	}
+	tfHistogram->seal();
+
+	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+
+	LOG( "Histogram computed in " << clock.SecondsPassed() );
+
+	//statusbar->showMessage("Applying transfer function...");
+	//applyTransferFunction();
+
+	statusbar->clearMessage();
 }
