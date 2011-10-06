@@ -161,8 +161,12 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 			if ( !aConfig.transferFunction ) {
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
-			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
-			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
+
+			mCgEffect.SetParameter( "gTransferFunction1D", *(aConfig.transferFunction) );
+
+			if( aConfig.integralTransferFunction ) {
+				mCgEffect.SetParameter( "gIntegralTransferFunction1D", *(aConfig.integralTransferFunction) );
+			}
 
 			if ( aConfig.jitterEnabled ) {
 				if ( aConfig.shadingEnabled ) {

@@ -172,7 +172,7 @@ CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 		throw;
 	}
 
-	return GLTransferFunctionBuffer1D::Ptr( new GLTransferFunctionBuffer1D( texName, aTransferFunction.GetMappedInterval() ) );
+	return GLTransferFunctionBuffer1D::Ptr( new GLTransferFunctionBuffer1D( texName, aTransferFunction.GetMappedInterval(), aTransferFunction.Size() ) );
 
 }
 

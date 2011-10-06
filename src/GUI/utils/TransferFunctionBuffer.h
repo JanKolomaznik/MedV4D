@@ -99,13 +99,20 @@ struct GLTransferFunctionBuffer1D
 	GLuint
 	GetTextureID()const
 	{ return mGLTextureID; }
+
+	int
+	GetSampleCount()const
+	{
+		return mSampleCount;
+	}
 private:
-	GLTransferFunctionBuffer1D( GLuint aGLTextureID, MappedInterval aMappedInterval )
-		: mGLTextureID( aGLTextureID ), mMappedInterval( aMappedInterval )
+	GLTransferFunctionBuffer1D( GLuint aGLTextureID, MappedInterval aMappedInterval, int aSampleCount )
+		: mGLTextureID( aGLTextureID ), mMappedInterval( aMappedInterval ), mSampleCount( aSampleCount )
 	{ /* empty */ }
 
 	GLuint	mGLTextureID;
 	MappedInterval mMappedInterval;
+	int mSampleCount;
 };
 
 GLTransferFunctionBuffer1D::Ptr
@@ -122,6 +129,9 @@ struct TransferFunctionBufferInfo
 	M4D::Common::IDNumber id;
 	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
 	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
+
+	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLIntegralBuffer;
+	M4D::GUI::TransferFunctionBuffer1D::Ptr tfIntegralBuffer;
 };
 
 

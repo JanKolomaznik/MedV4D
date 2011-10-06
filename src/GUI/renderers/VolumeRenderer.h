@@ -103,13 +103,14 @@ struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
 		: imageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
-		transferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
+		transferFunction( NULL ), integralTransferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
 		sampleCount( 150 ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
 	{ }
 	const GLTextureImage3D			*imageData;
 	
 	int					colorTransform;
 	const GLTransferFunctionBuffer1D	*transferFunction;
+	const GLTransferFunctionBuffer1D	*integralTransferFunction;
 	Vector2f				lutWindow;
 	Camera					camera;
 	bool					jitterEnabled;

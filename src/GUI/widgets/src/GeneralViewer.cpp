@@ -282,6 +282,7 @@ GeneralViewer::setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunct
 
 	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
 	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
+	getViewerState().mVolumeRenderConfig.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer.get();
 
 	notifyAboutSettingsChange();
 	update();

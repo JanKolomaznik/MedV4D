@@ -5,11 +5,18 @@
 
 struct ImageData3D
 {
-	sampler3D data;
+	sampler3D data: TEX0;
 	int3 size;
 	float3 realSize;
 	float3 realMinimum;
 	float3 realMaximum;
+};
+
+struct TransferFunction1D
+{
+	sampler1D data: TEX1;
+	float2 interval;
+	int sampleCount;
 };
 
 struct FragmentOutput
@@ -69,8 +76,11 @@ float3 gViewDirection;
 
 sampler3D gMaskData3D;
 
-sampler1D gTransferFunction1D;
-float2 gTransferFunction1DInterval;
+TransferFunction1D gTransferFunction1D;
+TransferFunction1D gIntegralTransferFunction1D;
+//sampler1D gTransferFunction1Dtex;
+//float2 gTransferFunction1DInterval;
+
 float gRenderingSliceThickness;
 float2 gWLWindow;
 sampler1D gColorMap;
@@ -264,12 +274,21 @@ float3 Difference( sampler3D aTextureData, float3 aTexCoord, float3 aStep, float
 
 
 float4
-ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTransferFunction1DInterval )
+ApplyTransferFunction1Dbac( float value, sampler1D aTransferFunction1D, float2 interval )
 {
-	float range = aTransferFunction1DInterval[1] - aTransferFunction1DInterval[0];
-	float remappedValue = ( value - aTransferFunction1DInterval[0] ) / range;
+	float range = interval[1] - interval[0];
+	float remappedValue = ( value - interval[0] ) / range;
 
 	return tex1D( aTransferFunction1D, remappedValue );
+}
+
+float4
+ApplyTransferFunction1D( float value, TransferFunction1D aTransferFunction1D )
+{
+	float range = aTransferFunction1D.interval[1] - aTransferFunction1D.interval[0];
+	float remappedValue = ( value - aTransferFunction1D.interval[0] ) / range;
+
+	return tex1D( aTransferFunction1D.data, remappedValue );
 }
 
 VertexOutput
@@ -366,8 +385,7 @@ FragmentOutput
 fp_TransferFunction1D_3D( 
 		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
-		uniform sampler1D aTransferFunction1D : TEX1,
-		uniform float2 aTransferFunction1DInterval,
+		uniform TransferFunction1D aTransferFunction1D,
 		uniform float aRenderingSliceThickness,
 		uniform float2 aMappedIntervalBands )
 {
@@ -382,40 +400,32 @@ fp_TransferFunction1D_3D(
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
 		
-	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
 
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 	return OUT;
 }
 
-FragmentOutput 
-fp_TransferFunction1DShading_3D( 
-		float3 aPosition : TEXCOORD0, 
-		uniform ImageData3D aTextureData,
-		uniform sampler1D aTransferFunction1D : TEX1,
-		uniform float2 aTransferFunction1DInterval,
-		uniform float aRenderingSliceThickness,
-		uniform float2 aMappedIntervalBands,
-		uniform	float3 aLightPosition,
-		uniform	float3 aLightColor,
-		uniform	float3 aEyePosition
+FragmentOutput
+computeTransferFunctionShading( 
+		float value,
+		float3 position,
+		float3 coordinates,
+		ImageData3D aTextureData,
+		TransferFunction1D aTransferFunction1D,
+		float aRenderingSliceThickness,
+		float3 aLightPosition,
+		float3 aLightColor,
+		float3 aEyePosition
 		)
 {
-	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
-
-	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	float3 position = coordinates;
-	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float raw_value = tex3D( aTextureData.data, coordinates ).x;
-	float value = (raw_value * range) + aMappedIntervalBands[0];
-	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
 
 	if( OUT.color.a > THRESHOLD ) {
 		float3 gradient;
 		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
 		float3 N = normalize( gradient );
-
 
 		float3 L = normalize( aLightPosition - position );
 		float3 V = normalize( aEyePosition - position );
@@ -436,12 +446,122 @@ fp_TransferFunction1DShading_3D(
 	return OUT;
 }
 
+FragmentOutput
+computeIntegralTransferFunctionShading( 
+		float2 values,
+		float3 position,
+		float3 coordinates,
+		ImageData3D aTextureData,
+		TransferFunction1D aTransferFunction1D,
+		float aRenderingSliceThickness,
+		float3 aLightPosition,
+		float3 aLightColor,
+		float3 aEyePosition
+		)
+{
+	FragmentOutput OUT;
+	float v1 = max(values.x,values.y);
+	float v2 = min(values.x,values.y);
+	float factor = 1.0f;///(v1-v2);
+	float4 color1 = ApplyTransferFunction1D( v1, gIntegralTransferFunction1D/* aTransferFunction1D*/ );
+	float4 color2 = ApplyTransferFunction1D( v2, gIntegralTransferFunction1D/* aTransferFunction1D*/ );
+	OUT.color = color1;//(color1 - color2) * factor;
+
+	/*if( OUT.color.a > THRESHOLD ) {
+		float3 gradient;
+		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
+		float3 N = normalize( gradient );
+
+		float3 L = normalize( aLightPosition - position );
+		float3 V = normalize( aEyePosition - position );
+
+		Material material;
+		material.Ka = float3(0.1,0.1,0.1);
+		material.Kd = float3(0.6,0.6,0.6);
+		material.Ks = float3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		Light light;
+		light.color = aLightColor;
+		light.ambient = float3(0.3,0.3,0.3);
+
+		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
+	}*/
+	//OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
+
+FragmentOutput 
+fp_TransferFunction1DShading_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	float3 aLightPosition,
+		uniform	float3 aLightColor,
+		uniform	float3 aEyePosition
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float raw_value = tex3D( aTextureData.data, coordinates ).x;
+	float value = (raw_value * range) + aMappedIntervalBands[0];
+
+	return computeTransferFunctionShading( 
+		value,
+		aPosition,
+		coordinates,
+		aTextureData,
+		aTransferFunction1D,
+		aRenderingSliceThickness,
+		aLightPosition,
+		aLightColor,
+		aEyePosition
+		);
+}
+
+FragmentOutput 
+fp_IntegralTransferFunction1DShading_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	float3 aLightPosition,
+		uniform	float3 aLightColor,
+		uniform	float3 aEyePosition
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+	float2 raw_values;
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	raw_values.x = tex3D( aTextureData.data, coordinates ).x;
+	raw_values.y = tex3D( aTextureData.data, coordinates + gSliceNormalTexCoords).x;
+	float2 values = (raw_values * range) + aMappedIntervalBands[0];
+
+	return computeIntegralTransferFunctionShading( 
+		values,
+		aPosition,
+		coordinates,
+		aTextureData,
+		aTransferFunction1D,
+		aRenderingSliceThickness,
+		aLightPosition,
+		aLightColor,
+		aEyePosition
+		);
+}
+
 FragmentOutput 
 fp_TransferFunction1DJitter_3D( 
 		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
-		uniform sampler1D aTransferFunction1D : TEX1,
-		uniform float2 aTransferFunction1DInterval,
+		uniform TransferFunction1D aTransferFunction1D,
 		uniform float aRenderingSliceThickness,
 		uniform float2 aMappedIntervalBands,
 		uniform float3 aSliceNormalTexCoords,
@@ -457,7 +577,7 @@ fp_TransferFunction1DJitter_3D(
 
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
-	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 	return OUT;
 }
@@ -467,8 +587,7 @@ FragmentOutput
 fp_TransferFunction1DShadingJitter_3D( 
 		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData,
-		uniform sampler1D aTransferFunction1D : TEX1,
-		uniform float2 aTransferFunction1DInterval,
+		uniform TransferFunction1D aTransferFunction1D,
 		uniform float aRenderingSliceThickness,
 		uniform float2 aMappedIntervalBands,
 		uniform	float3 aLightPosition,
@@ -479,38 +598,24 @@ fp_TransferFunction1DShadingJitter_3D(
 		)
 {
 	CUT_PLANE_TEST( aPosition );
-	FragmentOutput OUT;
 
 	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
-	float3 position = texCoordsFromPosition( aPosition, aTextureData );
-	float3 coordinates = position + offset *aSliceNormalTexCoords;
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	coordinates += offset *aSliceNormalTexCoords;
 
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
-	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
-
-	if( OUT.color.a > THRESHOLD ) {
-		float3 gradient;
-		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
-		float3 N = normalize( gradient );
-
-		float3 L = normalize( aLightPosition - position );
-		float3 V = normalize( aEyePosition - position );
-
-		Material material;
-		material.Ka = float3(0.1,0.1,0.1);
-		material.Kd = float3(0.6,0.6,0.6);
-		material.Ks = float3(0.2,0.2,0.2);
-		material.shininess = 100;
-		
-		Light light;
-		light.color = aLightColor;
-		light.ambient = float3(0.3,0.3,0.3);
-
-		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
-	}
-	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
-	return OUT;
+	return computeTransferFunctionShading( 
+		value,
+		aPosition,
+		coordinates,
+		aTextureData,
+		aTransferFunction1D,
+		aRenderingSliceThickness,
+		aLightPosition,
+		aLightColor,
+		aEyePosition
+		);
 }
 
 FragmentOutput 
@@ -614,7 +719,6 @@ technique TransferFunction1D_3D {
 		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
-									gTransferFunction1DInterval, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands 
 									);
@@ -633,7 +737,6 @@ technique TransferFunction1D_3DNoBlending {
 		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
-									gTransferFunction1DInterval, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands 
 									);
@@ -649,10 +752,9 @@ technique TransferFunction1D_3DNoBlending {
 technique TransferFunction1DShading_3D {
 	pass t0 {
 		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( 
+		FragmentProgram = compile glslf /*fp_IntegralTransferFunction1DShading_3D(*/fp_TransferFunction1DShading_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
-									gTransferFunction1DInterval, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLightPosition, 
@@ -675,7 +777,6 @@ technique TransferFunction1DJitter_3D {
 		FragmentProgram = compile glslf fp_TransferFunction1DJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
-									gTransferFunction1DInterval, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gSliceNormalTexCoords 
@@ -700,7 +801,6 @@ technique TransferFunction1DShadingJitter_3D {
 		FragmentProgram = compile gp4fp fp_TransferFunction1DShadingJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
-									gTransferFunction1DInterval, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLightPosition, 

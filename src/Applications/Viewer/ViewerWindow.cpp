@@ -118,6 +118,36 @@ bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::T
 	return true;
 }
 
+bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBuffer1D::Ptr& buffer){
+
+	if(!function) return false;
+
+	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
+	if(!buffer || buffer->Size() != domain)
+	{
+		buffer = M4D::GUI::TransferFunctionBuffer1D::Ptr(new M4D::GUI::TransferFunctionBuffer1D(domain, M4D::GUI::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
+	}
+
+	M4D::GUI::TF::Coordinates coords(1);
+	M4D::GUI::TF::Color lastColor = function.getRGBfColor(coords);
+	M4D::GUI::TF::Color color;
+	for(M4D::GUI::TF::Size i = 1; i < domain; ++i)
+	{
+		coords[0] = i;
+		color = function.getRGBfColor(coords);
+
+		M4D::GUI::TF::Color tmpColor = (lastColor + color)*0.5f;
+		float alpha = tmpColor.alpha;
+		(*buffer)[i] = (*buffer)[i-1] + M4D::GUI::TransferFunctionBuffer1D::value_type(
+			tmpColor.component1 * alpha,
+			tmpColor.component2 * alpha,
+			tmpColor.component3 * alpha,
+			tmpColor.alpha);;
+		lastColor = color;
+	}
+	return true;
+}
+
 void
 loadAllSavedTFEditorsIntoPalette( M4D::GUI::TFPalette &palette, boost::filesystem::path dirName )
 {
@@ -501,6 +531,16 @@ ViewerWindow::transferFunctionModified( int idx )
 			ftor.tfBuffer = rec.info.tfBuffer;
 			ftor = OpenGLManager::getInstance()->doGL( ftor );
 			rec.info.tfGLBuffer = ftor.tfGLBuffer;	
+
+			if( fillIntegralBufferFromTF( mTFEditingSystem->getTransferFunction(idx), rec.info.tfIntegralBuffer ) )
+			{
+				ftor.tfBuffer = rec.info.tfIntegralBuffer;
+				ftor = OpenGLManager::getInstance()->doGL( ftor );
+				rec.info.tfGLIntegralBuffer = ftor.tfGLBuffer;
+			} else {
+				rec.info.tfGLIntegralBuffer = M4D::GUI::GLTransferFunctionBuffer1D::Ptr();
+			}
+
 			for (ViewerList::iterator it = rec.viewers.begin(); it != rec.viewers.end(); ++it ) {
 				(*it)->setTransferFunctionBufferInfo( rec.info );
 			}

@@ -88,6 +88,16 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage3D &aImage )
 	SetParameter( TO_STRING( aName << ".realMaximum" ), aImage.GetMaximum() );
 }
 
+void
+CgEffect::SetParameter( std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction )
+{
+	SetTextureParameter( TO_STRING( aName << ".data" ), aTransferFunction.GetTextureID() );
+
+	SetParameter( TO_STRING( aName << ".interval" ), aTransferFunction.GetMappedInterval() );
+
+	SetParameter( TO_STRING( aName << ".sampleCount" ), aTransferFunction.GetSampleCount() );
+}
+
 
 void
 CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )

@@ -13,6 +13,7 @@
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/Camera.h"
 #include "GUI/utils/GLTextureImage.h"
+#include "GUI/utils/TransferFunctionBuffer.h"
 #include <map>
 
 namespace M4D {
@@ -74,6 +75,9 @@ public:
 
 	void
 	SetParameter( std::string aName, const GLTextureImage3D &aImage );
+
+	void
+	SetParameter( std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction );
 
 	void
 	SetParameter( std::string aName, float aValue );

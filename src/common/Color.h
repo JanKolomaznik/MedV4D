@@ -15,6 +15,7 @@ template < typename TChannelType >
 class RGB: public Vector< TChannelType, 3 >
 {
 public:
+	typedef Vector< TChannelType, 3 > Predecessor;
 	template< unsigned tCoord >
 	struct ValueAccessor
 	{
@@ -29,6 +30,9 @@ public:
 			return aData.template StaticGet< tCoord >();
 		}
 	};
+
+	RGB( const Predecessor &p ): Predecessor ( p )
+	{}
 
 	RGB( TChannelType r, TChannelType g, TChannelType b ): Vector< TChannelType, 3 >( r, g, b )
 	{}
@@ -62,6 +66,7 @@ template < typename TChannelType >
 class RGBA: public Vector< TChannelType, 4 >
 {
 public:
+	typedef Vector< TChannelType, 4 > Predecessor;
 	template< unsigned tCoord >
 	struct ValueAccessor
 	{
@@ -76,7 +81,9 @@ public:
 			return aData.template StaticGet< tCoord >();
 		}
 	};
-
+	
+	RGBA( const Predecessor &p ): Predecessor ( p )
+	{}
 
 	RGBA( TChannelType r, TChannelType g, TChannelType b, TChannelType a ): Vector< TChannelType, 4 >( r, g, b, a )
 	{}
@@ -116,6 +123,7 @@ template < typename TChannelType >
 class HSV: public Vector< TChannelType, 3 >
 {
 public:
+	typedef Vector< TChannelType, 3 > Predecessor;
 	template< unsigned tCoord >
 	struct ValueAccessor
 	{
@@ -130,6 +138,9 @@ public:
 			return aData.template StaticGet< tCoord >();
 		}
 	};
+
+	HSV( const Predecessor &p ): Predecessor ( p )
+	{}
 
 	HSV( TChannelType h, TChannelType s, TChannelType v ): Vector< TChannelType, 3 >( h, s, v )
 	{}
@@ -163,6 +174,7 @@ template < typename TChannelType >
 class HSVA: public Vector< TChannelType, 4 >
 {
 public:
+	typedef Vector< TChannelType, 4 > Predecessor;
 	template< unsigned tCoord >
 	struct ValueAccessor
 	{
@@ -177,6 +189,9 @@ public:
 			return aData.template StaticGet< tCoord >();
 		}
 	};
+
+	HSVA( const Predecessor &p ): Predecessor ( p )
+	{}
 
 	HSVA( TChannelType h, TChannelType s, TChannelType v, TChannelType a ): Vector< TChannelType, 4 >( h, s, v, a )
 	{}
@@ -290,6 +305,79 @@ RgbToHsv( const RGBf &aRgb )
 	}
 	return hsv;
 }
+
+
+template < typename TChannelType >
+RGBA< TChannelType >
+operator+( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template < typename TChannelType >
+RGBA< TChannelType >
+operator-( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		- static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template < typename TChannelType >
+RGBA< TChannelType >
+operator+=( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template < typename TChannelType >
+RGBA< TChannelType >
+operator-=( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		-= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+/*template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+operator*( CoordType k, const Vector< CoordType, Dim > &v )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+operator*( const Vector< CoordType, Dim > &v, CoordType k )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+operator*=( Vector< CoordType, Dim > &v, CoordType k )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template< typename CoordType, unsigned Dim >
+CoordType
+operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+operator-( const Vector< CoordType, Dim > &v )
+{
+	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+}*/
 
 
 
