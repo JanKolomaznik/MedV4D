@@ -153,7 +153,7 @@ CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 			glTexImage1D(
 				GL_TEXTURE_1D, 
 				0, 
-				GL_RGBA, 
+				GL_RGBA32F, 
 				static_cast<GLsizei>(aTransferFunction.Size()), 
 				0, 
 				GL_RGBA, 

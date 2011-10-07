@@ -15,6 +15,10 @@
 #include "common/MathTools.h"
 #include <boost/thread.hpp>
 
+#include <iostream>
+#include <iterator>
+#include <algorithm>
+
 
 #include <QtGui>
 namespace M4D
@@ -57,7 +61,7 @@ public:
 
 		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );
 
-		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
+		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.4, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
 
 
@@ -137,7 +141,7 @@ bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D
 		color = function.getRGBfColor(coords);
 
 		M4D::GUI::TF::Color tmpColor = (lastColor + color)*0.5f;
-		float alpha = tmpColor.alpha;
+		float alpha = 1.0f;//tmpColor.alpha;
 		(*buffer)[i] = (*buffer)[i-1] + M4D::GUI::TransferFunctionBuffer1D::value_type(
 			tmpColor.component1 * alpha,
 			tmpColor.component2 * alpha,
@@ -466,25 +470,49 @@ struct CreateGLTFBuffer
 	}
 };
 
+bool
+fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBufferInfo &info )
+{
+	if( fillBufferFromTF( function, info.tfBuffer ) ) {
+		//std::ofstream file( "TF.txt" );
+		//D_PRINT( "Printing TF" );
+		//std::copy( info.tfBuffer->Begin(), info.tfBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
+
+		CreateGLTFBuffer ftor;
+		ftor.tfBuffer = info.tfBuffer;
+		ftor = OpenGLManager::getInstance()->doGL( ftor );
+		info.tfGLBuffer = ftor.tfGLBuffer;
+
+		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) )
+		{
+			//file << std::endl;
+			//std::copy( info.tfIntegralBuffer->Begin(), info.tfIntegralBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
+
+			ftor.tfBuffer = info.tfIntegralBuffer;
+			ftor = OpenGLManager::getInstance()->doGL( ftor );
+			info.tfGLIntegralBuffer = ftor.tfGLBuffer;
+		} else {
+			info.tfGLIntegralBuffer = M4D::GUI::GLTransferFunctionBuffer1D::Ptr();
+		}
+		//file.close();
+	} else { 
+		D_PRINT( "TF buffer not created" );
+		return false;
+	}
+	return true;
+}
+
 void
 ViewerWindow::transferFunctionAdded( int idx )
 {
 	M4D::GUI::TransferFunctionBufferInfo info;
 	info.id = idx;
 
-	if( fillBufferFromTF( mTFEditingSystem->getTransferFunction(idx), info.tfBuffer ) ) {
-		CreateGLTFBuffer ftor;
-		ftor.tfBuffer = info.tfBuffer;
-		ftor = OpenGLManager::getInstance()->doGL( ftor );
-		info.tfGLBuffer = ftor.tfGLBuffer;
-
+	if ( fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), info ) ) {
 		TransferFunctionBufferUsageRecord record;
 		record.info = info;
 		mTFUsageMap[idx] = record;
-	} else { 
-		D_PRINT( "TF buffer not created" );
 	}
-	//LOG( __FUNCTION__ );
 }
 
 void
@@ -526,26 +554,10 @@ ViewerWindow::transferFunctionModified( int idx )
 	TransferBufferUsageMap::iterator it = mTFUsageMap.find( idx );
 	if ( it != mTFUsageMap.end() ) {
 		TransferFunctionBufferUsageRecord &rec = it->second;
-		if( fillBufferFromTF( mTFEditingSystem->getTransferFunction(idx), rec.info.tfBuffer ) ) {
-			CreateGLTFBuffer ftor;
-			ftor.tfBuffer = rec.info.tfBuffer;
-			ftor = OpenGLManager::getInstance()->doGL( ftor );
-			rec.info.tfGLBuffer = ftor.tfGLBuffer;	
 
-			if( fillIntegralBufferFromTF( mTFEditingSystem->getTransferFunction(idx), rec.info.tfIntegralBuffer ) )
-			{
-				ftor.tfBuffer = rec.info.tfIntegralBuffer;
-				ftor = OpenGLManager::getInstance()->doGL( ftor );
-				rec.info.tfGLIntegralBuffer = ftor.tfGLBuffer;
-			} else {
-				rec.info.tfGLIntegralBuffer = M4D::GUI::GLTransferFunctionBuffer1D::Ptr();
-			}
-
-			for (ViewerList::iterator it = rec.viewers.begin(); it != rec.viewers.end(); ++it ) {
-				(*it)->setTransferFunctionBufferInfo( rec.info );
-			}
-		}else {
-			D_PRINT( "TF buffer not created" );
+		fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), rec.info );
+		for (ViewerList::iterator it = rec.viewers.begin(); it != rec.viewers.end(); ++it ) {
+			(*it)->setTransferFunctionBufferInfo( rec.info );
 		}
 	} else {
 		D_PRINT( "Modified function not found" );

@@ -311,32 +311,31 @@ template < typename TChannelType >
 RGBA< TChannelType >
 operator+( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
 {
-	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
-		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+	return RGBA< TChannelType >( c1.Red() + c2.Red(), c1.Green() + c2.Green(), c1.Blue() + c2.Blue(),  c1.Alpha() + c2.Alpha() );
 }
 
 template < typename TChannelType >
 RGBA< TChannelType >
 operator-( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
 {
-	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
-		- static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+	return RGBA< TChannelType >( static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		- static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1) );
 }
 
 template < typename TChannelType >
 RGBA< TChannelType >
 operator+=( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
 {
-	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
-		+= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+	return RGBA< TChannelType >( static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		+= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1) );
 }
 
 template < typename TChannelType >
 RGBA< TChannelType >
 operator-=( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
 {
-	return static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
-		-= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
+	return RGBA< TChannelType >( static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1)
+		-= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1) );
 }
 
 /*template< typename CoordType, unsigned Dim >

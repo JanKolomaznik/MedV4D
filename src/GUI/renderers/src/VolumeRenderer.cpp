@@ -83,6 +83,12 @@ VolumeRenderer::Finalize()
 	//TODO
 }
 
+enum TFConfigurationFlags{
+	tfShading	= 1,
+	tfJittering	= 1 << 1,
+	tfIntegral	= 1 << 2
+};
+
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
 {
@@ -133,8 +139,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
-	mCgEffect.SetParameter( "gLightPosition", aConfig.lightPosition );
-	mCgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
+	mCgEffect.SetParameter( "gLight.position", aConfig.lightPosition );
+	mCgEffect.SetParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
+	mCgEffect.SetParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
 	mCgEffect.SetParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
 	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
@@ -143,7 +150,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gMinID", (int)minId );
 	mCgEffect.SetParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetSize() );
+	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetRealSize() );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
@@ -167,8 +174,37 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 			if( aConfig.integralTransferFunction ) {
 				mCgEffect.SetParameter( "gIntegralTransferFunction1D", *(aConfig.integralTransferFunction) );
 			}
+			unsigned configurationMask = 0;
 
-			if ( aConfig.jitterEnabled ) {
+			if ( aConfig.jitterEnabled ) configurationMask |= tfJittering;
+			if ( aConfig.shadingEnabled ) configurationMask |= tfShading;
+			if ( aConfig.integralTFEnabled ) configurationMask |= tfIntegral;
+
+			switch ( configurationMask ) {
+			case 0:
+			case tfIntegral:
+				techniqueName = "TransferFunction1D_3D";
+				break;
+			case tfJittering:
+			case ( tfJittering | tfIntegral ):
+				techniqueName = "TransferFunction1DJitter_3D";
+				break;
+			case ( tfShading | tfIntegral ):
+				techniqueName = "IntegralTransferFunction1DShading_3D";
+				break;
+			case ( tfJittering | tfShading | tfIntegral ):
+				techniqueName = "IntegralTransferFunction1DShadingJitter_3D";
+				break;
+			case ( tfShading ):
+				techniqueName = "TransferFunction1DShading_3D";
+				break;
+			case ( tfJittering | tfShading ):
+				techniqueName = "TransferFunction1DShadingJitter_3D";
+				break;
+			default:
+				ASSERT( false );
+			}
+			/*if ( aConfig.jitterEnabled ) {
 				if ( aConfig.shadingEnabled ) {
 					techniqueName = "TransferFunction1DShadingJitter_3D";
 				} else {
@@ -180,7 +216,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				} else {
 					techniqueName = "TransferFunction1D_3D";
 				}
-			}
+			}*/
 		}
 		break;
 	case ctMaxIntensityProjection:

@@ -270,6 +270,9 @@ public:
 	isJitteringEnabled() const;
 
 	bool
+	isIntegratedTransferFunctionEnabled() const;
+
+	bool
 	isVolumeRestrictionEnabled() const;
 
 	bool
@@ -347,6 +350,9 @@ public slots:
 
 	void
 	enableJittering( bool aEnable );
+
+	void
+	enableIntegratedTransferFunction( bool aEnable );
 
 	void
 	setJitterStrength( float aValue );

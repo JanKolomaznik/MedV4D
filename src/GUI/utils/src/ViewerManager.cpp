@@ -241,6 +241,16 @@ ViewerManager::createViewerActions()
 			);
 	mPimpl->mViewerActions.addAction( colorTransformChooser );
 	//****************************	
+	QAction *actionEnableIntegratedTF = createGeneralViewerAction( 
+			QString( "Integrated TF" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableIntegratedTransferFunction, _1, _2 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isIntegratedTransferFunctionEnabled, _1 ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+			true,
+			app.getIcon( "integrated_tf" )
+			);
+	mPimpl->mViewerActions.addAction( actionEnableIntegratedTF );
+
 	QAction *actionLowQuality = createGeneralViewerAction( 
 			QString( "Low Quality" ), 
 			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmLow ), 

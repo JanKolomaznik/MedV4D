@@ -509,6 +509,12 @@ GeneralViewer::isJitteringEnabled() const
 }
 
 bool
+GeneralViewer::isIntegratedTransferFunctionEnabled() const
+{
+	return getViewerState().mVolumeRenderConfig.integralTFEnabled;
+}
+
+bool
 GeneralViewer::isVolumeRestrictionEnabled() const
 {
 	return getViewerState().mVolumeRenderConfig.enableVolumeRestrictions;
@@ -674,6 +680,14 @@ void
 GeneralViewer::enableJittering( bool aEnable )
 {
 	getViewerState().mVolumeRenderConfig.jitterEnabled = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.integralTFEnabled = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }
