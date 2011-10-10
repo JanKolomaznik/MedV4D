@@ -3,6 +3,7 @@
 
 #include "common/Common.h"
 #include "common/GeometricPrimitives.h"
+#include <boost/shared_array.hpp>
 
 #ifdef _MSC_VER
 # define WIN32_LEAN_AND_MEAN 1
@@ -68,6 +69,8 @@ IsGLContextActive()
 	return QGLContext::currentContext() != NULL;
 }
 
+void
+getImageBufferFromTexture( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer, GLuint aTexture );
 
 #ifdef USE_DEVIL
 

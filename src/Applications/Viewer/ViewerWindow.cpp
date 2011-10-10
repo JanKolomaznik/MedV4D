@@ -61,7 +61,7 @@ public:
 
 		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );
 
-		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.4, 1.0 ) );
+		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
 
 
@@ -242,6 +242,7 @@ ViewerWindow::ViewerWindow()
 	statusbar->addWidget( mInfoLabel );
 
 
+	//************* VIEWER FACTORY *****************
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mRenderingExtension );

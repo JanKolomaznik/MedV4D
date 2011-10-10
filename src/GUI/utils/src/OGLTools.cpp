@@ -85,6 +85,27 @@ CheckForGLError( const std::string &situation  )
 }
 
 
+void
+getImageBufferFromTexture( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer, GLuint aTexture )
+{
+	GLint width = 0;
+	GLint height = 0;
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, aTexture ) );
+	GL_CHECKED_CALL( glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width ) );
+	GL_CHECKED_CALL( glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height ) );
+
+	aBuffer = boost::shared_array< uint8 >( new uint8[ 3 * width * height ] );
+
+	GL_CHECKED_CALL( glGetTexImage(	
+				GL_TEXTURE_2D, 
+				0, 
+				GL_RGB, 
+				GL_UNSIGNED_BYTE, 
+				(void*)aBuffer.get()
+				) );
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, 0 ) );
+}
+
 #ifdef USE_DEVIL
 
 void 

@@ -30,6 +30,25 @@ AGLViewer::~AGLViewer()
 }
 
 void
+AGLViewer::getCurrentViewImageBuffer( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer )
+{
+	makeCurrent();
+	getImageBufferFromTexture( aWidth, aHeight, aBuffer, mFrameBufferObject.GetColorBuffer() );	
+	doneCurrent();
+}
+
+QImage
+AGLViewer::getCurrentViewImage()
+{
+	uint32 width = 0, height = 0;
+	boost::shared_array< uint8 > buffer;
+
+	getCurrentViewImageBuffer( width, height, buffer );
+	QImage image( buffer.get(), width, height, QImage::Format_RGB888 );
+	return image.mirrored(false,true);
+}
+
+void
 AGLViewer::select()
 {
 	//TODO check if enabled

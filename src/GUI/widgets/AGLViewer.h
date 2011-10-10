@@ -118,6 +118,13 @@ public:
 	{
 		return mGLViewSetup;
 	}
+
+	void
+	getCurrentViewImageBuffer( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer );
+
+	QImage
+	getCurrentViewImage();
+
 public slots:
 	void
 	select();
