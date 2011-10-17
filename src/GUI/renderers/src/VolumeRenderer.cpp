@@ -158,6 +158,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 
 	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
 	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
+	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 
 	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
 

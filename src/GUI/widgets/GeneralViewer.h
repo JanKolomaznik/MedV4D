@@ -278,6 +278,9 @@ public:
 	bool
 	isCutPlaneEnabled() const;
 
+	bool
+	isInterpolationEnabled() const;
+
 	void
 	cameraOrbit( Vector2f aAngles );
 
@@ -368,6 +371,9 @@ public slots:
 
 	void
 	enableBoundingBox( bool aEnable );
+
+	void
+	enableInterpolation( bool aEnable );
 	
 	void
 	resetView();

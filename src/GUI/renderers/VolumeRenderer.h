@@ -104,7 +104,7 @@ struct VolumeRenderer::RenderingConfiguration
 	RenderingConfiguration()
 		: imageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
 		transferFunction( NULL ), integralTransferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
-		integralTFEnabled( false ), sampleCount( 150 ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
+		integralTFEnabled( false ), sampleCount( 150 ), enableInterpolation(true ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
 	{ }
 	const GLTextureImage3D			*imageData;
 	
@@ -118,6 +118,7 @@ struct VolumeRenderer::RenderingConfiguration
 	bool					shadingEnabled;
 	bool					integralTFEnabled;
 	size_t					sampleCount;				
+	bool					enableInterpolation;
 
 	Vector3f				lightPosition;
 

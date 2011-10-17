@@ -183,6 +183,16 @@ ViewerManager::createViewerActions()
 			app.getIcon( "volume_restrictions" ) 
 			);
 	mPimpl->mViewerActions.addAction( actionEnableVolumeRestriction );
+	//****************************	
+	QAction *actionEnableInterpolation = createGeneralViewerAction( 
+			QString( "Enable Interpolation" ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableInterpolation, _1, _2 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isInterpolationEnabled, _1 ), 
+			M4D::Functors::PredicateAlwaysTrue(), 
+			true,
+			app.getIcon( "interpolation" ) 
+			);
+	mPimpl->mViewerActions.addAction( actionEnableInterpolation );
 	mPimpl->mViewerActions.addSeparator();
 	//****************************	
 	QAction *actionXY = createGeneralViewerAction( 

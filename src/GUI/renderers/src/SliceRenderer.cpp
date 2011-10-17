@@ -41,6 +41,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
+	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 
 	std::string techniqueName;
 
@@ -57,8 +58,9 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
 
-			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
-			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
+			//mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
+			mCgEffect.SetParameter( "gTransferFunction1D", *(aConfig.transferFunction) );
+			//mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
 			techniqueName = "TransferFunction1D_3DNoBlending";
 		}
 		break;

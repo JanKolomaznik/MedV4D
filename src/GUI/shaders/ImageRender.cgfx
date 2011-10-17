@@ -84,6 +84,7 @@ TransferFunction1D gIntegralTransferFunction1D;
 //sampler1D gTransferFunction1Dtex;
 //float2 gTransferFunction1DInterval;
 
+bool gEnableInterpolation;
 float gRenderingSliceThickness;
 float2 gWLWindow;
 sampler1D gColorMap;
@@ -182,9 +183,14 @@ LinePlaneIntersection(
 float3
 texCoordsFromPosition( float3 pos, ImageData3D image )
 {
+	float3 elementSize = 1.0f / image.size;
 	float3 relPos = pos - image.realMinimum;
 
-	return float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
+	float3 texCoord =  float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
+	if (gEnableInterpolation) {
+		return texCoord;
+	}
+	return 0.5f * elementSize + round( texCoord / elementSize ) * elementSize;
 }
 
 float3

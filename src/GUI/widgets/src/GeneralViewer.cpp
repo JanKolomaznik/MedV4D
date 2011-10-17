@@ -351,25 +351,6 @@ GeneralViewer::changeCurrentSlice( int32 diff )
 	setCurrentSlice( diff + getCurrentSlice() );
 }
 
-void
-GeneralViewer::setVolumeRestrictions( const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
-{
-	//TODO test if valid values
-	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
-
-	notifyAboutSettingsChange();
-	update();
-}
-
-void
-GeneralViewer::setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
-{
-	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
-	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
-
-	notifyAboutSettingsChange();
-	update();
-}
 
 void
 GeneralViewer::setCutPlane( const Planef &aCutPlane )
@@ -514,17 +495,79 @@ GeneralViewer::isIntegratedTransferFunctionEnabled() const
 	return getViewerState().mVolumeRenderConfig.integralTFEnabled;
 }
 
+void
+GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.integralTFEnabled = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
 bool
 GeneralViewer::isVolumeRestrictionEnabled() const
 {
 	return getViewerState().mVolumeRenderConfig.enableVolumeRestrictions;
 }
 
+void
+GeneralViewer::enableVolumeRestrictions( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::setVolumeRestrictions( const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
+{
+	//TODO test if valid values
+	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+void
+GeneralViewer::setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ )
+{
+	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
+	getViewerState().mVolumeRenderConfig.volumeRestrictions = M4D::GUI::Renderer::VolumeRestrictions( aX, aY, aZ );
+
+	notifyAboutSettingsChange();
+	update();
+}
+
+
+
 bool
 GeneralViewer::isCutPlaneEnabled() const
 {
 	return getViewerState().mVolumeRenderConfig.enableCutPlane;
 }
+
+void
+GeneralViewer::enableCutPlane( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.enableCutPlane = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
+bool
+GeneralViewer::isInterpolationEnabled() const
+{
+	return getViewerState().mVolumeRenderConfig.enableInterpolation;
+}
+
+void
+GeneralViewer::enableInterpolation( bool aEnable )
+{
+	getViewerState().mVolumeRenderConfig.enableInterpolation = aEnable;
+	getViewerState().mSliceRenderConfig.enableInterpolation = aEnable;
+	notifyAboutSettingsChange();
+	update();
+}
+
 
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
@@ -684,13 +727,6 @@ GeneralViewer::enableJittering( bool aEnable )
 	update();
 }
 
-void
-GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
-{
-	getViewerState().mVolumeRenderConfig.integralTFEnabled = aEnable;
-	notifyAboutSettingsChange();
-	update();
-}
 
 void
 GeneralViewer::setJitterStrength( float aValue )
@@ -700,21 +736,9 @@ GeneralViewer::setJitterStrength( float aValue )
 	update();
 }
 
-void
-GeneralViewer::enableVolumeRestrictions( bool aEnable )
-{
-	getViewerState().mVolumeRenderConfig.enableVolumeRestrictions = aEnable;
-	notifyAboutSettingsChange();
-	update();
-}
 
 void
-GeneralViewer::enableCutPlane( bool aEnable )
-{
-	getViewerState().mVolumeRenderConfig.enableCutPlane = aEnable;
-	notifyAboutSettingsChange();
-	update();
-}
+GeneralViewer::enableInterpolation( bool aEnable );
 
 void
 GeneralViewer::resetView()
