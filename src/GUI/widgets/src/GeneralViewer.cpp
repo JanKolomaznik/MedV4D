@@ -738,9 +738,6 @@ GeneralViewer::setJitterStrength( float aValue )
 
 
 void
-GeneralViewer::enableInterpolation( bool aEnable );
-
-void
 GeneralViewer::resetView()
 {
 	Vector3f pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
