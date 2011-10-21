@@ -236,7 +236,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	/*mCgEffect.ExecuteTechniquePass(
+	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
 				bbox,
@@ -246,9 +246,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				mIndices,
 				1.0f
 				) 
-			); */
+			); 
 
-	mCgEffect.ExecuteTechniquePass(
+	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices, 
 				bbox,
@@ -256,7 +256,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				sliceCount,
 				1.0f
 				) 
-			); 
+			); */
 
 	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 

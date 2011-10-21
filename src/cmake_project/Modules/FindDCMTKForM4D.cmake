@@ -30,8 +30,13 @@ ELSE( WIN32_USE_PREPARED_PACKAGES_DCMTK )
 	IF( NOT DCMTK_INCLUDE_DIR )
 		SET(DCMTK_INCLUDE_DIR "/usr/include/dcmtk" )
 	ENDIF( NOT DCMTK_INCLUDE_DIR )
-	
-	SET( DCMTK_LIBRARIES dcmdata dcmimgle dcmpstat dcmtls dcmdsig dcmjpeg dcmqrdb dcmwlm dcmimage dcmnet dcmsr ijg16 ijg12 ijg8 tiff ofstd oflog crypto ssl xml2 )
-	SET( DCMTK_OPTIONS "HAVE_CONFIG_H" )
+
+	FIND_LIBRARY( TIFF_LIBRARY tiff )
+
+
+	#MESSAGE( "${DCMTK_LIBRARIES}" )
+	#SET( DCMTK_LIBRARIES dcmdata dcmimgle dcmpstat dcmdsig dcmjpeg dcmjpls dcmqrdb dcmwlm  dcmnet dcmsr dcmtls dcmimage ijg16 ijg12 ijg8 ${TIFF_LIBRARY} ofstd oflog crypto ssl xml2 )
+	SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} ${DCMTK_LIBRARIES} ofstd oflog )
+	SET( DCMTK_OPTIONS HAVE_CONFIG_H )
 ENDIF( WIN32_USE_PREPARED_PACKAGES_DCMTK )
 

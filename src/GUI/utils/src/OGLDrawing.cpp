@@ -163,9 +163,10 @@ GLDrawVolumeSlices_Buffered(
 	GL_CHECKED_CALL( glEnable(GL_PRIMITIVE_RESTART) );
 	GL_CHECKED_CALL( glPrimitiveRestartIndex(primitiveRestart) );
 	
+#ifdef OPTIMIZED_VERSION_FFF //not working well yet
 	size_t indicesSize = fillPlaneBBoxIntersectionBufferFill( bbox, camera, numberOfSteps, vertices, indices, cutPlane, primitiveRestart	);
-
-	/*ASSERT( vertices );
+#else
+	ASSERT( vertices );
 	ASSERT( indices );
 
 	float 				min = 0; 
@@ -204,7 +205,8 @@ GLDrawVolumeSlices_Buffered(
 		}
 		*(currentIndexPtr++) = primitiveRestart;
 		indicesSize += count+1;
-	}*/
+	}
+#endif
 	GL_CHECKED_CALL( glEnableClientState(GL_VERTEX_ARRAY) );
 	GL_CHECKED_CALL( glVertexPointer( 3, GL_FLOAT, 0, vertices ) );
 	GL_CHECKED_CALL( glDrawElements(GL_TRIANGLE_FAN, indicesSize, GL_UNSIGNED_INT, indices) );
