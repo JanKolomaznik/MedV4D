@@ -199,8 +199,8 @@ template< typename TViewer, typename TOnChangeOption, typename TGetOptions, type
 class SubmenuViewerAction: public HelperViewerWidgetAction
 {
 public:
-	SubmenuViewerAction( QString aName, TOnChangeOption aOnChangeOption, TGetOptions aGetOptions, TGetCurrentOption aGetCurrentOption, TCheckEnabled aCheckEnabled, QObject *parent )
-		: HelperViewerWidgetAction( parent ), mName( aName ), mOnChangeOption( aOnChangeOption ), mGetOptions( aGetOptions ), mGetCurrentOption( aGetCurrentOption ), mCheckEnabled( aCheckEnabled )
+	SubmenuViewerAction( QString aName, TOnChangeOption aOnChangeOption, TGetOptions aGetOptions, TGetCurrentOption aGetCurrentOption, TCheckEnabled aCheckEnabled, QObject *parent, bool aEditable = false )
+		: HelperViewerWidgetAction( parent ), mName( aName ), mOnChangeOption( aOnChangeOption ), mGetOptions( aGetOptions ), mGetCurrentOption( aGetCurrentOption ), mCheckEnabled( aCheckEnabled ), mEditable( aEditable )
 	{
 		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
@@ -261,20 +261,17 @@ protected:
 	createWidget ( QWidget * parent )
 	{
 		if ( parent->inherits( "QMenu" ) ) {
-			/*QMenu *menu = new QMenu( "Color transform" );
-			QAction * testAction = new QAction( "1111", menu );
-			menu->addAction( testAction );
-			testAction = new QAction( "2222", menu );
-			menu->addAction( testAction );
-
-			dynamic_cast< QMenu* >( parent )->addMenu( menu );*/
-			
+			QMenu *menu = new QMenu( "Color transform" );
+			rebuildMenu( mStrings, mCurrentOption, menu );
+			dynamic_cast< QMenu* >( parent )->addMenu( menu );
+			//return menu;
 			return NULL;
 		}
 		if ( parent->inherits( "QToolBar" ) ) {
 			QComboBox *combo = new QComboBox( parent );
 			combo->setSizeAdjustPolicy( QComboBox::AdjustToContents );
 			combo->setEnabled( isEnabled() );
+			combo->setEditable( mEditable );
 			rebuildCombo( mStrings, mCurrentOption, combo );
 			QObject::connect( combo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( callChangeOption( const QString & ) ) ); 
 			return combo;
@@ -305,7 +302,7 @@ protected:
 	{
 		rebuildActionGroup( aStrings, aCurrent );
 
-		rebuildMenu( NULL );
+		//rebuildMenu( NULL );
 
 		QList<QWidget *>::iterator it;
 		QList<QWidget *> widgets = createdWidgets();
@@ -322,8 +319,25 @@ protected:
 	{}
 
 	void
-	rebuildMenu( QMenu *aMenu )
-	{}
+	rebuildMenu( QStringList &aStrings, QString aCurrent, QMenu *aMenu )
+	{
+		ASSERT( aMenu );
+		aMenu->clear();
+		//int idx = -1;
+		for (int i = 0; i < aStrings.size(); ++i ) {
+			QAction * action = new QAction( aStrings[ i ], aMenu );
+			aMenu->addAction( action );
+			/*if ( aStrings[ i ] == aCurrent ) {
+				idx = i;
+				break;
+			}*/
+		}
+		/*aComboBox->blockSignals( true );
+		aComboBox->clear();
+		aComboBox->addItems(aStrings);
+		aComboBox->setCurrentIndex( idx );
+		aComboBox->blockSignals( false );*/
+	}
 
 	void
 	rebuildCombo( QStringList &aStrings, QString aCurrent, QComboBox *aComboBox )
@@ -354,13 +368,14 @@ protected:
 	TGetOptions mGetOptions;
 	TGetCurrentOption mGetCurrentOption;
 	TCheckEnabled mCheckEnabled;
+	bool mEditable;
 };
 
 template< typename TOnChangeOption, typename TGetOptions, typename TGetCurrentOption, typename TCheckEnabled >
 QAction *
-createGeneralViewerSubmenuAction( QString aName, TOnChangeOption aOnChangeOption, TGetOptions aGetOptions, TGetCurrentOption aGetCurrentOption, TCheckEnabled aCheckEnabled, QObject *parent = NULL )
+createGeneralViewerSubmenuAction( QString aName, TOnChangeOption aOnChangeOption, TGetOptions aGetOptions, TGetCurrentOption aGetCurrentOption, TCheckEnabled aCheckEnabled, QObject *parent = NULL, bool aEditable = false )
 {
-	QAction *action = new SubmenuViewerAction< M4D::GUI::Viewer::GeneralViewer, TOnChangeOption, TGetOptions, TGetCurrentOption, TCheckEnabled >( aName, aOnChangeOption, aGetOptions, aGetCurrentOption, aCheckEnabled, parent );
+	QAction *action = new SubmenuViewerAction< M4D::GUI::Viewer::GeneralViewer, TOnChangeOption, TGetOptions, TGetCurrentOption, TCheckEnabled >( aName, aOnChangeOption, aGetOptions, aGetCurrentOption, aCheckEnabled, parent, aEditable );
 	return action;
 }
 

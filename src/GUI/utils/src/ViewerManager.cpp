@@ -250,6 +250,18 @@ ViewerManager::createViewerActions()
 			M4D::Functors::PredicateAlwaysTrue()
 			);
 	mPimpl->mViewerActions.addAction( colorTransformChooser );
+	//****************************
+	void (M4D::GUI::Viewer::GeneralViewer::*setZoom) ( const QString & ) = &M4D::GUI::Viewer::GeneralViewer::setZoom;
+	QAction *zoomChooser = createGeneralViewerSubmenuAction(
+			QString( "Zoom" ),
+			boost::bind( setZoom, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getPredefinedZoomValueNames, _1 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getZoomValueName, _1 ), 
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
+			NULL,
+			true
+			);
+	mPimpl->mViewerActions.addAction( zoomChooser );
 	//****************************	
 	QAction *actionEnableIntegratedTF = createGeneralViewerAction( 
 			QString( "Integrated TF" ), 

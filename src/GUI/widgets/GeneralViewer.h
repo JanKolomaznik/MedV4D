@@ -335,6 +335,13 @@ public:
 	QString
 	GetVoxelInfo( Vector3f aDataCoords );
 
+	QStringList
+	getPredefinedZoomValueNames()const;
+
+	QString
+	getZoomValueName()const;
+
+
 public slots:
 	void
 	setViewType( int aViewType );
@@ -380,6 +387,15 @@ public slots:
 
 	void
 	zoomFit( ZoomType zoomType = ztFIT );
+
+	void
+	setZoom( ZoomType zoomType );
+
+	void
+	setZoom( float aZoom );
+
+	void
+	setZoom( const QString &aZoom );
 
 signals:
 	void

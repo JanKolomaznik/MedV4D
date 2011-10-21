@@ -1035,6 +1035,66 @@ GeneralViewer::zoomFit( ZoomType zoomType )
 	update();
 }
 
+void
+GeneralViewer::setZoom( ZoomType zoomType )
+{
+	zoomFit( zoomType );
+}
+
+void
+GeneralViewer::setZoom( float aZoom )
+{
+	const Vector2f regionMin = VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane );
+	const Vector2f regionMax = VectorPurgeDimension( getViewerState()._regionRealMax, getViewerState().mSliceRenderConfig.plane );
+	getViewerState().mSliceRenderConfig.viewConfig = ViewConfiguration2D( regionMin + (0.5f * (regionMax - regionMin)), aZoom );
+	emit settingsChanged();
+	update();
+}
+
+QStringList
+GeneralViewer::getPredefinedZoomValueNames()const
+{
+	QStringList zoom;
+	zoom << tr( "50%" );
+	zoom << tr( "75%" );
+	zoom << tr( "100%" );
+	zoom << tr( "150%" );
+	zoom << tr( "200%" );
+	zoom << tr( "400%" );
+	zoom << tr( "Best Fit" );
+	zoom << tr( "Fit Width" );
+	zoom << tr( "Fit Height" );
+	return zoom;
+}
+
+QString
+GeneralViewer::getZoomValueName()const
+{
+	//LOG( getViewerState().mSliceRenderConfig.viewConfig.zoom );
+	return QString::number( getViewerState().mSliceRenderConfig.viewConfig.zoom * 100.0 ) +"%";
+	//return QString();
+}
+
+void
+GeneralViewer::setZoom( const QString &aZoom )
+{
+	QRegExp percentString( "\\s*(\\d+\\.?\\d*)\\s*%?\\s*" );
+	if( percentString.exactMatch( aZoom ) ) {
+		QString text = percentString.cap(1);
+		bool ok= false;
+		float zoom = static_cast< float >( text.toDouble(&ok) );
+		LOG( text.toLocal8Bit().data() << "   " << zoom );
+		if( ok ) {
+			setZoom( zoom * 0.01f );
+			return;
+		}
+	}
+
+
+	//LOG( aZoom.toLocal8Bit().data() << "   " << percentString.exactMatch( aZoom ) );
+
+}
+
 
 } /*namespace Viewer*/
 } /*namespace GUI*/
