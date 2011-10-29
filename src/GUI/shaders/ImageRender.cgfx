@@ -200,7 +200,7 @@ texCoordsFromPositionNoInterpolation( float3 pos, ImageData3D image )
 	float3 relPos = pos - image.realMinimum;
 
 	float3 texCoord = float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
-	return 0.5f * elementSize + round( texCoord / elementSize ) * elementSize;
+	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
 }
 
 
