@@ -216,6 +216,12 @@ round( float32 aValue )
 	return (int)ceil( aValue + 0.5f );
 }
 
+inline int32
+flr( float32 aValue )
+{
+	return (int)floorf( aValue );
+}
+
 /*inline int32
 round( float64 aValue )
 {
@@ -241,6 +247,17 @@ round( const Vector< float64, tDim > &a ) {
 	}
 	return res;
 }
+
+template< size_t tDim >
+inline Vector< int32, tDim >
+	floor( const Vector< float32, tDim > &a ) {
+		Vector< int32, tDim > res;
+		for( size_t i = 0; i < tDim; ++i ) {
+			res[i] = flr( a[i] );
+		}
+		return res;
+}
+
 
 template< typename NType >
 inline NType

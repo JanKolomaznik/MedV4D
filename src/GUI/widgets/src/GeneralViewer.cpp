@@ -412,7 +412,8 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
 			Vector3f extents = typedImage->GetElementExtents();
-			Vector3i coords = round<3>( VectorMemberDivision( aDataCoords, extents ) );
+			// HH: previously was 'round', now is floor instead, because round was making errors during outputting correct mouse coordinates
+			Vector3i coords = floor<3>( VectorMemberDivision( aDataCoords, extents ) );
 			if( coords >= typedImage->GetMinimum() &&  coords < typedImage->GetMaximum() ) {
 				result += VectorToQString( coords );
 				result += " : ";
