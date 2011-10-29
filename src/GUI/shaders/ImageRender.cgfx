@@ -190,7 +190,7 @@ texCoordsFromPosition( float3 pos, ImageData3D image )
 	if (gEnableInterpolation) {
 		return texCoord;
 	}
-	return 0.5f * elementSize + round( texCoord / elementSize ) * elementSize;
+	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
 }
 
 float3
