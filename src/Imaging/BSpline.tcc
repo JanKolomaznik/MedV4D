@@ -2,6 +2,8 @@
 #error File BSpline.tcc cannot be included directly!
 #else
 
+#include <cmath>
+
 namespace M4D
 {
 /**
@@ -36,7 +38,7 @@ typename BSpline< VectorType >::PointType
 BSpline< VectorType >
 ::PointByParameter( double t )const
 {
-	int segment_nmbr = floor( t );
+	int segment_nmbr = M4D::floor( t );
 	double relative_t = t - segment_nmbr;
 
 	BFunctionValues values;
@@ -51,7 +53,7 @@ bool
 BSpline< VectorType >
 ::DerivationAtPoint( double t, PointType &derivation )const
 {
-	int segment_nmbr = floor( t );
+	int segment_nmbr = M4D::floor( t );
 	double relative_t = t - segment_nmbr;
 
 	BFunctionValues dvalues;
@@ -69,7 +71,7 @@ bool
 BSpline< VectorType >
 ::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
 {
-	int segment_nmbr = floor( t );
+	int segment_nmbr = M4D::floor( t );
 	double relative_t = t - segment_nmbr;
 
 	BFunctionValues values;

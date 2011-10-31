@@ -217,7 +217,7 @@ round( float32 aValue )
 }
 
 inline int32
-flr( float32 aValue )
+floor( float32 aValue )
 {
 	return (int)floorf( aValue );
 }
@@ -250,12 +250,12 @@ round( const Vector< float64, tDim > &a ) {
 
 template< size_t tDim >
 inline Vector< int32, tDim >
-	floor( const Vector< float32, tDim > &a ) {
-		Vector< int32, tDim > res;
-		for( size_t i = 0; i < tDim; ++i ) {
-			res[i] = flr( a[i] );
-		}
-		return res;
+floor( const Vector< float32, tDim > &a ) {
+	Vector< int32, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = M4D::floor( a[i] );
+	}
+	return res;
 }
 
 

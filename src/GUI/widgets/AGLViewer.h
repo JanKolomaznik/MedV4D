@@ -210,6 +210,8 @@ protected:
 	GLViewSetup mGLViewSetup;
 
 	bool mSelected;
+
+	QLabel *mFPSLabel;
 };
 
 

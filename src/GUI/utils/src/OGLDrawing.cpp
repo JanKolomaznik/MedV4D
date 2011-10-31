@@ -200,11 +200,17 @@ GLDrawVolumeSlices_Buffered(
 
 		currentVertexPtr += count;
 		primitiveStartIndex += count;
+		currentVertexPtr += 6;
+		primitiveStartIndex += 6;
 		for( unsigned j = 0; j < count; ++j ) {
 			*(currentIndexPtr++) = primitiveStartIndex + j;
 		}
 		*(currentIndexPtr++) = primitiveRestart;
 		indicesSize += count+1;
+		/*for( unsigned j = count; j <= 6; ++j ) {
+			*(currentIndexPtr++) = primitiveRestart;
+		}
+		indicesSize += 7;*/
 	}
 #endif
 	GL_CHECKED_CALL( glEnableClientState(GL_VERTEX_ARRAY) );

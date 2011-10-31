@@ -57,6 +57,8 @@ public:
 
 		viewer->setJitterStrength( GET_SETTINGS( "gui.viewer.volume_rendering.jitter_strength", double, 1.0 ) );
 
+		viewer->enableIntegratedTransferFunction( GET_SETTINGS( "gui.viewer.volume_rendering.integrated_transfer_function_enabled", bool, true ) );
+
 		viewer->setRenderingQuality( GET_SETTINGS( "gui.viewer.volume_rendering.rendering_quality", int, qmNormal ) );
 
 		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );

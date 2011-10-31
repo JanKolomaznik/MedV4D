@@ -18,6 +18,8 @@ AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
 {
 	setMouseTracking ( true );
 	setMinimumSize( 50, 50 );
+
+	//mFPSLabel = new QLabel( 
 }
 
 AGLViewer::~AGLViewer()
