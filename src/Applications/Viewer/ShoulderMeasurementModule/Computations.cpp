@@ -22,7 +22,10 @@ template< typename TNumType, size_t tDim, typename TFunction >
 class NumericOptimizer
 {
 public:
-	Vector< TNumType, tDim >
+	NumericOptimizer(): mStepTestLimit( 20 ), mGlobalCycleLimit( 500 )
+	{}
+
+	/*Vector< TNumType, tDim >
 	optimize( const Vector< TNumType, tDim > &aMin, const Vector< TNumType, tDim > &aMax, Vector< TNumType, tDim > aInitialValue, TFunction aFunction )
 	{
 		srand ( time(NULL) );
@@ -39,7 +42,61 @@ public:
 			}
 		}
 		return best;
+	}*/
+
+
+	Vector< TNumType, tDim >
+	optimize( const Vector< TNumType, tDim > &aMin, const Vector< TNumType, tDim > &aMax, Vector< TNumType, tDim > aInitialValue, TFunction aFunction )
+	{
+		srand ( time(NULL) );
+		Vector< TNumType, tDim > best = aInitialValue;
+		TNumType bestScore = aFunction( aInitialValue );
+		for( size_t k = 0; k < mGlobalCycleLimit; ++k ) {
+			for( size_t i = 0; i < tDim; ++i ) {
+				
+				Vector< TNumType, tDim > tmpVec1 = best;
+				Vector< TNumType, tDim > tmpVec2 = best;
+				TNumType step = (static_cast<double>( rand() ) / RAND_MAX ) * (aMax[i] - aMin[i])/10;
+				tmpVec1[i] += step;
+				tmpVec2[i] -= step;
+				TNumType s1 = aFunction( tmpVec1 );
+				TNumType s2 = aFunction( tmpVec2 );
+				size_t j = 0;
+				while (s1 > bestScore && s2 > bestScore && j++ < mStepTestLimit) {
+					step *= 0.5f;
+					tmpVec1 = best;
+					tmpVec2 = best;
+					s1 = aFunction( tmpVec1 );
+					s2 = aFunction( tmpVec2 );
+				}
+				if ( s1 < s2 && s1 < bestScore ) {
+					bestScore = s1;
+					best = tmpVec1;
+				} else if ( s2 < bestScore ) {
+					bestScore = s2;
+					best = tmpVec2;
+				}
+			}
+		}
+
+		/*srand ( time(NULL) );
+
+		Vector< TNumType, tDim > best = aInitialValue;
+		TNumType bestScore = aFunction( aInitialValue );
+		for( size_t i = 0; i < 5000; ++i ) {
+			Vector< TNumType, tDim > tmpVec = getRandomVector< TNumType, tDim >( aMin, aMax );
+			TNumType tmpVal = aFunction( tmpVec );
+			if( tmpVal < bestScore ) {
+				bestScore = tmpVal;
+				best = tmpVec;
+				LOG( "iteration " << i << "; score = " << bestScore );
+			}
+		}*/
+		return best;
 	}
+
+	size_t mStepTestLimit;
+	size_t mGlobalCycleLimit;
 };
 
 
@@ -63,7 +120,8 @@ struct CylinderMaximumFillFtor
 			sumDistance += tmp;
 		}
 
-		return sumDistance - mPoints.size()*minDistance;
+		//return sumDistance - mPoints.size()*minDistance;
+		return -minDistance;
 	}
 
 	const PointSet &mPoints;
@@ -138,13 +196,11 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 {
 	Vector3f center;
 	Vector3f v1;
-	Vector3f minimum;
-	Vector3f maximum;
 	Eigen::Matrix3f covarianceMatrix;
 
 
-	minimum = aPoints[0];
-	maximum = aPoints[0];
+	Vector3f minimum = aPoints[0];
+	Vector3f maximum = aPoints[0];
 	for ( size_t i = 1; i < aPoints.size(); ++i ) {
 		minimum = M4D::min< float, 3 >( static_cast< const Vector3f &>( minimum ), static_cast< const Vector3f &>( aPoints[i] ) );
 		maximum = M4D::max< float, 3 >( static_cast< const Vector3f &>( maximum ), static_cast< const Vector3f &>( aPoints[i] ) );

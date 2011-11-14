@@ -853,6 +853,8 @@ technique IntegralTransferFunction1DShading_3D {
 
 technique IntegralTransferFunction1DShadingJitter_3D {
 	pass t0 {
+		//VertexProgram = compile gp5vp vertexPassThru();
+		//GeometryProgram = compile gp5gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
 		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile gp4fp fp_IntegralTransferFunction1DShadingJitter_3D( 
 									gImageData3D, 

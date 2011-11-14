@@ -14,12 +14,14 @@ namespace Viewer
 {
 
 
-AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false )
+AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false ), mLastMeasurement( 0 ), mEnableFPS( false )
 {
 	setMouseTracking ( true );
 	setMinimumSize( 50, 50 );
 
-	//mFPSLabel = new QLabel( 
+	mFPSLabel = new QLabel( "0 FPS", this );
+	mFPSLabel->setVisible( mEnableFPS );
+
 }
 
 AGLViewer::~AGLViewer()
@@ -88,6 +90,8 @@ AGLViewer::initializeOverlayGL()
 void	
 AGLViewer::paintGL()
 {
+	M4D::Common::Clock timer;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if ( preparedForRendering() ) {
@@ -140,6 +144,18 @@ AGLViewer::paintGL()
 				GLVertexVector( Vector2f( width()-5.0f, height()-5.0f ) );
 				GLVertexVector( Vector2f( width()-5.0f, 5.0f ) );
 			glEnd();
+	}
+
+	if( mEnableFPS ) {
+		glFlush();
+		mTimeMeasurements[mLastMeasurement++] = timer.secondsPassed();
+		mLastMeasurement = mLastMeasurement % MEASUREMENT_SAMPLE_COUNT;
+		double sum = 0.0;
+		for( size_t i = 0; i < MEASUREMENT_SAMPLE_COUNT; ++i ) {
+			sum += mTimeMeasurements[i];
+		}
+		sum /= double(MEASUREMENT_SAMPLE_COUNT);
+		LOG( "FPS = " << 1.0 / sum );
 	}
 }
 

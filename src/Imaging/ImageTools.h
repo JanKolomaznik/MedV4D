@@ -190,6 +190,12 @@ CreateHistogramForImageRegion( const TRegion &aRegion )
 	return histogram;
 }
 
+template< typename TImage, typename TContainer >
+void
+fillDataAlongRay( float aSampleDistance, Vector<float,TImage::Dimension> aDirection, Vector<float,TImage::Dimension> aStartPosition, TContainer &aContainer )
+{
+
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

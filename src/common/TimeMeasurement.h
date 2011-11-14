@@ -2,6 +2,7 @@
 #define TIME_MEASUREMENT_H
 
 #include <ctime>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace M4D
 {
@@ -11,22 +12,29 @@ namespace Common
 class Clock
 {
 public:
-	Clock(): mTime( ::clock() )
-	{}
+	Clock(): mTime( boost::posix_time::microsec_clock::local_time() )
+	{ }
 
-	float32
-	SecondsPassed()const
+	double
+	SecondsPassed()const //deprecated name
 	{
-		return ((float32)::clock() - mTime)/CLOCKS_PER_SEC;
+		return secondsPassed();
+	}
+
+	double
+	secondsPassed()const
+	{
+		boost::posix_time::time_duration td = boost::posix_time::microsec_clock::local_time() - mTime;
+		return 1.0E-9 * double(td.total_nanoseconds());//return double(::clock() - mTime)/CLOCKS_PER_SEC;
 	}
 
 	void
 	Reset()
 	{
-		mTime = ::clock();
+		mTime = boost::posix_time::microsec_clock::local_time();
 	}
 private:
-	clock_t mTime;
+	boost::posix_time::ptime mTime;
 };
 
 }/*namespace Common*/

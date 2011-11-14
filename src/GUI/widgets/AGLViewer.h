@@ -136,12 +136,28 @@ public slots:
 	{
 		mViewerState->backgroundColor = aColor;
 	}
+
+
+	void
+	toggleFPS()
+	{
+		enableFPS( !mEnableFPS );
+	}
+
+	void
+	enableFPS( bool aEnable )
+	{
+		mEnableFPS = aEnable;
+		mFPSLabel->setVisible( mEnableFPS );
+		update();
+	}
 signals:
 	void
 	viewerSelected();
 
 	void
 	MouseInfoUpdate( const QString &aInfo );
+
 protected:
 //**************************************************************
 	virtual void
@@ -211,6 +227,10 @@ protected:
 
 	bool mSelected;
 
+	static const size_t MEASUREMENT_SAMPLE_COUNT = 10;
+	double mTimeMeasurements[MEASUREMENT_SAMPLE_COUNT];
+	size_t mLastMeasurement;
+	bool mEnableFPS;
 	QLabel *mFPSLabel;
 };
 

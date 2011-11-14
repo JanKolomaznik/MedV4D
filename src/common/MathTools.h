@@ -210,11 +210,7 @@ sgn( NType a ) {
 	return 0;
 }
 
-inline int32
-round( float32 aValue )
-{
-	return (int)ceil( aValue + 0.5f );
-}
+
 
 inline int32
 floor( float32 aValue )
@@ -227,6 +223,12 @@ round( float64 aValue )
 {
 	return (int)ceil( aValue + 0.5 );
 }*/
+
+inline int32
+round( float32 aValue )
+{
+	return (int)M4D::floor( aValue + 0.5f );
+}
 
 template< size_t tDim >
 inline Vector< int32, tDim >

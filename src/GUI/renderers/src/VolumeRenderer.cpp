@@ -247,6 +247,15 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				1.0f
 				) 
 			); 
+	/*mCgEffect.ExecuteTechniquePass(
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
+				bbox,
+				aConfig.camera,
+				sliceCount,
+				1.0f
+				) 
+			);*/
 
 	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
@@ -258,15 +267,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 				) 
 			); */
 
-	/*mCgEffect.ExecuteTechniquePass(
-			techniqueName, 
-			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
-				bbox,
-				aConfig.camera,
-				sliceCount,
-				1.0f
-				) 
-			); */
+
 
 	M4D::CheckForGLError( "OGL error : " );
 }

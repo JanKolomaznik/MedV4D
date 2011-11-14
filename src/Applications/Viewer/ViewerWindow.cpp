@@ -329,7 +329,16 @@ ViewerWindow::setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aVie
 void
 ViewerWindow::testSlot()
 {
+	LOG( "AAAAA" );
 	updateGui();
+
+	M4D::GUI::Viewer::AGLViewer *pViewer;
+	pViewer = ViewerManager::getInstance()->getSelectedViewer();
+
+	if(pViewer != NULL) {
+		pViewer->toggleFPS();
+	}
+
 }
 
 void
