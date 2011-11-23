@@ -9,7 +9,7 @@
 #error File Ports.tcc cannot be included directly!
 #else
 
-#include "Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
 
 /**
  *  @addtogroup imaging Imaging Library

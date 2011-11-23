@@ -1,4 +1,4 @@
-#include "common/PythonInterpreter.h"
+#include "MedV4D/Common/PythonInterpreter.h"
 
 #ifdef USE_PYTHON
 

@@ -1,7 +1,7 @@
 #ifndef TYPE_COMPARATOR_H
 #define TYPE_COMPARATOR_H
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 #include <boost/numeric/conversion/conversion_traits.hpp>
 
 template< typename FirstType, typename SecondType >

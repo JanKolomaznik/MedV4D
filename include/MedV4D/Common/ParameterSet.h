@@ -5,7 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <boost/any.hpp>
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/ExceptionBase.h"
 
 class ParameterSet
 {

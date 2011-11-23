@@ -13,7 +13,7 @@
 #include <set>
 #include "structures.h"
 #include "DcmObject.h"
-#include "common/ProgressNotifier.h"
+#include "MedV4D/Common/ProgressNotifier.h"
 
 namespace M4D
 {

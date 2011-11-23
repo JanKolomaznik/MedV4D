@@ -3,7 +3,7 @@
  *  @file Thread.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/Thread.h"
+#include "MedV4D/Common/Thread.h"
 
 #include <boost/thread/xtime.hpp>
 

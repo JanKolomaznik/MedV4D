@@ -2,8 +2,8 @@
 #define OGL_DRAWING_H
 
 
-#include "common/Common.h"
-#include "common/Sphere.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Sphere.h"
 #include "GUI/utils/OGLTools.h"
 #include "Imaging/AImage.h"
 #include "Imaging/ImageRegion.h"

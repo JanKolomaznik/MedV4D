@@ -8,12 +8,12 @@
 #ifndef _MODIFICATION_MANAGER_H
 #define _MODIFICATION_MANAGER_H
 
-#include "common/Common.h"
-#include "common/Thread.h"
-#include "common/TimeStamp.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Thread.h"
+#include "MedV4D/Common/TimeStamp.h"
 #include <boost/shared_ptr.hpp>
 #include <list>
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 
 /**
  *  @addtogroup imaging Imaging Library

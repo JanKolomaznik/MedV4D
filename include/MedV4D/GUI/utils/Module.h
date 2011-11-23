@@ -1,7 +1,7 @@
 #ifndef MODULE_H
 #define MODULE_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <map>
 #include <boost/shared_ptr.hpp>
 

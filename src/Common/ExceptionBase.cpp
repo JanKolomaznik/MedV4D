@@ -3,10 +3,10 @@
  *  @file ExceptionBase.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/ExceptionBase.h"
 
-#include "common/Log.h"
-#include "common/Debug.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/Debug.h"
 
 namespace M4D
 {

@@ -1,8 +1,8 @@
 #ifndef _MASK_SELECTION_H
 #define _MASK_SELECTION_H
 
-#include "common/Common.h"
-#include "Imaging/AMultiImageFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AMultiImageFilter.h"
 
 namespace M4D
 {
@@ -112,7 +112,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/filters/MaskSelection.tcc"
+#include "MedV4D/Imaging/filters/MaskSelection.tcc"
 
 #endif /*_MASK_SELECTION_H*/
 

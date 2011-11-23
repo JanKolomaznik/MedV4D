@@ -12,7 +12,7 @@
 #include <TFXmlWriterInterface.h>
 #include <TFXmlReaderInterface.h>
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #define TF_DIMENSION_1 1
 

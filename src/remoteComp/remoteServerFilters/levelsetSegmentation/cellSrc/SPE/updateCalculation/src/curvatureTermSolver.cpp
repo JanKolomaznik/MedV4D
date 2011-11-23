@@ -1,6 +1,6 @@
 
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 #include "../curvatureTermSolver.h"
 #include "../../vnl_math.h"
 

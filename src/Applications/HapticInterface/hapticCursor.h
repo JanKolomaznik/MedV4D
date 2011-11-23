@@ -4,7 +4,7 @@
 #include "cursorInterface.h"
 #define _MSVC
 #include <chai3d.h>
-#include "common/Log.h"
+#include "MedV4D/Common/Log.h"
 #include "transitionFunction.h"
 #include "vtkRenderWindow.h"
 #include <vector>

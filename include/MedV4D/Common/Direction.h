@@ -1,8 +1,8 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-#include "common/MathTools.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/MathTools.h"
+#include "MedV4D/Common/Vector.h"
 #include <cmath>
 
 namespace M4D

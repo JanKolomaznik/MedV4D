@@ -8,10 +8,10 @@
 #ifndef IMAGE_TRANSFORM_H_
 #define IMAGE_TRANSFORM_H_
 
-#include "common/Common.h"
-#include "Imaging/AImageFilter.h"
-#include "Imaging/interpolators/base.h"
-#include "Imaging/interpolators/linear.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilter.h"
+#include "MedV4D/Imaging/interpolators/base.h"
+#include "MedV4D/Imaging/interpolators/linear.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -219,7 +219,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/ImageTransform.tcc"
+#include "MedV4D/Imaging/filters/ImageTransform.tcc"
 
 #endif /*IMAGE_TRANSFORM_H_*/
 

@@ -1,8 +1,8 @@
 #ifndef _COLOR_H
 #define _COLOR_H
 
-#include "common/Vector.h"
-#include "common/MathTools.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/MathTools.h"
 #undef RGB
 #ifdef RGB
 	#undef RGB

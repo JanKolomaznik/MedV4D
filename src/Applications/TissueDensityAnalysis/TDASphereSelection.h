@@ -1,7 +1,7 @@
 #ifndef _TDA_SPHERE_SELECTION_H
 #define _TDA_SPHERE_SELECTION_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D

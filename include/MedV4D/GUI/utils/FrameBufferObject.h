@@ -1,7 +1,7 @@
 #ifndef FRAME_BUFFER_OBJECT_H
 #define FRAME_BUFFER_OBJECT_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/OGLDrawing.h"
 
 namespace M4D {

@@ -9,7 +9,7 @@
 #error File CannyEdgeDetector.tcc cannot be included directly!
 #else
 
-#include "Imaging/CannyEdgeDetection.h"
+#include "MedV4D/Imaging/CannyEdgeDetection.h"
 
 /**
  *  @addtogroup imaging Imaging Library

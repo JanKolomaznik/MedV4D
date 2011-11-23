@@ -2,7 +2,7 @@
 #define SHOULDER_MEASUREMENT_COMPUTATIONS_HPP
 
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/QtModelViewTools.h"
 
 typedef VectorItemModel< M4D::Point3Df > PointSet;

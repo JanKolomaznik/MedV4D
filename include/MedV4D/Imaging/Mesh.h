@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include "Imaging/VertexInfo.h"
-#include "Imaging/FaceInfo.h"
-#include "Imaging/PointSet.h"
+#include "MedV4D/Imaging/VertexInfo.h"
+#include "MedV4D/Imaging/FaceInfo.h"
+#include "MedV4D/Imaging/PointSet.h"
 #include <vector>
 
 namespace M4D

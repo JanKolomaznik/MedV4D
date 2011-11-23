@@ -1,9 +1,9 @@
 #ifndef POLYGON_FILL_H
 #define POLYGON_FILL_H
 
-#include "Imaging/PointSet.h"
-#include "Imaging/Polyline.h"
-#include "Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/PointSet.h"
+#include "MedV4D/Imaging/Polyline.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -78,6 +78,6 @@ FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const M4D::Imag
 }/*namespace M4D*/
 
 //include implementation
-#include "Imaging/PolygonFill.tcc"
+#include "MedV4D/Imaging/PolygonFill.tcc"
 
 #endif /*POLYGON_FILL_H*/

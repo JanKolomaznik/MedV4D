@@ -14,7 +14,7 @@
  *  @{
  */
 
-#include "Imaging/DatasetSerializationTools.h"
+#include "MedV4D/Imaging/DatasetSerializationTools.h"
 
 namespace M4D
 {

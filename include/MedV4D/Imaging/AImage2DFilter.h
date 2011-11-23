@@ -8,9 +8,9 @@
 #ifndef _ABSTRACT_IMAGE_2D_FILTER_H
 #define _ABSTRACT_IMAGE_2D_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImageSliceFilter.h"
-#include "Imaging/AImageFilterWholeAtOnce.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageSliceFilter.h"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.h"
 #include <vector>
 
 namespace M4D
@@ -140,7 +140,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/AImage2DFilter.tcc"
+#include "MedV4D/Imaging/AImage2DFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
 

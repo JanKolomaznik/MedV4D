@@ -18,7 +18,7 @@
 
 #include "boost/filesystem/path.hpp"
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include "backendForDICOM/DcmProvider.h"
 #include "backendForDICOM/DicomAssoc.h"

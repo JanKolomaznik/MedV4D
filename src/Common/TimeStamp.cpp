@@ -3,8 +3,8 @@
  *  @file TimeStamp.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/TimeStamp.h"
-#include "common/Thread.h"
+#include "MedV4D/Common/TimeStamp.h"
+#include "MedV4D/Common/Thread.h"
 
 namespace M4D
 {

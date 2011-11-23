@@ -3,7 +3,7 @@
 
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/ScaleVisualizer.h"
-#include "Imaging/Histogram.h"
+#include "MedV4D/Imaging/Histogram.h"
 
 namespace M4D
 {

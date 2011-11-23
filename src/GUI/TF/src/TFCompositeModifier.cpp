@@ -4,8 +4,8 @@
 #include "GUI/TF/TFEditor.h"
 
 #include <QtGui/QMessageBox>
-#include "common/Common.h"
-#include "common/Debug.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Debug.h"
 
 namespace M4D {
 namespace GUI {

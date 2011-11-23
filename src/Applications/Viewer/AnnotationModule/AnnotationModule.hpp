@@ -6,7 +6,7 @@
 #include "GUI/utils/Module.h"
 #include "GUI/utils/ApplicationManager.h"
 #include "AnnotationModule/AnnotationEditorController.hpp"
-#include "common/IDGenerator.h"
+#include "MedV4D/Common/IDGenerator.h"
 
 class AnnotationModule: public AModule
 {

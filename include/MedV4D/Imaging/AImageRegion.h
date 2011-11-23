@@ -1,9 +1,9 @@
 #ifndef _AIMAGE_REGION_H
 #define _AIMAGE_REGION_H
 
-#include "common/Common.h"
-#include "common/Vector.h"
-#include "Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Imaging/DatasetDefinitionTools.h"
 
 namespace M4D
 {

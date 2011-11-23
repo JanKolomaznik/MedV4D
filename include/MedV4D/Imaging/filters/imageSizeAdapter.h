@@ -1,10 +1,10 @@
 #ifndef IMAGE_SIZE_ADAPTER_H_
 #define IMAGE_SIZE_ADAPTER_H_
 
-#include "common/Common.h"
-#include "Imaging/AImageFilterWholeAtOnce.h"
-//#include "Imaging/interpolators/nearestNeighbor.h"
-#include "Imaging/interpolators/linear.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.h"
+//#include "MedV4D/Imaging/interpolators/nearestNeighbor.h"
+#include "MedV4D/Imaging/interpolators/linear.h"
 
 namespace M4D
 {

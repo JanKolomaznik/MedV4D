@@ -2,7 +2,7 @@
 #define REMOTEFILTERFACTORY_
 
 #include "Imaging/AbstractFilter.h"
-#include "common/IOStreams.h"
+#include "MedV4D/Common/IOStreams.h"
 #include "remoteComp/iRemoteFilterProperties.h"
 
 namespace M4D

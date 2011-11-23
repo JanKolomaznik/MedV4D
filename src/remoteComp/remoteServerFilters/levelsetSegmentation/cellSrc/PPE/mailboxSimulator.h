@@ -2,7 +2,7 @@
 #define MAILBOXSIMULATOR_H_
 
 #include <queue>
-#include "common/Thread.h"
+#include "MedV4D/Common/Thread.h"
 
 namespace M4D
 {

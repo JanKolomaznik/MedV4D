@@ -4,7 +4,7 @@
 #include "../commonTypes.h"
 
 #ifdef FOR_PC
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "../../PPE/mailboxSimulator.h"
 #endif
 

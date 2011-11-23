@@ -2,8 +2,8 @@
 #define PROGRESS_INFO_DIALOG_H
 
 #include "ui_ProgressInfoDialog.h"
-#include "common/ProgressNotifier.h"
-#include "common/Common.h"
+#include "MedV4D/Common/ProgressNotifier.h"
+#include "MedV4D/Common/Common.h"
 
 
 class ProgressInfoDialog: public QDialog, public Ui::ProgressInfoDialog, public ProgressNotifier

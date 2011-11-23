@@ -4,8 +4,8 @@
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/transform.hpp>
 #include "Imaging/Ports.h"
-#include "common/Functors.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Functors.h"
+#include "MedV4D/Common/Common.h"
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/size.hpp>

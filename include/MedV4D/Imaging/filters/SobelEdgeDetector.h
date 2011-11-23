@@ -8,10 +8,10 @@
 #ifndef _SOBEL_EDGE_DETECTOR_H
 #define _SOBEL_EDGE_DETECTOR_H
 
-#include "common/Common.h"
-#include "common/Types.h"
-#include "Imaging/AImage2DFilter.h"
-#include "Imaging/Convolution.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Types.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
+#include "MedV4D/Imaging/Convolution.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -113,7 +113,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/SobelEdgeDetector.tcc"
+#include "MedV4D/Imaging/filters/SobelEdgeDetector.tcc"
 
 #endif /*_SOBEL_EDGE_DETECTOR_H*/
 

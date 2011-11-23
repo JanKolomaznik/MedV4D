@@ -1,7 +1,7 @@
 #ifndef MULTI_HISTOGRAM_H
 #define MULTI_HISTOGRAM_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>

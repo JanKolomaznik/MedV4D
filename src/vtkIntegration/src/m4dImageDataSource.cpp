@@ -10,8 +10,8 @@
 #include "vtkInformationVector.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-#include "common/Log.h"
-#include "common/Debug.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/Debug.h"
 #include "vtkIntegration/DataConversion.h"
 #include "Imaging/ImageFactory.h"
 

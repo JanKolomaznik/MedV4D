@@ -7,8 +7,8 @@
 #include <cmath>
 #include <limits>
 #include "nr/nrutil.h"
-#include "common/Common.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 #include "OptimizationBase.h"
 
 namespace M4D

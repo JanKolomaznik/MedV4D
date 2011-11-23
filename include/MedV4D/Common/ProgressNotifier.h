@@ -7,9 +7,9 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 
-#include "common/Debug.h"
-#include "common/Log.h"
-#include "common/StringTools.h"
+#include "MedV4D/Common/Debug.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/StringTools.h"
 
 class ProgressNotifier
 {

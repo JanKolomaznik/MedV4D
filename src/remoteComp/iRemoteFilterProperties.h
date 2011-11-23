@@ -1,7 +1,7 @@
 #ifndef IREMOTEFILTERPROPERTIES_H_
 #define IREMOTEFILTERPROPERTIES_H_
 
-#include "common/IOStreams.h"
+#include "MedV4D/Common/IOStreams.h"
 
 namespace M4D
 {

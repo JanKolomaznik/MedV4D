@@ -2,7 +2,7 @@
 #ifndef GENERAL_VIEWER_H
 #define GENERAL_VIEWER_H
 
-#include "Imaging/Imaging.h"
+#include "MedV4D/Imaging/Imaging.h"
 
 #include "GUI/utils/ViewConfiguration.h"
 #include "GUI/utils/IUserEvents.h"
@@ -24,7 +24,7 @@
 #include <boost/cast.hpp>
 #include <map>
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 
 
 namespace M4D

@@ -8,10 +8,10 @@
 #ifndef CONVOLUTION_H
 #define CONVOLUTION_H
 
-#include "Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 #include <boost/shared_ptr.hpp>
 
-#include "Imaging/FilterComputation.h"
+#include "MedV4D/Imaging/FilterComputation.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -193,7 +193,7 @@ MirrorBorderAccess(
 } /*namespace M4D*/
 
 /** @} */
-//#include "Imaging/Convolution.tcc"
+//#include "MedV4D/Imaging/Convolution.tcc"
 
 #endif /*CONVOLUTION_H*/
 

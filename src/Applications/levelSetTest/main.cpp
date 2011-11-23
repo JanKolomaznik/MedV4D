@@ -1,11 +1,11 @@
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <fstream>
 
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/DataSetFactory.h"
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/filters/ImageConvertor.h"
-#include "common/IOStreams.h"
+#include "MedV4D/Common/IOStreams.h"
 #include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
 
 using namespace M4D::Common;

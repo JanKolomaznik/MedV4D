@@ -1,5 +1,5 @@
-#include "common/Common.h"
-#include "common/fileAccessor.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/fileAccessor.h"
 #include <stdio.h>
 
 using namespace std;

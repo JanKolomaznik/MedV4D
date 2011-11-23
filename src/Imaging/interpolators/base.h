@@ -1,8 +1,8 @@
 #ifndef BASE_H_
 #define BASE_H_
 
-#include "common/Common.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 
 namespace M4D
 {

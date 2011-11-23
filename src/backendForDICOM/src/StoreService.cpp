@@ -10,7 +10,7 @@
 #include <dcmtk/dcmdata/dcelem.h>		// data dictionary
 #include <dcmtk/dcmdata/dcdict.h>		// data dictionary
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include "../DicomAssoc.h"
 #include "../AbstractService.h"

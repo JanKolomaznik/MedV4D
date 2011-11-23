@@ -10,7 +10,7 @@ namespace M4D
  * @{ 
  **/
 
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 
 namespace Imaging
 {

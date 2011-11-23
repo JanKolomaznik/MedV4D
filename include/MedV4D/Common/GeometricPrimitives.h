@@ -1,7 +1,7 @@
 #ifndef GEOMETRIC_PRIMITIVES_H
 #define GEOMETRIC_PRIMITIVES_H
 
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 
 namespace M4D
 {

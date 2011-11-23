@@ -2,7 +2,7 @@
 #define MYFINITEDIFFERENCEFILTER_
 
 #include "itkInPlaceImageFilter.h"
-#include "commonConsts.h"
+#include "MedV4D/CommonConsts.h"
 
 namespace M4D
 {

@@ -3,7 +3,7 @@
 
 #include "GUI/utils/OGLTools.h"
 #include "GUI/utils/GLTextureImage.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <QtOpenGL>
 #include <boost/thread.hpp> 
 #include <boost/thread/recursive_mutex.hpp>

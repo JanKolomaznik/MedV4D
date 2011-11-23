@@ -1,9 +1,9 @@
 #ifndef PARAMETRIC_CURVE_H
 #define PARAMETRIC_CURVE_H
 
-#include "Imaging/PointSet.h"
+#include "MedV4D/Imaging/PointSet.h"
 #include <cmath>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 namespace M4D
 {
@@ -254,6 +254,6 @@ protected:
 }/*namespace M4D*/
 
 //include implementation
-#include "Imaging/ParametricCurve.tcc"
+#include "MedV4D/Imaging/ParametricCurve.tcc"
 
 #endif /*PARAMETRIC_CURVE_H*/

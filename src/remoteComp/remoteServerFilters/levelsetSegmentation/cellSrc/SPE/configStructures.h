@@ -1,7 +1,7 @@
 #ifndef CONFIGSTRUCTURES_H_
 #define CONFIGSTRUCTURES_H_
 
-#include "commonTypes.h"
+#include "MedV4D/CommonTypes.h"
 
 namespace M4D {
 namespace Cell {

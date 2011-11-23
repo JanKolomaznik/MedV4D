@@ -7,7 +7,7 @@
 #include <spu_mfcio.h>
 #include "SPEdebug.h"
 #else
-#include "common/Debug.h"
+#include "MedV4D/Common/Debug.h"
 #include <string.h>
 #endif
 

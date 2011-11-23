@@ -1,6 +1,6 @@
 #include "GUI/utils/ViewConfiguration.h"
-#include "common/MathTools.h"
-#include "common/Log.h"
+#include "MedV4D/Common/MathTools.h"
+#include "MedV4D/Common/Log.h"
 #include <algorithm>
 
 namespace M4D

@@ -1,8 +1,8 @@
 #ifndef _SIMPLE_PROJECTION_H
 #define _SIMPLE_PROJECTION_H
 
-#include "common/Common.h"
-#include "Imaging/AImageFilterWholeAtOnce.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D
 {
@@ -156,7 +156,7 @@ struct AverageOperator
 
 
 //include implementation
-#include "Imaging/filters/SimpleProjection.tcc"
+#include "MedV4D/Imaging/filters/SimpleProjection.tcc"
 
 #endif /*_SIMPLE_PROJECTION_H*/
 

@@ -1,8 +1,8 @@
 #ifndef VOLUME_RENDERER_H
 #define VOLUME_RENDERER_H
 
-#include "common/Common.h"
-#include "common/GeometricPrimitives.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>

@@ -1,6 +1,6 @@
 
-#include "common/Common.h"
-#include "common/IOStreams.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/IOStreams.h"
 
 using namespace M4D::IO;
 

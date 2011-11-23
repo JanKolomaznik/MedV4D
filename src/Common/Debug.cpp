@@ -3,7 +3,7 @@
  *  @file Debug.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/Debug.h"
+#include "MedV4D/Common/Debug.h"
 
 #ifdef DEBUG_LEVEL
 

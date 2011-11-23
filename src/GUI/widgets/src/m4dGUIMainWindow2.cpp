@@ -7,8 +7,8 @@
 
 #include <QtGui>
 
-#include "common/Log.h"
-#include "common/Debug.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/Debug.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;

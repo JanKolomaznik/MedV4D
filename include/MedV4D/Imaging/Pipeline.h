@@ -9,8 +9,8 @@
 #define _PIPELINE_H
 
 
-#include "Imaging/APipeline.h"
-#include "Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/APipeline.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 

@@ -18,10 +18,10 @@
 #include "Imaging/Image.h"
 
 #include "vtkImageData.h"
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/ExceptionBase.h"
 
-#include "common/Common.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 
 #include <fstream>
 

@@ -9,9 +9,9 @@
 #define _PIPELINE_CONTAINER_H
 
 
-#include "Imaging/AFilter.h"
-#include "Imaging/ConnectionInterface.h"
-#include "Imaging/ADataset.h"
+#include "MedV4D/Imaging/AFilter.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/ADataset.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 

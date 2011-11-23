@@ -9,11 +9,11 @@
 #define _ABSTRACT_DATA_SET_H
 
 #include <boost/shared_ptr.hpp>
-#include "common/TimeStamp.h"
-#include "common/Thread.h"
-#include "Imaging/DatasetClassEnum.h"
-#include "common/IOStreams.h"
-#include "Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Common/TimeStamp.h"
+#include "MedV4D/Common/Thread.h"
+#include "MedV4D/Imaging/DatasetClassEnum.h"
+#include "MedV4D/Common/IOStreams.h"
+#include "MedV4D/Imaging/DatasetDefinitionTools.h"
 
 /**
  *  @addtogroup imaging Imaging Library

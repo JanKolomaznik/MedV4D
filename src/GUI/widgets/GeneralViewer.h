@@ -24,7 +24,7 @@
 #include <boost/cast.hpp>
 #include <map>
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 
 
 namespace M4D

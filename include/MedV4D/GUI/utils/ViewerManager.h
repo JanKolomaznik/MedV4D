@@ -1,7 +1,7 @@
 #ifndef VIEWER_MANAGER_H
 #define VIEWER_MANAGER_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/widgets/AGLViewer.h"
 //#include "GUI/utils/ViewerAction.h"
 

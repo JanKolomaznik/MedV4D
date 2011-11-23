@@ -1,17 +1,17 @@
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
-#include "Imaging/AImageData.h"
-#include "Imaging/ImageDataTemplate.h"
-#include "Imaging/Image.h"
+#include "MedV4D/Imaging/AImageData.h"
+#include "MedV4D/Imaging/ImageDataTemplate.h"
+#include "MedV4D/Imaging/Image.h"
 
-#include "common/Common.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "common/FStreams.h"
+#include "MedV4D/Common/FStreams.h"
 
 /**
  * @ingroup imaging 

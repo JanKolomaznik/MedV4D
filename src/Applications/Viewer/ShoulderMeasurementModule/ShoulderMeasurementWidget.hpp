@@ -1,7 +1,7 @@
 #ifndef SHOULDER_MEASUREMENT_WIDGET_HPP
 #define SHOULDER_MEASUREMENT_WIDGET_HPP
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "ui_ShoulderMeasurementWidget.h"
 #include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
 #include <QtGui>

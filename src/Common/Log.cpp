@@ -3,7 +3,7 @@
  *  @file Log.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/Log.h"
+#include "MedV4D/Common/Log.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>

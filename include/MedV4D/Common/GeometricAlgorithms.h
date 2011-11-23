@@ -2,10 +2,10 @@
 #define GEOMETRIC_ALGORITHMS
 
 #include <cmath>
-#include "common/Common.h"
-#include "common/Vector.h"
-#include "common/MathTools.h"
-#include "common/GeometricPrimitives.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/MathTools.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
 #include <ostream>
 #include <iomanip>
 

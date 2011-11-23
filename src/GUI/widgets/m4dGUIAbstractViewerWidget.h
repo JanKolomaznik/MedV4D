@@ -8,7 +8,7 @@
 #ifndef M4D_GUI_ABSTRACTVIEWERWIDGET_H_
 #define M4D_GUI_ABSTRACTVIEWERWIDGET_H_
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "Imaging/PipelineMessages.h"
 #include "Imaging/Ports.h"
 #include <QtGui>

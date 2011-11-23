@@ -1,8 +1,8 @@
 #include "GUI/TF/TFEditorGUI.h"
 
 #include "GUI/TF/TFQtXmlReader.h"
-#include "common/Common.h"
-#include "common/Debug.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Debug.h"
 
 namespace M4D{
 namespace GUI{

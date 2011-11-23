@@ -10,7 +10,7 @@
 
 
 #include <boost/shared_ptr.hpp>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{

@@ -6,7 +6,7 @@
 #include "SPE/commonTypes.h"
 
 #include "supportClasses.h"
-#include "common/perfCounter.h"
+#include "MedV4D/Common/perfCounter.h"
 
 #include "itkNeighborhoodIterator.h"
 #include "itkZeroCrossingImageFilter.h"

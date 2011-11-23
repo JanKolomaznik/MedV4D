@@ -8,8 +8,8 @@
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 #define _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 
-#include "common/Common.h"
-#include "Imaging/AImageFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilter.h"
 #include <vector>
 
 /**
@@ -98,7 +98,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/AImageFilterWholeAtOnce.tcc"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.tcc"
 
 #endif /*_ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H*/
 

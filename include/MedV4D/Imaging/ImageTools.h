@@ -1,9 +1,9 @@
 #ifndef _IMAGE_TOOLS_H
 #define _IMAGE_TOOLS_H
 
-#include "common/Common.h"
-#include "Imaging/ImageRegion.h"
-#include "Imaging/Histogram.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/Histogram.h"
 
 #ifdef USE_TBB
 #include <tbb/tbb.h>

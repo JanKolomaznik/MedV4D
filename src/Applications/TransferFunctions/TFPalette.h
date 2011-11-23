@@ -1,7 +1,7 @@
 #ifndef TF_WINDOW
 #define TF_WINDOW
 
-#include "common/IDGenerator.h"
+#include "MedV4D/Common/IDGenerator.h"
 
 #include <map>
 

@@ -1,8 +1,8 @@
 #ifndef POLYLINE_H
 #define POLYLINE_H
 
-#include "Imaging/PointSet.h"
-#include "common/GeometricAlgorithms.h"
+#include "MedV4D/Imaging/PointSet.h"
+#include "MedV4D/Common/GeometricAlgorithms.h"
 
 namespace M4D
 {

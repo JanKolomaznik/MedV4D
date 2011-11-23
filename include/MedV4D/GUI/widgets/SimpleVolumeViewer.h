@@ -5,10 +5,10 @@
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/CgShaderTools.h"
 #include <QtGui/QWidget>
-#include "Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 #include "GUI/utils/ViewConfiguration.h"
-#include "common/Vector.h"
-#include "common/MathTools.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/MathTools.h"
 
 #include "GUI/utils/DrawingTools.h"
 

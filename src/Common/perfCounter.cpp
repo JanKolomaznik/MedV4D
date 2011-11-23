@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include "common/Common.h"
-#include "common/perfCounter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/perfCounter.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,11 +1,11 @@
 #ifndef _IMAGE_REGION_H
 #define _IMAGE_REGION_H
 
-#include "common/Common.h"
-#include "common/Vector.h"
-#include "Imaging/AImageRegion.h"
-#include "Imaging/DatasetDefinitionTools.h"
-#include "Imaging/ImageIterator.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Imaging/AImageRegion.h"
+#include "MedV4D/Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Imaging/ImageIterator.h"
 #include <memory>
 
 namespace M4D

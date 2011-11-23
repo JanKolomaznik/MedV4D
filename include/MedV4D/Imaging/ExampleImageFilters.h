@@ -8,12 +8,12 @@
 #ifndef _EXAMPLE_IMAGE_FILTERS_H
 #define _EXAMPLE_IMAGE_FILTERS_H
 
-#include "Common.h"
+#include "MedV4D/Common.h"
 
-#include "Imaging/Ports.h"
-#include "Imaging/ImageDataTemplate.h"
-#include "Imaging/ImageFactory.h"
-#include "Imaging/AImageFilter.h"
+#include "MedV4D/Imaging/Ports.h"
+#include "MedV4D/Imaging/ImageDataTemplate.h"
+#include "MedV4D/Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/AImageFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -166,7 +166,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/ExampleImageFilters.tcc"
+#include "MedV4D/Imaging/ExampleImageFilters.tcc"
 
 #endif /*_EXAMPLE_IMAGE_FILTERS_H*/
 

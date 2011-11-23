@@ -1,5 +1,5 @@
 
-#include "Common.h"
+#include "MedV4D/Common.h"
 #include "Imaging/ExampleImageFilters.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>

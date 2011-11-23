@@ -35,7 +35,7 @@
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "Imaging/Imaging.h"
 #include "m4dGUIAbstractViewerWidget.h"
 

@@ -1,7 +1,7 @@
 #include "mainWindow.h"
 #include "SettingsBox.h"
 #include "Imaging/PipelineMessages.h"
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/ExceptionBase.h"
 
 
 using namespace std;

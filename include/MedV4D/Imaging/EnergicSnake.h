@@ -1,9 +1,9 @@
 #ifndef ENERGIC_SNAKE_H
 #define ENERGIC_SNAKE_H
 
-#include "Imaging/PointSet.h"
-#include "Imaging/BSpline.h"
-#include "Imaging/EnergyModels.h"
+#include "MedV4D/Imaging/PointSet.h"
+#include "MedV4D/Imaging/BSpline.h"
+#include "MedV4D/Imaging/EnergyModels.h"
 
 namespace M4D
 {

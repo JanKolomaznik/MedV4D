@@ -1,9 +1,9 @@
 #ifndef _FACE_INFO_H
 #define _FACE_INFO_H
 
-#include "common/Vector.h"
-#include "common/Color.h"
-#include "Imaging/VertexInfo.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/Color.h"
+#include "MedV4D/Imaging/VertexInfo.h"
 
 
 namespace M4D

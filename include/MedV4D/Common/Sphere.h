@@ -1,8 +1,8 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "common/Vector.h"
-#include "common/DefinitionMacros.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/DefinitionMacros.h"
 
 namespace M4D
 {

@@ -1,7 +1,7 @@
 #ifndef TYPE_TRAITS_H
 #define TYPE_TRAITS_H
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 
 
 template< typename Type >

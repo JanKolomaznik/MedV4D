@@ -7,7 +7,7 @@
  *  @{
  */
 
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/ExceptionBase.h"
 #include "Imaging/AImageData.h"
 #include "Imaging/Image.h"
 

@@ -2,7 +2,7 @@
 #define QUATERNION_H
 
 #include <boost/math/quaternion.hpp>
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 #include <cmath>
 
 using   ::boost::math::real;

@@ -5,7 +5,7 @@
 #include "../SPE/tools/sparesFieldLayer.h"
 #include "../supportClasses.h"
 #include "../SPE/configStructures.h"
-#include "common/Thread.h"
+#include "MedV4D/Common/Thread.h"
 #include "updateValsAllocator.h"
 
 namespace M4D

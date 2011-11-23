@@ -8,8 +8,8 @@
 #ifndef _CANNY_EDGE_DETECTOR_H
 #define _CANNY_EDGE_DETECTOR_H
 
-#include "common/Common.h"
-#include "Imaging/AImage2DFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -65,7 +65,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/CannyEdgeDetector.tcc"
+#include "MedV4D/Imaging/filters/CannyEdgeDetector.tcc"
 
 #endif /*_CANNY_EDGE_DETECTOR_H*/
 

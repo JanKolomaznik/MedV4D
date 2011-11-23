@@ -9,7 +9,7 @@
 #error File SobelEdgeDetector.tcc cannot be included directly!
 #else
 
-#include "Imaging/FilterComputation.h"
+#include "MedV4D/Imaging/FilterComputation.h"
 
 /**
  *  @addtogroup imaging Imaging Library

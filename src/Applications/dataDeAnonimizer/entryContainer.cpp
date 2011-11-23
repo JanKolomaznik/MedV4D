@@ -9,7 +9,7 @@
 #include <dcmtk/dcmdata/dcdeftag.h>
 #include <dcmtk/dcmdata/dcfilefo.h>
 
-#include "Common.h"
+#include "MedV4D/Common.h"
 #include "entryContainer.h"
 
 using namespace M4D::DataModifier;

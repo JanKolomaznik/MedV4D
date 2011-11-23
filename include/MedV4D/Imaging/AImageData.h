@@ -8,8 +8,8 @@
 #ifndef _ABSTRACT_IMAGE_DATA_H
 #define _ABSTRACT_IMAGE_DATA_H
 
-#include "common/Common.h"
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/ExceptionBase.h"
 
 #include <boost/shared_ptr.hpp>
 

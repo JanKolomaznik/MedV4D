@@ -1,8 +1,8 @@
 #ifndef _SPHERE_SELECTION_H
 #define _SPHERE_SELECTION_H
 
-#include "common/Common.h"
-#include "Imaging/AImageFilterWholeAtOnce.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D
 {
@@ -100,7 +100,7 @@ private:
 
 
 //include implementation
-#include "Imaging/filters/SphereSelection.tcc"
+#include "MedV4D/Imaging/filters/SphereSelection.tcc"
 
 #endif /*_SPHERE_SELECTION_H*/
 

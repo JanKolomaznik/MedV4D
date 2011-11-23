@@ -3,7 +3,7 @@
 
 #include "PPE/SPEManager.h"
 #include "initPartOfFilter.h"
-#include "common/perfCounter.h"
+#include "MedV4D/Common/perfCounter.h"
 
 namespace M4D
 {

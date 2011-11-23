@@ -8,9 +8,9 @@
 #ifndef _ABSTRACT_PIPELINE_H
 #define _ABSTRACT_PIPELINE_H
 
-#include "Imaging/AFilter.h"
-#include "Imaging/ConnectionInterface.h"
-#include "Imaging/Ports.h"
+#include "MedV4D/Imaging/AFilter.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/Ports.h"
 #include <boost/shared_ptr.hpp>
 
 /**

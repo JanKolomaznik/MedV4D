@@ -1,8 +1,8 @@
 #ifndef AVIEWER_H
 #define AVIEWER_H
 
-#include "common/Common.h"
-#include "common/IDGenerator.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/IDGenerator.h"
 
 namespace M4D
 {

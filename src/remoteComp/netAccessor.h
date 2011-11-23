@@ -14,8 +14,8 @@
 #include <asio.hpp>
 //#include <boost/bind.hpp>
 
-#include "common/mediumAccessor.h"
-#include "common/Endianess.h"
+#include "MedV4D/Common/mediumAccessor.h"
+#include "MedV4D/Common/Endianess.h"
 
 
 namespace M4D

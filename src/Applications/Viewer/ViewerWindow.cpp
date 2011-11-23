@@ -12,7 +12,7 @@
 #include "GUI/utils/QtM4DTools.h"
 #include "GUI/widgets/SettingsDialog.h"
 #include "GUI/widgets/ViewerControls.h"
-#include "common/MathTools.h"
+#include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 
 #include <iostream>

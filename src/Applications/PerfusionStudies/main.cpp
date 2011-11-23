@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include "MainWindow.h"
 

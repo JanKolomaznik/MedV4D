@@ -1,8 +1,8 @@
 #ifndef CANNY_EDGE_DETECTION_H
 #define CANNY_EDGE_DETECTION_H
 
-#include "common/Direction.h"
-#include "Imaging/FilterComputation.h"
+#include "MedV4D/Common/Direction.h"
+#include "MedV4D/Imaging/FilterComputation.h"
 
 namespace M4D
 {

@@ -2,7 +2,7 @@
 #define IMAGE_TOOLS_H
 
 #include "Imaging/Imaging.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include <boost/filesystem.hpp>
 #include <vector>

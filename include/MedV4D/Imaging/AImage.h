@@ -3,10 +3,10 @@
 #define A_IMAGE_H
 
 #include <boost/shared_ptr.hpp>
-#include "Imaging/ModificationManager.h"
-#include "Imaging/ADataset.h"
-#include "common/Vector.h"
-#include "Imaging/AImageRegion.h"
+#include "MedV4D/Imaging/ModificationManager.h"
+#include "MedV4D/Imaging/ADataset.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Imaging/AImageRegion.h"
 
 namespace M4D
 {
@@ -226,7 +226,7 @@ protected:
 }/*namespace M4D*/
 
 //include implementation
-#include "Imaging/AImage.tcc"
+#include "MedV4D/Imaging/AImage.tcc"
 
 #endif /*A_IMAGE_H*/
 

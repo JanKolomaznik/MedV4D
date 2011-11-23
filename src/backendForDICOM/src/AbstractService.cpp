@@ -8,7 +8,7 @@
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include "../DicomAssoc.h"
 #include "../AbstractService.h"

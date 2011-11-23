@@ -1,8 +1,8 @@
 #ifndef FILE_STREAMS_H
 #define FILE_STREAMS_H
 
-#include "common/IOStreams.h"
-#include "common/fileAccessor.h"
+#include "MedV4D/Common/IOStreams.h"
+#include "MedV4D/Common/fileAccessor.h"
 #include <string>
 
 namespace M4D

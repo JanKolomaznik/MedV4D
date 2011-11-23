@@ -8,7 +8,7 @@
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "../DcmObject.h"
 #include "../dicomDataStreamDecoder.h"
 

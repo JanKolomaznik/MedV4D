@@ -1,7 +1,7 @@
 #ifndef ANNOTATION_WIDGET_HPP
 #define ANNOTATION_WIDGET_HPP
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "ui_AnnotationWidget.h"
 #include "AnnotationModule/AnnotationEditorController.hpp"
 #include <QtGui>

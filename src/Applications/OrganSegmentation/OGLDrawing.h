@@ -1,7 +1,7 @@
 #ifndef OGL_DRAWING_H
 #define OGL_DRAWING_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "Imaging/Imaging.h"
 
 inline void

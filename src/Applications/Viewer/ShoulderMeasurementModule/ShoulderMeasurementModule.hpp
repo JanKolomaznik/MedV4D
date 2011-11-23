@@ -7,7 +7,7 @@
 #include "GUI/utils/ApplicationManager.h"
 #include "ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
 #include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
-#include "common/IDGenerator.h"
+#include "MedV4D/Common/IDGenerator.h"
 
 
 

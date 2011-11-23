@@ -2,7 +2,7 @@
 #define INTERFACE_USER_EVENTS_H
 
 #include <QtGui>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 class IUserEvents
 {

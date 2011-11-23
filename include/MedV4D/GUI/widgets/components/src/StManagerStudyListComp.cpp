@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "GUI/widgets/utils/StudyFilter.h"
-#include "common/ExceptionBase.h"
-#include "common/Thread.h"
+#include "MedV4D/Common/ExceptionBase.h"
+#include "MedV4D/Common/Thread.h"
 #include "GUI/widgets/utils/LoadingThreads.h"
 
 // DICOM namespace:

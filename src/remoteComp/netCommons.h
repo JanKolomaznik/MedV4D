@@ -8,7 +8,7 @@
 #ifndef TRANSDEFS_H
 #define TRANSDEFS_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 /**
  * Contains some common declarations for communicaton

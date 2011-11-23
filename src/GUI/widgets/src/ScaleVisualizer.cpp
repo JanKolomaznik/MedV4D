@@ -1,5 +1,5 @@
 #include "GUI/widgets/ScaleVisualizer.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 
 void

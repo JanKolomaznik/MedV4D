@@ -16,7 +16,7 @@
 
 #endif
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 namespace viewer {
 

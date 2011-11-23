@@ -1,8 +1,8 @@
 #ifndef GAUSSIAN_FILTER_H
 #define GAUSSIAN_FILTER_H
 
-#include "Imaging/Convolution.h"
-#include "Imaging/filters/ConvolutionFilter.h"
+#include "MedV4D/Imaging/Convolution.h"
+#include "MedV4D/Imaging/filters/ConvolutionFilter.h"
 #include <cmath>
 
 namespace M4D

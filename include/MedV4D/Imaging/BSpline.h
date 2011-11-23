@@ -1,10 +1,10 @@
 #ifndef BSPLINE_H
 #define BSPLINE_H
 
-#include "Imaging/PointSet.h"
-#include "Imaging/Polyline.h"
+#include "MedV4D/Imaging/PointSet.h"
+#include "MedV4D/Imaging/Polyline.h"
 #include <cmath>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <ostream>
 #include <iomanip>
 
@@ -467,6 +467,6 @@ DeserializeGeometryObject( M4D::IO::InStream &stream, BSpline< VectorType > * &o
 }/*namespace M4D*/
 
 //include implementation
-#include "Imaging/BSpline.tcc"
+#include "MedV4D/Imaging/BSpline.tcc"
 
 #endif /*BSPLINE_H*/

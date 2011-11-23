@@ -9,8 +9,8 @@
 #define _AGEOMETRY_DATA_SET_H
 
 #include <boost/shared_ptr.hpp>
-#include "Imaging/ADataset.h"
-#include "Imaging/GeometryDatasetFactory.h"
+#include "MedV4D/Imaging/ADataset.h"
+#include "MedV4D/Imaging/GeometryDatasetFactory.h"
 
 /**
  *  @addtogroup imaging Imaging Library

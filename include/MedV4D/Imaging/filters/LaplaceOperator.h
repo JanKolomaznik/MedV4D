@@ -1,8 +1,8 @@
 #ifndef LAPLACE_OPERATOR_H
 #define LAPLACE_OPERATOR_H
 
-#include "Imaging/Convolution.h"
-#include "Imaging/filters/ConvolutionFilter.h"
+#include "MedV4D/Imaging/Convolution.h"
+#include "MedV4D/Imaging/filters/ConvolutionFilter.h"
 #include <cmath>
 
 namespace M4D

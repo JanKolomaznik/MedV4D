@@ -12,13 +12,13 @@
 #ifndef _ABSTRACT_FILTER_H
 #define _ABSTRACT_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AProcessingUnit.h"
-#include "Imaging/Ports.h"
-#include "Imaging/ConnectionInterface.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AProcessingUnit.h"
+#include "MedV4D/Imaging/Ports.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
 #include <boost/shared_ptr.hpp>
-#include "common/Thread.h"
-#include "Imaging/PipelineMessages.h"
+#include "MedV4D/Common/Thread.h"
+#include "MedV4D/Imaging/PipelineMessages.h"
 #include "filterIDsEnum.h"
 #include <string>
 

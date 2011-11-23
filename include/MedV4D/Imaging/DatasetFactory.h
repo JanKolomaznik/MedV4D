@@ -2,8 +2,8 @@
 #define DATASETFACTORY_H_
 
 #include "ADataset.h"
-#include "Imaging/ImageFactory.h"
-#include "Imaging/GeometryDatasetFactory.h"
+#include "MedV4D/Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/GeometryDatasetFactory.h"
 
 
 namespace M4D

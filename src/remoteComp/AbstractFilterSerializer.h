@@ -10,7 +10,7 @@
 
 #include "cellBE/filterIDEnums.h"
 #include "cellBE/netStream.h"
-#include "Common.h"
+#include "MedV4D/Common.h"
 #include "Imaging/AbstractFilter.h"
 
 #include <vector>

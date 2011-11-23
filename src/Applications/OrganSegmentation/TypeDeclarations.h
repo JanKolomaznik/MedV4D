@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "Imaging/Imaging.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 typedef M4D::Imaging::AImage::Ptr			AImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >			InputImageType;

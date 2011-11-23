@@ -4,7 +4,7 @@
 #include <OISException.h>
 #include <sstream>
 #include <iostream>
-#include "common/Debug.h"
+#include "MedV4D/Common/Debug.h"
 
 JoyInput::JoyInput() : m_InputManager(NULL), m_bInitialized(false) {
 

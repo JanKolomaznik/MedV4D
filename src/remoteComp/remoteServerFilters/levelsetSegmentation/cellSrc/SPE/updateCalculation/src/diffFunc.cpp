@@ -1,11 +1,11 @@
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 #include "../diffFunc.h"
 #include "../../vnl_math.h"
 
 #ifdef FOR_CELL
 #include "../../tools/SPEdebug.h"
 #else
-#include "common/Debug.h"
+#include "MedV4D/Common/Debug.h"
 #endif
 
 using namespace M4D::Cell;

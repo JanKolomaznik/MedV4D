@@ -2,8 +2,8 @@
 #define _VERTEX_INFO_H
 
 
-#include "common/Vector.h"
-#include "common/Color.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/Color.h"
 
 namespace M4D
 {

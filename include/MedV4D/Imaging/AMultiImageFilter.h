@@ -1,14 +1,14 @@
 #ifndef _ABSTRACT_MULTI_IMAGE_FILTER_H
 #define _ABSTRACT_MULTI_IMAGE_FILTER_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
-#include "Imaging/Ports.h"
-#include "Imaging/ImageDataTemplate.h"
-#include "Imaging/ImageFactory.h"
-#include "Imaging/AFilter.h"
-#include "Imaging/ModificationManager.h"
-#include "Imaging/ImageTraits.h"
+#include "MedV4D/Imaging/Ports.h"
+#include "MedV4D/Imaging/ImageDataTemplate.h"
+#include "MedV4D/Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/AFilter.h"
+#include "MedV4D/Imaging/ModificationManager.h"
+#include "MedV4D/Imaging/ImageTraits.h"
 
 #include <vector>
 
@@ -91,7 +91,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/AMultiImageFilter.tcc"
+#include "MedV4D/Imaging/AMultiImageFilter.tcc"
 
 #endif /*_ABSTRACT_MULTI_IMAGE_FILTER_H*/
 

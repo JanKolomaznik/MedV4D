@@ -5,7 +5,7 @@
 #include <QWidget>
 #include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/Imaging.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "ViewerWindow.hpp"
 
 #include <tclap/CmdLine.h>

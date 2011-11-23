@@ -1,7 +1,7 @@
 #ifndef OPTIMIZATION_BASE_H
 #define OPTIMIZATION_BASE_H
 
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 
 namespace M4D
 {

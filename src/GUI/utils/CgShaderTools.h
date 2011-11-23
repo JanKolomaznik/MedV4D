@@ -7,8 +7,8 @@
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
 #include <Cg/cgGL.h>
 #include <string>
-#include "common/Common.h"
-#include "common/GeometricPrimitives.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
 #include "GUI/utils/DrawingTools.h"
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/Camera.h"

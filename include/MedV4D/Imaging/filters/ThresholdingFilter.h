@@ -8,9 +8,9 @@
 #ifndef _THRESHOLDING_FILTER_H
 #define _THRESHOLDING_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/ImageTraits.h"
-#include "Imaging/AImageElementFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/ImageTraits.h"
+#include "MedV4D/Imaging/AImageElementFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -155,7 +155,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/ThresholdingFilter.tcc"
+#include "MedV4D/Imaging/filters/ThresholdingFilter.tcc"
 
 #endif /*_THRESHOLDING_FILTER_H*/
 

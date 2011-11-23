@@ -11,11 +11,11 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "structures.h"
-#include "Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/ImageFactory.h"
 #include "DcmObject.h"
-#include "common/ProgressNotifier.h"
+#include "MedV4D/Common/ProgressNotifier.h"
 
 
 /**

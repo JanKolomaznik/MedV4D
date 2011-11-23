@@ -4,7 +4,7 @@
 #include <QMoveEvent>
 #include <QtGui>
 #include <QtCore>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/QtM4DTools.h"
 
 class MultiDockWidget: public QDockWidget

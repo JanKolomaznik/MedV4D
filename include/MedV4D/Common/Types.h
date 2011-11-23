@@ -2,7 +2,7 @@
 #define TYPES_H
 
 
-#include "common/Debug.h"
+#include "MedV4D/Common/Debug.h"
 /**
  *  @ingroup common
  *  @file Types.h

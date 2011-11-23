@@ -12,7 +12,7 @@
 #include <QtGui>
 #include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
-#include "Imaging/Imaging.h"
+#include "MedV4D/Imaging/Imaging.h"
 #include "GUI/utils/ViewConfiguration.h"
 //#include "GUI/utils/ImageDataRenderer.h"
 #include "GUI/utils/TransferFunctionBuffer.h"

@@ -10,9 +10,9 @@
 
 
 #include <boost/shared_ptr.hpp>
-#include "common/Common.h"
-#include "Imaging/DatasetClassEnum.h"
-#include "common/FStreams.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/DatasetClassEnum.h"
+#include "MedV4D/Common/FStreams.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{

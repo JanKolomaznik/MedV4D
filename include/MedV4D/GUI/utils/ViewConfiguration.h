@@ -1,9 +1,9 @@
 #ifndef _VIEW_CONFIGURATION_H
 #define _VIEW_CONFIGURATION_H
 
-#include "common/Vector.h"
-#include "common/Log.h"
-#include "common/Types.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/Types.h"
 
 namespace M4D
 {

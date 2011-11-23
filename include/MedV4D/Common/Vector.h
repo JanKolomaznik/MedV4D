@@ -1,11 +1,11 @@
 #ifndef COORDINATES_H
 #define COORDINATES_H
 
-#include "common/Debug.h"
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/Debug.h"
+#include "MedV4D/Common/ExceptionBase.h"
 #include <istream>
-#include "common/TypeTraits.h"
-#include "common/TypeComparator.h"
+#include "MedV4D/Common/TypeTraits.h"
+#include "MedV4D/Common/TypeComparator.h"
 
 #include <boost/static_assert.hpp>
 

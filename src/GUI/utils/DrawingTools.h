@@ -1,8 +1,8 @@
 #ifndef DRAWING_TOOLS_H
 #define DRAWING_TOOLS_H
 
-#include "common/Common.h"
-#include "common/GeometricPrimitives.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
 
 class Camera;
 namespace M4D

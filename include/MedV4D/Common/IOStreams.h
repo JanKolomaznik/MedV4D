@@ -1,9 +1,9 @@
 #ifndef IOSTREAMS_H_
 #define IOSTREAMS_H_
 
-#include "Common.h"
+#include "MedV4D/Common/Common.h"
 #include <vector>
-#include "mediumAccessor.h"
+#include "MedV4D/Common/mediumAccessor.h"
 
 namespace M4D
 {

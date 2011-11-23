@@ -1,6 +1,6 @@
 #include "GUI/utils/DrawingTools.h"
-#include "common/Common.h"
-#include "common/GeometricAlgorithms.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GeometricAlgorithms.h"
 #include "GUI/utils/Camera.h"
 
 

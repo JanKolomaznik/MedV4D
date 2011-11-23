@@ -1,5 +1,5 @@
 
-#include "Common.h"
+#include "MedV4D/Common.h"
 #include "Imaging.h"
 #include "GUI/m4dGUISliceViewerWidget.h"
 #include <iostream>

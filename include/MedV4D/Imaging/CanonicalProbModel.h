@@ -1,9 +1,9 @@
 #ifndef CANONICAL_PROB_MODEL_H
 #define CANONICAL_PROB_MODEL_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <cmath>
-#include "Imaging/Histogram.h"
+#include "MedV4D/Imaging/Histogram.h"
 #include <fstream>
 #include <boost/shared_ptr.hpp>
 

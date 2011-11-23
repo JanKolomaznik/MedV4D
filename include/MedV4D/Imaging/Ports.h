@@ -9,10 +9,10 @@
 #define _PORTS_H
 
 #include <boost/shared_ptr.hpp>
-#include "Imaging/ADataset.h"
+#include "MedV4D/Imaging/ADataset.h"
 #include <vector>
-#include "Imaging/PipelineMessages.h"
-//#include "Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/PipelineMessages.h"
+//#include "MedV4D/Imaging/ConnectionInterface.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -492,7 +492,7 @@ public:
 
 /** @} */
 
-#include "Imaging/Ports.tcc"
+#include "MedV4D/Imaging/Ports.tcc"
 
 #endif /*_PORTS_H*/
 

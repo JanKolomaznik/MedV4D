@@ -1,11 +1,11 @@
 #ifndef _GEOMETRY_DATASET_FACTORY_H
 #define _GEOMETRY_DATASET_FACTORY_H
 
-#include "common/Common.h"
-#include "Imaging/ADataset.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/ADataset.h"
 #include "AGeometryDataset2D.h"
-#include "Imaging/DatasetSerializationTools.h"
-#include "Imaging/GeometricalObject.h"
+#include "MedV4D/Imaging/DatasetSerializationTools.h"
+#include "MedV4D/Imaging/GeometricalObject.h"
 
 #include <iostream>
 #include <fstream>

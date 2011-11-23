@@ -4,7 +4,7 @@
 #ifdef USE_PYTHON
 
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 #include <boost/python.hpp>
 

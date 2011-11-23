@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "base.h"
-#include "Imaging/Image.h"
+#include "MedV4D/Imaging/Image.h"
 
 namespace M4D
 {

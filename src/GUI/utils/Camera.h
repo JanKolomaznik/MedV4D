@@ -1,9 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "common/Common.h"
-#include "common/Vector.h"
-#include "common/Quaternion.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/Quaternion.h"
 
 
 class Camera

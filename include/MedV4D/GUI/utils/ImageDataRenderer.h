@@ -1,7 +1,7 @@
 #ifndef IMAGE_DATA_RENDERER_H
 #define IMAGE_DATA_RENDERER_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>

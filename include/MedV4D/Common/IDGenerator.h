@@ -1,8 +1,8 @@
 #ifndef ID_GENERATOR
 #define ID_GENERATOR
 
-#include "Common.h"
-#include "Thread.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Thread.h"
 
 
 namespace M4D

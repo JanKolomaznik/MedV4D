@@ -2,8 +2,8 @@
 #define TYPE_DECLARATIONS_H
 
 
-#include "common/Common.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 
 
 #define ORGANIZATION_NAME     "MFF"

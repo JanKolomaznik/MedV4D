@@ -2,7 +2,7 @@
 
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/QtM4DTools.h"
-#include "common/MathTools.h"
+#include "MedV4D/Common/MathTools.h"
 #include "GUI/widgets/GeneralViewer.h"
 #include "Imaging/ImageFactory.h"
 #include "GUI/utils/CameraManipulator.h"

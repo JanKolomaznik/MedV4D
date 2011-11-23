@@ -1,9 +1,9 @@
 #ifndef CLAMP_FILTER_H
 #define CLAMP_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/ImageTraits.h"
-#include "Imaging/AImageElementFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/ImageTraits.h"
+#include "MedV4D/Imaging/AImageElementFilter.h"
 #include <cmath>
 
 namespace M4D

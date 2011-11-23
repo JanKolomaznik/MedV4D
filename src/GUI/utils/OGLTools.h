@@ -1,8 +1,8 @@
 #ifndef OGL_TOOLS_H
 #define OGL_TOOLS_H
 
-#include "common/Common.h"
-#include "common/GeometricPrimitives.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
 #include <boost/shared_array.hpp>
 
 #ifdef _MSC_VER

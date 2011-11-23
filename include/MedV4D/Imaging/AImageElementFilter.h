@@ -8,8 +8,8 @@
 #ifndef _ABSTRACT_IMAGE_ELEMENT_FILTER_H
 #define _ABSTRACT_IMAGE_ELEMENT_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImage2DFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
 #include <vector>
 
 /**
@@ -136,7 +136,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/AImageElementFilter.tcc"
+#include "MedV4D/Imaging/AImageElementFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_ELEMENT_FILTER_H*/
 

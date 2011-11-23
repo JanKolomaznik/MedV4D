@@ -1,6 +1,6 @@
 #include "ShoulderMeasurementModule/Computations.hpp"
-#include "common/MathTools.h"
-#include "common/GeometricAlgorithms.h"
+#include "MedV4D/Common/MathTools.h"
+#include "MedV4D/Common/GeometricAlgorithms.h"
 
 #include <numeric>
 #include <cstdlib>

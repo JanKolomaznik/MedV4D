@@ -4,7 +4,7 @@
 #include <QtGui>
 #include "GUI/widgets/AGLViewer.h"
 #include <boost/bind/bind.hpp>
-#include "Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
 
 namespace M4D
 {

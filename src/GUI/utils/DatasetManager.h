@@ -2,9 +2,9 @@
 #define DATASET_MANAGER_H
 
 #include <QtCore>
-#include "common/Common.h"
-#include "common/Thread.h"
-#include "common/ProgressNotifier.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Thread.h"
+#include "MedV4D/Common/ProgressNotifier.h"
 #include "Imaging/ImageFactory.h"
 
 typedef M4D::Common::IDNumber DatasetID;

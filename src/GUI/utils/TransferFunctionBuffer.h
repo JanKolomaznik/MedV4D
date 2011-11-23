@@ -1,7 +1,7 @@
 #ifndef TRANSFER_FUNCTION_BUFFER_H
 #define TRANSFER_FUNCTION_BUFFER_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/OGLTools.h"
 
 namespace M4D

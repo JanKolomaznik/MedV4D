@@ -3,7 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "GUI/utils/OGLTools.h"
 #include "Imaging/AImageRegion.h"
 #include "Imaging/Image.h"

@@ -4,7 +4,7 @@
 #include "Imaging/Imaging.h"
 #include "MainManager.h"
 #include "ManagerViewerSpecialState.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "SegmentationManager.h"
 
 #include <QtCore>

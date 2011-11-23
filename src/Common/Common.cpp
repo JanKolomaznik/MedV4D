@@ -3,7 +3,7 @@
  *  @file Common.cpp
  *  @author Jan Kolomaznik
  */
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 namespace M4D
 {
@@ -19,7 +19,7 @@ const float32 PId4 = PI/4;
 
 }//namespace M4D
 
-#include "common/Direction.h"
+#include "MedV4D/Common/Direction.h"
 
 namespace M4D
 {
@@ -37,7 +37,7 @@ Vector<int32,2>	directionOffset[] = {
 
 }//namespace M4D
 
-#include "common/Types.h"
+#include "MedV4D/Common/Types.h"
 
 float32 TypeTraits< float32 >::Max = MAX_FLOAT32;
 float32 TypeTraits< float32 >::Min = -MAX_FLOAT32;

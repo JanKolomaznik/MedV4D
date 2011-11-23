@@ -8,11 +8,11 @@
 #ifndef _IMAGE_TRAITS_H
 #define _IMAGE_TRAITS_H
 
-#include "Imaging/ADataset.h"
-#include "Imaging/Image.h"
-#include "common/Types.h"
-#include "Imaging/ConnectionInterface.h"
-#include "Imaging/Ports.h"
+#include "MedV4D/Imaging/ADataset.h"
+#include "MedV4D/Imaging/Image.h"
+#include "MedV4D/Common/Types.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
+#include "MedV4D/Imaging/Ports.h"
 
 /**
  *  @addtogroup imaging Imaging Library

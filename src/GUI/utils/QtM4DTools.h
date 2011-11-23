@@ -1,7 +1,7 @@
 #ifndef QT_M4D_TOOLS_H
 #define QT_M4D_TOOLS_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <QPointF>
 #include <QPoint>
 #include <QSize>

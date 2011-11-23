@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include "boost/variant.hpp"
 #include <map>
 #include <iterator>

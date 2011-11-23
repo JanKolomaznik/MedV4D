@@ -4,8 +4,8 @@
 #include <exception>
 #include <ostream>
 #include <string>
-#include "common/StringTools.h"
-#include "common/Types.h"
+#include "MedV4D/Common/StringTools.h"
+#include "MedV4D/Common/Types.h"
 
 /**
  *  @ingroup common

@@ -1,8 +1,8 @@
 #ifndef DECIMATION_H_
 #define DECIMATION_H_
 
-#include "common/Common.h"
-#include "Imaging/AImageFilterWholeAtOnce.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D
 {

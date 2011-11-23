@@ -3,8 +3,8 @@
 
 #include <QtGui>
 
-#include "common/GeometricPrimitives.h"
-#include "common/Sphere.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
+#include "MedV4D/Common/Sphere.h"
 #include "GUI/widgets/GeneralViewer.h"
 #include "GUI/utils/OGLTools.h"
 #include "GUI/utils/OGLDrawing.h"

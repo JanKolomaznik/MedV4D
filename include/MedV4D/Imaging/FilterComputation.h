@@ -8,11 +8,11 @@
 #ifndef FILTER_COMPUTATION_H
 #define FILTER_COMPUTATION_H
 
-#include "Imaging/Image.h"
-#include "common/Vector.h"
-#include "Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/Image.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 #include <boost/shared_ptr.hpp>
-#include "Imaging/ImageRegionAccessors.h"
+#include "MedV4D/Imaging/ImageRegionAccessors.h"
 
 /**
  *  @addtogroup imaging Imaging Library

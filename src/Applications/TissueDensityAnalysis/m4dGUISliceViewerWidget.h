@@ -13,8 +13,8 @@
 #include <string>
 #include <map>
 #include "Imaging/Imaging.h"
-#include "common/Common.h"
-#include "common/ExceptionBase.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/ExceptionBase.h"
 #include "GUI/widgets/m4dSelection.h"
 #include "GUI/widgets/m4dGUIAbstractViewerWidget.h"
 #include "GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"

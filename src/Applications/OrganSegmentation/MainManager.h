@@ -8,7 +8,7 @@
 
 #include "TypeDeclarations.h"
 #include "AnalyseResults.h"
-#include "common/Thread.h"
+#include "MedV4D/Common/Thread.h"
 
 class ResultsPage;
 

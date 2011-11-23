@@ -8,10 +8,10 @@
 #ifndef _CONNECTION_INTERFACE_H
 #define _CONNECTION_INTERFACE_H
 
-#include "common/Common.h"
-//#include "Imaging/Ports.h"
-#include "Imaging/PipelineMessages.h"
-#include "Imaging/ADataset.h"
+#include "MedV4D/Common/Common.h"
+//#include "MedV4D/Imaging/Ports.h"
+#include "MedV4D/Imaging/PipelineMessages.h"
+#include "MedV4D/Imaging/ADataset.h"
 
 #include <map>
 #include <algorithm>
@@ -325,7 +325,7 @@ protected:
 /** @} */
 
 //Include implementation
-#include "Imaging/ConnectionInterface.tcc"
+#include "MedV4D/Imaging/ConnectionInterface.tcc"
 
 #endif /*_CONNECTION_INTERFACE_H*/
 

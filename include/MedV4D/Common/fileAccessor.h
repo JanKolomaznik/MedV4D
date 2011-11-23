@@ -2,7 +2,7 @@
 #define FILESTREAM_H_
 
 #include <fstream>
-#include "IOStreams.h"
+#include "MedV4D/Common/IOStreams.h"
 
 namespace M4D
 {

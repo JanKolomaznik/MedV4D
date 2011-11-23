@@ -8,8 +8,8 @@
 #ifndef _IMAGE_CONVERTOR_H
 #define _IMAGE_CONVERTOR_H
 
-#include "common/Common.h"
-#include "Imaging/AImageFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -100,7 +100,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/ImageConvertor.tcc"
+#include "MedV4D/Imaging/filters/ImageConvertor.tcc"
 
 #endif /*_IMAGE_CONVERTOR_H*/
 

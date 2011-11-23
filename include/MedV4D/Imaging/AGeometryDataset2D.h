@@ -8,12 +8,12 @@
 #ifndef _AGEOMETRY_DATA_SET_2D_H
 #define _AGEOMETRY_DATA_SET_2D_H
 
-#include "Imaging/AGeometryDataset.h"
+#include "MedV4D/Imaging/AGeometryDataset.h"
 #include <vector>
-#include "common/Common.h"
-#include "Imaging/GeometryDatasetFactory.h"
-#include "Imaging/ModificationManager.h"
-#include "Imaging/GeometricalObject.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/GeometryDatasetFactory.h"
+#include "MedV4D/Imaging/ModificationManager.h"
+#include "MedV4D/Imaging/GeometricalObject.h"
 
 /**
  *  @addtogroup imaging Imaging Library

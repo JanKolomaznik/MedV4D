@@ -8,7 +8,7 @@
 #include "GUI/utils/Module.h"
 #include "GUI/utils/Settings.h"
 #include "GUI/widgets/MainWindow.h"
-#include "common/IDGenerator.h"
+#include "MedV4D/Common/IDGenerator.h"
 #include "GUI/utils/ProxyViewerController.h"
 #include <QtCore>
 

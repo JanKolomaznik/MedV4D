@@ -6,7 +6,7 @@
  *  @file DcmObject.h
  *  @author Vaclav Klecanda
  */
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <vector>
 #include <boost/shared_ptr.hpp>
 

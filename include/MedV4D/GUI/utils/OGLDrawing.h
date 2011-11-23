@@ -2,15 +2,15 @@
 #define OGL_DRAWING_H
 
 
-#include "common/Common.h"
-#include "common/Sphere.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Sphere.h"
 #include "GUI/utils/OGLTools.h"
-#include "Imaging/AImage.h"
-#include "Imaging/ImageRegion.h"
-#include "Imaging/PointSet.h"
-#include "Imaging/Mesh.h"
-#include "Imaging/VertexInfo.h"
-#include "Imaging/FaceInfo.h"
+#include "MedV4D/Imaging/AImage.h"
+#include "MedV4D/Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/PointSet.h"
+#include "MedV4D/Imaging/Mesh.h"
+#include "MedV4D/Imaging/VertexInfo.h"
+#include "MedV4D/Imaging/FaceInfo.h"
 #include "GUI/utils/ViewConfiguration.h"
 #include "GUI/utils/Camera.h"
 #include "GUI/utils/DrawingTools.h"

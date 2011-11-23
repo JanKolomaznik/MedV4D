@@ -7,7 +7,7 @@
 #include "GUI/utils/ApplicationManager.h"
 #include "GUI/utils/QtM4DTools.h"
 //#include <boost/cast.hpp>
-#include "common/Functors.h"
+#include "MedV4D/Common/Functors.h"
 
 class HelperViewerActionInterface
 {

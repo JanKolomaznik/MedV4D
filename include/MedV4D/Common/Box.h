@@ -1,8 +1,8 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "common/Vector.h"
-#include "common/DefinitionMacros.h"
+#include "MedV4D/Common/Vector.h"
+#include "MedV4D/Common/DefinitionMacros.h"
 
 template< unsigned taDim, typename TCoordType = float32 >
 class AABox

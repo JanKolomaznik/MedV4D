@@ -1,8 +1,8 @@
 #ifndef _TIME_STAMP_H
 #define _TIME_STAMP_H
 
-#include "Common.h"
-#include "Thread.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Thread.h"
 
 /**
  *  @ingroup common

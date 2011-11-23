@@ -1,12 +1,12 @@
 #ifndef _MEDIAN_FILTER_H
 #define _MEDIAN_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImage2DFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include <map>
 
-#include "Imaging/FilterComputation.h"
+#include "MedV4D/Imaging/FilterComputation.h"
 
 namespace M4D
 {
@@ -68,7 +68,7 @@ private:
 
 
 //include implementation
-#include "Imaging/filters/MedianFilter.tcc"
+#include "MedV4D/Imaging/filters/MedianFilter.tcc"
 
 #endif /*_MEDIAN_FILTER_H*/
 

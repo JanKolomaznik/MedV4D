@@ -8,10 +8,10 @@
 #ifndef IMAGE_REGISTRATION_H_
 #define IMAGE_REGISTRATION_H_
 
-#include "Imaging/filters/ImageTransform.h"
-#include "Imaging/MultiHistogram.h"
-#include "Imaging/criterion/NormalizedMutualInformation.h"
-#include "Imaging/optimization/PowellOptimization.h"
+#include "MedV4D/Imaging/filters/ImageTransform.h"
+#include "MedV4D/Imaging/MultiHistogram.h"
+#include "MedV4D/Imaging/criterion/NormalizedMutualInformation.h"
+#include "MedV4D/Imaging/optimization/PowellOptimization.h"
 #include <boost/shared_ptr.hpp>
 
 #define	HISTOGRAM_MIN_VALUE						0
@@ -160,7 +160,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/ImageRegistration.tcc"
+#include "MedV4D/Imaging/filters/ImageRegistration.tcc"
 
 #endif /*IMAGE_REGISTRATION_H_*/
 

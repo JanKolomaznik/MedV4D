@@ -1,7 +1,7 @@
 #ifndef TERMINAL_WIDGET_HPP
 #define TERMINAL_WIDGET_HPP
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 #include <QtGui>
 #include <list>
 

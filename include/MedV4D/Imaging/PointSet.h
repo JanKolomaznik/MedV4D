@@ -1,10 +1,10 @@
 #ifndef POINT_SET_H
 #define POINT_SET_H
 
-#include "common/Common.h"
-#include "Imaging/GeometricalObject.h"
-#include "common/GeometricAlgorithms.h"
-#include "common/Vector.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/GeometricalObject.h"
+#include "MedV4D/Common/GeometricAlgorithms.h"
+#include "MedV4D/Common/Vector.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>

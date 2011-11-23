@@ -1,8 +1,8 @@
 #ifndef _MASK_MEDIAN_FILTER_H
 #define _MASK_MEDIAN_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImage2DFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
 
 namespace M4D
 {
@@ -101,7 +101,7 @@ private:
 
 
 //include implementation
-#include "Imaging/filters/MaskMedianFilter.tcc"
+#include "MedV4D/Imaging/filters/MaskMedianFilter.tcc"
 
 #endif /*_MASK_MEDIAN_FILTER_H*/
 

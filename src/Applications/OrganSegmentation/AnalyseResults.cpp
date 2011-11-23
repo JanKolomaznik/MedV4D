@@ -1,5 +1,5 @@
 #include "AnalyseResults.h"
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
 void
 AnalyseResults( const InputImageType &image, const M4D::Imaging::Mask3D &mask, AnalysisRecord &record )

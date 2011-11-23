@@ -8,8 +8,8 @@
 #ifndef _A_IMAGE_SLICE_FILTER_H
 #define _A_IMAGE_SLICE_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImageFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImageFilter.h"
 #include <vector>
 
 /**
@@ -215,7 +215,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/AImageSliceFilter.tcc"
+#include "MedV4D/Imaging/AImageSliceFilter.tcc"
 
 #endif /*_A_IMAGE_SLICE_FILTER_H*/
 

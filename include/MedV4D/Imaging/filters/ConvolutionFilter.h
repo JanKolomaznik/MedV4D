@@ -8,10 +8,10 @@
 #ifndef _CONVOLUTION_FILTER_H
 #define _CONVOLUTION_FILTER_H
 
-#include "common/Common.h"
-#include "Imaging/AImage2DFilter.h"
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/AImage2DFilter.h"
 #include <boost/shared_array.hpp>
-#include "Imaging/Convolution.h"
+#include "MedV4D/Imaging/Convolution.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -73,7 +73,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/filters/ConvolutionFilter.tcc"
+#include "MedV4D/Imaging/filters/ConvolutionFilter.tcc"
 
 #endif /*_CONVOLUTION_FILTER_H*/
 

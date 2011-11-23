@@ -8,10 +8,10 @@
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #define _IMAGE_DATA_TEMPLATE_H
 
-#include "common/Common.h"
+#include "MedV4D/Common/Common.h"
 
-#include "Imaging/AImageData.h"
-#include "Imaging/ModificationManager.h"
+#include "MedV4D/Imaging/AImageData.h"
+#include "MedV4D/Imaging/ModificationManager.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -265,7 +265,7 @@ public:
 /** @} */
 
 /*Include template implementation.*/
-#include "Imaging/ImageDataTemplate.tcc"
+#include "MedV4D/Imaging/ImageDataTemplate.tcc"
 
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/

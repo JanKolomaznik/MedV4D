@@ -1,13 +1,13 @@
 #ifndef _IMAGE__H
 #define _IMAGE__H
 
-#include "Imaging/AImage.h"
-#include "Imaging/ImageDataTemplate.h"
+#include "MedV4D/Imaging/AImage.h"
+#include "MedV4D/Imaging/ImageDataTemplate.h"
 #include <boost/shared_ptr.hpp>
-#include "Imaging/ModificationManager.h"
-#include "Imaging/ADataset.h"
-#include "Imaging/ImageIterator.h"
-#include "Imaging/ImageRegion.h"
+#include "MedV4D/Imaging/ModificationManager.h"
+#include "MedV4D/Imaging/ADataset.h"
+#include "MedV4D/Imaging/ImageIterator.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 #include <iostream>
 
 namespace M4D
@@ -452,7 +452,7 @@ typedef Image< uint8, 3 >	Mask3D;
 }/*namespace M4D*/
 
 //include implementation
-#include "Imaging/Image.tcc"
+#include "MedV4D/Imaging/Image.tcc"
 
 #endif /*_IMAGE__H*/
 

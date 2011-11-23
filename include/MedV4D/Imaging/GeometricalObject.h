@@ -1,9 +1,9 @@
 #ifndef GEOMETRICAL_OBJECT_H
 #define GEOMETRICAL_OBJECT_H
 
-#include "Imaging/GeometricalObjectTypeOperations.h"
-#include "Imaging/VertexInfo.h"
-#include "common/Common.h"
+#include "MedV4D/Imaging/GeometricalObjectTypeOperations.h"
+#include "MedV4D/Imaging/VertexInfo.h"
+#include "MedV4D/Common/Common.h"
 #include <boost/shared_ptr.hpp>
 
 namespace M4D

@@ -2,7 +2,7 @@
 #define MATH_TOOLS_H
 
 #include <cmath>
-#include "common/Vector.h"
+#include "MedV4D/Common/Vector.h"
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>

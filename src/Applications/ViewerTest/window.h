@@ -41,7 +41,7 @@
 #include "GUI/m4dGUIVtkViewerWidget.h"
 #include "Imaging/ImageConnection.h"
 #include "Imaging/Image.h"
-#include "Common.h"
+#include "MedV4D/Common.h"
 
 
 class mywindow : public QWidget

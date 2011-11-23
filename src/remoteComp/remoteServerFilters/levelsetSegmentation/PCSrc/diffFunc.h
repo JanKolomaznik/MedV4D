@@ -2,7 +2,7 @@
 #define CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
 
 #include "itkFiniteDifferenceFunction.h"
-#include "common/perfCounter.h"
+#include "MedV4D/Common/perfCounter.h"
 #include "speedTermSolver.h"
 //#include "advectionTermSolver.h"
 #include "curvatureTermSolver.h"
