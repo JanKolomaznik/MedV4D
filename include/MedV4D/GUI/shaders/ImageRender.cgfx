@@ -1,0 +1,970 @@
+
+#define DELTA (0.01)
+#define THRESHOLD (0.1)
+#define EPSILON (0.0000001f)
+
+struct ImageData3D
+{
+	sampler3D data: TEX0;
+	int3 size;
+	float3 realSize;
+	float3 realMinimum;
+	float3 realMaximum;
+};
+
+struct TransferFunction1D
+{
+	sampler1D data: TEX1;
+	float2 interval;
+	int sampleCount;
+};
+
+struct FragmentOutput
+{
+	float4 color : COLOR;
+};
+
+struct VertexOutput
+{
+	float4 position : POSITION;
+	float4 color    : COLOR0;
+	float3 texCoord : TEXCOORD0;
+};
+
+struct Material
+{
+	float3	Ka;
+	float3	Kd;
+	float3	Ks;
+	float	shininess;
+};
+
+struct Light
+{
+	float3 color;
+	float3 ambient;
+	float3 position;
+};
+
+struct BoundingBox
+{
+	float3	vertices[8];
+};
+
+struct Plane
+{
+	float3 point;
+	float3 normal;
+};
+
+
+ImageData3D gImageData3D;
+
+float3 gSliceNormalTexCoords;
+sampler2D gNoiseMap;
+float gJitterStrength = 1.0f;
+float2 gNoiseMapSize;
+
+float4x4 gModelViewProj;// : glstate.matrix.modelview[0];
+
+//int3 gImageDataResolution3D = {0, 0, 0};
+float2 gMappedIntervalBands;
+
+//float3 gLightPosition;
+//float3 gLightColor;
+
+Light gLight;
+float3 gEyePosition;
+float3 gViewDirection;
+
+sampler3D gMaskData3D;
+
+TransferFunction1D gTransferFunction1D;
+TransferFunction1D gIntegralTransferFunction1D;
+//sampler1D gTransferFunction1Dtex;
+//float2 gTransferFunction1DInterval;
+
+bool gEnableInterpolation;
+float gRenderingSliceThickness;
+float2 gWLWindow;
+sampler1D gColorMap;
+float gMaskAlpha;
+
+bool gEnableCutPlane;
+Plane gCutPlane;
+
+BoundingBox gBBox;
+int gMinID;
+
+uint2
+GetBBoxEdgePoints( uint idx )
+{
+	if( idx < 4 ) {
+		return uint2( idx, (idx + 1) % 4 );
+	}
+
+	if( idx < 8 ) {
+		return uint2( idx % 4, idx );
+	}
+	if( idx < 11 ) {
+		return uint2( idx - 4, idx - 3 );
+	}
+	return uint2( idx - 4, 4 );
+}
+
+
+const int edgeOrder[96/*8*12*/];/* = { 
+				10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
+				11,  8, 10,  5,  9,  6,  2,  1,  7,  3,  0,  4,
+				8,  9, 11,  6, 10,  7,  3,  2,  4,  0,  1,  5,
+				9, 10,  8,  7, 11,  4,  0,  3,  5,  1,  2,  6,
+				1,  0,  2,  4,  3,  7, 10, 11,  6,  9,  8,  5,
+				2,  1,  3,  5,  0,  4, 11,  8,  7, 10,  9,  6,
+				3,  2,  0,  6,  1,  5,  8,  9,  4, 11, 10,  7,
+				0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4 
+				};*/
+
+
+struct IntersectionResult
+{
+	uint resultType;
+	float3 intersection;
+};
+
+bool
+pointPlaneRelativePos( Plane aPlane, float3 aPoint )
+{
+	float3 tmp = aPoint - aPlane.point;
+	return dot( tmp, aPlane.normal ) > 0.0;
+}
+
+#define CUT_PLANE_TEST( POINT )\
+	if ( gEnableCutPlane && pointPlaneRelativePos( gCutPlane, POINT ) > 0.0f ) discard;
+
+IntersectionResult
+LinePlaneIntersection( 
+		float3	lineA, 
+		float3	lineB,
+		float3	planePoint, 
+		float3	planeNormal
+		)
+{
+
+	float3 u = float3( lineB - lineA );
+	float3 w = float3( lineA - planePoint );
+	IntersectionResult result;
+	result.resultType = 0;
+	result.intersection = float3(0.0f, 0.0f, 0.0f);
+	
+	float D = dot( planeNormal, u );
+	float N = dot(-planeNormal, w );
+
+	if ( abs(D) < EPSILON ) {          // segment is parallel to plane
+		result.resultType = 1;
+		/*if ( abs(N) < EPSILON ) {                   // segment lies in plane
+		    result.resultType = 1;
+		} else {
+		    result.resultType = 2;                   // no intersection
+		}*/
+		return result;
+	}
+	// they are not parallel
+	// compute intersect param
+	float sI = N / D;
+	if (sI < 0.0f || sI > 1.0f) {
+		result.resultType = 2;
+		return result;                       // no intersection
+	}
+
+	result.intersection = lineA + sI * u;                 // compute segment intersect point
+	return result;
+}
+
+float3
+texCoordsFromPosition( float3 pos, ImageData3D image )
+{
+	float3 elementSize = 1.0f / image.size;
+	float3 relPos = pos - image.realMinimum;
+
+	float3 texCoord =  float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
+	if (gEnableInterpolation) {
+		return texCoord;
+	}
+	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
+}
+
+float3
+texCoordsFromPositionNoInterpolation( float3 pos, ImageData3D image )
+{
+	float3 elementSize = 1.0f / image.size;
+	float3 relPos = pos - image.realMinimum;
+
+	float3 texCoord = float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
+	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
+}
+
+
+float3
+PreventInterpolation( float3 aTexCoord, int3 aImageDataResolution3D )
+{
+	float3 elementSize = 1.0f / aImageDataResolution3D;
+	
+	float3 coord = round( aTexCoord / elementSize ) * elementSize;
+	return coord + 0.5f * elementSize;
+	//return aTexCoord;
+}
+
+float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light light )
+{
+	//half way vector
+	float3 H = normalize( L + V );
+
+	//compute ambient term
+	float3 ambient = material.Ka * light.ambient;
+
+	//compute diffuse term
+	float diffuseLight = max( dot( L, N ), 0 );
+	float3 diffuse = material.Kd * light.color * diffuseLight;
+
+	//compute specular term
+	float specularLight = pow( max( dot( H, N ), 0), material.shininess );
+	if( diffuseLight <= 0.0 )
+		specularLight = 0.0;
+	float3 specular = material.Ks * light.color * specularLight;
+
+	return ambient + diffuse + specular;
+}
+
+float3 SymmetricDifference( sampler3D aTextureData, float3 aTexCoord, float3 aStep )
+{
+	float3 sample1, sample2;
+	sample1.x = tex3D( aTextureData, coordinates - half3( aStep.x, 0.0, 0.0 ) ).x;
+	sample2.x = tex3D( aTextureData, coordinates + half3( aStep.x, 0.0, 0.0 ) ).x;
+	sample1.y = tex3D( aTextureData, coordinates - half3( 0.0, aStep.y, 0.0 ) ).x;
+	sample2.y = tex3D( aTextureData, coordinates + half3( 0.0, aStep.y, 0.0 ) ).x;
+	sample1.z = tex3D( aTextureData, coordinates - half3( 0.0, 0.0, aStep.z ) ).x;
+	sample2.z = tex3D( aTextureData, coordinates + half3( 0.0, 0.0, aStep.z ) ).x;
+	return sample1 - sample2;
+}
+
+#define COMPUTE_GRADIENT2( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+	GRADIENT.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
+	GRADIENT.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
+	GRADIENT.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
+	GRADIENT -= CENTRAL_VALUE.xxx
+
+#define COMPUTE_GRADIENT( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+	GRADIENT.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x - tex3D( TEX_DATA, COORDINATES + half3( DELTA, 0.0, 0.0 ) ).x;\
+	GRADIENT.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x - tex3D( TEX_DATA, COORDINATES + half3( 0.0, DELTA, 0.0 ) ).x;\
+	GRADIENT.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x - tex3D( TEX_DATA, COORDINATES + half3( 0.0, 0.0, DELTA ) ).x;
+
+#define SYMMETRIC_DIFFERENCE( SAMPLE1, SAMPLE2, TEX_DATA, COORDINATES )\
+	SAMPLE1.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
+	SAMPLE2.x = tex3D( TEX_DATA, COORDINATES + half3( DELTA, 0.0, 0.0 ) ).x;\
+	SAMPLE1.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
+	SAMPLE2.y = tex3D( TEX_DATA, COORDINATES + half3( 0.0, DELTA, 0.0 ) ).x;\
+	SAMPLE1.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
+	SAMPLE2.z = tex3D( TEX_DATA, COORDINATES + half3( 0.0, 0.0, DELTA ) ).x;
+
+#define DIFFERENCE( SAMPLE, TEX_DATA, COORDINATES )\
+	SAMPLE.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
+	SAMPLE.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
+	SAMPLE.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
+
+
+float3 Difference( sampler3D aTextureData, float3 aTexCoord, float3 aStep, float aValue )
+{
+	float3 sample1;
+	sample1.x = tex3D( aTextureData, coordinates - half3( aStep.x, 0.0, 0.0 ) ).x;
+	sample1.y = tex3D( aTextureData, coordinates - half3( 0.0, aStep.y, 0.0 ) ).x;
+	sample1.z = tex3D( aTextureData, coordinates - half3( 0.0, 0.0, aStep.z ) ).x;
+	return sample1 - aValue.xxx;
+}
+
+
+float4
+ApplyTransferFunction1Dbac( float value, sampler1D aTransferFunction1D, float2 interval )
+{
+	float range = interval[1] - interval[0];
+	float remappedValue = ( value - interval[0] ) / range;
+
+	return tex1D( aTransferFunction1D, remappedValue );
+}
+
+float4
+ApplyTransferFunction1D( float value, TransferFunction1D aTransferFunction1D )
+{
+	float range = aTransferFunction1D.interval[1] - aTransferFunction1D.interval[0];
+	float remappedValue = ( value - aTransferFunction1D.interval[0] ) / range;
+
+	return tex1D( aTransferFunction1D.data, remappedValue );
+}
+
+VertexOutput
+vertexPassThru
+	(
+		float4 position  : POSITION,
+		float4 color     : COLOR0,
+		float3 texCoord  : TEXCOORD0
+	)
+{
+	VertexOutput result;
+	result.position =position;
+	result.color    = color;
+	result.texCoord = texCoord;
+	return result;
+}
+
+VertexOutput
+vp_VertexPassPosAsTexCoords
+	(
+		float4 position  : POSITION
+	)
+{
+	VertexOutput result;
+	result.position = mul(gModelViewProj, position );
+	result.color    = float4( 1.0f, 0.0f, 0.0f, 1.0f );
+	result.texCoord = position.xyz;
+	return result;
+}
+
+
+FragmentOutput 
+fp_WLWindow_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData, 
+		uniform float3 aWLWindow
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+	FragmentOutput OUT;
+
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = aWLWindow.z;
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//Disable interpolation
+	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
+	float value = clamp( 
+			( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier,
+			0.0f,
+			1.0f
+			);
+		
+	OUT.color = float4( value.xxx, 1.0f );
+
+	return OUT;
+}
+
+FragmentOutput 
+fp_WLWindowBasic_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData, 
+		uniform float3 aWLWindow,
+		uniform float aRenderingSliceThickness
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+	FragmentOutput OUT;
+
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = aWLWindow.z;
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//Disable interpolation
+	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
+	float value = clamp( 
+			( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier,
+			0.0f,
+			1.0f
+			);
+		
+	OUT.color = float4( 0.9f, 0.9f, 0.9f, 0.5f*value.x );
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+
+	return OUT;
+}
+
+
+FragmentOutput 
+fp_TransferFunction1D_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands )
+{
+	CUT_PLANE_TEST( aPosition );
+	FragmentOutput OUT;
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//OUT.color = float4( coordinates, 1.0f );
+	//return OUT;
+	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
+		
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
+
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
+
+FragmentOutput
+computeTransferFunctionShading( 
+		float value,
+		float3 position,
+		float3 coordinates,
+		ImageData3D aTextureData,
+		TransferFunction1D aTransferFunction1D,
+		float aRenderingSliceThickness,
+		Light aLight,
+		float3 aEyePosition
+		)
+{
+	FragmentOutput OUT;
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
+
+	if( OUT.color.a > THRESHOLD ) {
+		float3 gradient;
+		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
+		float3 N = normalize( gradient );
+
+		float3 L = normalize( aLight.position - position );
+		float3 V = normalize( aEyePosition - position );
+
+		Material material;
+		material.Ka = float3(0.1,0.1,0.1);
+		material.Kd = float3(0.6,0.6,0.6);
+		material.Ks = float3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		OUT.color.rgb += BlinnPhongShading( N, V, L, material, aLight );
+	}
+	OUT.color = clamp( OUT.color, 0.0f.xxxx, 1.0f.xxxx);
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
+
+FragmentOutput
+computeIntegralTransferFunctionShading( 
+		float2 values,
+		float3 position,
+		float3 coordinates,
+		ImageData3D aTextureData,
+		TransferFunction1D aIntegralTransferFunction1D,
+		float aRenderingSliceThickness,
+		Light aLight,
+		float3 aEyePosition
+		)
+{
+	FragmentOutput OUT;
+	float v1 = max(values.x,values.y);
+	float v2 = min(values.x,values.y);
+	v2 = min( v2, v1 - 0.5f ); //Prevent division by zero
+	float factor = 1.0f/(v1-v2);
+	float4 color1 = ApplyTransferFunction1D( v1, aIntegralTransferFunction1D );
+	float4 color2 = ApplyTransferFunction1D( v2, aIntegralTransferFunction1D );
+	OUT.color = (color1 - color2) * factor;
+
+	if( OUT.color.a > THRESHOLD ) {
+		float3 gradient;
+		COMPUTE_GRADIENT( gradient, value, aTextureData.data, coordinates ); 
+		float3 N = normalize( gradient );
+
+		float3 L = normalize( aLight.position - position );
+		float3 V = normalize( aEyePosition - position );
+
+		Material material;
+		material.Ka = float3(0.1,0.1,0.1);
+		material.Kd = float3(0.6,0.6,0.6);
+		material.Ks = float3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		OUT.color.rgb += BlinnPhongShading( N, V, L, material, aLight );
+	}
+	OUT.color = clamp( OUT.color, 0.0f.xxxx, 1.0f.xxxx);
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
+
+FragmentOutput 
+fp_TransferFunction1DShading_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	Light aLight,
+		uniform	float3 aEyePosition
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+
+	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float raw_value = tex3D( aTextureData.data, coordinates ).x;
+	float value = (raw_value * range) + aMappedIntervalBands[0];
+
+	return computeTransferFunctionShading( 
+		value,
+		aPosition,
+		coordinates,
+		aTextureData,
+		aTransferFunction1D,
+		aRenderingSliceThickness,
+		aLight,
+		aEyePosition
+		);
+}
+
+
+FragmentOutput 
+fp_TransferFunction1DJitter_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform float3 aViewDirection,
+		float3 aWinPos : WPOS
+ )
+{
+	CUT_PLANE_TEST( aPosition );
+	FragmentOutput OUT;
+
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
+	float3 coordinates = texCoordsFromPosition( aPosition + offset * aViewDirection, aTextureData );
+	//float3 coordinates = position + offset *aSliceNormalTexCoords;
+
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
+
+
+FragmentOutput 
+fp_TransferFunction1DShadingJitter_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	Light aLight,
+		uniform	float3 aEyePosition,
+		uniform float3 aViewDirection,
+		float3 aWinPos : WPOS
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
+	float3 coordinates = texCoordsFromPosition( aPosition + offset * aViewDirection, aTextureData );
+	//coordinates += offset *aSliceNormalTexCoords;
+
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
+	return computeTransferFunctionShading( 
+		value,
+		aPosition,
+		coordinates,
+		aTextureData,
+		aTransferFunction1D,
+		aRenderingSliceThickness,
+		aLight,
+		aEyePosition
+		);
+}
+
+FragmentOutput 
+fp_IntegralTransferFunction1DShading_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aIntegralTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	Light aLight,
+		uniform	float3 aEyePosition,
+		uniform float3 aViewDirection
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+	float2 raw_values;
+
+	float3 coordinates1 = texCoordsFromPosition( aPosition, aTextureData );
+	float3 coordinates2 = texCoordsFromPosition( aPosition + aRenderingSliceThickness* aViewDirection , aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	raw_values.x = tex3D( aTextureData.data, coordinates1 ).x;
+	raw_values.y = tex3D( aTextureData.data, coordinates2 ).x;
+	float2 values = (raw_values * range) + aMappedIntervalBands[0];
+
+	return computeIntegralTransferFunctionShading( 
+		values,
+		aPosition,
+		coordinates1,
+		aTextureData,
+		aIntegralTransferFunction1D,
+		aRenderingSliceThickness,
+		aLight,
+		aEyePosition
+		);
+}
+
+FragmentOutput 
+fp_IntegralTransferFunction1DShadingJitter_3D( 
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform TransferFunction1D aIntegralTransferFunction1D,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	Light aLight,
+		uniform	float3 aEyePosition,
+		uniform float3 aViewDirection,
+		float3 aWinPos : WPOS
+		)
+{
+	CUT_PLANE_TEST( aPosition );
+	float2 raw_values;
+
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * gJitterStrength*aRenderingSliceThickness;
+	float3 pos = aPosition + offset * aViewDirection;
+	float3 coordinates1 = texCoordsFromPosition( pos, aTextureData );
+	float3 coordinates2 = texCoordsFromPosition( pos + aRenderingSliceThickness* aViewDirection , aTextureData );
+	//float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	//coordinates += offset *aSliceNormalTexCoords;
+
+	//float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	raw_values.x = tex3D( aTextureData.data, coordinates1 ).x;
+	raw_values.y = tex3D( aTextureData.data, coordinates2 ).x;
+	float2 values = (raw_values * range) + aMappedIntervalBands[0];
+
+	return computeIntegralTransferFunctionShading( 
+		values,
+		aPosition,
+		coordinates1,
+		aTextureData,
+		aIntegralTransferFunction1D,
+		aRenderingSliceThickness,
+		aLight,
+		aEyePosition
+		);
+}
+
+FragmentOutput 
+fp_ColorMappedMask_3D( 
+		float3 aTexCoord : TEXCOORD0, 
+		uniform ImageData3D aMaskData, 
+		uniform sampler1D aColorMap : TEX1, 
+		uniform float aMaskAlpha )
+{
+	FragmentOutput OUT;
+
+
+	return OUT;
+}
+
+FragmentOutput fp_Test()
+{
+	FragmentOutput OUT;
+
+	OUT.color = float4( 1.0f, 0.0f, 0.0f, 1.0 );
+	return OUT;
+}
+
+FragmentOutput
+fp_SimpleRegionColorMap_3D(
+		float3 aPosition : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform float aRange )
+{
+	CUT_PLANE_TEST( aPosition );
+	FragmentOutput OUT;
+	float3 coordinates = texCoordsFromPositionNoInterpolation( aPosition, aTextureData );//PreventInterpolation( aTexCoord, aTextureData.size );
+	unsigned int value = round( tex3D( aTextureData.data, coordinates ).x * 4200000000 );
+
+	OUT.color.r = float(((value * 359) % 901) % 256) / 256;
+	OUT.color.g = float(((value * 617) % 1013) % 256) / 256;
+	OUT.color.b = float(((value *137) % 1237) % 256) / 256;
+	OUT.color.a = 1.0f;
+	return OUT;
+}
+
+
+POINT TRIANGLE_OUT
+void gp_GenerateSlice( 
+			AttribArray<float4> position :POSITION,
+			uniform float3 aViewDirection,
+			uniform int aMinID,
+			uniform BoundingBox aBBox
+			)
+{
+	uint2 lineIndices;
+	float4 vertices[6];
+	float4 trVertices[6];
+	
+	int idx = 0;
+	float4 pos = position[0] / position[0].w;
+
+	IntersectionResult res;
+	for( int i = 0; i < 12; ++i ) {
+		lineIndices = GetBBoxEdgePoints( edgeOrder[aMinID*12 + i] ); 
+		res = LinePlaneIntersection( aBBox.vertices[ lineIndices.x ], aBBox.vertices[ lineIndices.y ], pos.xyz, aViewDirection );
+		if( res.resultType == 0 ) {
+			vertices[idx] = float4(res.intersection,1.0f);
+			trVertices[idx] = mul(gModelViewProj, vertices[idx] );
+			++idx;
+		}
+	
+	}
+	if( idx >= 3 ) {
+		emitVertex( trVertices[0] : POSITION, vertices[0].xyz : TEXCOORD0 );
+		emitVertex( trVertices[1] : POSITION, vertices[1].xyz : TEXCOORD0 );
+		emitVertex( trVertices[2] : POSITION, vertices[2].xyz : TEXCOORD0 );
+		for( int i = 2; i < idx-1; ++i ) {
+			restartStrip();
+			emitVertex( trVertices[0] : POSITION, vertices[0].xyz : TEXCOORD0 );
+			emitVertex( trVertices[i] : POSITION, vertices[i].xyz : TEXCOORD0 );
+			emitVertex( trVertices[i+1] : POSITION, vertices[i+1].xyz : TEXCOORD0 );
+		}
+	}
+}
+
+//*********************************************************************************************************
+//*******************************************                  ********************************************
+//*******************************************    TECHNIQUES    ********************************************
+//*******************************************                  ********************************************
+//*********************************************************************************************************
+
+//*********************** TRANSFER FUNCTIONS ****************
+technique TransferFunction1D_3DNoBlending {
+	pass t0 {
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands 
+									);
+
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = false;DepthFunc = LEqual;
+	}
+}
+
+
+technique TransferFunction1D_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands 
+									);
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
+	}
+}
+
+
+technique TransferFunction1DShading_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight, 
+									gEyePosition 
+									);
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
+	}
+}
+
+technique TransferFunction1DShadingJitter_3D {
+	pass t0 {
+		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
+		//VertexProgram = compile gp4vp vertexPassThru();
+
+		//GeometryProgram = compile gp4gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
+		FragmentProgram = compile gp4fp fp_TransferFunction1DShadingJitter_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight,
+									gEyePosition,
+									gViewDirection 
+									);
+		DepthTestEnable = true;	DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
+	}
+}
+
+
+technique TransferFunction1DJitter_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_TransferFunction1DJitter_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gViewDirection 
+									);
+		DepthTestEnable = true; DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
+	}
+}
+//*********************** INTEGRAL TRANSFER FUNCTIONS ****************
+/*technique IntegralTransferFunction1D_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_IntegralTransferFunction1D_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands 
+									);
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
+	}
+}*/
+
+
+technique IntegralTransferFunction1DShading_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_IntegralTransferFunction1DShading_3D( 
+									gImageData3D, 
+									gIntegralTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight, 
+									gEyePosition, 
+									gViewDirection 
+									);
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
+	}
+}
+
+technique IntegralTransferFunction1DShadingJitter_3D {
+	pass t0 {
+		//VertexProgram = compile gp5vp vertexPassThru();
+		//GeometryProgram = compile gp5gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
+		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile gp4fp fp_IntegralTransferFunction1DShadingJitter_3D( 
+									gImageData3D, 
+									gIntegralTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight,
+									gEyePosition,
+									gViewDirection 
+									);
+		DepthTestEnable = true;	DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
+	}
+}
+
+/*
+technique IntegralTransferFunction1DJitter_3D {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_IntegralTransferFunction1DJitter_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gViewDirection 
+									);
+		DepthTestEnable = true; DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
+	}
+}*/
+
+//*********************** WINDOW LUT ****************
+
+
+technique WLWindow_3D {
+	pass t0 {
+		FragmentProgram = compile glslf fp_WLWindow_3D( 
+							gImageData3D, 
+							float3( 
+								gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+								gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+								(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+								) 
+							);
+	}
+}
+
+
+
+technique WLWindowMIP_3D  {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_WLWindow_3D( 
+								gImageData3D, 
+								float3( 
+									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+									gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+									) 
+								);
+		DepthTestEnable = false;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		BlendEquation = Max;
+
+		DepthFunc = LEqual;
+	}
+}
+
+technique WLWindowBasic_3D  {
+	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_WLWindowBasic_3D( 
+								gImageData3D, 
+								float3( 
+									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+									gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+									),
+								gRenderingSliceThickness 
+								);
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}
+
+
+technique SimpleRegionColorMap_3D {
+	pass t0 {
+		FragmentProgram = compile glslf fp_SimpleRegionColorMap_3D( 
+							gImageData3D, 
+							gMappedIntervalBands[1] - gMappedIntervalBands[0] 
+							);
+	}
+}
+
+/*
+technique ColorMappedMask_3D {
+	pass t0 {
+		FragmentProgram = compile glslf fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
+	}
+}
+
+technique Test {
+	pass t0 {
+		FragmentProgram = compile glslf fp_Test();
+	}
+}
+*/
