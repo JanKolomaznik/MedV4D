@@ -1,7 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>../../icons/dicomdir.png</file>
-    <file>../../icons/recent.png</file>
-    <file>../../icons/remote.png</file>
-</qresource>
-</RCC>
