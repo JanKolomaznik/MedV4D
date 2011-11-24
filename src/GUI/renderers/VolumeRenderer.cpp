@@ -1,4 +1,4 @@
-#include "GUI/renderers/VolumeRenderer.h"
+#include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
 namespace M4D
 {

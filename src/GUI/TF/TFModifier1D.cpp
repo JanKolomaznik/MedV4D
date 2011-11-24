@@ -1,4 +1,4 @@
-#include "GUI/TF/TFModifier1D.h"
+#include "MedV4D/GUI/TF/TFModifier1D.h"
 
 namespace M4D {
 namespace GUI {

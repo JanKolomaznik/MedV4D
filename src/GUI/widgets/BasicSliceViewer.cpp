@@ -1,11 +1,11 @@
 #ifdef USE_CG
 
-#include "GUI/utils/OGLDrawing.h"
-#include "GUI/utils/QtM4DTools.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
-#include "GUI/widgets/BasicSliceViewer.h"
+#include "MedV4D/GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/ImageFactory.h"
-#include "GUI/utils/CameraManipulator.h"
+#include "MedV4D/GUI/utils/CameraManipulator.h"
 
 namespace M4D
 {

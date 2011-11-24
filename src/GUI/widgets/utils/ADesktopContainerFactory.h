@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
-#include "GUI/widgets/ADesktopContainer.h"
+#include "MedV4D/GUI/widgets/ADesktopContainer.h"
 #include "MedV4D/Common/ParameterSet.h"
 
 namespace M4D

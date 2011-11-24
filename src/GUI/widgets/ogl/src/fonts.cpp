@@ -6,7 +6,7 @@
  *  @date    $Date: 2005-05-02 05:34:44 +0200 (Mon, 02 May 2005) $
  */
 
-#include "GUI/widgets/ogl/fonts.h"
+#include "MedV4D/GUI/widgets/ogl/fonts.h"
 
 #ifdef _MSC_VER
 #  define WIN32_LEAN_AND_MEAN 1

@@ -1,4 +1,4 @@
-#include "GUI/TF/TFWorkCopy.h"
+#include "MedV4D/GUI/TF/TFWorkCopy.h"
 
 namespace M4D {
 namespace GUI {

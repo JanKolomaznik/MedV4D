@@ -3,7 +3,7 @@
  *  @file StManagerFilterComp.cpp
  *  @brief some brief
  */
-#include "GUI/widgets/components/StManagerFilterComp.h"
+#include "MedV4D/GUI/widgets/components/StManagerFilterComp.h"
 
 #include <QtGui>
 

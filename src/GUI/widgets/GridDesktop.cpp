@@ -1,4 +1,4 @@
-#include "GUI/widgets/GridDesktop.h"
+#include "MedV4D/GUI/widgets/GridDesktop.h"
 
 namespace M4D
 {

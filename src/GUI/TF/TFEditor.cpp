@@ -1,9 +1,9 @@
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
-#include "GUI/TF/TFQtXmlWriter.h"
-#include "GUI/TF/TFQtXmlReader.h"
+#include "MedV4D/GUI/TF/TFQtXmlWriter.h"
+#include "MedV4D/GUI/TF/TFQtXmlReader.h"
 
-#include "GUI/TF/TFCreator.h"
+#include "MedV4D/GUI/TF/TFCreator.h"
 
 namespace M4D{
 namespace GUI{

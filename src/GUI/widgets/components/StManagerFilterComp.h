@@ -10,7 +10,7 @@
 
 #include <QWidget>
 
-#include "GUI/widgets/components/StManagerStudyListComp.h"
+#include "MedV4D/GUI/widgets/components/StManagerStudyListComp.h"
 
 
 class QPushButton;

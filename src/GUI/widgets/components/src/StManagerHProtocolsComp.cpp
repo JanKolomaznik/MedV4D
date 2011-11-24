@@ -2,7 +2,7 @@
  *  @ingroup gui
  *  @file StManagerHProtocolsComp.cpp
  */
-#include "GUI/widgets/components/StManagerHProtocolsComp.h"
+#include "MedV4D/GUI/widgets/components/StManagerHProtocolsComp.h"
 
 #include <QtGui>
 

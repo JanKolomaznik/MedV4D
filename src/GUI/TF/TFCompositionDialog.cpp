@@ -1,7 +1,7 @@
-#include "GUI/TF/TFCompositionDialog.h"
+#include "MedV4D/GUI/TF/TFCompositionDialog.h"
 
-#include "GUI/TF/TFPalette.h"
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFPalette.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
 namespace M4D {
 namespace GUI {

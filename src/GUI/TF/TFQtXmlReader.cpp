@@ -1,4 +1,4 @@
-#include "GUI/TF/TFQtXmlReader.h"
+#include "MedV4D/GUI/TF/TFQtXmlReader.h"
 
 namespace M4D {
 namespace GUI {

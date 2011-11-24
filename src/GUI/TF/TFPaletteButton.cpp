@@ -1,4 +1,4 @@
-#include "GUI/TF/TFPaletteButton.h"
+#include "MedV4D/GUI/TF/TFPaletteButton.h"
 
 namespace M4D {
 namespace GUI {

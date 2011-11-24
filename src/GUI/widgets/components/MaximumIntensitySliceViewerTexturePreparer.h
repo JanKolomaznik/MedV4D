@@ -6,7 +6,7 @@
 #ifndef MAXIMUM_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MAXIMUM_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/IntensitySelectorSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/IntensitySelectorSliceViewerTexturePreparer.h"
 
 
 namespace M4D

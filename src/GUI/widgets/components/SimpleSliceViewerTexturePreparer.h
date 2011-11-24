@@ -6,7 +6,7 @@
 #ifndef SIMPLE_SLICEVIEWER_TEXTURE_PREPARER_H
 #define SIMPLE_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"
 
 
 namespace M4D

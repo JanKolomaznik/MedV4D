@@ -1,4 +1,4 @@
-#include "GUI/renderers/SliceRenderer.h"
+#include "MedV4D/GUI/renderers/SliceRenderer.h"
 
 namespace M4D
 {

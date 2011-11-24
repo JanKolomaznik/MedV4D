@@ -1,5 +1,5 @@
-#include "GUI/widgets/ViewerDesktop.h"
-#include "GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/widgets/ViewerDesktop.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
 
 
 namespace M4D

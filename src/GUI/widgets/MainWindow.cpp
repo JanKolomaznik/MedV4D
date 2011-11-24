@@ -1,4 +1,4 @@
-#include "GUI/widgets/MainWindow.h"
+#include "MedV4D/GUI/widgets/MainWindow.h"
 
 namespace M4D
 {

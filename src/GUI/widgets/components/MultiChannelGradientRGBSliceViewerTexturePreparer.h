@@ -6,8 +6,8 @@
 #ifndef MULTI_CHANNEL_GRADIENT_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MULTI_CHANNEL_GRADIENT_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/MultiChannelRGBSliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/MultiChannelRGBSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
 
 
 namespace M4D

@@ -6,8 +6,8 @@
 #ifndef MAXIMUM_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MAXIMUM_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
 
 
 namespace M4D

@@ -3,7 +3,7 @@
  *  @file LoadingThreads.cpp
  *  @brief some brief
  */
-#include "GUI/widgets/utils/LoadingThreads.h"
+#include "MedV4D/GUI/widgets/utils/LoadingThreads.h"
 
 using namespace M4D::Dicom;
 

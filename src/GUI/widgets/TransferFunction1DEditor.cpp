@@ -1,5 +1,5 @@
 
-#include "GUI/widgets/TransferFunction1DEditor.h"
+#include "MedV4D/GUI/widgets/TransferFunction1DEditor.h"
 
 namespace M4D
 {

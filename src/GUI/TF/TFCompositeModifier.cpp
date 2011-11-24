@@ -1,7 +1,7 @@
-#include "GUI/TF/TFCompositeModifier.h"
+#include "MedV4D/GUI/TF/TFCompositeModifier.h"
 
-#include "GUI/TF/TFPalette.h"
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFPalette.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
 #include <QtGui/QMessageBox>
 #include "MedV4D/Common/Common.h"

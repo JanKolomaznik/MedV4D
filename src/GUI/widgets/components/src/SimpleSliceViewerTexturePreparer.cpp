@@ -1,4 +1,4 @@
-#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
 
 namespace M4D
 {

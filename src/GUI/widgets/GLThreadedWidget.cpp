@@ -1,5 +1,5 @@
 
-#include "GUI/widgets/GLThreadedWidget.h"
+#include "MedV4D/GUI/widgets/GLThreadedWidget.h"
 
 #include <QtGui/QResizeEvent>
 

@@ -1,4 +1,4 @@
-#include "GUI/TF/TFPolygonModifier.h"
+#include "MedV4D/GUI/TF/TFPolygonModifier.h"
 
 namespace M4D {
 namespace GUI {

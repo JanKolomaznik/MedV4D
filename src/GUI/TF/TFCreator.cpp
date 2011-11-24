@@ -1,21 +1,21 @@
-#include "GUI/TF/TFCreator.h"
+#include "MedV4D/GUI/TF/TFCreator.h"
 
-#include "GUI/TF/TFQtXmlReader.h"
+#include "MedV4D/GUI/TF/TFQtXmlReader.h"
 
-#include "GUI/TF/TFPalette.h"
+#include "MedV4D/GUI/TF/TFPalette.h"
 
-#include "GUI/TF/TFEditorGUI.h"
+#include "MedV4D/GUI/TF/TFEditorGUI.h"
 
-#include "GUI/TF/TFModifier1D.h"
-#include "GUI/TF/TFPolygonModifier.h"
-#include "GUI/TF/TFCompositeModifier.h"
+#include "MedV4D/GUI/TF/TFModifier1D.h"
+#include "MedV4D/GUI/TF/TFPolygonModifier.h"
+#include "MedV4D/GUI/TF/TFCompositeModifier.h"
 
-#include "GUI/TF/TFRGBaFunction.h"
-#include "GUI/TF/TFHSVaFunction.h"
+#include "MedV4D/GUI/TF/TFRGBaFunction.h"
+#include "MedV4D/GUI/TF/TFHSVaFunction.h"
 
-#include "GUI/TF/TFGrayscaleAlphaPainter1D.h"
-#include "GUI/TF/TFRGBaPainter1D.h"
-#include "GUI/TF/TFHSVaPainter1D.h"
+#include "MedV4D/GUI/TF/TFGrayscaleAlphaPainter1D.h"
+#include "MedV4D/GUI/TF/TFRGBaPainter1D.h"
+#include "MedV4D/GUI/TF/TFHSVaPainter1D.h"
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Debug.h"

@@ -6,8 +6,8 @@
 #ifndef MEDIAN_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MEDIAN_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/MedianIntensitySliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/MedianIntensitySliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/GradientSliceViewerTexturePreparer.h"
 
 
 namespace M4D

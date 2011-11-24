@@ -6,7 +6,7 @@
 #ifndef MULTI_CHANNEL_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MULTI_CHANNEL_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 
 
 namespace M4D

@@ -1,6 +1,6 @@
-#include "GUI/TF/TFEditorGUI.h"
+#include "MedV4D/GUI/TF/TFEditorGUI.h"
 
-#include "GUI/TF/TFQtXmlReader.h"
+#include "MedV4D/GUI/TF/TFQtXmlReader.h"
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Debug.h"
 

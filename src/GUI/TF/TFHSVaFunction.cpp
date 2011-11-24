@@ -1,4 +1,4 @@
-#include "GUI/TF/TFHSVaFunction.h"
+#include "MedV4D/GUI/TF/TFHSVaFunction.h"
 
 namespace M4D {
 namespace GUI {

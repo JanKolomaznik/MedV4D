@@ -1,4 +1,4 @@
-#include "GUI/widgets/ScaleVisualizer.h"
+#include "MedV4D/GUI/widgets/ScaleVisualizer.h"
 #include "MedV4D/Common/Common.h"
 
 
