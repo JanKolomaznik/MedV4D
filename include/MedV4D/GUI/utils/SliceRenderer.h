@@ -2,8 +2,8 @@
 #define SLICE_RENDERER_H
 
 
-#include "GUI/utils/GLTextureImage.h"
-#include "GUI/utils/ARenderer.h"
+#include "MedV4D/GUI/utils/GLTextureImage.h"
+#include "MedV4D/GUI/utils/ARenderer.h"
 
 namespace M4D
 {

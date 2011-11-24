@@ -1,8 +1,8 @@
 #ifndef _VIEWER_CONSTRUCTION_KIT_H
 #define _VIEWER_CONSTRUCTION_KIT_H
 
-#include "GUI/widgets/AGUIViewer.h"
-#include "GUI/utils/PortInterfaceHelper.h"
+#include "MedV4D/GUI/widgets/AGUIViewer.h"
+#include "MedV4D/GUI/utils/PortInterfaceHelper.h"
 
 namespace M4D
 {

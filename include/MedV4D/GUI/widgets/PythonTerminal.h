@@ -8,7 +8,7 @@
 #include <boost/python.hpp>
 
 #include "MedV4D/Common/PythonInterpreter.h"
-#include "GUI/widgets/TerminalWidget.h"
+#include "MedV4D/GUI/widgets/TerminalWidget.h"
 
 namespace M4D
 {

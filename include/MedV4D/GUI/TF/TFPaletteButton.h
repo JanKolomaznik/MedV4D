@@ -1,7 +1,7 @@
 #ifndef TF_PALETTE_BUTTON
 #define TF_PALETTE_BUTTON
 
-#include "GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
 
 #include <QtGui/QFrame>
 #include <QtGui/QPainter>

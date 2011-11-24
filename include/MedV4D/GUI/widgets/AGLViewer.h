@@ -1,9 +1,9 @@
 #ifndef A_GL_VIEWER_H
 #define A_GL_VIEWER_H
 
-#include "GUI/widgets/GLWidget.h"
-//#include "GUI/widgets/AViewer.h"
-#include "GUI/utils/FrameBufferObject.h"
+#include "MedV4D/GUI/widgets/GLWidget.h"
+//#include "MedV4D/GUI/widgets/AViewer.h"
+#include "MedV4D/GUI/utils/FrameBufferObject.h"
 #include <QtGui>
 #include <QtOpenGL>
 #include <boost/shared_ptr.hpp>

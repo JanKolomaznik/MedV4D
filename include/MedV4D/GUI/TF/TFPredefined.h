@@ -1,10 +1,10 @@
 #ifndef TF_PREDEFINED
 #define TF_PREDEFINED
 
-#include "GUI/TF/TFDimensions.h"
-#include "GUI/TF/TFModifiers.h"
-#include "GUI/TF/TFFunctions.h"
-#include "GUI/TF/TFPainters.h"
+#include "MedV4D/GUI/TF/TFDimensions.h"
+#include "MedV4D/GUI/TF/TFModifiers.h"
+#include "MedV4D/GUI/TF/TFFunctions.h"
+#include "MedV4D/GUI/TF/TFPainters.h"
 
 namespace M4D {
 namespace GUI {

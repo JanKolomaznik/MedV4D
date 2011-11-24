@@ -9,8 +9,8 @@
 
 #include <QtGui/QColor>
 
-#include "GUI/TF/TFXmlWriterInterface.h"
-#include "GUI/TF/TFXmlReaderInterface.h"
+#include "MedV4D/GUI/TF/TFXmlWriterInterface.h"
+#include "MedV4D/GUI/TF/TFXmlReaderInterface.h"
 
 #include "MedV4D/Common/Common.h"
 

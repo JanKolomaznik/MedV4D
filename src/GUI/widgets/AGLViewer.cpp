@@ -1,5 +1,3 @@
-#ifdef USE_CG
-
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
@@ -258,5 +256,3 @@ AGLViewer::wheelEvent ( QWheelEvent * event )
 } /*namespace GUI*/
 } /*namespace M4D*/
 
-
-#endif /*USE_CG*/

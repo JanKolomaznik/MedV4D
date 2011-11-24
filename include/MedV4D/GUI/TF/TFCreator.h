@@ -4,22 +4,22 @@
 #include <QtGui/QDialog>
 #include <QtGui/QVBoxLayout>
 
-#include "GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
 
-#include "GUI/TF/TFCreatorDialogButtons.h"
+#include "MedV4D/GUI/TF/TFCreatorDialogButtons.h"
 
-#include "GUI/TF/TFAbstractFunction.h"
-#include "GUI/TF/TFAbstractModifier.h"
-#include "GUI/TF/TFAbstractPainter.h"
-#include "GUI/TF/TFWorkCopy.h"
+#include "MedV4D/GUI/TF/TFAbstractFunction.h"
+#include "MedV4D/GUI/TF/TFAbstractModifier.h"
+#include "MedV4D/GUI/TF/TFAbstractPainter.h"
+#include "MedV4D/GUI/TF/TFWorkCopy.h"
 
-#include "GUI/TF/TFDimensions.h"
-#include "GUI/TF/TFFunctions.h"
-#include "GUI/TF/TFPainters.h"
-#include "GUI/TF/TFModifiers.h"
-#include "GUI/TF/TFPredefined.h"
+#include "MedV4D/GUI/TF/TFDimensions.h"
+#include "MedV4D/GUI/TF/TFFunctions.h"
+#include "MedV4D/GUI/TF/TFPainters.h"
+#include "MedV4D/GUI/TF/TFModifiers.h"
+#include "MedV4D/GUI/TF/TFPredefined.h"
 
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
 #include "ui_TFCreator.h"
 

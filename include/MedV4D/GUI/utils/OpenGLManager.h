@@ -1,8 +1,8 @@
 #ifndef OPENGL_MANAGER_H
 #define OPENGL_MANAGER_H
 
-#include "GUI/utils/OGLTools.h"
-#include "GUI/utils/GLTextureImage.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/Common/Common.h"
 #include <QtOpenGL>
 #include <boost/thread.hpp> 

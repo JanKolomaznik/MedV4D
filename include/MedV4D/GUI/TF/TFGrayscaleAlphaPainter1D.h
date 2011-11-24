@@ -1,7 +1,7 @@
 #ifndef TF_GA_PAINTER_1D
 #define TF_GA_PAINTER_1D
 
-#include "GUI/TF/TFPainter1D.h"
+#include "MedV4D/GUI/TF/TFPainter1D.h"
 
 namespace M4D {
 namespace GUI {

@@ -4,8 +4,9 @@
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 
-#include "GUI/widgets/MultiDockWidget.h"
-#include "GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/widgets/MultiDockWidget.h"
+#include "MedV4D/GUI/widgets/AGLViewer.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
 
 namespace M4D
 {

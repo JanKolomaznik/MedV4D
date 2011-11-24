@@ -2,10 +2,10 @@
 #define VIEWER_ACTION_H
 
 #include <QtGui>
-#include "GUI/widgets/GeneralViewer.h"
-#include "GUI/utils/ViewerManager.h"
-#include "GUI/utils/ApplicationManager.h"
-#include "GUI/utils/QtM4DTools.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/utils/QtM4DTools.h"
 //#include <boost/cast.hpp>
 #include "MedV4D/Common/Functors.h"
 

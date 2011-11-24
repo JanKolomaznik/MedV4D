@@ -8,9 +8,9 @@
 #ifndef VIEWER_FACTORY_H
 #define VIEWER_FACTORY_H
 
-#include "GUI/widgets/m4dGUIAbstractViewerWidget.h"
-#include "GUI/widgets/m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/m4dGUIVtkViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUIAbstractViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUISliceViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUIVtkViewerWidget.h"
 
 #include <string>
 

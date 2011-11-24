@@ -7,9 +7,9 @@
 #ifndef RGB_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 #define RGB_GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
 
-#include "GUI/widgets/ogl/fonts.h"
+#include "MedV4D/GUI/widgets/ogl/fonts.h"
 
 #include <sstream>
 

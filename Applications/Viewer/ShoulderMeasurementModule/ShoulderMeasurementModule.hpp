@@ -3,8 +3,8 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "GUI/utils/Module.h"
-#include "GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/utils/Module.h"
+#include "MedV4D/GUI/utils/ApplicationManager.h"
 #include "ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
 #include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
 #include "MedV4D/Common/IDGenerator.h"

@@ -2,8 +2,8 @@
 #define VIEWER_MANAGER_H
 
 #include "MedV4D/Common/Common.h"
-#include "GUI/widgets/AGLViewer.h"
-//#include "GUI/utils/ViewerAction.h"
+#include "MedV4D/GUI/widgets/AGLViewer.h"
+//#include "MedV4D/GUI/utils/ViewerAction.h"
 
 namespace M4D
 {

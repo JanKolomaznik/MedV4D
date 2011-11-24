@@ -2,7 +2,7 @@
  *  @ingroup gui
  *  @file StudyFilter.cpp
  */
-#include "GUI/widgets/utils/StudyFilter.h"
+#include "MedV4D/GUI/widgets/utils/StudyFilter.h"
 
 using namespace M4D::Dicom;
 

@@ -2,7 +2,7 @@
 #define MANAGER_VIEWER_SPECIAL_STATE
 
 
-#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
+#include "MedV4D/GUI/widgets/m4dGUISliceViewerWidget2.h"
 
 template< typename ManagerType >
 class ManagerViewerSpecialState: public M4D::Viewer::SliceViewerSpecialStateOperator

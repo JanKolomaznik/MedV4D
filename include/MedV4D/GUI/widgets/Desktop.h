@@ -3,9 +3,9 @@
 
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
-#include "GUI/widgets/ADesktop.h"
-#include "GUI/widgets/ADesktopContainer.h"
-#include "GUI/widgets/utils/ADesktopContainerFactory.h"
+#include "MedV4D/GUI/widgets/ADesktop.h"
+#include "MedV4D/GUI/widgets/ADesktopContainer.h"
+#include "MedV4D/GUI/widgets/utils/ADesktopContainerFactory.h"
 
 namespace M4D
 {

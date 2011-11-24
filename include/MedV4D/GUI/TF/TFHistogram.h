@@ -1,8 +1,8 @@
 #ifndef TF_HISTOGRAM
 #define TF_HISTOGRAM
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFMultiDVector.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFMultiDVector.h"
 
 namespace M4D {
 namespace GUI {	

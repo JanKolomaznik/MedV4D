@@ -1,7 +1,7 @@
 #ifndef TF_RGBA_PAINTER
 #define TF_RGBA_PAINTER
 
-#include "GUI/TF/TFPainter1D.h"
+#include "MedV4D/GUI/TF/TFPainter1D.h"
 
 namespace M4D {
 namespace GUI {

@@ -1,19 +1,17 @@
 #ifndef CG_SHADER_TOOLS_H
 #define CG_SHADER_TOOLS_H
 
-#ifdef USE_CG
-
-#include "GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
 #include <Cg/cgGL.h>
 #include <string>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
-#include "GUI/utils/DrawingTools.h"
-#include "GUI/utils/OGLDrawing.h"
-#include "GUI/utils/Camera.h"
-#include "GUI/utils/GLTextureImage.h"
-#include "GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/DrawingTools.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/Camera.h"
+#include "MedV4D/GUI/utils/GLTextureImage.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 #include <map>
 
 namespace M4D {
@@ -312,7 +310,5 @@ GLDrawVolumeSlicesForVertexShader(
 
 } //namespace M4D
 } //namespace GUI
-
-#endif /*USE_CG*/
 
 #endif /*CG_SHADER_TOOLS_H*/

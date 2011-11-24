@@ -46,7 +46,7 @@
 #include "MedV4D/Common/Common.h"
 #include "Imaging/Imaging.h"
 #include "gui\widgets\m4dGUIAbstractViewerWidget.h"
-#include "GUI/widgets/utils/ViewerFactory.h"
+#include "MedV4D/GUI/widgets/utils/ViewerFactory.h"
 #include "hapticCursor.h"
 #include "settingsBoxWidget.h"
 

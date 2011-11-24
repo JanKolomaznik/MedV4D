@@ -5,7 +5,7 @@
  */
 
 #include "TDASliceViewerWidget.h"
-#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 #include "TDASliceViewerTexturePreparer.cpp"
 
 using namespace M4D;

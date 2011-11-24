@@ -1,9 +1,9 @@
 #ifndef TF_COLORVECTOR
 #define TF_COLORVECTOR
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFMultiDVector.h"
-#include "GUI/TF/TFColor.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFMultiDVector.h"
+#include "MedV4D/GUI/TF/TFColor.h"
 
 namespace M4D {
 namespace GUI {

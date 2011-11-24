@@ -2,8 +2,8 @@
 #define MANUAL_SEGMENTATION_WIDGET_H
 
 #include <QtGui>
-#include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
-#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
+#include "MedV4D/GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUISliceViewerWidget2.h"
 #include "Imaging/Imaging.h"
 
 class SegmentationViewerWidget: public M4D::GUI::m4dGUIMainViewerDesktopWidget

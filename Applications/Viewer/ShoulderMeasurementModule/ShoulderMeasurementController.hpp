@@ -2,11 +2,11 @@
 #define SHOULDER_MEASUREMENT_CONTROLLER_H
 
 #include <QtCore>
-#include "GUI/widgets/GeneralViewer.h"
-#include "GUI/utils/ApplicationManager.h"
-#include "GUI/utils/ProxyViewerController.h"
-#include "GUI/utils/QtModelViewTools.h"
-#include "GUI/utils/PrimitiveCreationEventController.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/utils/ProxyViewerController.h"
+#include "MedV4D/GUI/utils/QtModelViewTools.h"
+#include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
 #include "ShoulderMeasurementModule/Computations.hpp"
 
 

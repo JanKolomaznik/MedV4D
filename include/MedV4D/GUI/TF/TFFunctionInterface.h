@@ -1,8 +1,8 @@
 #ifndef TF_FUNCTION_IFACE
 #define TF_FUNCTION_IFACE
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFColor.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFColor.h"
 
 namespace M4D {
 namespace GUI {

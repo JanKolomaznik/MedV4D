@@ -1,7 +1,7 @@
 #ifndef AVIEWER_DESKTOP_H
 #define AVIEWER_DESKTOP_H
 
-#include "GUI/widgets/AGUIViewer.h"
+#include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 

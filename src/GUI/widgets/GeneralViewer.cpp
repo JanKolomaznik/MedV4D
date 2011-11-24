@@ -1,10 +1,8 @@
-#ifdef USE_CG
-
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
-#include "Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/ImageFactory.h"
 #include "MedV4D/GUI/utils/CameraManipulator.h"
 #include "MedV4D/GUI/utils/ViewerManager.h"
 #include "MedV4D/GUI/utils/ApplicationManager.h"
@@ -1101,5 +1099,3 @@ GeneralViewer::setZoom( const QString &aZoom )
 } /*namespace GUI*/
 } /*namespace M4D*/
 
-
-#endif /*USE_CG*/

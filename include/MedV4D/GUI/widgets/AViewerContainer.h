@@ -1,7 +1,7 @@
 #ifndef AVIEWER_CONTAINER_H
 #define AVIEWER_CONTAINER_H
 
-#include "GUI/widgets/ADesktopContainer.h"
+#include "MedV4D/GUI/widgets/ADesktopContainer.h"
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 

@@ -7,8 +7,8 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QCheckBox>
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFPaletteButton.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFPaletteButton.h"
 
 #include "ui_TFCompositionDialog.h"
 

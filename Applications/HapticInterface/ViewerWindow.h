@@ -30,8 +30,8 @@ private:
 //////////////////////////////////////////////////////////////////////////
 // Medv4d GUI
 //////////////////////////////////////////////////////////////////////////
-//#include "GUI/widgets/m4dGUIMainWindow.h"
-//#include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+//#include "MedV4D/GUI/widgets/m4dGUIMainWindow.h"
+//#include "MedV4D/GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 //
 //#include "m4dGUIOGLHapticViewerWidget.h"
 //

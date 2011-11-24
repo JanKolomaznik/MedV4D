@@ -1,5 +1,3 @@
-#ifdef USE_CG
-
 #include "MedV4D/GUI/utils/CgShaderTools.h"
 
 namespace M4D {
@@ -477,5 +475,3 @@ GLDrawVolumeSlicesForVertexShader(
 
 } //namespace M4D
 } //namespace GUI
-
-#endif /*USE_CG*/

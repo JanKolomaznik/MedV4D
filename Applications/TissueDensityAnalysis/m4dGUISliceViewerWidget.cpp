@@ -4,10 +4,10 @@
  *  @brief some brief
  */
 #include "m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 
 #include <QtGui>
-#include "GUI/widgets/ogl/fonts.h"
+#include "MedV4D/GUI/widgets/ogl/fonts.h"
 #include <sstream>
 #include <cmath>
 

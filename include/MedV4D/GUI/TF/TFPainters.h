@@ -1,7 +1,7 @@
 #ifndef TF_PAINTERS
 #define TF_PAINTERS
 
-#include "GUI/TF/TFFunctions.h"
+#include "MedV4D/GUI/TF/TFFunctions.h"
 
 namespace M4D {
 namespace GUI {

@@ -1,7 +1,7 @@
 #ifndef PROXY_RENDERING_EXTENSION_H
 #define PROXY_RENDERING_EXTENSION_H
 
-#include "GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
 #include <boost/bind.hpp>
 #include <algorithm>
 

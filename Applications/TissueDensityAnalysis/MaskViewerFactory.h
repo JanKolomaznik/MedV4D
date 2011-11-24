@@ -8,13 +8,13 @@
 #ifndef MASKVIEWER_FACTORY_H
 #define MASKVIEWER_FACTORY_H
 
-#include "GUI/widgets/m4dGUIAbstractViewerWidget.h"
-#include "GUI/widgets/m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/m4dGUIVtkViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUIAbstractViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUISliceViewerWidget.h"
+#include "MedV4D/GUI/widgets/m4dGUIVtkViewerWidget.h"
 
 #include <string>
 
-#include "GUI/utils/ViewerFactory.h"
+#include "MedV4D/GUI/utils/ViewerFactory.h"
 
 
 namespace M4D {

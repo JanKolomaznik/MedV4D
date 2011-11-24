@@ -2,16 +2,16 @@
  *  @ingroup gui
  *  @file StManagerStudyListComp.cpp
  */
-#include "GUI/widgets/components/StManagerStudyListComp.h"
+#include "MedV4D/GUI/widgets/components/StManagerStudyListComp.h"
 
 #include <QtGui>
 
 #include <vector>
 
-#include "GUI/widgets/utils/StudyFilter.h"
+#include "MedV4D/GUI/widgets/utils/StudyFilter.h"
 #include "MedV4D/Common/ExceptionBase.h"
 #include "MedV4D/Common/Thread.h"
-#include "GUI/widgets/utils/LoadingThreads.h"
+#include "MedV4D/GUI/widgets/utils/LoadingThreads.h"
 
 // DICOM namespace:
 using namespace M4D::Dicom;

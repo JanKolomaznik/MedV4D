@@ -1,7 +1,7 @@
 #ifndef TF_HSVA_FUNCTION
 #define TF_HSVA_FUNCTION
 
-#include "GUI/TF/TFAbstractFunction.h"
+#include "MedV4D/GUI/TF/TFAbstractFunction.h"
 #include <QtGui/QColor>
 
 namespace M4D {

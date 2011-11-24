@@ -1,7 +1,7 @@
 #ifndef PRIMITIVE_CREATION_EVENT_CONTROLLER_H
 #define PRIMITIVE_CREATION_EVENT_CONTROLLER_H
 
-#include "GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
 
 class APrimitiveCreationEventController: public M4D::GUI::Viewer::AViewerController
 {

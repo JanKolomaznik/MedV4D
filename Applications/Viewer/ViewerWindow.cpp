@@ -1,17 +1,17 @@
 #include "ViewerWindow.hpp"
-//#include "GUI/utils/ImageDataRenderer.h"
+//#include "MedV4D/GUI/utils/ImageDataRenderer.h"
 #include "Imaging/ImageTools.h"
 #include "Imaging/Histogram.h"
 #include <cmath>
 
-#include "GUI/widgets/PythonTerminal.h"
-#include "GUI/widgets/MultiDockWidget.h"
-#include "GUI/utils/ViewerManager.h"
-#include "GUI/utils/ProxyRenderingExtension.h"
-#include "GUI/utils/ViewerAction.h"
-#include "GUI/utils/QtM4DTools.h"
-#include "GUI/widgets/SettingsDialog.h"
-#include "GUI/widgets/ViewerControls.h"
+#include "MedV4D/GUI/widgets/PythonTerminal.h"
+#include "MedV4D/GUI/widgets/MultiDockWidget.h"
+#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/utils/ProxyRenderingExtension.h"
+#include "MedV4D/GUI/utils/ViewerAction.h"
+#include "MedV4D/GUI/utils/QtM4DTools.h"
+#include "MedV4D/GUI/widgets/SettingsDialog.h"
+#include "MedV4D/GUI/widgets/ViewerControls.h"
 #include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 

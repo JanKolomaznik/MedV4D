@@ -4,13 +4,13 @@
 #include <QtGui/QRadioButton>
 #include <QtGui/QVBoxLayout>
 
-#include "GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
 
-#include "GUI/TF/TFDimensions.h"
-#include "GUI/TF/TFFunctions.h"
-#include "GUI/TF/TFPainters.h"
-#include "GUI/TF/TFModifiers.h"
-#include "GUI/TF/TFPredefined.h"
+#include "MedV4D/GUI/TF/TFDimensions.h"
+#include "MedV4D/GUI/TF/TFFunctions.h"
+#include "MedV4D/GUI/TF/TFPainters.h"
+#include "MedV4D/GUI/TF/TFModifiers.h"
+#include "MedV4D/GUI/TF/TFPredefined.h"
 
 namespace M4D {
 namespace GUI {

@@ -1,10 +1,8 @@
-#ifdef USE_CG
-
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/BasicSliceViewer.h"
-#include "Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/ImageFactory.h"
 #include "MedV4D/GUI/utils/CameraManipulator.h"
 
 namespace M4D
@@ -464,4 +462,3 @@ BasicSliceViewer::GetVoxelInfo( Vector3i aDataCoords )
 } /*namespace M4D*/
 
 
-#endif /*USE_CG*/

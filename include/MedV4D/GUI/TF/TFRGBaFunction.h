@@ -1,7 +1,7 @@
 #ifndef TF_RGBA_FUNCTION
 #define TF_RGBA_FUNCTION
 
-#include "GUI/TF/TFAbstractFunction.h"
+#include "MedV4D/GUI/TF/TFAbstractFunction.h"
 
 namespace M4D {
 namespace GUI {

@@ -4,23 +4,23 @@
 #include <QtGui>
 #include <QtCore>
 #include "ui_ViewerWindow.h"
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "GUI/utils/ProxyViewerController.h"
-#include "GUI/utils/ProxyRenderingExtension.h"
-#include "GUI/utils/DatasetManager.h"
-#include "GUI/widgets/TransferFunction1DEditor.h"
-#include "GUI/widgets/ProgressInfoDialog.h"
-#include "GUI/widgets/MainWindow.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/ProxyViewerController.h"
+#include "MedV4D/GUI/utils/ProxyRenderingExtension.h"
+#include "MedV4D/GUI/utils/DatasetManager.h"
+#include "MedV4D/GUI/widgets/TransferFunction1DEditor.h"
+#include "MedV4D/GUI/widgets/ProgressInfoDialog.h"
+#include "MedV4D/GUI/widgets/MainWindow.h"
 
 #include "backendForDICOM/DcmProvider.h"
 #ifdef OIS_ENABLED
 #include "JoyInput.h"
 #endif
 
-#include "GUI/TF/TFPalette.h"
-#include "GUI/TF/TFFunctionInterface.h"
+#include "MedV4D/GUI/TF/TFPalette.h"
+#include "MedV4D/GUI/TF/TFFunctionInterface.h"
 
-#include "GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 
 typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord

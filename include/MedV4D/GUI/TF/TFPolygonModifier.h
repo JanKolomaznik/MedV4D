@@ -1,7 +1,7 @@
 #ifndef TF_POLYGON_MODIFIER
 #define TF_POLYGON_MODIFIER
 
-#include "GUI/TF/TFModifier1D.h"
+#include "MedV4D/GUI/TF/TFModifier1D.h"
 
 #include "ui_TFPolygonModifier.h"
 

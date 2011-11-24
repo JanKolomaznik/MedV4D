@@ -4,10 +4,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 #include "MedV4D/Common/Common.h"
-#include "GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/Imaging/AImageRegion.h"
 #include "MedV4D/Imaging/Image.h"
-#include "GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
 
 namespace M4D
 {

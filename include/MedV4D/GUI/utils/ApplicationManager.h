@@ -2,14 +2,14 @@
 #define APPLICATION_MANAGER_H
 
 
-#include "GUI/utils/OpenGLManager.h"
-#include "GUI/utils/ViewerManager.h"
-#include "GUI/utils/DatasetManager.h"
-#include "GUI/utils/Module.h"
-#include "GUI/utils/Settings.h"
-#include "GUI/widgets/MainWindow.h"
+#include "MedV4D/GUI/utils/OpenGLManager.h"
+#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/utils/DatasetManager.h"
+#include "MedV4D/GUI/utils/Module.h"
+#include "MedV4D/GUI/utils/Settings.h"
+#include "MedV4D/GUI/widgets/MainWindow.h"
 #include "MedV4D/Common/IDGenerator.h"
-#include "GUI/utils/ProxyViewerController.h"
+#include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include <QtCore>
 
 #ifdef USE_TBB

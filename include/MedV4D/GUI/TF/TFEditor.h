@@ -8,14 +8,14 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFHistogram.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFHistogram.h"
 
-#include "GUI/TF/TFFunctionInterface.h"
-#include "GUI/TF/TFAbstractModifier.h"
-#include "GUI/TF/TFWorkCopy.h"
+#include "MedV4D/GUI/TF/TFFunctionInterface.h"
+#include "MedV4D/GUI/TF/TFAbstractModifier.h"
+#include "MedV4D/GUI/TF/TFWorkCopy.h"
 
-#include "GUI/TF/TFPredefined.h"
+#include "MedV4D/GUI/TF/TFPredefined.h"
 
 #include <set>
 

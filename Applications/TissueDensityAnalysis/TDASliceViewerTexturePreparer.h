@@ -8,7 +8,7 @@
 #ifndef _TDA_SLICE_VIEWER_TEXTURE_PREPARER_H
 #define _TDA_SLICE_VIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
 
 using namespace M4D;
 using namespace M4D::Viewer;

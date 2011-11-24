@@ -1,13 +1,13 @@
 #ifndef _SIMPLE_2D_VIEWER_H
 #define _SIMPLE_2D_VIEWER_H
 
-#include "GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
 #include <QtGui/QWidget>
 #include "MedV4D/Imaging/ImageRegion.h"
-#include "GUI/utils/ViewConfiguration.h"
+#include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/Common/Vector.h"
 
-#include "GUI/utils/CgShaderTools.h"
+#include "MedV4D/GUI/utils/CgShaderTools.h"
 
 
 template< typename SupportGLWidget >

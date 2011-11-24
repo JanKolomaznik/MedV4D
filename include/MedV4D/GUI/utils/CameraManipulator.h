@@ -1,9 +1,9 @@
 #ifndef CAMERA_MANIPULATOR_H
 #define CAMERA_MANIPULATOR_H
 
-#include "GUI/utils/IUserEvents.h"
-#include "GUI/utils/Camera.h"
-#include "GUI/utils/ViewConfiguration.h"
+#include "MedV4D/GUI/utils/IUserEvents.h"
+#include "MedV4D/GUI/utils/Camera.h"
+#include "MedV4D/GUI/utils/ViewConfiguration.h"
 
 namespace M4D
 {

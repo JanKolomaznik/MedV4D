@@ -1,7 +1,7 @@
 #ifndef TF_VIEW_MODIFIER
 #define TF_VIEW_MODIFIER
 
-#include "GUI/TF/TFAbstractModifier.h"
+#include "MedV4D/GUI/TF/TFAbstractModifier.h"
 
 #include "QtGui/QGridLayout"
 #include "QtGui/QSpacerItem"

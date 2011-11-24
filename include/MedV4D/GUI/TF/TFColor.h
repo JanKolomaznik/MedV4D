@@ -1,7 +1,7 @@
 #ifndef TF_COLOR
 #define TF_COLOR
 
-#include "GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
 
 namespace M4D {
 namespace GUI {

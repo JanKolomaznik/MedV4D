@@ -1,7 +1,7 @@
 #ifndef TF_XMLWRITER_QT
 #define TF_XMLWRITER_QT
 
-#include "GUI/TF/TFXmlWriterInterface.h"
+#include "MedV4D/GUI/TF/TFXmlWriterInterface.h"
 
 namespace M4D {
 namespace GUI {

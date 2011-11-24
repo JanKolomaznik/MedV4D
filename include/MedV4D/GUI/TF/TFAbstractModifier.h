@@ -9,10 +9,10 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFWorkCopy.h"
-#include "GUI/TF/TFAbstractPainter.h"
-#include "GUI/TF/TFAbstractFunction.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFWorkCopy.h"
+#include "MedV4D/GUI/TF/TFAbstractPainter.h"
+#include "MedV4D/GUI/TF/TFAbstractFunction.h"
 
 #include <QtGui/QWidget>
 

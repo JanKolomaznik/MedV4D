@@ -3,7 +3,7 @@
 
 
 #include "MedV4D/Common/Common.h"
-#include "GUI/utils/QtModelViewTools.h"
+#include "MedV4D/GUI/utils/QtModelViewTools.h"
 
 typedef VectorItemModel< M4D::Point3Df > PointSet;
 

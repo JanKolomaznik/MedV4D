@@ -4,16 +4,16 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Sphere.h"
-#include "GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/Imaging/AImage.h"
 #include "MedV4D/Imaging/ImageRegion.h"
 #include "MedV4D/Imaging/PointSet.h"
 #include "MedV4D/Imaging/Mesh.h"
 #include "MedV4D/Imaging/VertexInfo.h"
 #include "MedV4D/Imaging/FaceInfo.h"
-#include "GUI/utils/ViewConfiguration.h"
-#include "GUI/utils/Camera.h"
-#include "GUI/utils/DrawingTools.h"
+#include "MedV4D/GUI/utils/ViewConfiguration.h"
+#include "MedV4D/GUI/utils/Camera.h"
+#include "MedV4D/GUI/utils/DrawingTools.h"
 
 namespace M4D {
 
@@ -284,6 +284,6 @@ drawLineSet( TIterator aBegin, TIterator aEnd )
 } /*namespace M4D*/
 
 //include implementation
-#include "GUI/utils/OGLDrawing.tcc"
+#include "MedV4D/GUI/utils/OGLDrawing.tcc"
 
 #endif /*OGL_DRAWING_H*/

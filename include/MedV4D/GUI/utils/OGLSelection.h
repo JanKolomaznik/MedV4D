@@ -1,7 +1,7 @@
 #ifndef OGL_SELECTION_H
 #define OGL_SELECTION_H
 
-#include "GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
 
 typedef size_t SelectID;
 

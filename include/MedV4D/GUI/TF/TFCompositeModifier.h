@@ -1,8 +1,8 @@
 #ifndef TF_COMPOSITE_MODIFIER
 #define TF_COMPOSITE_MODIFIER
 
-#include "GUI/TF/TFModifier1D.h"
-#include "GUI/TF/TFCompositionDialog.h"
+#include "MedV4D/GUI/TF/TFModifier1D.h"
+#include "MedV4D/GUI/TF/TFCompositionDialog.h"
 
 #include <QtCore/QTimer>
 #include <QtGui/QVBoxLayout>

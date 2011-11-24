@@ -1,8 +1,8 @@
 #ifndef TRANSFER_FUNCTION_1D_EDITOR_H
 #define TRANSFER_FUNCTION_1D_EDITOR_H
 
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "GUI/widgets/ScaleVisualizer.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/widgets/ScaleVisualizer.h"
 #include "MedV4D/Imaging/Histogram.h"
 
 namespace M4D

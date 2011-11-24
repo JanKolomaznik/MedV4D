@@ -3,7 +3,7 @@
 
 #include "ui_SettingsDialog.h"
 #include "MedV4D/Common/Common.h"
-#include "GUI/utils/Settings.h"
+#include "MedV4D/GUI/utils/Settings.h"
 
 
 class SettingsDialog: public QDialog, public Ui::SettingsDialog

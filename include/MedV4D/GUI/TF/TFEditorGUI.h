@@ -6,8 +6,8 @@
 
 #include <QtGui/QMessageBox>
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
 #include "ui_TFEditorGUI.h"
 

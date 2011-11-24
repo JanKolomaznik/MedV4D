@@ -5,15 +5,15 @@
 
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include "MedV4D/Common/Sphere.h"
-#include "GUI/widgets/GeneralViewer.h"
-#include "GUI/utils/OGLTools.h"
-#include "GUI/utils/OGLDrawing.h"
-#include "GUI/utils/QtModelViewTools.h"
-#include "GUI/utils/PrimitiveCreationEventController.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/QtModelViewTools.h"
+#include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
 #include <algorithm>
 #include <boost/bind.hpp>
-#include "GUI/utils/ApplicationManager.h"
-#include "GUI/utils/ProxyViewerController.h"
+#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/utils/ProxyViewerController.h"
 
 class AnnotationSettingsDialog;
 class AnnotationWidget;

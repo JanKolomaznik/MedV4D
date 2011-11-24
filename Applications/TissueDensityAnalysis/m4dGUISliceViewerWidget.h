@@ -15,9 +15,9 @@
 #include "Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/ExceptionBase.h"
-#include "GUI/widgets/m4dSelection.h"
-#include "GUI/widgets/m4dGUIAbstractViewerWidget.h"
-#include "GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/m4dSelection.h"
+#include "MedV4D/GUI/widgets/m4dGUIAbstractViewerWidget.h"
+#include "MedV4D/GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"
 
 #define RW 0.3086
 #define GW 0.6094

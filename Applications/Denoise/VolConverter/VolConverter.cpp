@@ -6,7 +6,7 @@
 #include <tclap/CmdLine.h>
 
 //#include <QWidget>
-//#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+//#include "MedV4D/GUI/widgets/m4dGUISliceViewerWidget.h"
 #include "Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 

@@ -2,7 +2,7 @@
 #define VIEWER_DESKTOP_H
 
 #include <QtGui>
-#include "GUI/widgets/AGLViewer.h"
+#include "MedV4D/GUI/widgets/AGLViewer.h"
 #include <boost/bind/bind.hpp>
 #include "MedV4D/Imaging/ConnectionInterface.h"
 

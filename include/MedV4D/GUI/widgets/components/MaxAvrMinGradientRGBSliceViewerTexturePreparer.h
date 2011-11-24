@@ -6,10 +6,10 @@
 #ifndef MAX_AVR_MIN_GRADIENT_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 #define MAX_AVR_MIN_GRADIENT_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/MinimumIntensitySliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/AverageGradientSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/MinimumIntensitySliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/AverageGradientSliceViewerTexturePreparer.h"
 
 
 namespace M4D

@@ -2,11 +2,11 @@
 #define SLICE_RENDERER_H
 
 #include "MedV4D/Common/Common.h"
-#include "GUI/utils/CgShaderTools.h"
-#include "GUI/utils/GLTextureImage.h"
+#include "MedV4D/GUI/utils/CgShaderTools.h"
+#include "MedV4D/GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "GUI/renderers/RendererTools.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/renderers/RendererTools.h"
 
 namespace M4D
 {

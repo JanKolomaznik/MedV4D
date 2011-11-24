@@ -5,8 +5,8 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFWorkCopy.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFWorkCopy.h"
 
 #include <QtGui/QPainter>
 

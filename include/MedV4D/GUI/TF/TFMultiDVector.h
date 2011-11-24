@@ -1,7 +1,7 @@
 #ifndef TF_MULTI_D_VECTOR
 #define TF_MULTI_D_VECTOR
 
-#include "GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
 
 namespace M4D {
 namespace GUI {

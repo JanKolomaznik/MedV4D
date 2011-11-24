@@ -1,7 +1,7 @@
 #ifndef PROXY_VIEWER_CONTROLLER_H
 #define PROXY_VIEWER_CONTROLLER_H
 
-#include "GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/widgets/GeneralViewer.h"
 class ModeViewerController: public M4D::GUI::Viewer::ViewerController
 {
 public:

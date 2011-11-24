@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include <QWidget>
-#include "GUI/widgets/BasicSliceViewer.h"
+#include "MedV4D/GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 #include "ViewerWindow.hpp"

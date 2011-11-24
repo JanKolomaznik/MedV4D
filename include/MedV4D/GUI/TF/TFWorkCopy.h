@@ -1,9 +1,9 @@
 #ifndef TF_WORKCOPY
 #define TF_WORKCOPY
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFFunctionInterface.h"
-#include "GUI/TF/TFHistogram.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFFunctionInterface.h"
+#include "MedV4D/GUI/TF/TFHistogram.h"
 
 #include <cmath>
 

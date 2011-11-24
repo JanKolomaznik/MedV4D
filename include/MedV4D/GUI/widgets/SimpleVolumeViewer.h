@@ -2,15 +2,15 @@
 #define _SIMPLE_VOLUME_VIEWER_H
 
 
-#include "GUI/utils/OGLDrawing.h"
-#include "GUI/utils/CgShaderTools.h"
+#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/CgShaderTools.h"
 #include <QtGui/QWidget>
 #include "MedV4D/Imaging/ImageRegion.h"
-#include "GUI/utils/ViewConfiguration.h"
+#include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/Common/Vector.h"
 #include "MedV4D/Common/MathTools.h"
 
-#include "GUI/utils/DrawingTools.h"
+#include "MedV4D/GUI/utils/DrawingTools.h"
 
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>

@@ -1,7 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "GUI/widgets/m4dGUIMainWindow.h"
+#include "MedV4D/GUI/widgets/m4dGUIMainWindow.h"
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ImageConvertor.h"

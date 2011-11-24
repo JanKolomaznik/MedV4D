@@ -1,7 +1,7 @@
 #ifndef TF_XMLREADER_QT
 #define TF_XMLREADER_QT
 
-#include "GUI/TF/TFXmlReaderInterface.h"
+#include "MedV4D/GUI/TF/TFXmlReaderInterface.h"
 
 namespace M4D {
 namespace GUI {

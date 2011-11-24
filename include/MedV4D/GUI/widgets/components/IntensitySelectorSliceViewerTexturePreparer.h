@@ -6,7 +6,7 @@
 #ifndef INTENSITY_SELECTOR_SLICEVIEWER_TEXTURE_PREPARER_H
 #define INTENSITY_SELECTOR_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/IntensitySummarizerSliceViewerTexturePreparer.h"
+#include "MedV4D/GUI/widgets/components/IntensitySummarizerSliceViewerTexturePreparer.h"
 
 
 namespace M4D

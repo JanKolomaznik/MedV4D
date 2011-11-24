@@ -1,9 +1,9 @@
 #ifndef TF_MODIFIER_1D
 #define TF_MODIFIER_1D
 
-#include "GUI/TF/TFViewModifier.h"
+#include "MedV4D/GUI/TF/TFViewModifier.h"
 
-#include "GUI/TF/TFPainter1D.h"
+#include "MedV4D/GUI/TF/TFPainter1D.h"
 
 #include "ui_TFModifier1D.h"
 

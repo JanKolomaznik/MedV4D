@@ -2,7 +2,7 @@
 #define SETTINGSBOX
 
 #include <QtGui/QWidget>
-#include "GUI/widgets/m4dGUIMainWindow.h"
+#include "MedV4D/GUI/widgets/m4dGUIMainWindow.h"
 #include "TDASliceViewerWidget.h"
 #include "TDASphereSelection.h"
 #include <map>

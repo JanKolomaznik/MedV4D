@@ -1,7 +1,7 @@
 #ifndef A_3D_VIEWER_H
 #define A_3D_VIEWER_H
 
-#include "GUI/widgets/AGUIViewer.h"
+#include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 

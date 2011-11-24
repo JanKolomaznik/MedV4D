@@ -1,22 +1,21 @@
-#ifdef USE_CG
 #ifndef GENERAL_VIEWER_H
 #define GENERAL_VIEWER_H
 
 #include "MedV4D/Imaging/Imaging.h"
 
-#include "GUI/utils/ViewConfiguration.h"
-#include "GUI/utils/IUserEvents.h"
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "GUI/utils/CgShaderTools.h"
-#include "GUI/utils/GLTextureImage.h"
-#include "GUI/utils/FrameBufferObject.h"
-#include "GUI/widgets/AGUIViewer.h"
-#include "GUI/widgets/ViewerConstructionKit.h"
+#include "MedV4D/GUI/utils/ViewConfiguration.h"
+#include "MedV4D/GUI/utils/IUserEvents.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/CgShaderTools.h"
+#include "MedV4D/GUI/utils/GLTextureImage.h"
+#include "MedV4D/GUI/utils/FrameBufferObject.h"
+#include "MedV4D/GUI/widgets/AGUIViewer.h"
+#include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
 
-#include "GUI/widgets/AGLViewer.h"
-#include "GUI/renderers/RendererTools.h"
-#include "GUI/renderers/SliceRenderer.h"
-#include "GUI/renderers/VolumeRenderer.h"
+#include "MedV4D/GUI/widgets/AGLViewer.h"
+#include "MedV4D/GUI/renderers/RendererTools.h"
+#include "MedV4D/GUI/renderers/SliceRenderer.h"
+#include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
 #include <QtGui>
 #include <QtOpenGL>
@@ -475,7 +474,3 @@ private:
 
 
 #endif /*GENERAL_VIEWER_H*/
-
-
-
-#endif /*USE_CG*/

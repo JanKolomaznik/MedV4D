@@ -1,7 +1,7 @@
 #ifndef TF_MODIFIERS
 #define TF_MODIFIERS
 
-#include "GUI/TF/TFDimensions.h"
+#include "MedV4D/GUI/TF/TFDimensions.h"
 
 namespace M4D {
 namespace GUI {

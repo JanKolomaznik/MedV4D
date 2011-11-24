@@ -16,13 +16,13 @@
 #include "QtGui/QGridLayout"
 #include "QtCore/QTimer"
 
-#include "GUI/TF/TFCreator.h"
-#include "GUI/TF/TFPaletteButton.h"
+#include "MedV4D/GUI/TF/TFCreator.h"
+#include "MedV4D/GUI/TF/TFPaletteButton.h"
 
-#include "GUI/TF/TFCommon.h"
-#include "GUI/TF/TFColor.h"
-#include "GUI/TF/TFHistogram.h"
-#include "GUI/TF/TFEditor.h"
+#include "MedV4D/GUI/TF/TFCommon.h"
+#include "MedV4D/GUI/TF/TFColor.h"
+#include "MedV4D/GUI/TF/TFHistogram.h"
+#include "MedV4D/GUI/TF/TFEditor.h"
 
 #include "ui_TFPalette.h"
 

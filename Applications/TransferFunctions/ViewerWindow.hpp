@@ -3,8 +3,8 @@
 
 #include "ui_ViewerWindow.h"
 
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "GUI/utils/ImageDataRenderer.h"
+#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/ImageDataRenderer.h"
 #include "Imaging/ImageTools.h"
 #include "Imaging/Histogram.h"
 
