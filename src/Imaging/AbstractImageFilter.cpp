@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AImageFilter.cpp 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AImageFilter.cpp
+ * @{
  **/
 
 #include "MedV4D/Imaging/AImageFilter.h"
@@ -16,20 +16,19 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
-	/*
+/*
 const AImage&
 GetInputImageFromPort( InputPortAImage &port )
 {
-	return port.GetAImage();
+return port.GetAImage();
 }
 
 AImage&
 GetOutputImageFromPort( OutputPortAImage &port )
 {
-	return port.GetAImage();
+return port.GetAImage();
 }
 */
 

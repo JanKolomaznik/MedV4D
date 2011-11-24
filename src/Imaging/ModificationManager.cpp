@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ModificationManager.cpp 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file ModificationManager.cpp
+ * @{
  **/
 
 #include "MedV4D/Imaging/ModificationManager.h"
@@ -22,97 +22,94 @@ using namespace std;
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
-	
+
 ReaderBBoxInterface::~ReaderBBoxInterface()
-{ 
-	delete _boundingBox; 
+{
+        delete _boundingBox;
 }
 
 bool
-ReaderBBoxInterface::IsDirty()const
+ReaderBBoxInterface::IsDirty() const
 {
-	return GetState() == MS_DIRTY;
+        return GetState() == MS_DIRTY;
 }
 
 bool
-ReaderBBoxInterface::IsModified()const
+ReaderBBoxInterface::IsModified() const
 {
-	return GetState() == MS_MODIFIED;
+        return GetState() == MS_MODIFIED;
 }
 
 ModificationState
-ReaderBBoxInterface::GetState()const
+ReaderBBoxInterface::GetState() const
 {
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-	return _state;
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
+        return _state;
 }
 
 ModificationState
-ReaderBBoxInterface::WaitWhileDirty()const
+ReaderBBoxInterface::WaitWhileDirty() const
 {
-	while( 1 ){
-		Multithreading::RecursiveScopedLock lock( _accessLock );
-		if( _state == MS_DIRTY ) {
-		//TODO - sleep
+        while ( 1 ) {
+                Multithreading::RecursiveScopedLock lock ( _accessLock );
+                if ( _state == MS_DIRTY ) {
+                        //TODO - sleep
 
-		} else {
-			return _state;
-		}
-	}
+                } else {
+                        return _state;
+                }
+        }
 }
 
-ProxyReaderBBox::ProxyReaderBBox( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
-	: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
+ProxyReaderBBox::ProxyReaderBBox ( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+                : ReaderBBoxInterface ( timestamp, manager, boundingBox )
 {
-	_changeIterator = _manager->ChangesReverseBegin();
-}
-
-ModificationState
-ProxyReaderBBox::GetState()const
-{
-	while( _changeIterator != _manager->ChangesReverseEnd() 
-		&& (*_changeIterator)->GetTimeStamp() >= _changeTimestamp ) 
-	{
-		ModificationState state = (*_changeIterator)->GetState();
-		if( state != MS_MODIFIED 
-			&& _boundingBox->Incident( (*_changeIterator)->GetBoundingBox() ) )
-		{
-			return state;
-		}
-		++_changeIterator;
-		
-	}
-	return MS_MODIFIED;
+        _changeIterator = _manager->ChangesReverseBegin();
 }
 
 ModificationState
-ProxyReaderBBox::WaitWhileDirty()const
+ProxyReaderBBox::GetState() const
 {
-	ModificationState state = MS_MODIFIED;
-	//We check if previous wait - finished in MS_MODIFIED state (not in canceled), and
-	//actual bounding box has state dirty.
-	while( ( state == MS_MODIFIED ) && ( ( state = GetState() ) == MS_DIRTY ) ) {
-		state = (*_changeIterator)->WaitWhileDirty();
-	}
-	return state;
+        while ( _changeIterator != _manager->ChangesReverseEnd()
+                        && ( *_changeIterator )->GetTimeStamp() >= _changeTimestamp ) {
+                ModificationState state = ( *_changeIterator )->GetState();
+                if ( state != MS_MODIFIED
+                                && _boundingBox->Incident ( ( *_changeIterator )->GetBoundingBox() ) ) {
+                        return state;
+                }
+                ++_changeIterator;
+
+        }
+        return MS_MODIFIED;
+}
+
+ModificationState
+ProxyReaderBBox::WaitWhileDirty() const
+{
+        ModificationState state = MS_MODIFIED;
+        //We check if previous wait - finished in MS_MODIFIED state (not in canceled), and
+        //actual bounding box has state dirty.
+        while ( ( state == MS_MODIFIED ) && ( ( state = GetState() ) == MS_DIRTY ) ) {
+                state = ( *_changeIterator )->WaitWhileDirty();
+        }
+        return state;
 }
 
 
 void
-WriterBBoxInterface::SetState( ModificationState state )
+WriterBBoxInterface::SetState ( ModificationState state )
 {
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	_state = state;
+        _state = state;
 }
 
 void
 WriterBBoxInterface::SetModified()
 {
-	SetState( MS_MODIFIED );
+        SetState ( MS_MODIFIED );
 }
 
 //******************************************************************************
@@ -122,149 +119,149 @@ WriterBBoxInterface::SetModified()
 
 
 bool
-ModificationBBox::Incident( const ModificationBBox & bbox )const
+ModificationBBox::Incident ( const ModificationBBox & bbox ) const
 {
-	//We compare only in dimensions available for both boxes
-	unsigned dim = min( _dimension, bbox._dimension );
-	bool result = true;
+        //We compare only in dimensions available for both boxes
+        unsigned dim = min ( _dimension, bbox._dimension );
+        bool result = true;
 
-	for( unsigned d = 0; d < dim; ++d ) {
-		result = result && ( min( _first[d], _second[d] ) < max( bbox._first[d], bbox._second[d] ) ) 
-			&& ( max( _first[d], _second[d] ) > min( bbox._first[d], bbox._second[d] ) );
-	}
+        for ( unsigned d = 0; d < dim; ++d ) {
+                result = result && ( min ( _first[d], _second[d] ) < max ( bbox._first[d], bbox._second[d] ) )
+                         && ( max ( _first[d], _second[d] ) > min ( bbox._first[d], bbox._second[d] ) );
+        }
 
-	return result;
+        return result;
 }
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
 ModificationManager::ModificationManager()
-	: _actualTimestamp(), _lastStoredTimestamp( _actualTimestamp )
+                : _actualTimestamp(), _lastStoredTimestamp ( _actualTimestamp )
 {
 
 }
 
 ModificationManager::~ModificationManager()
 {
-	{
-		Multithreading::RecursiveScopedLock lock( _accessLock );
+        {
+                Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-		std::for_each( _changes.begin(), _changes.end(), M4D::Functors::Deletor< WriterBBoxInterface *>() );
-	}
+                std::for_each ( _changes.begin(), _changes.end(), M4D::Functors::Deletor< WriterBBoxInterface *>() );
+        }
 }
 
 
 //Predicate used in find_if algorithm
-struct ChangeTimestampComparator
-{
-	ChangeTimestampComparator( const Common::TimeStamp & changeStamp ):
-		_changeStamp( changeStamp ) {}
-	
-	bool
-	operator()( WriterBBoxInterface * change )
-	{ return change->GetTimeStamp() >= _changeStamp; }
+struct ChangeTimestampComparator {
+        ChangeTimestampComparator ( const Common::TimeStamp & changeStamp ) :
+                        _changeStamp ( changeStamp ) {}
 
-	const Common::TimeStamp & _changeStamp;
+        bool
+        operator() ( WriterBBoxInterface * change ) {
+                return change->GetTimeStamp() >= _changeStamp;
+        }
+
+        const Common::TimeStamp & _changeStamp;
 };
 
-ModificationManager::ChangeIterator 
-ModificationManager::GetChangeBBox( const Common::TimeStamp & changeStamp )
+ModificationManager::ChangeIterator
+ModificationManager::GetChangeBBox ( const Common::TimeStamp & changeStamp )
 {
 
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return std::find_if( _changes.begin(), _changes.end(), ChangeTimestampComparator( changeStamp ) );
+        return std::find_if ( _changes.begin(), _changes.end(), ChangeTimestampComparator ( changeStamp ) );
 }
 
-	
-ModificationManager::ChangeIterator 
+
+ModificationManager::ChangeIterator
 ModificationManager::ChangesBegin()
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.begin();
+        return _changes.begin();
 }
 
-ModificationManager::ConstChangeIterator 
-ModificationManager::ChangesBegin()const
+ModificationManager::ConstChangeIterator
+ModificationManager::ChangesBegin() const
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.begin();
+        return _changes.begin();
 }
 
-ModificationManager::ChangeIterator 
+ModificationManager::ChangeIterator
 ModificationManager::ChangesEnd()
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.end();
+        return _changes.end();
 }
 
-ModificationManager::ConstChangeIterator 
-ModificationManager::ChangesEnd()const
+ModificationManager::ConstChangeIterator
+ModificationManager::ChangesEnd() const
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.end();
+        return _changes.end();
 }
 
-ModificationManager::ChangeReverseIterator 
+ModificationManager::ChangeReverseIterator
 ModificationManager::ChangesReverseBegin()
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.rbegin();
+        return _changes.rbegin();
 }
 
-ModificationManager::ConstChangeReverseIterator 
-ModificationManager::ChangesReverseBegin()const
+ModificationManager::ConstChangeReverseIterator
+ModificationManager::ChangesReverseBegin() const
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.rbegin();
+        return _changes.rbegin();
 }
 
-ModificationManager::ChangeReverseIterator 
+ModificationManager::ChangeReverseIterator
 ModificationManager::ChangesReverseEnd()
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.rend();
+        return _changes.rend();
 }
 
-ModificationManager::ConstChangeReverseIterator 
-ModificationManager::ChangesReverseEnd()const
+ModificationManager::ConstChangeReverseIterator
+ModificationManager::ChangesReverseEnd() const
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	return _changes.rend();
+        return _changes.rend();
 }
 
 
 void
 ModificationManager::Reset()
 {
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	_lastStoredTimestamp = ++_actualTimestamp;
+        _lastStoredTimestamp = ++_actualTimestamp;
 }
 
 /*
 template<>
 WriterBBoxInterface &
-ModificationManager::AddMod< 1 >( 
+ModificationManager::AddMod< 1 >(
 		Vector< int32, 1 > min,
 		Vector< int32, 1 > max
 		)
@@ -274,7 +271,7 @@ ModificationManager::AddMod< 1 >(
 
 template<>
 WriterBBoxInterface &
-ModificationManager::AddMod< 2 >( 
+ModificationManager::AddMod< 2 >(
 		Vector< int32, 2 > min,
 		Vector< int32, 2 > max
 		)
@@ -284,7 +281,7 @@ ModificationManager::AddMod< 2 >(
 
 template<>
 WriterBBoxInterface &
-ModificationManager::AddMod< 3 >( 
+ModificationManager::AddMod< 3 >(
 		Vector< int32, 3 > min,
 		Vector< int32, 3 > max
 		)
@@ -294,7 +291,7 @@ ModificationManager::AddMod< 3 >(
 
 template<>
 ReaderBBoxInterface::Ptr
-ModificationManager::GetMod< 1 >( 
+ModificationManager::GetMod< 1 >(
 		Vector< int32, 1 > min,
 		Vector< int32, 1 > max
 		)
@@ -304,7 +301,7 @@ ModificationManager::GetMod< 1 >(
 
 template<>
 ReaderBBoxInterface::Ptr
-ModificationManager::GetMod< 2 >( 
+ModificationManager::GetMod< 2 >(
 		Vector< int32, 2 > min,
 		Vector< int32, 2 > max
 		)
@@ -314,7 +311,7 @@ ModificationManager::GetMod< 2 >(
 
 template<>
 ReaderBBoxInterface::Ptr
-ModificationManager::GetMod< 3 >( 
+ModificationManager::GetMod< 3 >(
 		Vector< int32, 3 > min,
 		Vector< int32, 3 > max
 		)

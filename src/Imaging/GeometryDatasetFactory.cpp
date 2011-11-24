@@ -4,38 +4,37 @@
 
 
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
  * @file GeometryDatasetFactory.cpp
- * @{ 
+ * @{
  **/
 
 namespace M4D
 {
 
-namespace Imaging
-{
+namespace Imaging {
 
 ASlicedGeometry::Ptr
-GeometryDatasetFactory::DeserializeSlicedGeometryFromStream( M4D::IO::InStream &stream ) 
+GeometryDatasetFactory::DeserializeSlicedGeometryFromStream ( M4D::IO::InStream &stream )
 {
-	return ASlicedGeometry::Ptr(); 
+        return ASlicedGeometry::Ptr();
 }
 
 void
-GeometryDatasetFactory::DeserializeSlicedGeometryFromStream( M4D::IO::InStream &stream, ASlicedGeometry &geometry ) 
+GeometryDatasetFactory::DeserializeSlicedGeometryFromStream ( M4D::IO::InStream &stream, ASlicedGeometry &geometry )
 {
 
 }
 
-void 
-GeometryDatasetFactory::SerializeSlicedGeometry(M4D::IO::OutStream &stream, const ASlicedGeometry &dataset)
+void
+GeometryDatasetFactory::SerializeSlicedGeometry ( M4D::IO::OutStream &stream, const ASlicedGeometry &dataset )
 {
-	GEOMETRY_TYPE_SWITCH_MACRO( dataset.GetSlicedGeometryObjectType(),
-			GeometryDatasetFactory::SerializeSlicedGeometry( stream, SlicedGeometry< TTYPE >::Cast( dataset ) );
-			);
+        GEOMETRY_TYPE_SWITCH_MACRO ( dataset.GetSlicedGeometryObjectType(),
+                                     GeometryDatasetFactory::SerializeSlicedGeometry ( stream, SlicedGeometry< TTYPE >::Cast ( dataset ) );
+                                   );
 
-	
+
 }
 
 

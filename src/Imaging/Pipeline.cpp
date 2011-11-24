@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file Pipeline.cpp 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file Pipeline.cpp
+ * @{
  **/
 
 #include "MedV4D/Imaging/Pipeline.h"
@@ -21,73 +21,72 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 
 Pipeline::Pipeline()
 {
-		//TODO
+        //TODO
 
 }
 
 Pipeline::~Pipeline()
 {
-	std::for_each(
-		_connections.begin(), 
-		_connections.end(), 
-		M4D::Functors::Deletor< ConnectionInterface* >() 
-		);
+        std::for_each (
+                _connections.begin(),
+                _connections.end(),
+                M4D::Functors::Deletor< ConnectionInterface* >()
+        );
 
-	std::for_each(
-		_filters.begin(), 
-		_filters.end(), 
-		M4D::Functors::Deletor< APipeFilter* >() 
-		);
+        std::for_each (
+                _filters.begin(),
+                _filters.end(),
+                M4D::Functors::Deletor< APipeFilter* >()
+        );
 }
 
 void
-Pipeline::AddFilter( APipeFilter *filter )
+Pipeline::AddFilter ( APipeFilter *filter )
 {
-	if( filter == NULL ) {
-		//TODO _THROW_ exception
-	}
-	_filters.push_back( filter );
+        if ( filter == NULL ) {
+                //TODO _THROW_ exception
+        }
+        _filters.push_back ( filter );
 }
 
 void
 Pipeline::FillingFinished()
 {
 
-		//TODO
+        //TODO
 }
 
 ConnectionInterface &
-Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort )
+Pipeline::MakeConnection ( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort )
 {
-	//if inPort occupied - error. Connection concept is designed only one to many.
-	if( inPort.IsPlugged() ) {
-		//TODO _THROW_ exception
-	}
+        //if inPort occupied - error. Connection concept is designed only one to many.
+        if ( inPort.IsPlugged() ) {
+                //TODO _THROW_ exception
+        }
 
-	ConnectionInterface *connection = NULL;
-	//if outPort is connected, we use already created Conncetion, otherwise we 
-	//have to create new one.
-	if( outPort.IsPlugged() ) {
-		//TODO -check
-		connection = outPort.GetConnection();
-	} else {
+        ConnectionInterface *connection = NULL;
+        //if outPort is connected, we use already created Conncetion, otherwise we
+        //have to create new one.
+        if ( outPort.IsPlugged() ) {
+                //TODO -check
+                connection = outPort.GetConnection();
+        } else {
 
-		//TODO
-		//connection = CreateConnectionObjectFromPorts( outPort, inPort );
-		//Newly created connection will be stored.
-		_connections.push_back( connection );
-	}
+                //TODO
+                //connection = CreateConnectionObjectFromPorts( outPort, inPort );
+                //Newly created connection will be stored.
+                _connections.push_back ( connection );
+        }
 
-	connection->ConnectConsumer( inPort );
-	connection->ConnectProducer( outPort );
-	
-	return *connection;
+        connection->ConnectConsumer ( inPort );
+        connection->ConnectProducer ( outPort );
+
+        return *connection;
 }
 
 

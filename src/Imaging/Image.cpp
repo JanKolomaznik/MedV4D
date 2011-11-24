@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file Image.cpp 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file Image.cpp
+ * @{
  **/
 
 #include "MedV4D/Imaging/Image.h"
@@ -16,11 +16,10 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
-AImage::AImage( uint16 dim, DimensionExtents *dimExtents )
-: ADataset( DATASET_IMAGE ), _dimCount( dim ), _dimensionExtents( dimExtents )
+AImage::AImage ( uint16 dim, DimensionExtents *dimExtents )
+                : ADataset ( DATASET_IMAGE ), _dimCount ( dim ), _dimensionExtents ( dimExtents )
 {
 
 }
@@ -31,14 +30,14 @@ AImage::~AImage()
 }
 
 const DimensionExtents &
-AImage::GetDimensionExtents( unsigned dimension )const
+AImage::GetDimensionExtents ( unsigned dimension ) const
 {
-	if( dimension >= _dimCount ) {
-		_THROW_ EBadDimension();
-	}
-	return _dimensionExtents[ dimension ];
+        if ( dimension >= _dimCount ) {
+                _THROW_ EBadDimension();
+        }
+        return _dimensionExtents[ dimension ];
 }
-	
+
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

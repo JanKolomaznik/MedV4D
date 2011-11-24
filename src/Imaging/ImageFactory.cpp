@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ImageFactory.cpp 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file ImageFactory.cpp
+ * @{
  **/
 
 #include "MedV4D/Imaging/ImageFactory.h"
@@ -17,212 +17,211 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 AImage::Ptr
-ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
+ImageFactory::DeserializeImage ( M4D::IO::InStream &stream )
 {
-	uint32 datasetType = 0;
+        uint32 datasetType = 0;
 
-	//Read stream header
-	datasetType = DeserializeHeader( stream );
+        //Read stream header
+        datasetType = DeserializeHeader ( stream );
 
-	if( datasetType != DATASET_IMAGE ) {
-		_THROW_ EWrongDatasetTypeIdentification();
-	}
+        if ( datasetType != DATASET_IMAGE ) {
+                _THROW_ EWrongDatasetTypeIdentification();
+        }
 
-	return ImageFactory::DeserializeImageFromStream(stream);
+        return ImageFactory::DeserializeImageFromStream ( stream );
 }
 
 void
-ImageFactory::DeserializeImage(M4D::IO::InStream &stream, AImage &existingImage )
+ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, AImage &existingImage )
 {
-	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( existingImage, ImageFactory::DeserializeImage< TTYPE, DIM >( stream, static_cast< Image<TTYPE,DIM> &>(existingImage) ) );
+        IMAGE_TYPE_TEMPLATE_SWITCH_MACRO ( existingImage, ImageFactory::DeserializeImage< TTYPE, DIM > ( stream, static_cast< Image<TTYPE,DIM> &> ( existingImage ) ) );
 }
 
 template< typename ElementType, unsigned Dimension >
 void
-ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage )
+ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage )
 {
-	uint32 datasetType = 0;
-	
-	//Read stream header
-	datasetType = DeserializeHeader( stream );
+        uint32 datasetType = 0;
 
-	if( datasetType != DATASET_IMAGE ) {
-		_THROW_ EWrongDatasetTypeIdentification();
-	}
+        //Read stream header
+        datasetType = DeserializeHeader ( stream );
 
-	uint32 dimension;
-	stream.Get<uint32>( dimension );
-	
-	uint32 elementTypeID;
-	stream.Get<uint32>( elementTypeID );
+        if ( datasetType != DATASET_IMAGE ) {
+                _THROW_ EWrongDatasetTypeIdentification();
+        }
 
-	if( dimension != Dimension || 
-		(int32)elementTypeID != GetNumericTypeID< ElementType >() ) {
-		_THROW_ EWrongDatasetType();
-	}
+        uint32 dimension;
+        stream.Get<uint32> ( dimension );
 
-	Vector< int32, Dimension > minimum;
-	Vector< int32, Dimension > maximum;
-	Vector< float32, Dimension > elementExtents;
+        uint32 elementTypeID;
+        stream.Get<uint32> ( elementTypeID );
 
-	for ( unsigned i = 0; i < dimension; ++i ) {
-		stream.Get<int32>( minimum[i] );
-		stream.Get<int32>( maximum[i] );
-		stream.Get<float32>( elementExtents[i] );
-	}
+        if ( dimension != Dimension ||
+                        ( int32 ) elementTypeID != GetNumericTypeID< ElementType >() ) {
+                _THROW_ EWrongDatasetType();
+        }
 
-	uint32 headerEndMagic = 0;
-	stream.Get<uint32>( headerEndMagic );
-	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
-		_THROW_ EWrongHeader();
-	}
+        Vector< int32, Dimension > minimum;
+        Vector< int32, Dimension > maximum;
+        Vector< float32, Dimension > elementExtents;
 
-	ChangeImageSize( existingImage, minimum, maximum, elementExtents );
+        for ( unsigned i = 0; i < dimension; ++i ) {
+                stream.Get<int32> ( minimum[i] );
+                stream.Get<int32> ( maximum[i] );
+                stream.Get<float32> ( elementExtents[i] );
+        }
 
-	LoadSerializedImageData( stream, existingImage );
+        uint32 headerEndMagic = 0;
+        stream.Get<uint32> ( headerEndMagic );
+        if ( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
+                _THROW_ EWrongHeader();
+        }
 
-	uint32 eoDataset = 0;
-	stream.Get<uint32>( eoDataset );
-	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamEnd();
-	}
+        ChangeImageSize ( existingImage, minimum, maximum, elementExtents );
+
+        LoadSerializedImageData ( stream, existingImage );
+
+        uint32 eoDataset = 0;
+        stream.Get<uint32> ( eoDataset );
+        if ( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+                _THROW_ EWrongStreamEnd();
+        }
 }
 
 template< typename ElementType, uint32 Dimension >
 void
-LoadSerializedImageData( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
+LoadSerializedImageData ( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
 {
-	if ( image.IsDataContinuous() ) {
-		D_PRINT( "Buffered loading of image" );
-		typename Image< ElementType, Dimension >::SizeType size;
-		typename Image< ElementType, Dimension >::PointType strides;
-		ElementType * pointer = image.GetPointer( size,	strides );
-		//TODO check invariants needed for buffered load
-		stream.Get< ElementType >( pointer, VectorCoordinateProduct( size ) );
-	} else {
-		D_PRINT( "Slow loading of image" );
-		typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
-		while( !iterator.IsEnd() && !stream.eof() ) {
-			stream.Get< ElementType >( *iterator );
-			++iterator;
-		}
-	}
+        if ( image.IsDataContinuous() ) {
+                D_PRINT ( "Buffered loading of image" );
+                typename Image< ElementType, Dimension >::SizeType size;
+                typename Image< ElementType, Dimension >::PointType strides;
+                ElementType * pointer = image.GetPointer ( size,	strides );
+                //TODO check invariants needed for buffered load
+                stream.Get< ElementType > ( pointer, VectorCoordinateProduct ( size ) );
+        } else {
+                D_PRINT ( "Slow loading of image" );
+                typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+                while ( !iterator.IsEnd() && !stream.eof() ) {
+                        stream.Get< ElementType > ( *iterator );
+                        ++iterator;
+                }
+        }
 //	image.DeSerializeData(stream);
 }
 
 AImage::Ptr
-ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
+ImageFactory::DeserializeImageFromStream ( M4D::IO::InStream &stream )
 {
-	uint32 dimension;
-	stream.Get<uint32>( dimension );
-	
-	uint32 elementTypeID;
-	stream.Get<uint32>( elementTypeID );
+        uint32 dimension;
+        stream.Get<uint32> ( dimension );
 
-	int32 *minimums = new int32[ dimension ];
-	int32 *maximums = new int32[ dimension ];
-	float32 *elementExtents = new float32[ dimension ];
+        uint32 elementTypeID;
+        stream.Get<uint32> ( elementTypeID );
 
-	for ( unsigned i = 0; i < dimension; ++i ) {
-		stream.Get<int32>( minimums[i] );
-		stream.Get<int32>( maximums[i] );
-		stream.Get<float32>( elementExtents[i] );
-	}
+        int32 *minimums = new int32[ dimension ];
+        int32 *maximums = new int32[ dimension ];
+        float32 *elementExtents = new float32[ dimension ];
 
-	uint32 headerEndMagic = 0;
-	stream.Get<uint32>( headerEndMagic );
-	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
-		_THROW_ EWrongHeader();
-	}
-	//header read
+        for ( unsigned i = 0; i < dimension; ++i ) {
+                stream.Get<int32> ( minimums[i] );
+                stream.Get<int32> ( maximums[i] );
+                stream.Get<float32> ( elementExtents[i] );
+        }
+
+        uint32 headerEndMagic = 0;
+        stream.Get<uint32> ( headerEndMagic );
+        if ( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
+                _THROW_ EWrongHeader();
+        }
+        //header read
 
 
-	AImage::Ptr image;
-	TYPE_TEMPLATE_SWITCH_MACRO(
-		elementTypeID,
-		/*image = CreateEmptyImageFromExtents< TTYPE >( 
-				dimension,
-				minimums,
-				maximums,
-				elementExtents
-			);*/
-		DIMENSION_TEMPLATE_SWITCH_MACRO(
-			dimension,
-			Image< TTYPE, DIM >::Ptr tmpImage = CreateEmptyImageFromExtents< TTYPE, DIM >( 
-				Vector< int32, DIM >( minimums ),
-				Vector< int32, DIM >( maximums ),
-				Vector< float32, DIM >( elementExtents )
-			);
-			LoadSerializedImageData< TTYPE, DIM >( stream, *tmpImage );
-			image = tmpImage;
-			)
-	);
+        AImage::Ptr image;
+        TYPE_TEMPLATE_SWITCH_MACRO (
+                elementTypeID,
+                /*image = CreateEmptyImageFromExtents< TTYPE >(
+                		dimension,
+                		minimums,
+                		maximums,
+                		elementExtents
+                	);*/
+                DIMENSION_TEMPLATE_SWITCH_MACRO (
+                        dimension,
+                        Image< TTYPE, DIM >::Ptr tmpImage = CreateEmptyImageFromExtents< TTYPE, DIM > (
+                                Vector< int32, DIM > ( minimums ),
+                                Vector< int32, DIM > ( maximums ),
+                                Vector< float32, DIM > ( elementExtents )
+                        );
+                        LoadSerializedImageData< TTYPE, DIM > ( stream, *tmpImage );
+                        image = tmpImage;
+                )
+        );
 
-	uint32 eoDataset = 0;
-	stream.Get<uint32>( eoDataset );
+        uint32 eoDataset = 0;
+        stream.Get<uint32> ( eoDataset );
 
-	delete [] minimums;
-	delete [] maximums;
-	delete [] elementExtents;
+        delete [] minimums;
+        delete [] maximums;
+        delete [] elementExtents;
 
-	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamEnd();
-	}
+        if ( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+                _THROW_ EWrongStreamEnd();
+        }
 
-	return image;
+        return image;
 
-}
-
-void 
-ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const AImage &image )
-{
-	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::SerializeImage< TTYPE, DIM >( stream, static_cast< const Image<TTYPE,DIM> &>(image) ) );
 }
 
 void
-ImageFactory::PrepareElementArrayFromTypeID( 
-		int 		typeId, 
-		uint32 		imageSize, 
-		uint8		*& dataArray 
-		)
+ImageFactory::SerializeImage ( M4D::IO::OutStream &stream, const AImage &image )
 {
-	//We will generate switch over common numerical types. For more see Common.h
-	TYPE_TEMPLATE_SWITCH_MACRO( 
-		typeId, dataArray = (uint8 *) PrepareElementArraySimple< TTYPE >( imageSize ) );
+        IMAGE_TYPE_TEMPLATE_SWITCH_MACRO ( image, ImageFactory::SerializeImage< TTYPE, DIM > ( stream, static_cast< const Image<TTYPE,DIM> &> ( image ) ) );
+}
+
+void
+ImageFactory::PrepareElementArrayFromTypeID (
+        int 		typeId,
+        uint32 		imageSize,
+        uint8		*& dataArray
+)
+{
+        //We will generate switch over common numerical types. For more see Common.h
+        TYPE_TEMPLATE_SWITCH_MACRO (
+                typeId, dataArray = ( uint8 * ) PrepareElementArraySimple< TTYPE > ( imageSize ) );
 }
 
 
 AImageData*
-ImageFactory::CreateImageFromDataAndTypeID(
-		int 			typeId, 
-		uint32 			imageSize, 
-		uint8			* dataArray, 
-		DimensionInfo		* info
-		)
+ImageFactory::CreateImageFromDataAndTypeID (
+        int 			typeId,
+        uint32 			imageSize,
+        uint8			* dataArray,
+        DimensionInfo		* info
+)
 {
-	AImageData*	image = NULL;
+        AImageData*	image = NULL;
 
-	//We will generate switch over common numerical types. For more see Common.h
-	TYPE_TEMPLATE_SWITCH_MACRO( 
-		typeId, image = new ImageDataTemplate< TTYPE >( (TTYPE*)dataArray, info, 3, imageSize ) );
+        //We will generate switch over common numerical types. For more see Common.h
+        TYPE_TEMPLATE_SWITCH_MACRO (
+                typeId, image = new ImageDataTemplate< TTYPE > ( ( TTYPE* ) dataArray, info, 3, imageSize ) );
 
-	return image;
+        return image;
 }
 
 void
-ImageFactory::DumpImage( std::string filename, const AImage & image )
+ImageFactory::DumpImage ( std::string filename, const AImage & image )
 {
-	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::DumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image) ) );	
+        IMAGE_TYPE_TEMPLATE_SWITCH_MACRO ( image, ImageFactory::DumpImage< TTYPE, DIM > ( filename, static_cast< const Image<TTYPE,DIM> &> ( image ) ) );
 }
 
 void
-ImageFactory::RawDumpImage( std::string filename, const AImage & image, std::ostream &aHeaderOutput )
+ImageFactory::RawDumpImage ( std::string filename, const AImage & image, std::ostream &aHeaderOutput )
 {
-	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::RawDumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image), aHeaderOutput ) );	
+        IMAGE_TYPE_TEMPLATE_SWITCH_MACRO ( image, ImageFactory::RawDumpImage< TTYPE, DIM > ( filename, static_cast< const Image<TTYPE,DIM> &> ( image ), aHeaderOutput ) );
 }
 /*
 template< typename ElementType, uint32 Dimension >
@@ -249,7 +248,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
 		_THROW_ EWrongStreamBeginning();
 	}
-	
+
 	BINSTREAM_READ_MACRO( stream, formatVersion );
 	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
 		_THROW_ EWrongFormatVersion();
@@ -258,7 +257,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 
 	uint32 dimension;
 	BINSTREAM_READ_MACRO( stream, dimension );
-	
+
 	uint32 elementTypeID;
 	BINSTREAM_READ_MACRO( stream, elementTypeID );
 
@@ -282,7 +281,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	AImage::Ptr image;
 	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
-		image = CreateEmptyImageFromExtents< TTYPE >( 
+		image = CreateEmptyImageFromExtents< TTYPE >(
 				dimension,
 				minimums,
 				maximums,
@@ -302,18 +301,18 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 }*/
 
 AImage::Ptr
-ImageFactory::LoadDumpedImage( std::string filename )
+ImageFactory::LoadDumpedImage ( std::string filename )
 {
-	//std::fstream input( filename.data(), std::ios::in | std::ios::binary );
+        //std::fstream input( filename.data(), std::ios::in | std::ios::binary );
 
-	M4D::Common::Clock clock;
+        M4D::Common::Clock clock;
 
-	M4D::IO::FInStream input( filename );
+        M4D::IO::FInStream input ( filename );
 
-	AImage::Ptr image = DeserializeImage( input );
-	
-	LOG( "Image '" << filename << "' loaded in " << clock.SecondsPassed() << " seconds." );
-	return image;
+        AImage::Ptr image = DeserializeImage ( input );
+
+        LOG ( "Image '" << filename << "' loaded in " << clock.SecondsPassed() << " seconds." );
+        return image;
 }
 
 
