@@ -12,9 +12,9 @@
 
 #include "MedV4D/Common/Common.h"
 
-#include "../DicomAssoc.h"
-#include "../AbstractService.h"
-#include "../StoreService.h"
+#include "MedV4D/DICOMInterface/DicomAssoc.h"
+#include "MedV4D/DICOMInterface/AbstractService.h"
+#include "MedV4D/DICOMInterface/StoreService.h"
 
 #ifdef ON_THE_FLY_COMPRESSION
 #include <dcmtk/dcmjpeg/djdecode.h>  /* for dcmjpeg decoders */

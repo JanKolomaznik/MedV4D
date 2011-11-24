@@ -10,8 +10,8 @@
 
 #include "MedV4D/Common/Common.h"
 
-#include "../DicomAssoc.h"
-#include "../AbstractService.h"
+#include "MedV4D/DICOMInterface/DicomAssoc.h"
+#include "MedV4D/DICOMInterface/AbstractService.h"
 
 using namespace M4D::Dicom;
 

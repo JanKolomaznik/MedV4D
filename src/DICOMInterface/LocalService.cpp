@@ -15,8 +15,8 @@
 #include "boost/filesystem/operations.hpp"
 
 #include "MedV4D/Common/Common.h"
-#include "../LocalService.h"
-#include "../DICOMSupport.h"
+#include "MedV4D/DICOMInterface/LocalService.h"
+#include "MedV4D/DICOMInterface/DICOMSupport.h"
 
 namespace fs = boost::filesystem;
 

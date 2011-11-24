@@ -11,7 +11,7 @@
 
 #include "MedV4D/Common/Common.h"
 
-#include "../DicomAssoc.h"
+#include "MedV4D/DICOMInterface/DicomAssoc.h"
 
 using namespace M4D::Dicom;
 ///////////////////////////////////////////////////////////////////////

@@ -10,11 +10,11 @@
 
 #include "MedV4D/Common/Common.h"
 
-#include "../DicomAssoc.h"
-#include "../AbstractService.h"
-#include "../FindService.h"
+#include "MedV4D/DICOMInterface/DicomAssoc.h"
+#include "MedV4D/DICOMInterface/AbstractService.h"
+#include "MedV4D/DICOMInterface/FindService.h"
 
-#include "../DICOMSupport.h"
+#include "MedV4D/DICOMInterface/DICOMSupport.h"
 
 using namespace M4D::ErrorHandling;
 using namespace M4D::Dicom;

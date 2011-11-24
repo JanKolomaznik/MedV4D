@@ -9,8 +9,8 @@
 #include "dcmtk/dcmdata/dcfilefo.h"
 
 #include "MedV4D/Common/Common.h"
-#include "../DcmObject.h"
-#include "../dicomDataStreamDecoder.h"
+#include "MedV4D/DICOMInterface/DcmObject.h"
+#include "MedV4D/DICOMInterface/dicomDataStreamDecoder.h"
 
 
 using namespace M4D::Dicom;

@@ -20,12 +20,12 @@
 
 #include "MedV4D/Common/Common.h"
 
-#include "backendForDICOM/DcmProvider.h"
-#include "backendForDICOM/DicomAssoc.h"
-#include "backendForDICOM/AbstractService.h"
-#include "backendForDICOM/MoveService.h"
-#include "backendForDICOM/FindService.h"
-#include "backendForDICOM/LocalService.h"
+#include "MedV4D/DICOMInterface/DcmProvider.h"
+#include "MedV4D/DICOMInterface/DicomAssoc.h"
+#include "MedV4D/DICOMInterface/AbstractService.h"
+#include "MedV4D/DICOMInterface/MoveService.h"
+#include "MedV4D/DICOMInterface/FindService.h"
+#include "MedV4D/DICOMInterface/LocalService.h"
 
 
 using namespace M4D::Dicom;
