@@ -1,10 +1,10 @@
-#include "Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/ImageFactory.h"
 #include <iostream>
 #include <sstream>
 
 #include <QWidget>
 #include "MedV4D/GUI/widgets/BasicSliceViewer.h"
-#include "Imaging/Imaging.h"
+#include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 #include "ViewerWindow.hpp"
 
