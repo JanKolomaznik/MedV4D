@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AImageSliceFilter.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AImageSliceFilter.h
+ * @{
  **/
 
 #ifndef _A_IMAGE_SLICE_FILTER_H
@@ -20,15 +20,13 @@
 namespace M4D
 {
 
-namespace Imaging
-{
+namespace Imaging {
 
-struct SliceComputationRecord
-{
-	ReaderBBoxInterface::Ptr	inputBBox;
-	WriterBBoxInterface		*writerBBox;
-	int32				firstSlice;
-	int32				lastSlice;
+struct SliceComputationRecord {
+        ReaderBBoxInterface::Ptr	inputBBox;
+        WriterBBoxInterface		*writerBBox;
+        int32				firstSlice;
+        int32				lastSlice;
 };
 
 /**
@@ -39,82 +37,83 @@ class AImageSliceFilter;
 
 template< typename InputElementType, typename OutputImageType >
 class AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-	 : public AImageFilter< Image< InputElementType, 3 >, OutputImageType >
+                        : public AImageFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
-	typedef AImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
-	typedef Image< InputElementType, 3 >	InputImageType;
-	
-	struct Properties : public PredecessorType::Properties
-	{
-		Properties( unsigned sliceNeighbourCount, unsigned computationGrouping ) 
-			: _sliceComputationNeighbourCount( sliceNeighbourCount ), _computationGrouping( computationGrouping ) {}
-		/**
-		 * How many slices to up and down are needed for computation.
-		 * This information is needed when waiting for input update.
-		 **/
-		unsigned	_sliceComputationNeighbourCount;
+        typedef AImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
+        typedef Image< InputElementType, 3 >	InputImageType;
 
-		/**
-		 * How many slices will be put into one computation sequence.
-		 **/
-		unsigned	_computationGrouping;
-	};
-	
-	AImageSliceFilter( Properties *prop );
-	~AImageSliceFilter() {}
+        struct Properties : public PredecessorType::Properties {
+                Properties ( unsigned sliceNeighbourCount, unsigned computationGrouping )
+                                : _sliceComputationNeighbourCount ( sliceNeighbourCount ), _computationGrouping ( computationGrouping ) {}
+                /**
+                 * How many slices to up and down are needed for computation.
+                 * This information is needed when waiting for input update.
+                 **/
+                unsigned	_sliceComputationNeighbourCount;
 
-	void
-	SetComputationNeighbourhood( unsigned count )
-		{ static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount = count; }
+                /**
+                 * How many slices will be put into one computation sequence.
+                 **/
+                unsigned	_computationGrouping;
+        };
 
-	unsigned
-	GetComputationNeighbourhood()
-		{ return static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount; }
+        AImageSliceFilter ( Properties *prop );
+        ~AImageSliceFilter() {}
 
-	void
-	SetComputationGrouping( unsigned count )
-		{ 
-			if( count > 0 ) {
-				static_cast<Properties*>(this->_properties)->_computationGrouping = count; 
-			}else {
-		       		_THROW_ ErrorHandling::ExceptionBadParameter< unsigned >( count );
-			}	
-		}
+        void
+        SetComputationNeighbourhood ( unsigned count ) {
+                static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount = count;
+        }
 
-	unsigned
-	GetComputationGrouping()
-		{ return static_cast<Properties*>(this->_properties)->_computationGrouping; }
+        unsigned
+        GetComputationNeighbourhood() {
+                return static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount;
+        }
+
+        void
+        SetComputationGrouping ( unsigned count ) {
+                if ( count > 0 ) {
+                        static_cast<Properties*> ( this->_properties )->_computationGrouping = count;
+                } else {
+                        _THROW_ ErrorHandling::ExceptionBadParameter< unsigned > ( count );
+                }
+        }
+
+        unsigned
+        GetComputationGrouping() {
+                return static_cast<Properties*> ( this->_properties )->_computationGrouping;
+        }
 protected:
 
-	typedef std::vector< SliceComputationRecord >	ComputationGroupList;
+        typedef std::vector< SliceComputationRecord >	ComputationGroupList;
 
-	virtual bool
-	ProcessSlice(
-			const ImageRegion< InputElementType, 3 >	&inRegion,
-			OutputImageType					&out,
-			int32						slice
-		    ) = 0;
+        virtual bool
+        ProcessSlice (
+                const ImageRegion< InputElementType, 3 >	&inRegion,
+                OutputImageType					&out,
+                int32						slice
+        ) = 0;
 
-	virtual WriterBBoxInterface &
-	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
+        virtual WriterBBoxInterface &
+        GetComputationGroupWriterBBox ( SliceComputationRecord & record ) = 0;
 
-	bool
-	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ );
+        bool
+        ExecutionThreadMethod ( APipeFilter::UPDATE_TYPE /*utype*/ );
 
 
-	void
-	MarkChanges( APipeFilter::UPDATE_TYPE utype );
+        void
+        MarkChanges ( APipeFilter::UPDATE_TYPE utype );
 
-	
 
-	ComputationGroupList		_actualComputationGroups;
+
+        ComputationGroupList		_actualComputationGroups;
 private:
-	GET_PROPERTIES_DEFINITION_MACRO;
-	/**
-	 * Prohibition of copying.
-	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageSliceFilter );
+        GET_PROPERTIES_DEFINITION_MACRO;
+        /**
+         * Prohibition of copying.
+         **/
+        PROHIBIT_COPYING_OF_OBJECT_MACRO ( AImageSliceFilter );
 };
 
 
@@ -127,86 +126,87 @@ class AImageSliceFilterIExtents;
 
 template< typename InputElementType, typename OutputElementType >
 class AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-	 : public AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+                        : public AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
-	typedef Image< InputElementType, 3 >	InputImageType;
-	typedef Image< OutputElementType, 3 >	OutputImageType;
-	
-	struct Properties : public PredecessorType::Properties
-	{
-		Properties( unsigned sliceNeighbourCount, unsigned computationGrouping ) 
-			: _sliceComputationNeighbourCount( sliceNeighbourCount ), _computationGrouping( computationGrouping ) {}
-		/**
-		 * How many slices to up and down are needed for computation.
-		 * This information is needed when waiting for input update.
-		 **/
-		unsigned	_sliceComputationNeighbourCount;
+        typedef AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+        typedef Image< InputElementType, 3 >	InputImageType;
+        typedef Image< OutputElementType, 3 >	OutputImageType;
 
-		/**
-		 * How many slices will be put into one computation sequence.
-		 **/
-		unsigned	_computationGrouping;
-	};
-	
-	AImageSliceFilterIExtents( Properties *prop );
-	~AImageSliceFilterIExtents() {}
+        struct Properties : public PredecessorType::Properties {
+                Properties ( unsigned sliceNeighbourCount, unsigned computationGrouping )
+                                : _sliceComputationNeighbourCount ( sliceNeighbourCount ), _computationGrouping ( computationGrouping ) {}
+                /**
+                 * How many slices to up and down are needed for computation.
+                 * This information is needed when waiting for input update.
+                 **/
+                unsigned	_sliceComputationNeighbourCount;
 
-	void
-	SetComputationNeighbourhood( unsigned count )
-		{ static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount = count; }
+                /**
+                 * How many slices will be put into one computation sequence.
+                 **/
+                unsigned	_computationGrouping;
+        };
 
-	unsigned
-	GetComputationNeighbourhood()
-		{ return static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount; }
+        AImageSliceFilterIExtents ( Properties *prop );
+        ~AImageSliceFilterIExtents() {}
 
-	void
-	SetComputationGrouping( unsigned count )
-		{ 
-			if( count > 0 ) {
-				static_cast<Properties*>(this->_properties)->_computationGrouping = count; 
-			}else {
-		       		_THROW_ ErrorHandling::ExceptionBadParameter< unsigned >( count );
-			}	
-		}
+        void
+        SetComputationNeighbourhood ( unsigned count ) {
+                static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount = count;
+        }
 
-	unsigned
-	GetComputationGrouping()
-		{ return static_cast<Properties*>(this->_properties)->_computationGrouping; }
+        unsigned
+        GetComputationNeighbourhood() {
+                return static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount;
+        }
+
+        void
+        SetComputationGrouping ( unsigned count ) {
+                if ( count > 0 ) {
+                        static_cast<Properties*> ( this->_properties )->_computationGrouping = count;
+                } else {
+                        _THROW_ ErrorHandling::ExceptionBadParameter< unsigned > ( count );
+                }
+        }
+
+        unsigned
+        GetComputationGrouping() {
+                return static_cast<Properties*> ( this->_properties )->_computationGrouping;
+        }
 protected:
 
-	typedef std::vector< SliceComputationRecord >	ComputationGroupList;
+        typedef std::vector< SliceComputationRecord >	ComputationGroupList;
 
-	void
-	PrepareOutputDatasets();
+        void
+        PrepareOutputDatasets();
 
-	virtual bool
-	ProcessSlice(
-			const ImageRegion< InputElementType, 3 >	&inRegion,
-			ImageRegion< OutputElementType, 2 > 		&outRegion,
-			int32						slice
-		    ) = 0;
+        virtual bool
+        ProcessSlice (
+                const ImageRegion< InputElementType, 3 >	&inRegion,
+                ImageRegion< OutputElementType, 2 > 		&outRegion,
+                int32						slice
+        ) = 0;
 
-	WriterBBoxInterface &
-	GetComputationGroupWriterBBox( SliceComputationRecord & record );
+        WriterBBoxInterface &
+        GetComputationGroupWriterBBox ( SliceComputationRecord & record );
 
-	bool
-	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ );
+        bool
+        ExecutionThreadMethod ( APipeFilter::UPDATE_TYPE /*utype*/ );
 
 
-	void
-	MarkChanges( APipeFilter::UPDATE_TYPE utype );
+        void
+        MarkChanges ( APipeFilter::UPDATE_TYPE utype );
 
-	
 
-	ComputationGroupList		_actualComputationGroups;
+
+        ComputationGroupList		_actualComputationGroups;
 private:
-	GET_PROPERTIES_DEFINITION_MACRO;
-	/**
-	 * Prohibition of copying.
-	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageSliceFilterIExtents );
+        GET_PROPERTIES_DEFINITION_MACRO;
+        /**
+         * Prohibition of copying.
+         **/
+        PROHIBIT_COPYING_OF_OBJECT_MACRO ( AImageSliceFilterIExtents );
 };
 
 } /*namespace Imaging*/

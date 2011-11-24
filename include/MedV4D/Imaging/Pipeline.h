@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file Pipeline.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file Pipeline.h
+ * @{
  **/
 
 #ifndef _PIPELINE_H
@@ -21,37 +21,36 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 
 class Pipeline : public APipeline
 {
 public:
-	
-	Pipeline();
 
-	~Pipeline();
+        Pipeline();
 
-	void
-	AddFilter( APipeFilter *filter );
+        ~Pipeline();
 
-	void
-	FillingFinished();
+        void
+        AddFilter ( APipeFilter *filter );
 
-	/**
-	 * Connect two compatible ports if possible.
-	 * @param outPort Reference to output port of some filter.
-	 * @param inPort Reference to input port of some filter.
-	 **/
-	ConnectionInterface &
-	MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
+        void
+        FillingFinished();
+
+        /**
+         * Connect two compatible ports if possible.
+         * @param outPort Reference to output port of some filter.
+         * @param inPort Reference to input port of some filter.
+         **/
+        ConnectionInterface &
+        MakeConnection ( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
 protected:
-	typedef std::vector< APipeFilter * > FilterVector;
-	typedef std::vector< ConnectionInterface * > ConnectionVector;
+        typedef std::vector< APipeFilter * > FilterVector;
+        typedef std::vector< ConnectionInterface * > ConnectionVector;
 
-	FilterVector		_filters;
-	ConnectionVector	_connections;
+        FilterVector		_filters;
+        ConnectionVector	_connections;
 
 private:
 

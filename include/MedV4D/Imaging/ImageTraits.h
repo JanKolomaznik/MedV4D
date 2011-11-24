@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ImageTraits.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file ImageTraits.h
+ * @{
  **/
 
 #ifndef _IMAGE_TRAITS_H
@@ -21,8 +21,7 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 template< typename ImageType >
 class ImageTraits;
@@ -31,47 +30,47 @@ template<>
 class ImageTraits< AImage >
 {
 public:
-	typedef void	ElementType;
+        typedef void	ElementType;
 
-	static const unsigned	Dimension = 0;
+        static const unsigned	Dimension = 0;
 
-	typedef	AImage 		ClassName;
-	typedef ConnectionTyped< ClassName > 	Connection;
-	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
-	typedef InputPortTyped< ClassName > 	InputPort;
-	typedef OutputPortTyped< ClassName > 	OutputPort;
-	typedef boost::shared_ptr< ClassName >	Ptr;
+        typedef	AImage 		ClassName;
+        typedef ConnectionTyped< ClassName > 	Connection;
+        typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+        typedef InputPortTyped< ClassName > 	InputPort;
+        typedef OutputPortTyped< ClassName > 	OutputPort;
+        typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
 template< unsigned Dim >
 class ImageTraits< AImageDim< Dim > >
 {
 public:
-	typedef void	ElementType;
+        typedef void	ElementType;
 
-	static const unsigned	Dimension = Dim;
+        static const unsigned	Dimension = Dim;
 
-	typedef	AImageDim< Dim > 		ClassName;
-	typedef ConnectionTyped< ClassName > 	Connection;
-	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
-	typedef InputPortTyped< ClassName > 	InputPort;
-	typedef OutputPortTyped< ClassName > 	OutputPort;
-	typedef boost::shared_ptr< ClassName >	Ptr;
+        typedef	AImageDim< Dim > 		ClassName;
+        typedef ConnectionTyped< ClassName > 	Connection;
+        typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+        typedef InputPortTyped< ClassName > 	InputPort;
+        typedef OutputPortTyped< ClassName > 	OutputPort;
+        typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
-template< typename EType, unsigned Dim > 
+template< typename EType, unsigned Dim >
 class ImageTraits< Image< EType, Dim > >
 {
 public:
-	typedef EType	ElementType;
+        typedef EType	ElementType;
 
-	static const unsigned	Dimension = Dim;
-	typedef	Image< EType, Dim > 			ClassName;
-	typedef ConnectionTyped< ClassName > 	Connection;
-	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
-	typedef InputPortTyped< ClassName > 	InputPort;
-	typedef OutputPortTyped< ClassName > 	OutputPort;
-	typedef boost::shared_ptr< ClassName >	Ptr;
+        static const unsigned	Dimension = Dim;
+        typedef	Image< EType, Dim > 			ClassName;
+        typedef ConnectionTyped< ClassName > 	Connection;
+        typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+        typedef InputPortTyped< ClassName > 	InputPort;
+        typedef OutputPortTyped< ClassName > 	OutputPort;
+        typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
 }/*namespace Imaging*/

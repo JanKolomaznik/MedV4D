@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AImageSliceFilter.tcc 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AImageSliceFilter.tcc
+ * @{
  **/
 
 #ifndef _A_IMAGE_SLICE_FILTER_H
@@ -16,343 +16,332 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 template< typename InputElementType, typename OutputImageType >
 AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::AImageSliceFilter( typename AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
-	: PredecessorType( prop )
+::AImageSliceFilter ( typename AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop )
+                : PredecessorType ( prop )
 {
-	//TODO - check intervals of parameters - _THROW_ exceptions
+        //TODO - check intervals of parameters - _THROW_ exceptions
 }
 
 template< typename InputElementType, typename OutputImageType >
 bool
 AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ )
+::ExecutionThreadMethod ( APipeFilter::UPDATE_TYPE /*utype*/ )
 {
-	size_t i = 0;
-	unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
-	for( i = 0; i < _actualComputationGroups.size(); ++i )
-	{
-		SliceComputationRecord & record = _actualComputationGroups[ i ];
+        size_t i = 0;
+        unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
+        for ( i = 0; i < _actualComputationGroups.size(); ++i ) {
+                SliceComputationRecord & record = _actualComputationGroups[ i ];
 
-		//Wait until input area is ready
-		if ( !(record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-			goto cleanup;
-		}
+                //Wait until input area is ready
+                if ( ! ( record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+                        goto cleanup;
+                }
 
-		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
-		{
-			int32 minZ = max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
-			ImageRegion< InputImageType, 3 > region = 
-				this->in->GetSubRegion(	
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					minZ,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					maxZ );
+                for ( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice ) {
+                        int32 minZ = max ( slice - ( int32 ) sliceComputationNeighbourCount, this->in->GetDimensionExtents ( 2 ).minimum );
+                        int32 maxZ = min ( slice + ( int32 ) sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents ( 2 ).maximum );
+                        ImageRegion< InputImageType, 3 > region =
+                                this->in->GetSubRegion (
+                                        this->in->GetDimensionExtents ( 0 ).minimum,
+                                        this->in->GetDimensionExtents ( 1 ).minimum,
+                                        minZ,
+                                        this->in->GetDimensionExtents ( 0 ).maximum,
+                                        this->in->GetDimensionExtents ( 1 ).maximum,
+                                        maxZ );
 
-			bool result = ProcessSlice( region, *(this->out), slice - minZ );
+                        bool result = ProcessSlice ( region, * ( this->out ), slice - minZ );
 
-			if( !result ){
-				goto cleanup;
-			}
-		}
+                        if ( !result ) {
+                                goto cleanup;
+                        }
+                }
 
-		record.writerBBox->SetModified();
-	}
+                record.writerBBox->SetModified();
+        }
 
-	_actualComputationGroups.clear();
+        _actualComputationGroups.clear();
 
-	return true;
+        return true;
 
 cleanup:
-	for( size_t j = i; j < _actualComputationGroups.size(); ++j )
-	{
-		_actualComputationGroups[ j ].writerBBox->SetState( MS_CANCELED );
-	}
-	_actualComputationGroups.clear();
-	return false;
+        for ( size_t j = i; j < _actualComputationGroups.size(); ++j ) {
+                _actualComputationGroups[ j ].writerBBox->SetState ( MS_CANCELED );
+        }
+        _actualComputationGroups.clear();
+        return false;
 }
 
 template< typename InputElementType, typename OutputImageType >
 void
 AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::MarkChanges( APipeFilter::UPDATE_TYPE utype )
+::MarkChanges ( APipeFilter::UPDATE_TYPE utype )
 {
 
-	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
-	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
+        unsigned computationGrouping = static_cast<Properties*> ( this->_properties )->_computationGrouping;
+        unsigned sliceComputationNeighbourCount = static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount;
 
-	switch ( utype ) {
-	case APipeFilter::RECALCULATION:
-		{
-			DL_PRINT( 5, "SliceFilter recalculation" );
+        switch ( utype ) {
+        case APipeFilter::RECALCULATION: {
+                DL_PRINT ( 5, "SliceFilter recalculation" );
 
-			const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
-			uint32 groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
-			for( unsigned i = 0; i < groupCount; ++i ) {
-				SliceComputationRecord record;
-				record.firstSlice = dimExtents.minimum + (i*computationGrouping);
-				record.lastSlice = dimExtents.minimum + ((i+1)*computationGrouping) - 1;
-				record.inputBBox = this->in->GetDirtyBBox( 
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					record.firstSlice - sliceComputationNeighbourCount,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					record.lastSlice + sliceComputationNeighbourCount
-					);
-				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                const DimensionExtents & dimExtents = this->in->GetDimensionExtents ( 2 );
+                uint32 groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
+                for ( unsigned i = 0; i < groupCount; ++i ) {
+                        SliceComputationRecord record;
+                        record.firstSlice = dimExtents.minimum + ( i*computationGrouping );
+                        record.lastSlice = dimExtents.minimum + ( ( i+1 ) *computationGrouping ) - 1;
+                        record.inputBBox = this->in->GetDirtyBBox (
+                                                   this->in->GetDimensionExtents ( 0 ).minimum,
+                                                   this->in->GetDimensionExtents ( 1 ).minimum,
+                                                   record.firstSlice - sliceComputationNeighbourCount,
+                                                   this->in->GetDimensionExtents ( 0 ).maximum,
+                                                   this->in->GetDimensionExtents ( 1 ).maximum,
+                                                   record.lastSlice + sliceComputationNeighbourCount
+                                           );
+                        record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
 
-				_actualComputationGroups.push_back( record );
-			}
+                        _actualComputationGroups.push_back ( record );
+                }
 
-			SliceComputationRecord record;
-			record.firstSlice = dimExtents.minimum + (groupCount*computationGrouping) - sliceComputationNeighbourCount;
-			record.lastSlice = dimExtents.maximum - 1;
-			record.inputBBox = this->in->GetDirtyBBox( 
-				this->in->GetDimensionExtents( 0 ).minimum,
-				this->in->GetDimensionExtents( 1 ).minimum,
-				record.firstSlice - sliceComputationNeighbourCount,
-				this->in->GetDimensionExtents( 0 ).maximum,
-				this->in->GetDimensionExtents( 1 ).maximum,
-				record.lastSlice + sliceComputationNeighbourCount
-				);
-			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                SliceComputationRecord record;
+                record.firstSlice = dimExtents.minimum + ( groupCount*computationGrouping ) - sliceComputationNeighbourCount;
+                record.lastSlice = dimExtents.maximum - 1;
+                record.inputBBox = this->in->GetDirtyBBox (
+                                           this->in->GetDimensionExtents ( 0 ).minimum,
+                                           this->in->GetDimensionExtents ( 1 ).minimum,
+                                           record.firstSlice - sliceComputationNeighbourCount,
+                                           this->in->GetDimensionExtents ( 0 ).maximum,
+                                           this->in->GetDimensionExtents ( 1 ).maximum,
+                                           record.lastSlice + sliceComputationNeighbourCount
+                                   );
+                record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
 
-			_actualComputationGroups.push_back( record );
-		}
-		break;
+                _actualComputationGroups.push_back ( record );
+        }
+        break;
 
-	case APipeFilter::ADAPTIVE_CALCULATION:
-		{
-			DL_PRINT( 5, "SliceFilter adaptive calculation" );
-			const ModificationManager &manager = this->in->GetModificationManager();
-			ModificationManager::ConstChangeReverseIterator iterator; 
-			for( 	iterator = manager.ChangesReverseBegin(); 
-				iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/; 
-				++iterator 
-			){
-				if ( this->_inEditTimestamp >= (**iterator).GetTimeStamp() ) {
-					break;
-				}
+        case APipeFilter::ADAPTIVE_CALCULATION: {
+                DL_PRINT ( 5, "SliceFilter adaptive calculation" );
+                const ModificationManager &manager = this->in->GetModificationManager();
+                ModificationManager::ConstChangeReverseIterator iterator;
+                for (	iterator = manager.ChangesReverseBegin();
+                                iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/;
+                                ++iterator
+                    ) {
+                        if ( this->_inEditTimestamp >= ( **iterator ).GetTimeStamp() ) {
+                                break;
+                        }
 
-				const ModificationBBox & BBox = (**iterator).GetBoundingBox();
-				SliceComputationRecord record;
-				
-				BBox.GetInterval( 3, record.firstSlice, record.lastSlice );
+                        const ModificationBBox & BBox = ( **iterator ).GetBoundingBox();
+                        SliceComputationRecord record;
 
-				record.inputBBox = this->in->GetDirtyBBox( 
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					record.firstSlice - sliceComputationNeighbourCount,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					record.lastSlice + sliceComputationNeighbourCount
-					);
-				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                        BBox.GetInterval ( 3, record.firstSlice, record.lastSlice );
 
-				_actualComputationGroups.push_back( record );
-			}
-		}
-		break;
-	default:
-		ASSERT( false );
-	}
+                        record.inputBBox = this->in->GetDirtyBBox (
+                                                   this->in->GetDimensionExtents ( 0 ).minimum,
+                                                   this->in->GetDimensionExtents ( 1 ).minimum,
+                                                   record.firstSlice - sliceComputationNeighbourCount,
+                                                   this->in->GetDimensionExtents ( 0 ).maximum,
+                                                   this->in->GetDimensionExtents ( 1 ).maximum,
+                                                   record.lastSlice + sliceComputationNeighbourCount
+                                           );
+                        record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
+
+                        _actualComputationGroups.push_back ( record );
+                }
+        }
+        break;
+        default:
+                ASSERT ( false );
+        }
 }
 
 //******************************************************************************
 template< typename InputElementType, typename OutputElementType >
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::AImageSliceFilterIExtents( typename AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
-	: PredecessorType( prop )
+::AImageSliceFilterIExtents ( typename AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop )
+                : PredecessorType ( prop )
 {
-	//TODO - check intervals of parameters - _THROW_ exceptions
+        //TODO - check intervals of parameters - _THROW_ exceptions
 }
 
 template< typename InputElementType, typename OutputElementType >
 bool
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ )
+::ExecutionThreadMethod ( APipeFilter::UPDATE_TYPE /*utype*/ )
 {
-	unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
-	size_t i = 0;
-	for( i = 0; i < _actualComputationGroups.size(); ++i )
-	{
-		SliceComputationRecord & record = _actualComputationGroups[ i ];
+        unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
+        size_t i = 0;
+        for ( i = 0; i < _actualComputationGroups.size(); ++i ) {
+                SliceComputationRecord & record = _actualComputationGroups[ i ];
 
-		//Wait until input area is ready
-		if ( !(record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-			goto cleanup;
-		}
+                //Wait until input area is ready
+                if ( ! ( record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+                        goto cleanup;
+                }
 
-		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
-		{
-			int32 minZ = max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
+                for ( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice ) {
+                        int32 minZ = max ( slice - ( int32 ) sliceComputationNeighbourCount, this->in->GetDimensionExtents ( 2 ).minimum );
+                        int32 maxZ = min ( slice + ( int32 ) sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents ( 2 ).maximum );
 
-			ImageRegion< InputElementType, 3 > region1 = 
-				this->in->GetSubRegion( 
-					CreateVector(
-						this->in->GetDimensionExtents( 0 ).minimum,
-						this->in->GetDimensionExtents( 1 ).minimum,
-						minZ ),
-					CreateVector(
-						this->in->GetDimensionExtents( 0 ).maximum,
-						this->in->GetDimensionExtents( 1 ).maximum,
-						maxZ )
-					);
+                        ImageRegion< InputElementType, 3 > region1 =
+                                this->in->GetSubRegion (
+                                        CreateVector (
+                                                this->in->GetDimensionExtents ( 0 ).minimum,
+                                                this->in->GetDimensionExtents ( 1 ).minimum,
+                                                minZ ),
+                                        CreateVector (
+                                                this->in->GetDimensionExtents ( 0 ).maximum,
+                                                this->in->GetDimensionExtents ( 1 ).maximum,
+                                                maxZ )
+                                );
 
-			ImageRegion< OutputElementType, 3 > regionTmp = 
-				this->out->GetSubRegion(	
-					CreateVector(
-						this->out->GetDimensionExtents( 0 ).minimum,
-						this->out->GetDimensionExtents( 1 ).minimum,
-						slice ),
-					CreateVector(
-						this->out->GetDimensionExtents( 0 ).maximum,
-						this->out->GetDimensionExtents( 1 ).maximum,
-						slice+1 )
-					);
+                        ImageRegion< OutputElementType, 3 > regionTmp =
+                                this->out->GetSubRegion (
+                                        CreateVector (
+                                                this->out->GetDimensionExtents ( 0 ).minimum,
+                                                this->out->GetDimensionExtents ( 1 ).minimum,
+                                                slice ),
+                                        CreateVector (
+                                                this->out->GetDimensionExtents ( 0 ).maximum,
+                                                this->out->GetDimensionExtents ( 1 ).maximum,
+                                                slice+1 )
+                                );
 
-			ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSliceRel( 0 );
+                        ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSliceRel ( 0 );
 
-			bool result = ProcessSlice( region1, region2, slice - minZ );
+                        bool result = ProcessSlice ( region1, region2, slice - minZ );
 
-			if( !result ){
-				goto cleanup;
-			}
-		}
+                        if ( !result ) {
+                                goto cleanup;
+                        }
+                }
 
-		record.writerBBox->SetModified();
-	}
+                record.writerBBox->SetModified();
+        }
 
-	_actualComputationGroups.clear();
+        _actualComputationGroups.clear();
 
-	return true;
+        return true;
 
 cleanup:
-	for( size_t j = i; j < _actualComputationGroups.size(); ++j )
-	{
-		_actualComputationGroups[ j ].writerBBox->SetState( MS_CANCELED );
-	}
-	_actualComputationGroups.clear();
-	return false;
+        for ( size_t j = i; j < _actualComputationGroups.size(); ++j ) {
+                _actualComputationGroups[ j ].writerBBox->SetState ( MS_CANCELED );
+        }
+        _actualComputationGroups.clear();
+        return false;
 }
 
 template< typename InputElementType, typename OutputElementType >
 void
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::MarkChanges( APipeFilter::UPDATE_TYPE utype )
+::MarkChanges ( APipeFilter::UPDATE_TYPE utype )
 {
 
-	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
-	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
+        unsigned computationGrouping = static_cast<Properties*> ( this->_properties )->_computationGrouping;
+        unsigned sliceComputationNeighbourCount = static_cast<Properties*> ( this->_properties )->_sliceComputationNeighbourCount;
 
-	switch ( utype ) {
-	case APipeFilter::RECALCULATION:
-		{
-			DL_PRINT( 5, "SliceFilter recalculation" );
+        switch ( utype ) {
+        case APipeFilter::RECALCULATION: {
+                DL_PRINT ( 5, "SliceFilter recalculation" );
 
-			const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
-			uint32 groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
-			for( unsigned i = 0; i < groupCount; ++i ) {
-				SliceComputationRecord record;
-				record.firstSlice = dimExtents.minimum + (i*computationGrouping);
-				record.lastSlice = dimExtents.minimum + ((i+1)*computationGrouping) - 1;
-				record.inputBBox = this->in->GetDirtyBBox( 
-					CreateVector< int32 >( 
-						this->in->GetDimensionExtents( 0 ).minimum,
-						this->in->GetDimensionExtents( 1 ).minimum,
-						record.firstSlice - sliceComputationNeighbourCount ),
-					CreateVector< int32 >( 
-						this->in->GetDimensionExtents( 0 ).maximum,
-						this->in->GetDimensionExtents( 1 ).maximum,
-						record.lastSlice + sliceComputationNeighbourCount )					
-					);
-				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                const DimensionExtents & dimExtents = this->in->GetDimensionExtents ( 2 );
+                uint32 groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
+                for ( unsigned i = 0; i < groupCount; ++i ) {
+                        SliceComputationRecord record;
+                        record.firstSlice = dimExtents.minimum + ( i*computationGrouping );
+                        record.lastSlice = dimExtents.minimum + ( ( i+1 ) *computationGrouping ) - 1;
+                        record.inputBBox = this->in->GetDirtyBBox (
+                                                   CreateVector< int32 > (
+                                                           this->in->GetDimensionExtents ( 0 ).minimum,
+                                                           this->in->GetDimensionExtents ( 1 ).minimum,
+                                                           record.firstSlice - sliceComputationNeighbourCount ),
+                                                   CreateVector< int32 > (
+                                                           this->in->GetDimensionExtents ( 0 ).maximum,
+                                                           this->in->GetDimensionExtents ( 1 ).maximum,
+                                                           record.lastSlice + sliceComputationNeighbourCount )
+                                           );
+                        record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
 
-				_actualComputationGroups.push_back( record );
-			}
+                        _actualComputationGroups.push_back ( record );
+                }
 
-			SliceComputationRecord record;
-			record.firstSlice = dimExtents.minimum + (groupCount*computationGrouping) - sliceComputationNeighbourCount;
-			record.lastSlice = dimExtents.maximum - 1;
-			record.inputBBox = this->in->GetDirtyBBox( 
-				CreateVector< int32 >( 
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					record.firstSlice - sliceComputationNeighbourCount ),
-				CreateVector< int32 >( 
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					record.lastSlice + sliceComputationNeighbourCount )
-				);
-			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                SliceComputationRecord record;
+                record.firstSlice = dimExtents.minimum + ( groupCount*computationGrouping ) - sliceComputationNeighbourCount;
+                record.lastSlice = dimExtents.maximum - 1;
+                record.inputBBox = this->in->GetDirtyBBox (
+                                           CreateVector< int32 > (
+                                                   this->in->GetDimensionExtents ( 0 ).minimum,
+                                                   this->in->GetDimensionExtents ( 1 ).minimum,
+                                                   record.firstSlice - sliceComputationNeighbourCount ),
+                                           CreateVector< int32 > (
+                                                   this->in->GetDimensionExtents ( 0 ).maximum,
+                                                   this->in->GetDimensionExtents ( 1 ).maximum,
+                                                   record.lastSlice + sliceComputationNeighbourCount )
+                                   );
+                record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
 
-			_actualComputationGroups.push_back( record );
-		}
-		break;
+                _actualComputationGroups.push_back ( record );
+        }
+        break;
 
-	case APipeFilter::ADAPTIVE_CALCULATION:
-		{
-			DL_PRINT( 5, "SliceFilter adaptive calculation" );
-			const ModificationManager &manager = this->in->GetModificationManager();
-			ModificationManager::ConstChangeReverseIterator iterator; 
-			for( 	iterator = manager.ChangesReverseBegin(); 
-				iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/; 
-				++iterator 
-			){
-				if ( this->_inEditTimestamp >= (**iterator).GetTimeStamp() ) {
-					break;
-				}
+        case APipeFilter::ADAPTIVE_CALCULATION: {
+                DL_PRINT ( 5, "SliceFilter adaptive calculation" );
+                const ModificationManager &manager = this->in->GetModificationManager();
+                ModificationManager::ConstChangeReverseIterator iterator;
+                for (	iterator = manager.ChangesReverseBegin();
+                                iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/;
+                                ++iterator
+                    ) {
+                        if ( this->_inEditTimestamp >= ( **iterator ).GetTimeStamp() ) {
+                                break;
+                        }
 
-				const ModificationBBox & BBox = (**iterator).GetBoundingBox();
-				SliceComputationRecord record;
-				
-				BBox.GetInterval( 3, record.firstSlice, record.lastSlice );
+                        const ModificationBBox & BBox = ( **iterator ).GetBoundingBox();
+                        SliceComputationRecord record;
 
-				record.inputBBox = this->in->GetDirtyBBox( 
-					CreateVector< int32 >( 
-						this->in->GetDimensionExtents( 0 ).minimum,
-						this->in->GetDimensionExtents( 1 ).minimum,
-						record.firstSlice - sliceComputationNeighbourCount ),
-					CreateVector< int32 >( 
-						this->in->GetDimensionExtents( 0 ).maximum,
-						this->in->GetDimensionExtents( 1 ).maximum,
-						record.lastSlice + sliceComputationNeighbourCount )
-					);
-				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+                        BBox.GetInterval ( 3, record.firstSlice, record.lastSlice );
 
-				_actualComputationGroups.push_back( record );
-			}
-		}
-		break;
-	default:
-		ASSERT( false );
-	}
+                        record.inputBBox = this->in->GetDirtyBBox (
+                                                   CreateVector< int32 > (
+                                                           this->in->GetDimensionExtents ( 0 ).minimum,
+                                                           this->in->GetDimensionExtents ( 1 ).minimum,
+                                                           record.firstSlice - sliceComputationNeighbourCount ),
+                                                   CreateVector< int32 > (
+                                                           this->in->GetDimensionExtents ( 0 ).maximum,
+                                                           this->in->GetDimensionExtents ( 1 ).maximum,
+                                                           record.lastSlice + sliceComputationNeighbourCount )
+                                           );
+                        record.writerBBox = & ( GetComputationGroupWriterBBox ( record ) );
+
+                        _actualComputationGroups.push_back ( record );
+                }
+        }
+        break;
+        default:
+                ASSERT ( false );
+        }
 }
 
 template< typename InputElementType, typename OutputElementType >
 WriterBBoxInterface &
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::GetComputationGroupWriterBBox(  SliceComputationRecord & record )
+::GetComputationGroupWriterBBox ( SliceComputationRecord & record )
 {
-	return this->out->SetDirtyBBox( 
-			CreateVector< int32 >( 
-				this->in->GetDimensionExtents( 0 ).minimum,
-				this->in->GetDimensionExtents( 1 ).minimum,
-				this->in->GetDimensionExtents( 0 ).maximum ),
-			CreateVector< int32 >( 
-				record.firstSlice,
-				this->in->GetDimensionExtents( 1 ).maximum,
-				record.lastSlice )
-			);
+        return this->out->SetDirtyBBox (
+                       CreateVector< int32 > (
+                               this->in->GetDimensionExtents ( 0 ).minimum,
+                               this->in->GetDimensionExtents ( 1 ).minimum,
+                               this->in->GetDimensionExtents ( 0 ).maximum ),
+                       CreateVector< int32 > (
+                               record.firstSlice,
+                               this->in->GetDimensionExtents ( 1 ).maximum,
+                               record.lastSlice )
+               );
 }
 
 template< typename InputElementType, typename OutputElementType >
@@ -360,26 +349,26 @@ void
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::PrepareOutputDatasets()
 {
-	PredecessorType::PrepareOutputDatasets();
+        PredecessorType::PrepareOutputDatasets();
 
-	int32 minimums[3];
-	int32 maximums[3];
-	float32 voxelExtents[3];
+        int32 minimums[3];
+        int32 maximums[3];
+        float32 voxelExtents[3];
 
-	for( unsigned i=0; i < 3; ++i ) {
-		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
+        for ( unsigned i=0; i < 3; ++i ) {
+                const DimensionExtents & dimExt = this->in->GetDimensionExtents ( i );
 
-		minimums[i] = dimExt.minimum;
-		maximums[i] = dimExt.maximum;
-		voxelExtents[i] = dimExt.elementExtent;
-	}
-	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+                minimums[i] = dimExt.minimum;
+                maximums[i] = dimExt.maximum;
+                voxelExtents[i] = dimExt.elementExtent;
+        }
+        this->SetOutputImageSize ( minimums, maximums, voxelExtents );
 }
 //******************************************************************************
 
 //template< typename InputElementType, typename OutputElementType >
 //AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-//::AImageSliceFilterIExtents( typename AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
+//::AImageSliceFilterIExtents( typename AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop )
 //	: PredecessorType( prop )
 //{
 //

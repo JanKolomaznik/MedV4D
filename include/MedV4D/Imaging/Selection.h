@@ -9,8 +9,8 @@ class SelectionBase
 {
 public:
 
-	virtual void
-	Reset();
+        virtual void
+        Reset();
 };
 
 /**
@@ -20,8 +20,8 @@ class SubSelectionBase
 {
 public:
 
-	virtual void
-	Reset();
+        virtual void
+        Reset();
 };
 
 

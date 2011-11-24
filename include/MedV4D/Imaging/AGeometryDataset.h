@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AGeometryDataset.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AGeometryDataset.h
+ * @{
  **/
 
 #ifndef _AGEOMETRY_DATA_SET_H
@@ -19,20 +19,18 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 class AGeometryDataset: public ADataset
 {
 public:
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AGeometryDataset );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ADataset );
-	PREPARE_CAST_METHODS_MACRO;
-	IS_NOT_CONSTRUCTABLE_MACRO;
+        MANDATORY_DATASET_DEFINITIONS_THIS_MACRO ( AGeometryDataset );
+        MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO ( ADataset );
+        PREPARE_CAST_METHODS_MACRO;
+        IS_NOT_CONSTRUCTABLE_MACRO;
 
 protected:
-	AGeometryDataset( DatasetType datasetType ): ADataset( datasetType ) 
-		{}
+        AGeometryDataset ( DatasetType datasetType ) : ADataset ( datasetType ) {}
 };
 
 }/*namespace Imaging*/

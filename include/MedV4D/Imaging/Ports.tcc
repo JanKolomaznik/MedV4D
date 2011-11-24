@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file Ports.tcc 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file Ports.tcc
+ * @{
  **/
 
 #ifndef _PORTS_H
@@ -18,146 +18,145 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 template< typename DatasetType >
 const DatasetType&
 InputPortTyped< DatasetType >
-::GetDatasetTyped()const
+::GetDatasetTyped() const
 {
-	if( this->_connection == NULL ) {
-		_THROW_ Port::EDisconnected( *this );
-	}
-	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetReadOnlyTyped();
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTyped();
 }
 
 template< typename DatasetType >
 typename DatasetType::ConstPtr
 InputPortTyped< DatasetType >
-::GetDatasetTypedPtr()const
+::GetDatasetTypedPtr() const
 {
-	if( this->_connection == NULL ) {
-		_THROW_ Port::EDisconnected( *this );
-	}
-	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetReadOnlyTypedPtr();
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTypedPtr();
 }
 
 template< typename DatasetType >
 void
 InputPortTyped< DatasetType >
-::Plug( ConnectionInterface & connection )
+::Plug ( ConnectionInterface & connection )
 {
-	if( this->IsPlugged() ) {
-		_THROW_ Port::EPortAlreadyConnected();
-	}
+        if ( this->IsPlugged() ) {
+                _THROW_ Port::EPortAlreadyConnected();
+        }
 
-	if( IsConnectionCompatible( connection ) ) {
-		this->_connection = &connection;
-		this->PortPluggedMsg();
-	} else {
-		_THROW_ Port::EConnectionTypeMismatch();
-	}
+        if ( IsConnectionCompatible ( connection ) ) {
+                this->_connection = &connection;
+                this->PortPluggedMsg();
+        } else {
+                _THROW_ Port::EConnectionTypeMismatch();
+        }
 }
 
 template< typename DatasetType >
 ConnectionInterface*
 InputPortTyped< DatasetType >
-::CreateIdealConnectionObject( bool ownsDataset )
+::CreateIdealConnectionObject ( bool ownsDataset )
 {
-	return new ConnectionTyped< DatasetType >( ownsDataset );
+        return new ConnectionTyped< DatasetType > ( ownsDataset );
 }
 
 template< typename DatasetType >
 bool
 InputPortTyped< DatasetType >
-::IsConnectionCompatible( ConnectionInterface &conn )
-{ 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
+::IsConnectionCompatible ( ConnectionInterface &conn )
+{
+        return dynamic_cast< IdealConnectionInterface * > ( &conn ) != NULL;
 }
 //******************************************************************************
 template< typename DatasetType >
 DatasetType&
 OutputPortTyped< DatasetType >
-::GetDatasetTyped()const
+::GetDatasetTyped() const
 {
-	if( this->_connection == NULL ) {
-		_THROW_ Port::EDisconnected( *this );
-	}
-	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetTyped();
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTyped();
 }
 
 template< typename DatasetType >
 typename DatasetType::Ptr
 OutputPortTyped< DatasetType >
-::GetDatasetTypedPtr()const
+::GetDatasetTypedPtr() const
 {
-	if( this->_connection == NULL ) {
-		_THROW_ Port::EDisconnected( *this );
-	}
-	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetTypedPtr();
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTypedPtr();
 }
 
 template< typename DatasetType >
 void
 OutputPortTyped< DatasetType >
-::Plug( ConnectionInterface & connection )
+::Plug ( ConnectionInterface & connection )
 {
-	if( this->IsPlugged() ) {
-		_THROW_ Port::EPortAlreadyConnected();
-	}
+        if ( this->IsPlugged() ) {
+                _THROW_ Port::EPortAlreadyConnected();
+        }
 
-	if( IsConnectionCompatible( connection ) ) {
-		this->_connection = &connection;
-		this->PortPluggedMsg();
-	} else {
-		_THROW_ Port::EConnectionTypeMismatch();
-	}
+        if ( IsConnectionCompatible ( connection ) ) {
+                this->_connection = &connection;
+                this->PortPluggedMsg();
+        } else {
+                _THROW_ Port::EConnectionTypeMismatch();
+        }
 }
 
 template< typename DatasetType >
 ConnectionInterface*
 OutputPortTyped< DatasetType >
-::CreateIdealConnectionObject( bool ownsDataset )
+::CreateIdealConnectionObject ( bool ownsDataset )
 {
-	return new ConnectionTyped< DatasetType >( ownsDataset );
+        return new ConnectionTyped< DatasetType > ( ownsDataset );
 }
 
 template< typename DatasetType >
 bool
 OutputPortTyped< DatasetType >
-::IsConnectionCompatible( ConnectionInterface &conn )
-{ 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
+::IsConnectionCompatible ( ConnectionInterface &conn )
+{
+        return dynamic_cast< IdealConnectionInterface * > ( &conn ) != NULL;
 }
 //******************************************************************************
 template< typename PortType >
 PortType&
-InputPortList::GetPortTyped( size_t idx )const
+InputPortList::GetPortTyped ( size_t idx ) const
 {
-	return static_cast< PortType& >( GetPort( idx ) );
+        return static_cast< PortType& > ( GetPort ( idx ) );
 }
 
 template< typename PortType >
 PortType*
-InputPortList::GetPortTypedSafe( size_t idx )const
+InputPortList::GetPortTypedSafe ( size_t idx ) const
 {
-	return dynamic_cast< PortType* >( &(GetPort( idx )) );
+        return dynamic_cast< PortType* > ( & ( GetPort ( idx ) ) );
 }
 //******************************************************************************
 
 template< typename PortType >
 PortType&
-OutputPortList::GetPortTyped( size_t idx )const
+OutputPortList::GetPortTyped ( size_t idx ) const
 {
-	return static_cast< PortType& >( GetPort( idx ) );
+        return static_cast< PortType& > ( GetPort ( idx ) );
 }
 
 template< typename PortType >
 PortType*
-OutputPortList::GetPortTypedSafe( size_t idx )const
+OutputPortList::GetPortTypedSafe ( size_t idx ) const
 {
-	return dynamic_cast< PortType* >( &(GetPort( idx )) );
+        return dynamic_cast< PortType* > ( & ( GetPort ( idx ) ) );
 }
 
 } /*namespace Imaging*/

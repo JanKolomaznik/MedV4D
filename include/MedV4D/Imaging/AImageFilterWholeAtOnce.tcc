@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AImageFilterWholeAtOnce.tcc 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AImageFilterWholeAtOnce.tcc
+ * @{
  **/
 
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
@@ -16,13 +16,12 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 template< typename InputImageType, typename OutputImageType >
 AImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::AImageFilterWholeAtOnce( typename AImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop )
-	: PredecessorType( prop )
+::AImageFilterWholeAtOnce ( typename AImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop )
+                : PredecessorType ( prop )
 {
 
 }
@@ -30,55 +29,55 @@ AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 template< typename InputImageType, typename OutputImageType >
 bool
 AImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod ( APipeFilter::UPDATE_TYPE utype )
 {
-	utype = utype;
-	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - AImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AImageFilterWholeAtOnce" );
-	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-		_writerBBox->SetState( MS_CANCELED );
-		return false;
-	}
+        utype = utype;
+        D_BLOCK_COMMENT ( "++++ Entering ExecutionThreadMethod() - AImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AImageFilterWholeAtOnce" );
+        if ( ! ( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+                _writerBBox->SetState ( MS_CANCELED );
+                return false;
+        }
 
-	if( ProcessImage( *(this->in), *(this->out) ) ) {
-		_writerBBox->SetModified();
-		return true;
-	} else {
-		_writerBBox->SetState( MS_CANCELED );
-		return false;
-	}
+        if ( ProcessImage ( * ( this->in ), * ( this->out ) ) ) {
+                _writerBBox->SetModified();
+                return true;
+        } else {
+                _writerBBox->SetState ( MS_CANCELED );
+                return false;
+        }
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
 AImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation ( APipeFilter::UPDATE_TYPE &utype )
 {
-	PredecessorType::BeforeComputation( utype );
-	
-	//This kind of filter computes always on whole dataset
-	utype = APipeFilter::RECALCULATION;
+        PredecessorType::BeforeComputation ( utype );
+
+        //This kind of filter computes always on whole dataset
+        utype = APipeFilter::RECALCULATION;
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
 AImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::MarkChanges( APipeFilter::UPDATE_TYPE utype )
+::MarkChanges ( APipeFilter::UPDATE_TYPE utype )
 {
-	utype = utype;
+        utype = utype;
 
-	_readerBBox = this->in->GetWholeDirtyBBox(); //ApplyReaderBBox( *(this->in) );
-	_writerBBox = &(this->out->SetWholeDirtyBBox()); //&(ApplyWriterBBox( *(this->out) ) );
+        _readerBBox = this->in->GetWholeDirtyBBox(); //ApplyReaderBBox( *(this->in) );
+        _writerBBox = & ( this->out->SetWholeDirtyBBox() ); //&(ApplyWriterBBox( *(this->out) ) );
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
 AImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::AfterComputation( bool successful )
+::AfterComputation ( bool successful )
 {
-	_readerBBox = ReaderBBoxInterface::Ptr();
-	_writerBBox = NULL;
+        _readerBBox = ReaderBBoxInterface::Ptr();
+        _writerBBox = NULL;
 
-	PredecessorType::AfterComputation( successful );
+        PredecessorType::AfterComputation ( successful );
 }
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 /*template< typename ElementType, unsigned dim >
@@ -89,7 +88,7 @@ template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
 ApplyReaderBBoxFunc( const Image< ElementType, 2 > &in )
 {
-	return in.GetDirtyBBox( 
+	return in.GetDirtyBBox(
 				in.GetDimensionExtents( 0 ).minimum,
 				in.GetDimensionExtents( 1 ).minimum,
 				in.GetDimensionExtents( 0 ).maximum,
@@ -101,7 +100,7 @@ template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
 ApplyReaderBBoxFunc( const Image< ElementType, 3 > &in )
 {
-	return in.GetDirtyBBox( 
+	return in.GetDirtyBBox(
 				in.GetDimensionExtents( 0 ).minimum,
 				in.GetDimensionExtents( 1 ).minimum,
 				in.GetDimensionExtents( 2 ).minimum,
@@ -115,7 +114,7 @@ template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
 ApplyReaderBBoxFunc( const Image< ElementType, 4 > &in )
 {
-	return in.GetDirtyBBox( 
+	return in.GetDirtyBBox(
 				in.GetDimensionExtents( 0 ).minimum,
 				in.GetDimensionExtents( 1 ).minimum,
 				in.GetDimensionExtents( 2 ).minimum,
@@ -135,7 +134,7 @@ template< typename ElementType, unsigned dim >
 WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 2 > &out )
 {
-	return out.SetDirtyBBox( 
+	return out.SetDirtyBBox(
 				out.GetDimensionExtents( 0 ).minimum,
 				out.GetDimensionExtents( 1 ).minimum,
 				out.GetDimensionExtents( 0 ).maximum,
@@ -147,7 +146,7 @@ template< typename ElementType, unsigned dim >
 WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 3 > &out )
 {
-	return out.SetDirtyBBox( 
+	return out.SetDirtyBBox(
 				out.GetDimensionExtents( 0 ).minimum,
 				out.GetDimensionExtents( 1 ).minimum,
 				out.GetDimensionExtents( 2 ).minimum,
@@ -161,7 +160,7 @@ template< typename ElementType, unsigned dim >
 WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 4 > &out )
 {
-	return out.SetDirtyBBox( 
+	return out.SetDirtyBBox(
 				out.GetDimensionExtents( 0 ).minimum,
 				out.GetDimensionExtents( 1 ).minimum,
 				out.GetDimensionExtents( 2 ).minimum,
@@ -196,10 +195,10 @@ AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
-::AImageFilterWholeAtOnceIExtents( typename AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >::Properties *prop )
-	: PredecessorType( prop )
+::AImageFilterWholeAtOnceIExtents ( typename AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >::Properties *prop )
+                : PredecessorType ( prop )
 {
-	
+
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -207,20 +206,20 @@ void
 AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 ::PrepareOutputDatasets()
 {
-	PredecessorType::PrepareOutputDatasets();
+        PredecessorType::PrepareOutputDatasets();
 
-	int32 minimums[ ImageTraits<InputImageType>::Dimension ];
-	int32 maximums[ ImageTraits<InputImageType>::Dimension ];
-	float32 voxelExtents[ ImageTraits<InputImageType>::Dimension ];
+        int32 minimums[ ImageTraits<InputImageType>::Dimension ];
+        int32 maximums[ ImageTraits<InputImageType>::Dimension ];
+        float32 voxelExtents[ ImageTraits<InputImageType>::Dimension ];
 
-	for( unsigned i=0; i <  ImageTraits<InputImageType>::Dimension; ++i ) {
-		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
+        for ( unsigned i=0; i <  ImageTraits<InputImageType>::Dimension; ++i ) {
+                const DimensionExtents & dimExt = this->in->GetDimensionExtents ( i );
 
-		minimums[i] = dimExt.minimum;
-		maximums[i] = dimExt.maximum;
-		voxelExtents[i] = dimExt.elementExtent;
-	}
-	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+                minimums[i] = dimExt.minimum;
+                maximums[i] = dimExt.maximum;
+                voxelExtents[i] = dimExt.elementExtent;
+        }
+        this->SetOutputImageSize ( minimums, maximums, voxelExtents );
 }
 
 } /*namespace Imaging*/

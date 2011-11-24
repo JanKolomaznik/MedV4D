@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ADataset.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file ADataset.h
+ * @{
  **/
 
 #ifndef _DATA_SET_DEFINITION_TOOLS_H
@@ -18,8 +18,7 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 #define STANDARD_DECLARATIONS_MACRO( ... ) \
 	typedef __VA_ARGS__				ThisClass; \
@@ -38,24 +37,24 @@ namespace Imaging
 #define MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( ... ) \
 	STANDARD_DECLARATIONS_MACRO( __VA_ARGS__ ) \
 	
-	
+
 #define MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ... ) \
 	typedef __VA_ARGS__	PredecessorType; \
 	static const unsigned HierarchyDepth = __VA_ARGS__::HierarchyDepth + 1;
-	
+
 #define PREPARE_CAST_REFERENCE_MACRO	\
 	static ThisClass & \
 	Cast( ADataset & dataset ) \
 	{	try { return dynamic_cast< ThisClass & >( dataset ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
-	} 
+	}
 
 #define PREPARE_CAST_CONST_REFERENCE_MACRO	\
 	static const ThisClass & \
 	Cast( const ADataset & dataset ) \
 	{	try { return dynamic_cast< const ThisClass & >( dataset ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
-	} 
+	}
 
 #define PREPARE_CAST_SMART_POINTER_MACRO	\
 	static Ptr \
@@ -73,7 +72,7 @@ namespace Imaging
 		} \
 		return boost::static_pointer_cast< const ThisClass >( dataset ); \
 	}
-	
+
 #define PREPARE_CAST_METHODS_MACRO	\
 	PREPARE_CAST_REFERENCE_MACRO \
 	PREPARE_CAST_CONST_REFERENCE_MACRO \
@@ -96,14 +95,14 @@ namespace Imaging
 	METHOD_NAME( INPUT_TYPE::Reference input ) \
 	{	try { return dynamic_cast< RETURN_TYPE::Reference >( input ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
-	} 
+	}
 
 #define CONFIGURABLE_PREPARE_CAST_CONST_REFERENCE_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::ConstReference \
 	METHOD_NAME( INPUT_TYPE::ConstReference input ) \
 	{	try { return dynamic_cast< RETURN_TYPE::ConstReference >( input ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
-	} 
+	}
 
 #define CONFIGURABLE_PREPARE_CAST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::Ptr \

@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AProcessingUnit.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AProcessingUnit.h
+ * @{
  **/
 
 #ifndef _ABSTRACT_PROCESSING_UNIT_H
@@ -17,8 +17,7 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
 
 /**
@@ -27,11 +26,11 @@ namespace Imaging
 class AProcessingUnit
 {
 public:
-	/**
-	 * Virtual destructor - to allow polymorphical destruction of successors.
-	 **/
-	virtual
-	~AProcessingUnit() {}
+        /**
+         * Virtual destructor - to allow polymorphical destruction of successors.
+         **/
+        virtual
+        ~AProcessingUnit() {}
 
 protected:
 

@@ -16,73 +16,71 @@ namespace M4D
 {
 
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file AMultiImageFilter.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file AMultiImageFilter.h
+ * @{
  **/
 
-namespace Imaging
-{
+namespace Imaging {
 
 template< uint32 InCount, uint32 OutCount >
 class AMultiImageFilter: public APipeFilter
 {
 public:
-	typedef APipeFilter	PredecessorType;
+        typedef APipeFilter	PredecessorType;
 
-	struct Properties : public PredecessorType::Properties
-	{
+        struct Properties : public PredecessorType::Properties {
 
-	};
+        };
 
-	~AMultiImageFilter() {}
+        ~AMultiImageFilter() {}
 protected:
-	AMultiImageFilter( Properties * prop );
+        AMultiImageFilter ( Properties * prop );
 
-	const AImage&
-	GetInputImage( uint32 idx )const;
+        const AImage&
+        GetInputImage ( uint32 idx ) const;
 
-	void
-	ReleaseInputImage( uint32 idx )const;
+        void
+        ReleaseInputImage ( uint32 idx ) const;
 
-	AImage&
-	GetOutputImage( uint32 idx )const;
+        AImage&
+        GetOutputImage ( uint32 idx ) const;
 
-	void
-	ReleaseOutputImage( uint32 idx )const;
+        void
+        ReleaseOutputImage ( uint32 idx ) const;
 
-	void
-	SetOutputImageSize(
-			uint32		idx,
-			uint32		dim,
-			int32 		minimums[], 
-			int32 		maximums[], 
-			float32		elementExtents[]
-		    );
+        void
+        SetOutputImageSize (
+                uint32		idx,
+                uint32		dim,
+                int32 		minimums[],
+                int32 		maximums[],
+                float32		elementExtents[]
+        );
 
-	void
-	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
+        void
+        BeforeComputation ( APipeFilter::UPDATE_TYPE &utype );
 
-	void
-	AfterComputation( bool successful );
-
-
-	const AImage	*in[ InCount ];
-	Common::TimeStamp	_inTimestamp[ InCount ];
-	Common::TimeStamp	_inEditTimestamp[ InCount ];
+        void
+        AfterComputation ( bool successful );
 
 
-	AImage		*out[ OutCount ];
-	Common::TimeStamp	_outTimestamp[ OutCount ];
-	Common::TimeStamp	_outEditTimestamp[ OutCount ];
+        const AImage	*in[ InCount ];
+        Common::TimeStamp	_inTimestamp[ InCount ];
+        Common::TimeStamp	_inEditTimestamp[ InCount ];
 
-	
+
+        AImage		*out[ OutCount ];
+        Common::TimeStamp	_outTimestamp[ OutCount ];
+        Common::TimeStamp	_outEditTimestamp[ OutCount ];
+
+
 private:
-	/**
-	 * Prohibition of copying.
-	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AMultiImageFilter );
+        /**
+         * Prohibition of copying.
+         **/
+        PROHIBIT_COPYING_OF_OBJECT_MACRO ( AMultiImageFilter );
 };
 
 } /*namespace Imaging*/

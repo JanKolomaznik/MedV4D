@@ -1,8 +1,8 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ModificationManager.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file ModificationManager.h
+ * @{
  **/
 
 #ifndef _MODIFICATION_MANAGER_H
@@ -22,13 +22,12 @@
 
 namespace M4D
 {
-namespace Imaging
-{
+namespace Imaging {
 
-enum ModificationState{ 
-	MS_DIRTY,
-	MS_MODIFIED,
-	MS_CANCELED
+enum ModificationState {
+        MS_DIRTY,
+        MS_MODIFIED,
+        MS_CANCELED
 };
 
 class ModificationBBox;
@@ -37,59 +36,62 @@ class ModificationManager;
 class ReaderBBoxInterface
 {
 public:
-	typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
+        typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
 
 
-	ReaderBBoxInterface( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
-		: _changeTimestamp( timestamp ),  _state( MS_MODIFIED ), _manager( manager ), _boundingBox( boundingBox ) {}
+        ReaderBBoxInterface ( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+                        : _changeTimestamp ( timestamp ),  _state ( MS_MODIFIED ), _manager ( manager ), _boundingBox ( boundingBox ) {}
 
-	virtual
-	~ReaderBBoxInterface();
+        virtual
+        ~ReaderBBoxInterface();
 
-	bool
-	IsDirty()const;
+        bool
+        IsDirty() const;
 
-	bool
-	IsModified()const;
+        bool
+        IsModified() const;
 
-	virtual ModificationState
-	GetState()const;
+        virtual ModificationState
+        GetState() const;
 
-	Common::TimeStamp
-	GetTimeStamp()const
-		{ return _changeTimestamp; }
+        Common::TimeStamp
+        GetTimeStamp() const {
+                return _changeTimestamp;
+        }
 
-	const ModificationBBox &
-	GetBoundingBox()const
-		{ return *_boundingBox; }
+        const ModificationBBox &
+        GetBoundingBox() const {
+                return *_boundingBox;
+        }
 
-	virtual ModificationState
-	WaitWhileDirty()const;
+        virtual ModificationState
+        WaitWhileDirty() const;
 
 protected:
-	Common::TimeStamp _changeTimestamp;
+        Common::TimeStamp _changeTimestamp;
 
-	ModificationState	_state;
+        ModificationState	_state;
 
-	ModificationManager	*_manager;
+        ModificationManager	*_manager;
 
-	ModificationBBox	*_boundingBox;
-	
-	mutable Multithreading::RecursiveMutex	_accessLock;
+        ModificationBBox	*_boundingBox;
+
+        mutable Multithreading::RecursiveMutex	_accessLock;
 };
 
 class WriterBBoxInterface : public ReaderBBoxInterface
 {
 public:
-	WriterBBoxInterface( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
-		: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
-		{ _state = MS_DIRTY; }
+        WriterBBoxInterface ( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+                        : ReaderBBoxInterface ( timestamp, manager, boundingBox ) {
+                _state = MS_DIRTY;
+        }
 
-	void
-	SetState( ModificationState state );
+        void
+        SetState ( ModificationState state );
 
-	void
-	SetModified();
+        void
+        SetModified();
 
 
 };
@@ -98,172 +100,177 @@ public:
 class ModificationBBox
 {
 public:
-	
-	template< unsigned Dim >
-	explicit ModificationBBox( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max );
 
-	~ModificationBBox() { delete [] _first;  delete [] _second; }
+        template< unsigned Dim >
+        explicit ModificationBBox ( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max );
 
-	void
-	GetInterval( unsigned dim, int32 &first, int32 &second )const
-		{ 
-			if( dim >= _dimension )	{ 
-				/*TODO exception*/ 
-			} 
+        ~ModificationBBox() {
+                delete [] _first;
+                delete [] _second;
+        }
 
-			first = _first[ dim ]; second = _second[ dim ]; 
-		}
+        void
+        GetInterval ( unsigned dim, int32 &first, int32 &second ) const {
+                if ( dim >= _dimension )	{
+                        /*TODO exception*/
+                }
 
-	bool
-	Incident( const ModificationBBox & bbox )const;
+                first = _first[ dim ];
+                second = _second[ dim ];
+        }
+
+        bool
+        Incident ( const ModificationBBox & bbox ) const;
 
 protected:
-	ModificationBBox( unsigned dim, int *first, int *second )
-		:_dimension( dim ), _first( first ), _second( second ) {}
+        ModificationBBox ( unsigned dim, int *first, int *second )
+                        :_dimension ( dim ), _first ( first ), _second ( second ) {}
 
-	unsigned	_dimension;
+        unsigned	_dimension;
 
-	int32 		*_first;
-	int32 		*_second;
+        int32 		*_first;
+        int32 		*_second;
 };
 
 class ModificationManager
 {
 public:
-	typedef std::list< WriterBBoxInterface * > 	ChangeQueue;
-	typedef ChangeQueue::iterator			ChangeIterator;
-	typedef ChangeQueue::reverse_iterator		ChangeReverseIterator;
-	typedef ChangeQueue::const_iterator		ConstChangeIterator;
-	typedef ChangeQueue::const_reverse_iterator	ConstChangeReverseIterator;
+        typedef std::list< WriterBBoxInterface * > 	ChangeQueue;
+        typedef ChangeQueue::iterator			ChangeIterator;
+        typedef ChangeQueue::reverse_iterator		ChangeReverseIterator;
+        typedef ChangeQueue::const_iterator		ConstChangeIterator;
+        typedef ChangeQueue::const_reverse_iterator	ConstChangeReverseIterator;
 
-	ModificationManager();
-	
-	~ModificationManager();
+        ModificationManager();
 
-
-	template< unsigned Dim >
-	WriterBBoxInterface &
-	AddMod(
-		const Vector< int32, Dim > &min,
-		const Vector< int32, Dim > &max
-	      );
-
-	template< unsigned Dim >
-	ReaderBBoxInterface::Ptr
-	GetMod(
-		const Vector< int32, Dim > &min,
-		const Vector< int32, Dim > &max
-	      );
+        ~ModificationManager();
 
 
-	ChangeIterator 
-	GetChangeBBox( const Common::TimeStamp & changeStamp );
+        template< unsigned Dim >
+        WriterBBoxInterface &
+        AddMod (
+                const Vector< int32, Dim > &min,
+                const Vector< int32, Dim > &max
+        );
 
-	ChangeIterator 
-	ChangesBegin();
+        template< unsigned Dim >
+        ReaderBBoxInterface::Ptr
+        GetMod (
+                const Vector< int32, Dim > &min,
+                const Vector< int32, Dim > &max
+        );
 
-	ConstChangeIterator 
-	ChangesBegin()const;
 
-	ChangeIterator 
-	ChangesEnd();
+        ChangeIterator
+        GetChangeBBox ( const Common::TimeStamp & changeStamp );
 
-	ConstChangeIterator 
-	ChangesEnd()const;
+        ChangeIterator
+        ChangesBegin();
 
-	ChangeReverseIterator 
-	ChangesReverseBegin();
+        ConstChangeIterator
+        ChangesBegin() const;
 
-	ConstChangeReverseIterator 
-	ChangesReverseBegin()const;
+        ChangeIterator
+        ChangesEnd();
 
-	ChangeReverseIterator 
-	ChangesReverseEnd();
+        ConstChangeIterator
+        ChangesEnd() const;
 
-	ConstChangeReverseIterator 
-	ChangesReverseEnd()const;
+        ChangeReverseIterator
+        ChangesReverseBegin();
 
-	Common::TimeStamp
-	GetLastStoredTimestamp()const
-		{ return _lastStoredTimestamp; }
+        ConstChangeReverseIterator
+        ChangesReverseBegin() const;
 
-	Common::TimeStamp
-	GetActualTimestamp()const
-		{ return _actualTimestamp; }
+        ChangeReverseIterator
+        ChangesReverseEnd();
 
-	void
-	Reset();
+        ConstChangeReverseIterator
+        ChangesReverseEnd() const;
+
+        Common::TimeStamp
+        GetLastStoredTimestamp() const {
+                return _lastStoredTimestamp;
+        }
+
+        Common::TimeStamp
+        GetActualTimestamp() const {
+                return _actualTimestamp;
+        }
+
+        void
+        Reset();
 private:
-	Common::TimeStamp	_actualTimestamp;
+        Common::TimeStamp	_actualTimestamp;
 
-	Common::TimeStamp	_lastStoredTimestamp;
+        Common::TimeStamp	_lastStoredTimestamp;
 
-	ChangeQueue		_changes;
+        ChangeQueue		_changes;
 
-	mutable Multithreading::RecursiveMutex	_accessLock;
+        mutable Multithreading::RecursiveMutex	_accessLock;
 };
 
 class ProxyReaderBBox: public ReaderBBoxInterface
 {
 public:
-	ProxyReaderBBox( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox );
+        ProxyReaderBBox ( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox );
 
-	ModificationState
-	GetState()const;
+        ModificationState
+        GetState() const;
 
-	ModificationState
-	WaitWhileDirty()const;
+        ModificationState
+        WaitWhileDirty() const;
 protected:
-	mutable ModificationManager::ChangeReverseIterator _changeIterator;
+        mutable ModificationManager::ChangeReverseIterator _changeIterator;
 };
 
 
 template< unsigned Dim >
-ModificationBBox::ModificationBBox( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max )
+ModificationBBox::ModificationBBox ( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max )
 {
-	_dimension = Dim;
-	_first = new int32[Dim];
-	_second = new int32[Dim];
+        _dimension = Dim;
+        _first = new int32[Dim];
+        _second = new int32[Dim];
 
-	for( unsigned i = 0; i < Dim; ++i ) {
-		_first[i] = min[i];
-		_second[i] = max[i];
-	}
+        for ( unsigned i = 0; i < Dim; ++i ) {
+                _first[i] = min[i];
+                _second[i] = max[i];
+        }
 }
 
 template< unsigned Dim >
 WriterBBoxInterface &
-ModificationManager::AddMod( 
-		const Vector< int32, Dim > &min,
-		const Vector< int32, Dim > &max
-		)
+ModificationManager::AddMod (
+        const Vector< int32, Dim > &min,
+        const Vector< int32, Dim > &max
+)
 {
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	_actualTimestamp.Increase();
-	//TODO - construction of right object
-	ModificationBBox * bbox = new ModificationBBox( min, max );
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, bbox );
-	
-	_changes.push_back( change );
+        _actualTimestamp.Increase();
+        //TODO - construction of right object
+        ModificationBBox * bbox = new ModificationBBox ( min, max );
+        WriterBBoxInterface *change = new WriterBBoxInterface ( _actualTimestamp, this, bbox );
 
-	return *change;
+        _changes.push_back ( change );
+
+        return *change;
 }
 
 template< unsigned Dim >
 ReaderBBoxInterface::Ptr
-ModificationManager::GetMod( 
-		const Vector< int32, Dim > &min,
-		const Vector< int32, Dim > &max
-		)
+ModificationManager::GetMod (
+        const Vector< int32, Dim > &min,
+        const Vector< int32, Dim > &max
+)
 {
-	Multithreading::RecursiveScopedLock lock( _accessLock );
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
 
-	//TODO - construction of right object
-	ModificationBBox * bbox = new ModificationBBox( min, max );
-	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, bbox );
+        //TODO - construction of right object
+        ModificationBBox * bbox = new ModificationBBox ( min, max );
+        ReaderBBoxInterface *changeProxy = new ProxyReaderBBox ( _actualTimestamp, this, bbox );
 
-	return ReaderBBoxInterface::Ptr( changeProxy );
+        return ReaderBBoxInterface::Ptr ( changeProxy );
 }
 
 }/*namespace Imaging*/

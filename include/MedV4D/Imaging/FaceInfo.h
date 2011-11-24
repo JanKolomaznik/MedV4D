@@ -9,30 +9,26 @@
 namespace M4D
 {
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file FaceInfo.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file FaceInfo.h
+ * @{
  **/
 
-namespace Imaging
-{
-namespace Geometry
-{
+namespace Imaging {
+namespace Geometry {
 
 
-struct TriangleInfoPart
-{
-	Vector< unsigned, 3 >	indices;
+struct TriangleInfoPart {
+        Vector< unsigned, 3 >	indices;
 };
 
 template<
-	typename FaceInfoPart,
-	typename NormalPart = NormalDummy< float32>, 
-	typename ColorPart = ColorDummy 
+typename FaceInfoPart,
+typename NormalPart = NormalDummy< float32>,
+typename ColorPart = ColorDummy
 >
-struct FaceInfo: public FaceInfoPart, public NormalPart, public ColorPart
-{
+struct FaceInfo: public FaceInfoPart, public NormalPart, public ColorPart {
 
 };
 

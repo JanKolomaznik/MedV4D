@@ -8,81 +8,74 @@
 namespace M4D
 {
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file VertexInfo.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file VertexInfo.h
+ * @{
  **/
 
-namespace Imaging
-{
-namespace Geometry
-{
+namespace Imaging {
+namespace Geometry {
 
 
 template< typename CoordType >
-struct PositionPart
-{
-	typedef Vector< CoordType, 3 >	PositionType;
+struct PositionPart {
+        typedef Vector< CoordType, 3 >	PositionType;
 
-	PositionType	position;
+        PositionType	position;
 };
 
 template< typename CoordType >
-struct NormalPart
-{
-	typedef Vector< CoordType, 3 >	NormalType;
+struct NormalPart {
+        typedef Vector< CoordType, 3 >	NormalType;
 
-	NormalType	normal;
+        NormalType	normal;
 };
 
 template< typename CoordType >
-struct NormalDummy
-{
+struct NormalDummy {
 };
 
-struct ColorPart
-{
-	RGB_float	color;
+struct ColorPart {
+        RGB_float	color;
 };
 
-struct ColorDummy
-{
+struct ColorDummy {
 };
 
 
-template< 
-	typename CoordType, 
-	template <typename CType> class NormalPart = NormalDummy, 
-	typename ColorPart = ColorDummy 
-	>
+template<
+typename CoordType,
+template <typename CType> class NormalPart = NormalDummy,
+typename ColorPart = ColorDummy
+>
 struct VertexInfo: public PositionPart< CoordType >, public NormalPart< CoordType >, public ColorPart
 {
 
 };
 
-template< 
-	typename VertexType,
-       	typename VectorType	
-	>
+template<
+typename VertexType,
+typename VectorType
+>
 void
-TranslateVertex( VertexType &v, const VectorType t )
+TranslateVertex ( VertexType &v, const VectorType t )
 {
-	v.position += t;
+        v.position += t;
 }
 
-template< 
-	typename VertexType,
-       	typename VectorType	
-	>
+template<
+typename VertexType,
+typename VectorType
+>
 void
-ScaleVertex( VertexType &v, const Vector<float32, VectorType::Dimension> &factor, const VectorType &center )
+ScaleVertex ( VertexType &v, const Vector<float32, VectorType::Dimension> &factor, const VectorType &center )
 {
-	VectorType pom = (v.position-center);
-	for( unsigned i=0; i<VectorType::Dimension; ++i ){
-		pom[i] = pom[i] * factor[i];
-	}
-	v.position = pom + center;
+        VectorType pom = ( v.position-center );
+        for ( unsigned i=0; i<VectorType::Dimension; ++i ) {
+                pom[i] = pom[i] * factor[i];
+        }
+        v.position = pom + center;
 }
 
 typedef VertexInfo< float32 > SimpleVertex_f32;
