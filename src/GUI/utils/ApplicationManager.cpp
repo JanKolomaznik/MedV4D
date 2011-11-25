@@ -1,5 +1,5 @@
 #include "MedV4D/GUI/utils/ApplicationManager.h"
-#include "backendForDICOM/DcmProvider.h"
+#include "MedV4D/DICOMInterface/DcmProvider.h"
 #include <QtGui>
 
 

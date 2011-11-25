@@ -5,7 +5,7 @@
 
 #include "MedV4D/GUI/TF/TFPainter1D.h"
 
-#include "ui_TFModifier1D.h"
+#include "MedV4D/generated/ui_TFModifier1D.h"
 
 namespace M4D {
 namespace GUI {

@@ -24,7 +24,7 @@
 #include "MedV4D/GUI/TF/TFHistogram.h"
 #include "MedV4D/GUI/TF/TFEditor.h"
 
-#include "ui_TFPalette.h"
+#include "MedV4D/generated/ui_TFPalette.h"
 
 namespace M4D {
 namespace GUI {

@@ -6,8 +6,8 @@
 #include "QtGui/QGridLayout"
 #include "QtGui/QSpacerItem"
 
-#include "ui_TFViewModifier.h"
-#include "ui_TFDimensionZoom.h"
+#include "MedV4D/generated/ui_TFViewModifier.h"
+#include "MedV4D/generated/ui_TFDimensionZoom.h"
 
 namespace M4D {
 namespace GUI {

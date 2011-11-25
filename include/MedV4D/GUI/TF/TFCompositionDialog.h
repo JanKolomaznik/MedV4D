@@ -10,7 +10,7 @@
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFPaletteButton.h"
 
-#include "ui_TFCompositionDialog.h"
+#include "MedV4D/generated/ui_TFCompositionDialog.h"
 
 namespace M4D {
 namespace GUI {

@@ -1,7 +1,7 @@
 #include "ViewerWindow.hpp"
 //#include "MedV4D/GUI/utils/ImageDataRenderer.h"
-#include "Imaging/ImageTools.h"
-#include "Imaging/Histogram.h"
+#include "MedV4D/Imaging/ImageTools.h"
+#include "MedV4D/Imaging/Histogram.h"
 #include <cmath>
 
 #include "MedV4D/GUI/widgets/PythonTerminal.h"

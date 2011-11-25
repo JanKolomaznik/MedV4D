@@ -1,7 +1,7 @@
 #ifndef PROGRESS_INFO_DIALOG_H
 #define PROGRESS_INFO_DIALOG_H
 
-#include "generated/ui_ProgressInfoDialog.h"
+#include "MedV4D/generated/ui_ProgressInfoDialog.h"
 #include "MedV4D/Common/ProgressNotifier.h"
 #include "MedV4D/Common/Common.h"
 

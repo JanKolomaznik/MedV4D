@@ -7,7 +7,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QVBoxLayout>
 
-#include "ui_TFCompositeModifier.h"
+#include "MedV4D/generated/ui_TFCompositeModifier.h"
 
 namespace M4D {
 namespace GUI {

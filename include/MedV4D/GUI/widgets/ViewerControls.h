@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QtCore>
-#include "ui_ViewerControls.h"
+#include "MedV4D/generated/ui_ViewerControls.h"
 #include "MedV4D/GUI/utils/ApplicationManager.h"
 
 class ViewerControls: public QWidget, public Ui::ViewerControls

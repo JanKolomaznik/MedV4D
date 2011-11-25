@@ -3,7 +3,7 @@
 
 #include "MedV4D/GUI/TF/TFModifier1D.h"
 
-#include "ui_TFPolygonModifier.h"
+#include "MedV4D/generated/ui_TFPolygonModifier.h"
 
 namespace M4D {
 namespace GUI {

@@ -9,7 +9,7 @@
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFEditor.h"
 
-#include "ui_TFEditorGUI.h"
+#include "MedV4D/generated/ui_TFEditorGUI.h"
 
 namespace M4D {
 namespace GUI {	

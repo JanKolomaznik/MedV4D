@@ -21,7 +21,7 @@
 
 #include "MedV4D/GUI/TF/TFEditor.h"
 
-#include "ui_TFCreator.h"
+#include "MedV4D/generated/ui_TFCreator.h"
 
 namespace M4D {
 namespace GUI {

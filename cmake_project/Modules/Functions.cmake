@@ -4,7 +4,7 @@ MACRO (M4D_QT4_WRAP_UI outfiles )
   FOREACH (it ${ui_files})
     GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
     GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
-    SET(outfile ${MEDV4D_GENERATED_HEADERS}/ui_${outfile}.h)
+    SET(outfile ${MEDV4D_GENERATED_HEADERS_DIR}/ui_${outfile}.h)
     ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
       COMMAND ${QT_UIC_EXECUTABLE}
       ARGS ${ui_options} -o ${outfile} ${infile}
@@ -71,7 +71,7 @@ ENDFUNCTION(INSERT_KEYWORD_BEFORE_EACH_MEMBER)
 MACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES arg_input arg_output)
 	SET(${arg_output} )
 	FOREACH(currentName ${${arg_input}} )
-		SET( ${arg_output} ${${arg_output}} "optimized" "${currentName}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
+		SET( ${arg_output} ${${arg_output}} "optimized" "${currentName}${MEDV4D_RELEASE_POSTFIX}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
 	ENDFOREACH(currentName) 
 ENDMACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES)
 

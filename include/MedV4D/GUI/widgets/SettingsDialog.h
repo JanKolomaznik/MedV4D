@@ -1,7 +1,7 @@
 #ifndef SETTINGS_DIALOG_H
 #define SETTINGS_DIALOG_H
 
-#include "ui_SettingsDialog.h"
+#include "MedV4D/generated/ui_SettingsDialog.h"
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/Settings.h"
 

@@ -12,7 +12,7 @@
 #include "MedV4D/GUI/widgets/ProgressInfoDialog.h"
 #include "MedV4D/GUI/widgets/MainWindow.h"
 
-#include "backendForDICOM/DcmProvider.h"
+#include "MedV4D/DICOMInterface/DcmProvider.h"
 #ifdef OIS_ENABLED
 #include "JoyInput.h"
 #endif
