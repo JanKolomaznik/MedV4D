@@ -9,6 +9,7 @@ SET(MEDV4D_CMAKE_MODULES_DIR ${MEDV4D_CMAKE_SOURCE_DIR}/cmake_project/Modules)
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/ApplicationCMakeListMandatoryInclude.cmake" )
 
 INCLUDE_DIRECTORIES( "${MEDV4D_CMAKE_SOURCE_DIR}/include" )
+LINK_DIRECTORIES( "${MEDV4D_CMAKE_SOURCE_DIR}/lib" )
 
 ###############################
 ## OIS

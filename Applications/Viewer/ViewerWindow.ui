@@ -91,7 +91,7 @@
   <customwidget>
    <class>M4D::GUI::Viewer::ViewerDesktop</class>
    <extends>QWidget</extends>
-   <header>GUI/widgets/ViewerDesktop.h</header>
+   <header>MedV4D/GUI/widgets/ViewerDesktop.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

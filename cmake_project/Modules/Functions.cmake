@@ -71,7 +71,7 @@ ENDFUNCTION(INSERT_KEYWORD_BEFORE_EACH_MEMBER)
 MACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES arg_input arg_output)
 	SET(${arg_output} )
 	FOREACH(currentName ${${arg_input}} )
-		SET( ${arg_output} ${${arg_output}} "optimized" "${currentName}${MEDV4D_RELEASE_POSTFIX}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
+		SET( ${arg_output} ${${arg_output}} "optimized" "${MEDV4D_LIBRARY_PREFIX}${currentName}${MEDV4D_RELEASE_POSTFIX}" "debug" "${MEDV4D_LIBRARY_PREFIX}${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
 	ENDFOREACH(currentName) 
 ENDMACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES)
 
@@ -133,7 +133,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	
 	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${MEDV4D_TMP_DIR} )
 	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
-	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES} ${MEDV4D_ALL_LIBRARIES})
 
 	ADD_DEPENDENCIES(${OUTPUT_NAME} ${MEDV4D_LIB_TARGETS})
 	IF( DCMTK_OPTIONS )
@@ -190,7 +190,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM_NONRECURSIVE prog_name source_dir )
 	
 	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${MEDV4D_TMP_DIR} )
 	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
-	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES} ${MEDV4D_ALL_LIBRARIES})
 
 	ADD_DEPENDENCIES(${OUTPUT_NAME} ${MEDV4D_LIB_TARGETS})
 	IF( DCMTK_OPTIONS )

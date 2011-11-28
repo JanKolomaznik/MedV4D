@@ -230,7 +230,7 @@
   <customwidget>
    <class>ColorChooserButton</class>
    <extends>QPushButton</extends>
-   <header>GUI/widgets/ColorChooserButton.h</header>
+   <header>MedV4D/GUI/widgets/ColorChooserButton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
