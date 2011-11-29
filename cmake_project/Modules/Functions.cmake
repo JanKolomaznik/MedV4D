@@ -221,8 +221,8 @@ FUNCTION(ADD_MEDV4D_EXECUTABLE prog_name)
 	set(groups SOURCES HEADERS UIS RESOURCES)
 	cmake_parse_arguments(MEDV4D_EXECUTABLE "" "" "${groups}" ${ARGN} )
 	
-	MESSAGE( INFO "${prog_name} sources : ${MEDV4D_EXECUTABLE_SOURCES}" )
-	MESSAGE( INFO "${prog_name} headers : ${MEDV4D_EXECUTABLE_HEADERS}" )
+	#MESSAGE( STATUS "${prog_name} sources : ${MEDV4D_EXECUTABLE_SOURCES}" )
+	#MESSAGE( STATUS "${prog_name} headers : ${MEDV4D_EXECUTABLE_HEADERS}" )
 
 	FILTER_HEADERS_FOR_MOC( "${MEDV4D_EXECUTABLE_HEADERS}" mocinput )
 	QT4_WRAP_CPP(mocoutput ${mocinput})

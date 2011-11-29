@@ -19,6 +19,8 @@ FIND_PACKAGE(OpenGL REQUIRED)
 #**************************************************************
 FIND_PACKAGE(DCMTK REQUIRED)
 
+SET(DCMTK_LIBRARIES ${DCMTK_LIBRARIES} oflog ${DCMTK_LIBRARIES} )
+
 #**************************************************************
 FIND_PACKAGE( Cg REQUIRED )
 SET( CG_SHADER_LIBRARIES ${CG_LIBRARY} ${CG_GL_LIBRARY} )
@@ -50,6 +52,20 @@ ENDIF(UNIX)
 IF(USE_TBB)
 	SET(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} tbb tbbmalloc)
 ENDIF(USE_TBB)
+
+#**************************************************************
+IF(WIN32)
+	#Visual studio is able to link those automatically
+	#TODO - add test for win compiler
+	SET(Boost_LIBRARIES "")
+	
+	SET(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} glew32s Imm32 Winmm ws2_32)
+	SET(ADDITIONAL_LIBRARY_DIR ${ADDITIONAL_LIBRARY_DIR} ${MEDV4D_CMAKE_SOURCE_DIR}/../lib/other)
+	ADD_DEFINITIONS( -DGLEW_STATIC )
+ELSE(WIN32)
+	SET(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} GLEW)
+	#SET(ADDITIONAL_LIBRARY_DIR ${ADDITIONAL_LIBRARY_DIR} "/usr/lib/x86_64-linux-gnu/")
+ENDIF(WIN32)
 
 #**************************************************************
 #**************************************************************

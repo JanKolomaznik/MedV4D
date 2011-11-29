@@ -2,8 +2,10 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/IOStreams.h"
 
-using namespace M4D::IO;
-
+namespace M4D
+{
+namespace IO
+{
 /////////////////////////////////////////////////////////////////////////////
 OutStream::OutStream(MediumAccessor *accessor, bool shared )
 	: _accessor(accessor)
@@ -114,3 +116,8 @@ InStream::Init( MediumAccessor *accessor, bool shared )
 //	
 //}
 /////////////////////////////////////////////////////////////////////////////
+
+
+
+}//namespace IO
+}//namespace M4D
