@@ -136,6 +136,12 @@ public:
 
 	QIcon 
 	getIcon( QString name )const;
+	
+	void
+	setIconsDirectory( boost::filesystem::path aIconsDirName )
+	{
+		mIconsDirName = aIconsDirName;
+	}
 public slots:
 	void
 	updateGUIRequest()
@@ -176,6 +182,7 @@ protected:
 
 	Settings	mSettings;
 
+	boost::filesystem::path mIconsDirName;
 	typedef std::map< QString, QIcon > IconMap;
 	IconMap mIconMap;
 

@@ -7,6 +7,8 @@ namespace GUI
 namespace Renderer
 {
 
+boost::filesystem::path gVolumeRendererShaderPath;
+  
 void
 applyVolumeRestrictionsOnBoundingBox( M4D::BoundingBox3D &aBBox, const VolumeRestrictions &aVolumeRestrictions )
 {
@@ -28,7 +30,7 @@ void
 VolumeRenderer::Initialize()
 {
 	InitializeCg();
-	mCgEffect.Initialize( "ImageRender.cgfx" );
+	mCgEffect.Initialize( gVolumeRendererShaderPath/*"ImageRender.cgfx"*/ );
 
 	initJitteringTexture();
 

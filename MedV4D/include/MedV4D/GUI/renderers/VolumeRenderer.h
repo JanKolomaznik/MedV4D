@@ -16,6 +16,8 @@ namespace GUI
 namespace Renderer
 {
 
+extern boost::filesystem::path gVolumeRendererShaderPath;
+	
 struct VolumeRestrictions
 {
 	VolumeRestrictions(): resX( 0.0f, 1.0f ), resY( 0.0f, 1.0f ), resZ( 0.0f, 1.0f )

@@ -187,6 +187,10 @@ ViewerWindow::ViewerWindow()
 		QPoint putAt=myRegion.topRight();
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
+		
+		
+	M4D::GUI::Renderer::gSliceRendererShaderPath = "data/shaders/ImageRender.cgfx";
+	M4D::GUI::Renderer::gVolumeRendererShaderPath = "data/shaders/ImageRender.cgfx";
 
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
@@ -205,7 +209,7 @@ ViewerWindow::ViewerWindow()
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);*/
 	//dockWidget->setFloating(true);
 	
-	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./TF" ) ) );
+	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./data/TF" ) ) );
 
 	LOG( "TF framework initialized" );
 //*****************

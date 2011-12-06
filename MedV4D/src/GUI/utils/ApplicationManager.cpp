@@ -69,17 +69,17 @@ ApplicationManager::getIcon( QString name )const
 void
 ApplicationManager::loadIcons()
 {
-	boost::filesystem::path dirName = "./icons";
-	if (!boost::filesystem::exists(dirName)) {
-		LOG( "Directory \'" << dirName << "\' doesn't exist!" );
+	//boost::filesystem::path dirName = "./data/icons";
+	if (!boost::filesystem::exists(mIconsDirName)) {
+		LOG( "Directory \'" << mIconsDirName << "\' doesn't exist!" );
 		return;
 	}
-	if (!boost::filesystem::is_directory(dirName) ){
-		LOG( "\'" << dirName << "\' is not a directory!" );
+	if (!boost::filesystem::is_directory(mIconsDirName) ){
+		LOG( "\'" << mIconsDirName << "\' is not a directory!" );
 		return;
 	}
 
-	boost::filesystem::directory_iterator dirIt(dirName);
+	boost::filesystem::directory_iterator dirIt(mIconsDirName);
 	boost::filesystem::directory_iterator end;
 	for ( ;dirIt != end; ++dirIt ) {
 		D_PRINT( "Found file :" << *dirIt );

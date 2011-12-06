@@ -6,12 +6,14 @@ namespace GUI
 {
 namespace Renderer
 {
+	
+boost::filesystem::path gSliceRendererShaderPath;
 
 void
 SliceRenderer::Initialize()
 {
 	InitializeCg();
-	mCgEffect.Initialize( "ImageRender.cgfx" );
+	mCgEffect.Initialize( gSliceRendererShaderPath/*"ImageRender.cgfx"*/ );
 
 
 	mAvailableColorTransforms.clear();

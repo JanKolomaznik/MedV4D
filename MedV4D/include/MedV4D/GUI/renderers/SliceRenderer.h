@@ -15,6 +15,7 @@ namespace GUI
 namespace Renderer
 {
 
+extern boost::filesystem::path gSliceRendererShaderPath;
 
 class SliceRenderer
 {

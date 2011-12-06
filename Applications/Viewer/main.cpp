@@ -52,9 +52,10 @@ main( int argc, char** argv )
         //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         //SET_DOUT( debugFile );
 
-
 	ApplicationManager appManager;
 
+	boost::filesystem::path dirName = GET_SETTINGS( "gui.icons_directory", std::string, std::string( "./data/icons" ) );
+	appManager.setIconsDirectory(dirName);
 	appManager.initialize( argc, argv );
 
 	try {
@@ -77,4 +78,5 @@ main( int argc, char** argv )
 	
 	return 1;
 }
+
 
