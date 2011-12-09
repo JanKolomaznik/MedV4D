@@ -7,12 +7,23 @@
 #include "MedV4D/GUI/utils/ViewerManager.h"
 #include "MedV4D/GUI/utils/ApplicationManager.h"
 
+
+
 namespace M4D
 {
 namespace GUI
 {
 namespace Viewer
 {
+	
+	
+struct AAAHELPER
+{
+	void operator()()
+	{
+		drawCylinder( Vector3f(), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
+	}
+};
 
 ViewerController::ViewerController()
 {
@@ -809,6 +820,8 @@ GeneralViewer::initializeRenderingEnvironment()
 {
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.Initialize();
+	
+	mPickManager.initialize( 50 );D_PRINT("REMOVE THIS" );
 }
 
 bool
@@ -923,6 +936,8 @@ GeneralViewer::render()
 	default:
 		ASSERT( false );
 	}
+	
+	mPickManager.render( Vector2i( 200,200 ), AAAHELPER() );D_PRINT("REMOVE THIS" );
 }
 
 void

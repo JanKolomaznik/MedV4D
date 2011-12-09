@@ -30,6 +30,9 @@
 */
 #include <QtOpenGL>
 
+#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
+#define GL_ERROR_CLEAR_AFTER_CALL( ... ) { __VA_ARGS__ ; glGetError(); }
+
 namespace M4D
 {
 
@@ -60,8 +63,6 @@ getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, cons
 void 
 CheckForGLError( const std::string &situation );
 
-#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
-#define GL_ERROR_CLEAR_AFTER_CALL( ... ) { __VA_ARGS__ ; glGetError(); }
 
 inline bool
 IsGLContextActive()

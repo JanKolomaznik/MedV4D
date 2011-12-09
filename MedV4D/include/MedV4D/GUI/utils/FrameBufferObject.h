@@ -3,6 +3,7 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/GUI/utils/OGLTools.h"
 
 namespace M4D {
 

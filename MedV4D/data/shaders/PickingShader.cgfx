@@ -1,0 +1,31 @@
+
+struct FragmentOutput
+{
+	float4 color : COLOR;
+};
+
+int gCurrentObjectID;
+
+FragmentOutput
+fp_Picking( uniform int aCurrentObjectID )
+{
+	FragmentOutput OUT;
+	OUT.color = float4( 1.0f, 0.0f, 0.0f, 1.0f );
+	return OUT;
+}
+
+technique PickingEffect {
+	pass t0 {
+		FragmentProgram = compile glslf fp_Picking( 
+							gCurrentObjectID
+							);
+		DepthTestEnable = false;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		BlendEquation = Max;
+
+		DepthFunc = LEqual;
+	}
+}
