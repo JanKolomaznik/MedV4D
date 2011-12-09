@@ -46,8 +46,8 @@ void
 PickManager::render( Vector2i aScreenCoordinates, TFunctor aFunctor )
 {
 	//mFrameBuffer.Bind();
-
-	
+	M4D::GLPushAtribs pushAttribs;
+	glViewport(50, 50, 500, 500);
 	
 	mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
 	
