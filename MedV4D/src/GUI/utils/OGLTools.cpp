@@ -1,6 +1,9 @@
 #include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
 #ifdef USE_DEVIL
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -13,21 +16,21 @@ namespace M4D
 void 
 getCurrentGLSetup( GLViewSetup &aSetup )
 {
-	glGetDoublev( GL_PROJECTION_MATRIX, aSetup.proj );
-	glGetDoublev( GL_MODELVIEW_MATRIX, aSetup.model );
-	glGetIntegerv( GL_VIEWPORT, aSetup.view );
+	glGetDoublev( GL_PROJECTION_MATRIX, glm::value_ptr( aSetup.projection) );
+	glGetDoublev( GL_MODELVIEW_MATRIX, glm::value_ptr( aSetup.modelView ) );
+	glGetIntegerv( GL_VIEWPORT, glm::value_ptr( aSetup.viewport ) );
 	CheckForGLError( "getCurrentGLSetup()" );
 };
 
 std::ostream &
 operator<<( std::ostream & stream, const GLViewSetup &setup )
 {
-	stream << "Model:\n[";
+	/*stream << "Model:\n[";
 	for( unsigned i = 0; i < 16; ++i ) {
 		if (i%4 == 0 && i != 0 ) {
 			stream << ";\n";
 		}
-		stream << "\t" << std::setw(9) << setup.model[i];
+		stream << "\t" << std::setw(9) << setup.modelView[i];
 		if( i %4 != 3 ) {
 			 stream << ",";
 		}
@@ -42,16 +45,24 @@ operator<<( std::ostream & stream, const GLViewSetup &setup )
 			 stream << ",";
 		}
 	}
-	stream << "]";
+	stream << "]";*/
+	//stream << "Model:\n" << setup.modelView;
 	return stream;
 }
 
 Vector3f
 getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, const Vector3f aCameraPos )
 {
-	Vector3d objCoords1;
+	glm::dvec3 tmp = glm::unProject(
+		glm::dvec3( aScreenCoords[0], aScreenCoords[1], 0.0),
+		aViewSetup.modelView,
+		aViewSetup.projection,
+		aViewSetup.viewport
+	);
+	
+	Vector3d objCoords1( glm::value_ptr(tmp) );
 	Vector3f direction;
-	GLint res = gluUnProject(
+	/*GLint res = gluUnProject(
 			aScreenCoords[0],  
 			aScreenCoords[1],  
 			0.0,  
@@ -64,7 +75,7 @@ getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, cons
 			);
 	if( res == GLU_FALSE ) {
 		_THROW_ GLException( "Cannot unproject screen coordinates" );
-	}
+	}*/
 		
 	//LOG( "screen : " << aScreenCoords );
 	//LOG( "coords1 : " << objCoords1 );

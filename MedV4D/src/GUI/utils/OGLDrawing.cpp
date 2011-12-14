@@ -1,4 +1,6 @@
 #include "MedV4D/GUI/utils/OGLDrawing.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #ifdef __APPLE__
 #include <OpenGL/glu.h>
@@ -70,6 +72,24 @@ SetViewAccordingToCamera( const Camera &camera )
 		camera.GetUpDirection()[1], 
 		camera.GetUpDirection()[2]
 		);
+}
+
+void
+getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView )
+{	
+
+	aProjection = glm::perspective<double>(
+		camera.GetFieldOfView(), 
+ 		camera.GetAspectRatio(), 
+ 		camera.GetZNear(), 
+ 		camera.GetZFar()
+	);
+	
+	aView = glm::lookAt<double>( 
+		glm::dvec3( camera.GetEyePosition()[0], camera.GetEyePosition()[1], camera.GetEyePosition()[2] ),
+		glm::dvec3( camera.GetTargetPosition()[0], camera.GetTargetPosition()[1], camera.GetTargetPosition()[2] ),
+		glm::dvec3( camera.GetUpDirection()[0], camera.GetUpDirection()[1], camera.GetUpDirection()[2] )
+	);
 }
 
 void

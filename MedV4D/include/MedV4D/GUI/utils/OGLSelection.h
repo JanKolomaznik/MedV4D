@@ -4,6 +4,8 @@
 #include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/GUI/utils/CgShaderTools.h"
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 namespace M4D
 {
@@ -33,7 +35,7 @@ public:
 	
 	template< typename TFunctor >
 	void
-	render( Vector2i aScreenCoordinates, TFunctor aFunctor );
+	render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor );
 protected:
 	unsigned mPickingRadius;
 	FrameBufferObject mFrameBuffer;
@@ -43,15 +45,27 @@ protected:
 
 template< typename TFunctor >
 void
-PickManager::render( Vector2i aScreenCoordinates, TFunctor aFunctor )
+PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor )
 {
-	//mFrameBuffer.Bind();
+	mFrameBuffer.Bind();
 	M4D::GLPushAtribs pushAttribs;
-	glViewport(50, 50, 500, 500);
+	glm::dmat4x4 pick = glm::pickMatrix(
+			glm::dvec2(aScreenCoordinates[0],aScreenCoordinates[1]),
+			glm::dvec2(mPickingRadius,mPickingRadius),
+			aViewSetup.viewport
+		);
+	glMatrixMode( GL_PROJECTION );
+	glPushMatrix();
+	glLoadMatrixd( glm::value_ptr(pick*aViewSetup.projection) );
+	//glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius);
 	
-	mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
+	//mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
 	
-	//mFrameBuffer.Unbind();
+	glPopMatrix();
+	mFrameBuffer.Unbind();
+	
+	glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius);
+	mFrameBuffer.Render();
 }
 
 

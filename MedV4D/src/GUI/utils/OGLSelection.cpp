@@ -8,7 +8,9 @@ boost::filesystem::path gPickingShaderPath = "./data/shaders/PickingShader.cgfx"
 void
 PickManager::initialize( unsigned aPickingRadius )
 {
+	mPickingRadius = aPickingRadius;
 	mCgEffect.Initialize( gPickingShaderPath );
+	mFrameBuffer.Initialize( 2*mPickingRadius, 2*mPickingRadius );
 }
 
 void

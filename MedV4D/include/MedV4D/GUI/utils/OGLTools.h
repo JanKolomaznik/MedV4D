@@ -4,6 +4,8 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include <boost/shared_array.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #ifdef _MSC_VER
 # define WIN32_LEAN_AND_MEAN 1
@@ -36,6 +38,7 @@
 namespace M4D
 {
 
+	
 class GLException: public M4D::ErrorHandling::ExceptionBase
 {
 public:
@@ -45,9 +48,12 @@ public:
 
 struct GLViewSetup
 {
-	GLdouble model[16];
-	GLdouble proj[16];
-	GLint view[4];
+	glm::dmat4x4 modelView;
+	glm::dmat4x4 projection;
+	glm::ivec4  viewport;
+	//GLdouble model[16];
+	//GLdouble proj[16];
+	//GLint view[4];
 };
 
 std::ostream &

@@ -821,7 +821,7 @@ GeneralViewer::initializeRenderingEnvironment()
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.Initialize();
 	
-	mPickManager.initialize( 50 );D_PRINT("REMOVE THIS" );
+	mPickManager.initialize( 100 );D_PRINT("REMOVE THIS" );
 }
 
 bool
@@ -937,7 +937,8 @@ GeneralViewer::render()
 		ASSERT( false );
 	}
 	
-	mPickManager.render( Vector2i( 200,200 ), AAAHELPER() );D_PRINT("REMOVE THIS" );
+	GLViewSetup  setup = getCurrentGLViewSetup();
+	mPickManager.render( Vector2i( 200,200 ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );
 }
 
 void
@@ -956,7 +957,7 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			//LOG( mGLViewSetup );
 			try{
 				direction = getDirectionFromScreenCoordinatesAndCameraPosition(
-				       	Vector2f( event->posF().x(), mGLViewSetup.view[3] - event->posF().y() ), 
+				       	Vector2f( event->posF().x(), mGLViewSetup.viewport[3] - event->posF().y() ), 
 					mGLViewSetup, 
 					getCameraPosition()					 
 					);				
