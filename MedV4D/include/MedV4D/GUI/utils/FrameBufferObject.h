@@ -54,6 +54,7 @@ public:
 	void
 	Render()
 	{
+		M4D::GLPushAtribs pushAttribs;
 		GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
 		GL_CHECKED_CALL( glLoadIdentity() );
 		GL_CHECKED_CALL( glMatrixMode( GL_MODELVIEW ) );

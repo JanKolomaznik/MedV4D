@@ -8,7 +8,7 @@ CGcontext gCgContext;
 
 void
 InitializeCg()
-{
+{//TODO - check if design with global variables is proper one
 	if ( gIsCgInitialized ) {
 		LOG( "Cg already initialized" );
 		return;

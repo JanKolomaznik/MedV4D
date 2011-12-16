@@ -9,6 +9,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 
+#include "MedV4D/GUI/utils/OGLSelection.h"
 
 namespace M4D
 {
@@ -232,6 +233,11 @@ protected:
 	size_t mLastMeasurement;
 	bool mEnableFPS;
 	QLabel *mFPSLabel;
+	
+		
+	
+	M4D::PickManager mPickManager;
+	int tmpX,tmpY;
 };
 
 

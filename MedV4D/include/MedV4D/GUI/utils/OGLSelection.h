@@ -47,25 +47,39 @@ template< typename TFunctor >
 void
 PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor )
 {
-	mFrameBuffer.Bind();
+	//try {
 	M4D::GLPushAtribs pushAttribs;
+	//mFrameBuffer.Bind();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::dmat4x4 pick = glm::pickMatrix(
 			glm::dvec2(aScreenCoordinates[0],aScreenCoordinates[1]),
 			glm::dvec2(mPickingRadius,mPickingRadius),
 			aViewSetup.viewport
 		);
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glLoadMatrixd( glm::value_ptr(pick*aViewSetup.projection) );
-	//glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius);
-	
-	//mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
-	
-	glPopMatrix();
-	mFrameBuffer.Unbind();
-	
+	GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
+	GL_CHECKED_CALL( glPushMatrix() );
+	GL_CHECKED_CALL( glLoadMatrixd( glm::value_ptr(pick*aViewSetup.projection) ) );
 	glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius);
-	mFrameBuffer.Render();
+	//glViewport(0, 0, 2*mPickingRadius, 2*mPickingRadius);
+	
+	mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
+	
+	//glClearColor(0.2f,0.2f, 0.3f, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	GL_CHECKED_CALL( glPopMatrix() );
+	//mFrameBuffer.Unbind();
+	
+	//GL_CHECKED_CALL( glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius) );
+	//mFrameBuffer.Render();
+	CheckForGLError( "Selection rendering" );
+	/*} catch (std::exception &e) {
+		LOG( e.what() );
+		throw;
+	} catch(...) {
+		LOG( "Picking error" );
+		throw;
+	}*/
 }
 
 

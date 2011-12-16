@@ -17,14 +17,6 @@ namespace Viewer
 {
 	
 	
-struct AAAHELPER
-{
-	void operator()()
-	{
-		drawCylinder( Vector3f(), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
-	}
-};
-
 ViewerController::ViewerController()
 {
 	mCameraOrbitButton = Qt::MidButton;
@@ -820,8 +812,7 @@ GeneralViewer::initializeRenderingEnvironment()
 {
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.Initialize();
-	
-	mPickManager.initialize( 100 );D_PRINT("REMOVE THIS" );
+
 }
 
 bool
@@ -936,9 +927,6 @@ GeneralViewer::render()
 	default:
 		ASSERT( false );
 	}
-	
-	GLViewSetup  setup = getCurrentGLViewSetup();
-	mPickManager.render( Vector2i( 200,200 ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );
 }
 
 void

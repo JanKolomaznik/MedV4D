@@ -11,6 +11,16 @@ namespace GUI
 namespace Viewer
 {
 
+struct AAAHELPER
+{
+	void operator()()
+	{
+		drawCylinder( Vector3f(), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
+		
+		drawCylinder( Vector3f( 200.0, 200.0, 100.0f), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
+	}
+};
+
 
 AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false ), mLastMeasurement( 0 ), mEnableFPS( false )
 {
@@ -72,10 +82,13 @@ void
 AGLViewer::initializeGL()
 {
 	InitOpenGL();
+	InitializeCg();
 	glClearColor( mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF() );
 	
 	mFrameBufferObject.Initialize( width(), height() );
 
+	mPickManager.initialize( 150 );D_PRINT("REMOVE THIS" );
+	
 	initializeRenderingEnvironment();
 }
 
@@ -106,16 +119,19 @@ AGLViewer::paintGL()
 		finalizeAfterRenderingStep();
 		//****************************************
 
+		GLViewSetup  setup = getCurrentGLViewSetup();
+		mPickManager.render( Vector2i( tmpX,tmpY ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );
+		
 		M4D::CheckForGLError( "OGL error occured during rendering: " );
 		
 		mFrameBufferObject.Unbind();
 
 		mFrameBufferObject.Render();
-
 	} else {
 		//D_PRINT( "Rendering not possible at the moment" );
 	}
-
+	
+	
 	if( mSelected ) {
 		GL_CHECKED_CALL( glDisable(GL_DEPTH_TEST ) );
 		GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
@@ -217,6 +233,9 @@ AGLViewer::mouseMoveEvent ( QMouseEvent * event )
 void	
 AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
+	tmpX = event->x();
+	tmpY = height() - event->y();
+	update();
 	ViewerManager::getInstance()->selectViewer( this );
 
 	if ( mViewerController && mViewerController->mouseDoubleClickEvent( mViewerState, getMouseEventInfo( event ) ) ) {

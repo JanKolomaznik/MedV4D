@@ -109,7 +109,7 @@ struct GLPushAtribs
 	}
 	~GLPushAtribs()
 	{
-		glPopAttrib();
+		GL_CHECKED_CALL( glPopAttrib() );
 	}
 };
 

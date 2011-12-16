@@ -25,7 +25,7 @@
 
 #include "MedV4D/Common/Types.h"
 
-#include "MedV4D/GUI/utils/OGLSelection.h"
+
 
 namespace M4D
 {
@@ -453,9 +453,7 @@ protected:
 	RenderingExtension::Ptr mRenderingExtension;
 
 	Vector4i mSliceCountForRenderingQualities;
-	
-	
-	M4D::PickManager mPickManager;
+
 private:
 	ViewerState &
 	getViewerState()

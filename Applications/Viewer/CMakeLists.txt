@@ -33,12 +33,30 @@ SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_EXECUTABLES_OUTPUT_DIRECTORY} )
 
 OPTION(EXTENSION_MODULES_ENABLED "Enable applications extension modules" OFF)
 
-#IF( EXTENSION_MODULES_ENABLED )
-#	ADD_DEFINITIONS(-DEXTENSION_MODULES_ENABLED)
-#	TARGET_MEDV4D_PROGRAM( Viewer . )
-#ELSE( EXTENSION_MODULES_ENABLED )
-#	TARGET_MEDV4D_PROGRAM_NONRECURSIVE( Viewer . )
-#ENDIF( EXTENSION_MODULES_ENABLED )
+IF( EXTENSION_MODULES_ENABLED )
+	ADD_DEFINITIONS(-DEXTENSION_MODULES_ENABLED)
+	SET( EXTENSION_SOURCES 
+		"AnnotationModule/AnnotationEditorController.cpp"
+		"ShoulderMeasurementModule/Computations.cpp"
+		"ShoulderMeasurementModule/ShoulderMeasurementController.cpp"
+		"ShoulderMeasurementModule/ShoulderMeasurementModule.cpp"
+	)
+	SET( EXTENSION_HEADERS
+		"AnnotationModule/AnnotationEditorController.hpp"
+		"AnnotationModule/AnnotationModule.hpp"
+		"AnnotationModule/AnnotationSettingsDialog.hpp"
+		"AnnotationModule/AnnotationWidget.hpp"
+		"ShoulderMeasurementModule/Computations.hpp"
+		"ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
+		"ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
+		"ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
+		)
+	SET( EXTENSION_UIS
+		"AnnotationModule/AnnotationSettingsDialog.ui"
+		"AnnotationModule/AnnotationWidget.ui"
+		"ShoulderMeasurementModule/ShoulderMeasurementWidget.ui"
+		)
+ENDIF( EXTENSION_MODULES_ENABLED )
 
 
 SET( VIEWER_HEADERS 
@@ -52,9 +70,9 @@ SET( VIEWER_UI
 	"ViewerWindow.ui"
 	)
 
-INCLUDE_DIRECTORIES( ${MEDV4D_INCLUDE_DIR} ${MEDV4D_INCLUDE_DIRS_3RD_PARTY} ${CMAKE_CURRENT_BINARY_DIR} )
+INCLUDE_DIRECTORIES( ${MEDV4D_INCLUDE_DIR} ${MEDV4D_INCLUDE_DIRS_3RD_PARTY} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/StandardCompileOptions.cmake" NO_POLICY_SCOPE)
-ADD_MEDV4D_EXECUTABLE( Viewer SOURCES ${VIEWER_SOURCES} HEADERS ${VIEWER_HEADERS} UIS ${VIEWER_UI} )
+ADD_MEDV4D_EXECUTABLE( Viewer SOURCES ${VIEWER_SOURCES} ${EXTENSION_SOURCES} HEADERS ${VIEWER_HEADERS} ${EXTENSION_HEADERS} UIS ${VIEWER_UI} ${EXTENSION_UIS} )
 TARGET_LINK_LIBRARIES( Viewer ${MEDV4D_LIBRARIES} ${MEDV4D_LIBRARIES_3RD_PARTY} )
 ###############################
 ## OIS
