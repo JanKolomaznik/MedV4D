@@ -103,13 +103,31 @@ InitOpenGL();
 
 struct GLPushAtribs
 {
-	GLPushAtribs()
+	GLPushAtribs(GLbitfield attribs = GL_ALL_ATTRIB_BITS )
 	{
-		GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
+		GL_CHECKED_CALL( glPushAttrib( attribs ) );
 	}
 	~GLPushAtribs()
 	{
 		GL_CHECKED_CALL( glPopAttrib() );
+	}
+};
+
+struct GLPushMatrices
+{
+	GLPushMatrices()
+	{
+		GL_CHECKED_CALL( glMatrixMode(GL_PROJECTION) );
+		GL_CHECKED_CALL( glPushMatrix() );
+		GL_CHECKED_CALL( glMatrixMode(GL_MODELVIEW) );
+		GL_CHECKED_CALL( glPushMatrix() );
+	}
+	~GLPushMatrices()
+	{
+		GL_CHECKED_CALL( glMatrixMode(GL_MODELVIEW) );
+		GL_CHECKED_CALL( glPopMatrix() );
+		GL_CHECKED_CALL( glMatrixMode(GL_PROJECTION) );
+		GL_CHECKED_CALL( glPopMatrix() );
 	}
 };
 

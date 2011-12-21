@@ -351,6 +351,50 @@ GLDraw2DImage(
 	glEnd();
 }
 
+void
+DrawRectangleOverViewPort( const Vector2f &aFirst, const Vector2f &aSecond )
+{
+	M4D::GLPushAtribs pushAttribs;
+	GLPushMatrices pushMatrices;
+	Vector4i viewport;
+	GL_CHECKED_CALL( glGetIntegerv( GL_VIEWPORT, (GLint *)&viewport ) );
+	
+	GL_CHECKED_CALL( glMatrixMode(GL_PROJECTION) );
+	GL_CHECKED_CALL( glLoadIdentity() );
+	GL_CHECKED_CALL( glOrtho( 
+		(double)viewport[0], 
+		(double)viewport[0]+viewport[2],
+		(double)viewport[1],
+		(double)viewport[1]+viewport[3], 
+		-1.0, 
+		1.0
+		) );
+
+	GL_CHECKED_CALL( glMatrixMode(GL_MODELVIEW) );
+	GL_CHECKED_CALL( glLoadIdentity() );
+	
+	Vector2f point1 = aFirst;
+	Vector2f point3 = aSecond;
+
+	Vector2f point2( point3[0], point1[1] );
+	Vector2f point4( point1[0], point3[1] );
+	
+	glBegin( GL_QUADS );
+		GLVertexVector( point1 );
+
+		GLVertexVector( point2 );
+
+		GLVertexVector( point3 );
+
+		GLVertexVector( point4 );
+	glEnd();
+	CheckForGLError( "DrawRectangleOverViewPort" );
+}
+void
+DrawRectangleOverViewPort( float aFirstX, float aFirstY, float aSecondX, float aSecondY )
+{
+	DrawRectangleOverViewPort( Vector2f( aFirstX, aFirstY ), Vector2f( aSecondX, aSecondY ) );
+}
 
 void
 GLDrawImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation )

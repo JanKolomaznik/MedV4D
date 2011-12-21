@@ -51,6 +51,10 @@ PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup,
 	M4D::GLPushAtribs pushAttribs;
 	//mFrameBuffer.Bind();
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glColor4f( 0.0f, 0.0f, 0.3f, 0.5f );
+	DrawRectangleOverViewPort(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius);
+	
 	glm::dmat4x4 pick = glm::pickMatrix(
 			glm::dvec2(aScreenCoordinates[0],aScreenCoordinates[1]),
 			glm::dvec2(mPickingRadius,mPickingRadius),

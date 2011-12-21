@@ -79,8 +79,11 @@ GLDrawImageData( const ImageRegionType &image, bool linearInterpolation );
 void
 GLDrawImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation );
 
+void
+DrawRectangleOverViewPort( const Vector2f &aFirst, const Vector2f &aSecond );
 
-
+void
+DrawRectangleOverViewPort( float aFirstX, float aFirstY, float aSecondX, float aSecondY );
 
 template< typename ImageRegionType >
 GLuint
