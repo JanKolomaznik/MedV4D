@@ -357,6 +357,7 @@ DrawRectangleOverViewPort( const Vector2f &aFirst, const Vector2f &aSecond )
 	M4D::GLPushAtribs pushAttribs;
 	GLPushMatrices pushMatrices;
 	Vector4i viewport;
+	GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 	GL_CHECKED_CALL( glGetIntegerv( GL_VIEWPORT, (GLint *)&viewport ) );
 	
 	GL_CHECKED_CALL( glMatrixMode(GL_PROJECTION) );
@@ -381,6 +382,7 @@ DrawRectangleOverViewPort( const Vector2f &aFirst, const Vector2f &aSecond )
 	
 	glBegin( GL_QUADS );
 		GLVertexVector( point1 );
+		D_PRINT( point1 );
 
 		GLVertexVector( point2 );
 
