@@ -32,12 +32,18 @@ public:
 	void
 	Initialize( unsigned aWidth, unsigned aHeight )
 	{
+		Initialize( aWidth, aHeight, GL_RGBA32F );
+	}
+	
+	void
+	Initialize( unsigned aWidth, unsigned aHeight, GLint aInternalFormat )
+	{
 		GL_CHECKED_CALL( glGenFramebuffersEXT( 1, &mFrameBufferObject ) );
 		GL_CHECKED_CALL( glGenRenderbuffersEXT( 1, &mDepthBuffer ) );
 		GL_CHECKED_CALL( glGenTextures( 1, &mColorTexture ) );
 
 		mInitialized = true;
-		Resize( aWidth, aHeight );
+		Resize( aWidth, aHeight, aInternalFormat );
 	}
 
 	void
@@ -90,7 +96,7 @@ public:
 	}
 
 	void
-	Resize( unsigned aWidth, unsigned aHeight )
+	Resize( unsigned aWidth, unsigned aHeight, GLint aInternalFormat = GL_RGBA32F )
 	{
 		ASSERT ( mInitialized );
 		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
@@ -109,7 +115,7 @@ public:
 		GL_CHECKED_CALL( glTexImage2D(
 					GL_TEXTURE_2D, 
 					0, 
-					GL_RGBA32F, 
+					aInternalFormat, 
 					aWidth, 
 					aHeight, 
 					0, 
