@@ -119,8 +119,8 @@ AGLViewer::paintGL()
 		finalizeAfterRenderingStep();
 		//****************************************
 
-		GLViewSetup  setup = getCurrentGLViewSetup();
-		mPickManager.render( Vector2i( tmpX,tmpY ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );//-----------------------------------------------------------------
+		//GLViewSetup  setup = getCurrentGLViewSetup();
+		//mPickManager.render( Vector2i( tmpX,tmpY ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );//-----------------------------------------------------------------
 		
 		M4D::CheckForGLError( "OGL error occured during rendering: " );
 		

@@ -6,6 +6,9 @@ struct FragmentOutput
 
 int gCurrentObjectID;
 
+float3 gColor;
+
+
 FragmentOutput
 fp_Picking( uniform int aCurrentObjectID )
 {
@@ -16,9 +19,7 @@ fp_Picking( uniform int aCurrentObjectID )
 
 technique PickingEffect {
 	pass t0 {
-		FragmentProgram = compile glslf fp_Picking( 
-							gCurrentObjectID
-							);
+		FragmentProgram = compile glslf fp_Picking();
 		DepthTestEnable = false;
 		DepthMask = true;
 		CullFaceEnable = false;
