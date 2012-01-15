@@ -10,7 +10,7 @@ class ViewerControls: public QWidget, public Ui::ViewerControls
 {
 	Q_OBJECT;
 public:
-	ViewerControls( QWidget *parent = NULL ): QWidget( parent )
+	ViewerControls( QWidget *parent = NULL ): QWidget( parent ), mUpdating( false )
 	{
 		setupUi( this );
 		updateControls();
@@ -43,6 +43,9 @@ public slots:
 		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 		if(pGenViewer != NULL) {
 			setEnabled( true );
+			
+			mUpdating = true;
+			
 			Vector2f win = pGenViewer->getLUTWindow();
 			windowCenterSpinBox->setValue( win[0] );
 			windowWidthSpinBox->setValue( win[1] );
@@ -53,15 +56,22 @@ public slots:
 			yIntervalASpinBox->setValue(y[0]); yIntervalBSpinBox->setValue(y[1]);
 			zIntervalASpinBox->setValue(z[0]); zIntervalBSpinBox->setValue(z[1]);
 
-			volumeRestrictionsGroupBox->setChecked( pGenViewer->isVolumeRestrictionEnabled() );		
+			volumeRestrictionsGroupBox->setChecked( pGenViewer->isVolumeRestrictionEnabled() );
+			
+			Vector2u grid = pGenViewer->getTiling();
+			viewportTilesRows->setValue( grid[0] );
+			viewportTilesCols->setValue( grid[1] );
+			sliceStep->setValue( pGenViewer->getTilingSliceStep() );
 		} else {
 			setEnabled( false );
 		}
+		mUpdating = false;
 	}
 
 	void
 	windowChanged()
 	{
+		if (mUpdating) return;
 		M4D::GUI::Viewer::AGLViewer *pViewer;
 		pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
@@ -74,6 +84,7 @@ public slots:
 	void
 	volumeRestrictionsChanged()
 	{
+		if (mUpdating) return;
 		M4D::GUI::Viewer::AGLViewer *pViewer;
 		pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
@@ -87,7 +98,21 @@ public slots:
 					);
 		}
 	}
+	
+	void
+	viewportTilingChanged()
+	{
+		if (mUpdating) return;
+		M4D::GUI::Viewer::AGLViewer *pViewer;
+		pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
+		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
+		if(pGenViewer != NULL) {
+			pGenViewer->setTiling( viewportTilesRows->value(), viewportTilesCols->value(), sliceStep->value() );
+		}
+	}
+private:
+	bool mUpdating;
 };
 
 #endif /*VIEWER_CONTROLS_H*/

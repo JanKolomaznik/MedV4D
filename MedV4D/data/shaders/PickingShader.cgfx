@@ -10,7 +10,7 @@ float3 gColor;
 
 
 FragmentOutput
-fp_Picking( uniform int aCurrentObjectID )
+fp_Picking(/* uniform int aCurrentObjectID */)
 {
 	FragmentOutput OUT;
 	OUT.color = float4( 1.0f, 0.0f, 0.0f, 1.0f );

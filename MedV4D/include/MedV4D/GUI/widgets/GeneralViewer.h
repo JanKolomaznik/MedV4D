@@ -9,6 +9,8 @@
 #include "MedV4D/GUI/utils/CgShaderTools.h"
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
+#include "MedV4D/GUI/utils/ViewerController.h"
+#include "MedV4D/GUI/utils/MouseTracking.h"
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
 
@@ -69,85 +71,8 @@ public:
 	bool 					mEnableVolumeBoundingBox;
 	QualityMode				mQualityMode;
 	
-};
-
-struct MouseTrackInfo
-{
-	void
-	startTracking( QPoint aLocalPosition, QPoint aGlobalPosition ) 
-	{
-		mStartLocalPosition = mLastLocalPosition = aLocalPosition;
-
-		mStartGlobalPosition = mLastGlobalPosition = aGlobalPosition;
-	}
-
-	QPoint
-	trackUpdate( QPoint aLocalPosition, QPoint aGlobalPosition )
-	{
-		QPoint diff = aLocalPosition - mLastLocalPosition;
-		mLastLocalPosition = aLocalPosition;
-
-		mLastGlobalPosition = aGlobalPosition;
-		return diff;
-	}
-
-	QPoint	mStartLocalPosition;
-	QPoint	mLastLocalPosition;
-
-	QPoint	mStartGlobalPosition;
-	QPoint	mLastGlobalPosition;
-};
-
-class ViewerController: public AViewerController
-{
-	Q_OBJECT;
-public:
-	typedef boost::shared_ptr< ViewerController > Ptr;
-	
-	enum InteractionMode { 
-		imNONE,
-		imORBIT_CAMERA,
-		imLUT_SETTING,
-		imFAST_SLICE_CHANGE,
-		imCUT_PLANE,
-		imCUT_PLANE_OFFSET
-	};
-
-	ViewerController();
-
-	bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
-
-	bool	
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
-
-	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
-
-	bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
-
-	bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
-
-protected slots:
-	virtual void
-	timerCall();
-
-protected:
-	Qt::MouseButton	mCameraOrbitButton;
-	Qt::MouseButton	mLUTSetMouseButton;
-	Qt::MouseButton	mFastSliceChangeMouseButton;
-	Qt::MouseButton	mCutPlaneOffsetButton;
-
-	Qt::KeyboardModifiers mCutPlaneKeyboardModifiers;
-
-	InteractionMode mInteractionMode;
-	MouseTrackInfo	mTrackInfo;
-
-	QTimer	mTimer;
-	GeneralViewer *mTmpViewer;
-	bool mPositive;
+	Vector2u				m2DMultiSliceGrid;
+	size_t					m2DMultiSliceStep;
 };
 
 class RenderingExtension
@@ -183,6 +108,17 @@ public:
 
 	GeneralViewer( QWidget *parent = NULL );
 
+	void
+	setTiling( unsigned aRows, unsigned aCols );
+	
+	void
+	setTiling( unsigned aRows, unsigned aCols, unsigned aSliceStep );
+	
+	Vector2u
+	getTiling() const;
+	
+	size_t
+	getTilingSliceStep() const;
 
 	void
 	setLUTWindow( float32 center, float32 width );
@@ -310,21 +246,15 @@ public:
 
 	Vector3f
 	getCameraPosition()const
-	{
-		return getViewerState().mVolumeRenderConfig.camera.GetEyePosition();
-	}
+	{ return getViewerState().mVolumeRenderConfig.camera.GetEyePosition(); }
 
 	Vector3f
 	getCameraTargetPosition()const
-	{
-		return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
-	}
+	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition(); }
 
 	Vector3f
 	getCameraTargetDirection()const
-	{
-		return getViewerState().mVolumeRenderConfig.camera.GetTargetDirection();
-	}
+	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetDirection(); }
 
 	void
 	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );
@@ -406,8 +336,6 @@ signals:
 
 	void
 	ColorTransformTypeChanged( int aColorTransform );
-
-
 
 protected:
 	void

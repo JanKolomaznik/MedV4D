@@ -74,7 +74,7 @@ public:
 	TViewerType &
 	getViewerWindow()
 	{
-		return *boost::polymorphic_cast< TViewerType *>( viewerWindow );
+		return *boost::polymorphic_cast< TViewerType *>( viewerWindow );//TODO exceptions
 	}
 };
 

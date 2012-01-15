@@ -126,6 +126,7 @@ AGLViewer::paintGL()
 		
 		mFrameBufferObject.Unbind();
 
+		GL_CHECKED_CALL( glViewport(0, 0, width(), height()) );
 		mFrameBufferObject.Render();
 	} else {
 		//D_PRINT( "Rendering not possible at the moment" );
