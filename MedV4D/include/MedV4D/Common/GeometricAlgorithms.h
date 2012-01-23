@@ -352,7 +352,7 @@ PointLineSegmentDistance(
 
 template< typename CoordType >
 inline IntersectionResult
-LinePlaneIntersection( 
+LineSegmentPlaneIntersection( 
 		const Vector< CoordType, 3 >	&lineA, 
 		const Vector< CoordType, 3 >	&lineB,
 		const Vector< CoordType, 3 >	&planePoint, 
@@ -388,6 +388,41 @@ LinePlaneIntersection(
 	return ie_UNIQUE_INTERSECTION;
 }
 
+template< typename CoordType >
+inline IntersectionResult
+AxisPlaneIntersection( 
+		const Vector< CoordType, 3 >	&linePoint, 
+		const Vector< CoordType, 3 >	&lineDirection,
+		const Vector< CoordType, 3 >	&planePoint, 
+		const Vector< CoordType, 3 >	&planeNormal,
+		Vector< CoordType, 3 >		&intersection
+		)
+{
+
+	Vector< CoordType, 3 > u(lineDirection);
+	VectorNormalization( u );
+	Vector< CoordType, 3 > w( linePoint - planePoint );
+
+	//only for debugging - ensure we aren't using random location later 
+	D_COMMAND( intersection = Vector< CoordType, 3 >(); );
+
+	CoordType D = planeNormal * u;
+	CoordType N = -planeNormal * w;
+
+	if ( abs(D) < Epsilon ) {          // segment is parallel to plane
+		if ( abs(N) < Epsilon ) {                   // segment lies in plane
+		    return ie_WHOLE_INSIDE;
+		} else {
+		    return ie_NO_INTERSECTION;                   // no intersection
+		}
+	}
+	// they are not parallel
+	// compute intersect param
+	CoordType sI = N / D;
+	
+	intersection = linePoint + sI * u;                 // compute segment intersect point
+	return ie_UNIQUE_INTERSECTION;
+}
 
 template< typename CoordType >
 bool

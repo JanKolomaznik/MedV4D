@@ -723,6 +723,8 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mSliceRenderConfig.targetPos = 0.5f*(getViewerState()._regionRealMax + getViewerState()._regionRealMin);
 			getViewerState().mSliceRenderConfig.up;
 			getViewerState().mSliceRenderConfig.eyePos = getViewerState().mSliceRenderConfig.targetPos;
+			getViewerState().mSliceRenderConfig.sliceCenter = 0.5f*(getViewerState()._regionRealMax + getViewerState()._regionRealMin);
+			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.imageData->GetElementExtents()[plane];
 			switch ( plane ) {
 			case YZ_PLANE:
 				getViewerState().mSliceRenderConfig.up = Vector3f( 0.0f, 0.0f, 1.0f );
@@ -891,23 +893,33 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 		break;
 	case vt2DAlignedSlices:
 		{
+			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
+			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
+			Vector3f eye = getViewerState().mSliceRenderConfig.eyePos;
+			Vector3f target = getViewerState().mSliceRenderConfig.targetPos;
+			Vector3f dir = target - eye;
+			VectorNormalization( dir );
+			Vector3f slicePoint = getViewerState().mSliceRenderConfig.sliceCenter;
 			Vector3d pom = getPointFromScreenCoordinates( Vector2f( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), mViewerState->glViewSetup );
 			//LOG( pom );
-			/*IntersectionResult res = LinePlaneIntersection( 
-					const Vector< CoordType, 3 >	&lineA, 
-					const Vector< CoordType, 3 >	&lineB,
-					const Vector< CoordType, 3 >	&planePoint, 
-					const Vector< CoordType, 3 >	&planeNormal,
-					Vector< CoordType, 3 >		&intersection
-					);*/
+			Vector3f intersection;
+			IntersectionResult res = AxisPlaneIntersection( 
+					Vector3f( pom ), 
+					dir,
+					slicePoint, 
+					dir,
+					intersection
+					);
+			//LOG( "Intersection res = " << res << "; " << intersection );
 			
-			Vector2f pos = GetRealCoordinatesFromScreen( 
+			/*Vector2f pos = GetRealCoordinatesFromScreen( 
 				Vector2f( event->posF().x(), event->posF().y() ), 
 				getViewerState().mWindowSize, 
 				getViewerState().mSliceRenderConfig.viewConfig 
 				);
-			float32 realSlice = getCurrentRealSlice();
-			Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
+			float32 realSlice = getCurrentRealSlice();*/
+			//Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
+			Vector3f position = intersection;
 			return MouseEventInfo( event, vt2DAlignedSlices, position );
 		}
 		break;

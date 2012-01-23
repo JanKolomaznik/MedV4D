@@ -96,7 +96,7 @@ GetPlaneVerticesInBoundingBox(
 		unsigned lineAIdx = GetBBoxEdgePointA( edgeOrder[minId][i] ); 
 		unsigned lineBIdx = GetBBoxEdgePointB( edgeOrder[minId][i] );
 		if( ie_UNIQUE_INTERSECTION == 
-				LinePlaneIntersection( bbox.vertices[ lineAIdx ], bbox.vertices[ lineBIdx ], planePoint, planeNormal, vertices[idx] ) 
+				LineSegmentPlaneIntersection( bbox.vertices[ lineAIdx ], bbox.vertices[ lineBIdx ], planePoint, planeNormal, vertices[idx] ) 
 		  ) {
 			++idx;
 			//center += vertices[idx];

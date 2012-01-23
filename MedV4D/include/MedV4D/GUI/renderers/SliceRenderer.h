@@ -55,6 +55,7 @@ struct SliceRenderer::RenderingConfiguration
 	Vector3f targetPos; //TODO - change
 	Vector3f up;
 	Vector3f eyePos;
+	Vector3f sliceCenter;
 
 	Vector3f
 	getCurrentRealSlice()const
