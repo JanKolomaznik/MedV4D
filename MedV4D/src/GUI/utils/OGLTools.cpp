@@ -50,6 +50,18 @@ operator<<( std::ostream & stream, const GLViewSetup &setup )
 	return stream;
 }
 
+Vector3d
+getPointFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, double aZValue )
+{
+	glm::dvec3 tmp = glm::unProject(
+		glm::dvec3( aScreenCoords[0], aScreenCoords[1], aZValue),
+		aViewSetup.modelView,
+		aViewSetup.projection,
+		aViewSetup.viewport
+	);
+	return Vector3d( glm::value_ptr(tmp) );
+}
+
 Vector3f
 getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, const Vector3f aCameraPos )
 {

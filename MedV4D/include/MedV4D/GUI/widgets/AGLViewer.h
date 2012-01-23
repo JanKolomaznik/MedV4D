@@ -70,6 +70,8 @@ public:
 	unsigned	availableViewTypes;
 	ViewType	viewType;
 
+	GLViewSetup 	glViewSetup;
+	
 	template< typename TViewerType >
 	TViewerType &
 	getViewerWindow()
@@ -117,7 +119,7 @@ public:
 	const GLViewSetup &
 	getCurrentGLViewSetup()const
 	{
-		return mGLViewSetup;
+		return mViewerState->glViewSetup;
 	}
 
 	void
@@ -183,7 +185,7 @@ protected:
 	void
 	updateGLViewSetupInfo()
 	{
-		getCurrentGLSetup( mGLViewSetup );
+		getCurrentGLSetup( mViewerState->glViewSetup );
 	}
 
 	void	
@@ -224,7 +226,7 @@ protected:
 	BaseViewerState::Ptr	mViewerState;
 	AViewerController::Ptr	mViewerController;
 
-	GLViewSetup mGLViewSetup;
+	//GLViewSetup mGLViewSetup;
 
 	bool mSelected;
 

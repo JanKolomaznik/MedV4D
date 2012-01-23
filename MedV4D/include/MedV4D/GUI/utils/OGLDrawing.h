@@ -66,6 +66,14 @@ GLDrawVolumeSlice(
 		);
 
 void
+GLDrawVolumeSlice3D(
+		const Vector< float32, 3 > 	&min, 
+		const Vector< float32, 3 > 	&max,
+		float32				sliceCoord,
+		CartesianPlanes			plane
+		);
+
+void
 GLDraw2DImage(
 		const Vector< float32, 2 > 	&min, 
 		const Vector< float32, 2 > 	&max

@@ -51,6 +51,10 @@ struct SliceRenderer::RenderingConfiguration
 	const GLTextureImage3D			*imageData;
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;
+	
+	Vector3f targetPos; //TODO - change
+	Vector3f up;
+	Vector3f eyePos;
 
 	Vector3f
 	getCurrentRealSlice()const

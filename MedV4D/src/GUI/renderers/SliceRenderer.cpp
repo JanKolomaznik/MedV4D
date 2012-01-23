@@ -78,7 +78,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 
 	mCgEffect.ExecuteTechniquePass( 
 			techniqueName, 
-			boost::bind( &M4D::GLDrawVolumeSlice, 
+			boost::bind( &M4D::GLDrawVolumeSlice3D, 
 				aConfig.imageData->GetMinimum(), 
 				aConfig.imageData->GetMaximum(), 
 				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.imageData->GetElementExtents()[aConfig.plane], 

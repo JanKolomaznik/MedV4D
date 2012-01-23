@@ -62,6 +62,9 @@ operator<<( std::ostream & stream, const GLViewSetup &setup );
 void 
 getCurrentGLSetup( GLViewSetup &aSetup );
 
+Vector3d
+getPointFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, double aZValue = 0.0 );
+
 Vector3f
 getDirectionFromScreenCoordinatesAndCameraPosition( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, const Vector3f aCameraPos );
 

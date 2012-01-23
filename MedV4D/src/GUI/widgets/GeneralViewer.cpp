@@ -711,7 +711,60 @@ GeneralViewer::prepareForRenderingStep()
 		break;
 	case vt2DAlignedSlices:
 		{
-			SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
+			//SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
+			
+			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
+			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
+			CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
+			Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane ); 
+			Vector2f regMax = VectorPurgeDimension( getViewerState()._regionRealMax, plane );
+			Vector2f size = regMax - regMin;
+			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
+			getViewerState().mSliceRenderConfig.targetPos = 0.5f*(getViewerState()._regionRealMax + getViewerState()._regionRealMin);
+			getViewerState().mSliceRenderConfig.up;
+			getViewerState().mSliceRenderConfig.eyePos = getViewerState().mSliceRenderConfig.targetPos;
+			switch ( plane ) {
+			case YZ_PLANE:
+				getViewerState().mSliceRenderConfig.up = Vector3f( 0.0f, 0.0f, 1.0f );
+				getViewerState().mSliceRenderConfig.eyePos[0] += 500.0f;
+				break;
+			case XZ_PLANE:
+				getViewerState().mSliceRenderConfig.up = Vector3f( 0.0f, 0.0f, 1.0f );
+				getViewerState().mSliceRenderConfig.eyePos[1] += 500.0f;
+				break;
+			case XY_PLANE:
+				getViewerState().mSliceRenderConfig.up = Vector3f( 0.0f, 1.0f, 0.0f );
+				getViewerState().mSliceRenderConfig.eyePos[2] += 500.0f;
+				break;
+			default:
+				ASSERT( false );
+			}
+			//eyePos = Vector3f( eyePos[0], eyePos[1], 500.0f);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glOrtho( 
+				0.5*double(-subVPortW)/zoom, 
+				0.5*double(subVPortW)/zoom, 
+				0.5*double(-subVPortH)/zoom, 
+				0.5*double(subVPortH)/zoom, 
+				-1000.0, 
+				1000.0
+				);
+			
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(	
+				getViewerState().mSliceRenderConfig.eyePos[0], 
+				getViewerState().mSliceRenderConfig.eyePos[1], 
+				getViewerState().mSliceRenderConfig.eyePos[2], 
+				getViewerState().mSliceRenderConfig.targetPos[0], 
+				getViewerState().mSliceRenderConfig.targetPos[1], 
+				getViewerState().mSliceRenderConfig.targetPos[2], 
+				getViewerState().mSliceRenderConfig.up[0], 
+				getViewerState().mSliceRenderConfig.up[1], 
+				getViewerState().mSliceRenderConfig.up[2]
+				);
+			
 		}
 		break;
 	default:
@@ -767,26 +820,27 @@ GeneralViewer::render()
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
 			//size_t sliceOffset = 0;
 			Renderer::SliceRenderer::RenderingConfiguration config = getViewerState().mSliceRenderConfig;
-			if( getViewerState().m2DMultiSliceGrid[0] * getViewerState().m2DMultiSliceGrid[1] > 1 ) {
+			/*if( getViewerState().m2DMultiSliceGrid[0] * getViewerState().m2DMultiSliceGrid[1] > 1 ) {
 				config.viewConfig = GetOptimalViewConfiguration(
 					VectorPurgeDimension( getViewerState()._regionRealMin, config.plane ), 
 					VectorPurgeDimension( getViewerState()._regionRealMax, config.plane ),
 					Vector< uint32, 2 >( (uint32)subVPortW, (uint32)subVPortH ), 
 					ztFIT );
-			}
+			}*/
 			for ( unsigned j = 0; j < getViewerState().m2DMultiSliceGrid[0]; ++j ) {
 				for ( unsigned i = 0; i < getViewerState().m2DMultiSliceGrid[1]; ++i ) {
 					
 					GL_CHECKED_CALL( glViewport( i * subVPortW, j * subVPortH, subVPortW, subVPortH ) );
-					SetToViewConfiguration2D( config.viewConfig );
+					//SetToViewConfiguration2D( config.viewConfig );
 					
 					try {
 						getViewerState().mSliceRenderer.Render( config, false );
 					}catch( std::exception &e ) {
 						LOG( e.what() );
 					}
-
+					
 					glClear( GL_DEPTH_BUFFER_BIT );
+					/*
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = config.getCurrentRealSlice();
@@ -796,7 +850,7 @@ GeneralViewer::render()
 								Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
 								config.plane 
 								);	
-					}
+					}*/
 					//sliceOffset += getViewerState().m2DMultiSliceStep;
 					config.currentSlice[ config.plane ] += getViewerState().m2DMultiSliceStep;
 				} 
@@ -821,11 +875,11 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 	case vt3D:
 		{
 			Vector3f direction;
-			//LOG( mGLViewSetup );
+			//LOG( mViewerState->glViewSetup );
 			try{
 				direction = getDirectionFromScreenCoordinatesAndCameraPosition(
-				       	Vector2f( event->posF().x(), mGLViewSetup.viewport[3] - event->posF().y() ), 
-					mGLViewSetup, 
+				       	Vector2f( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), 
+					mViewerState->glViewSetup, 
 					getCameraPosition()					 
 					);				
 			} catch (...){
@@ -837,6 +891,16 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 		break;
 	case vt2DAlignedSlices:
 		{
+			Vector3d pom = getPointFromScreenCoordinates( Vector2f( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), mViewerState->glViewSetup );
+			//LOG( pom );
+			/*IntersectionResult res = LinePlaneIntersection( 
+					const Vector< CoordType, 3 >	&lineA, 
+					const Vector< CoordType, 3 >	&lineB,
+					const Vector< CoordType, 3 >	&planePoint, 
+					const Vector< CoordType, 3 >	&planeNormal,
+					Vector< CoordType, 3 >		&intersection
+					);*/
+			
 			Vector2f pos = GetRealCoordinatesFromScreen( 
 				Vector2f( event->posF().x(), event->posF().y() ), 
 				getViewerState().mWindowSize, 
