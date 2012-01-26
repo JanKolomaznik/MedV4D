@@ -3,6 +3,8 @@
 
 #include "AnnotationModule/AnnotationWidget.hpp"
 
+#include "MedV4D/GUI/utils/OGLTools.h"
+
 
 //**************************************************************************
 //**************************************************************************
@@ -176,7 +178,7 @@ AnnotationEditorController::getAvailableViewTypes()const
 void
 AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, CartesianPlanes aPlane )
 {
-	GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
+	M4D::GLPushAtribs attribs;
 
 	GL_CHECKED_CALL( glEnable( GL_POINT_SMOOTH ) );
 	GL_CHECKED_CALL( glEnable( GL_BLEND ) );
@@ -187,7 +189,7 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 	
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
 
-	drawPointSet2D( mPoints.begin(), mPoints.end(), aInterval, aPlane );
+	/*drawPointSet2D( mPoints.begin(), mPoints.end(), aInterval, aPlane );
 
 	drawLineSet2D( mLines.begin(), mLines.end(), aInterval, aPlane );
 
@@ -196,11 +198,17 @@ AnnotationEditorController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aIn
 		float r2 = M4D::sqr( mSpheres[i].radius() ) - M4D::sqr( mSpheres[i].center()[ aPlane ] - 0.5*(aInterval[0]+aInterval[1]) );
 		if ( r2 > 0.0f ) { 
 			Vector2f pos = VectorPurgeDimension( mSpheres[i].center(), aPlane );
-			M4D::drawCircle( pos, sqrt( r2 ) /*mSpheres[i].radius()*/ );
+			M4D::drawCircle( pos, sqrt( r2 ) );
 		}
-	}
+	}*/
+	
+	renderPoints3D();
 
-	GL_CHECKED_CALL( glPopAttrib() );
+	renderLines3D();
+
+	renderSpheres3D();
+	
+	renderAngles3D();
 }
 
 void

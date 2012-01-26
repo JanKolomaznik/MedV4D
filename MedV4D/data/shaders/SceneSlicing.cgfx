@@ -1,0 +1,69 @@
+#include "DataStructures.inc"
+
+float3 gPlaneNormal;
+float3 gPlanePoint;
+float gPlaneWidth;
+
+
+float4x4 gModelViewProj;// : glstate.matrix.modelview[0];
+float4x4 gModelMatrix;
+float4x4 gProjMatrix;
+float4x4 gViewMatrix;
+
+struct SVertexOutput
+{
+	float4 tposition : POSITION;
+	float4 color    : COLOR0;
+	float3 position : TEXCOORD0;
+};
+
+SVertexOutput
+vp_vertexPassThru
+	(
+		float4 position  : POSITION,
+		float4 color     : COLOR0
+	)
+{
+	SVertexOutput result;
+	result.position = mul( gModelMatrix, position ).xyz;
+	result.color    = color;
+	result.tposition = mul( gModelViewProj, position );
+	return result;
+}
+
+FragmentOutput
+fp_sliceGeometry(
+		float4 color    : COLOR0,
+		float3 position : TEXCOORD0,
+		uniform float3 aPlaneNormal,
+		uniform float3 aPlanePoint,
+		uniform float aPlaneWidth
+		)
+{
+	FragmentOutput output;
+
+	if ( abs(dot(aPlaneNormal, (aPlanePoint - position))) < aPlaneWidth ) {
+		output.color.xyz = float4( 0.0f, 1.0f, 0.0f, 1.0f );//color;
+	} else {
+		output.color.xyz = float4( 1.0f, 0.0f, 0.0f, 1.0f );
+	}
+	output.color.w = 1.0f;
+	return output;
+}
+
+technique SceneSlicing  {
+	pass t0 {
+		VertexProgram = compile glslv vp_vertexPassThru();
+		FragmentProgram = compile glslf fp_sliceGeometry(
+						gPlaneNormal,
+						gPlanePoint,
+						gPlaneWidth);
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}

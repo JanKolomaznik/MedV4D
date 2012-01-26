@@ -25,6 +25,12 @@ SetToViewConfiguration2D( const ViewConfiguration2D &config );
 void
 SetViewAccordingToCamera( const Camera &camera );
 
+GLViewSetup
+getViewSetupFromCamera( const Camera &camera );
+
+void
+getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView );
+
 void
 SetVolumeTextureCoordinateGeneration( const Vector< float, 3 > &minCoord, const Vector< float, 3 > &size );
 

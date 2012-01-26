@@ -92,7 +92,7 @@ enum TFConfigurationFlags{
 };
 
 void
-VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
+VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
 	ASSERT( aConfig.imageData != NULL );
 
@@ -107,12 +107,12 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
 	};
 
-	if( aSetupView ) {
+	/*if( aSetupView ) {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		//Set viewing parameters
 		M4D::SetViewAccordingToCamera( aConfig.camera );
-	}
+	}*/
 	glMatrixMode(GL_MODELVIEW);
 	
 	size_t sliceCount = aConfig.sampleCount;
@@ -162,8 +162,9 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
 	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 
-	mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
-
+	//mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
+	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
+	
 	std::string techniqueName;
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:

@@ -682,6 +682,8 @@ GeneralViewer::initializeRenderingEnvironment()
 {
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.Initialize();
+	
+	getViewerState().mSceneSlicingCgEffect.Initialize( "data/shaders/SceneSlicing.cgfx" );
 }
 
 bool
@@ -706,7 +708,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mVolumeRenderConfig.camera.SetAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
 			SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
-			//updateGLViewSetupInfo();
+			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.camera );
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -741,6 +743,8 @@ GeneralViewer::prepareForRenderingStep()
 			default:
 				ASSERT( false );
 			}
+			getViewerState().mSliceRenderConfig.sliceNormal = getViewerState().mSliceRenderConfig.targetPos - getViewerState().mSliceRenderConfig.eyePos;
+			VectorNormalization( getViewerState().mSliceRenderConfig.sliceNormal );
 			//eyePos = Vector3f( eyePos[0], eyePos[1], 500.0f);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -804,7 +808,7 @@ GeneralViewer::render()
 			}
 
 			try {
-				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, false );
+				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
 			}catch( std::exception &e ) {
 				LOG( e.what() );
 			}
@@ -842,17 +846,30 @@ GeneralViewer::render()
 					}
 					
 					glClear( GL_DEPTH_BUFFER_BIT );
-					/*
+					/*if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
+						
+					}*/
+					
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = config.getCurrentRealSlice();
 						Vector3f hextents = 0.5f * getViewerState()._elementExtents;
-
-						mRenderingExtension->render2DAlignedSlices( config.currentSlice[ config.plane ], 
+						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
+						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
+						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneWidth", 10.0f );
+						getViewerState().mSceneSlicingCgEffect.ExecuteTechniquePass( 
+									"SceneSlicing", 
+									boost::bind( &M4D::GUI::Viewer::RenderingExtension::render2DAlignedSlices,
+									mRenderingExtension,
+									config.currentSlice[ config.plane ], 
+									Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
+									config.plane
+									) );
+						/*mRenderingExtension->render2DAlignedSlices( config.currentSlice[ config.plane ], 
 								Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
 								config.plane 
-								);	
-					}*/
+								);*/
+					}
 					//sliceOffset += getViewerState().m2DMultiSliceStep;
 					config.currentSlice[ config.plane ] += getViewerState().m2DMultiSliceStep;
 				} 

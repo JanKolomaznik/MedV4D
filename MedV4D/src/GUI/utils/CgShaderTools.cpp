@@ -135,6 +135,15 @@ CgEffect::SetParameter( std::string aName, int aValue )
 }
 
 void
+CgEffect::SetParameter( std::string aName, const glm::dmat4x4 &aMatrix )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetMatrixParameterdr( cgParameter, glm::value_ptr( aMatrix ) );
+}
+
+void
 CgEffect::SetParameter( std::string aName, const BoundingBox3D &aValue )
 {
 	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, TO_STRING( aName << ".vertices" ).data() );
@@ -171,11 +180,20 @@ CgEffect::SetParameter( std::string aName, const int *aValue, size_t aCount )
 }
 
 void
-CgEffect::SetParameter( std::string aName, const M4D::Planef aPlane )
+CgEffect::SetParameter( std::string aName, const M4D::Planef &aPlane )
 {
 	SetParameter( TO_STRING( aName << ".point" ), static_cast< const Vector3f &>( aPlane.point() ) );
 
 	SetParameter( TO_STRING( aName << ".normal" ), aPlane.normal() );
+}
+
+void
+CgEffect::SetParameter( std::string aName, const M4D::GLViewSetup &aViewSetup )
+{
+	SetParameter( TO_STRING( aName << ".modelViewProj" ), aViewSetup.modelViewProj );
+	SetParameter( TO_STRING( aName << ".modelMatrix" ), aViewSetup.model );
+	SetParameter( TO_STRING( aName << ".projMatrix" ), aViewSetup.projection );
+	SetParameter( TO_STRING( aName << ".viewMatrix" ), aViewSetup.view );
 }
 
 

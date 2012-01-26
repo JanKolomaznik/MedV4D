@@ -76,7 +76,8 @@ BasicSliceViewer::RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer )
 			case rt3D: {
 					M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration config = mVolumeRenderConfig;
 					config.camera.SetAspectRatio( x );
-					mVolumeRenderer.Render( config );
+					ASSERT( false ); //change in interfaces
+					//mVolumeRenderer.Render( config );
 				}
 				break;
 			case rt2DAlignedSlices: {
@@ -226,8 +227,8 @@ BasicSliceViewer::render()
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				M4D::GLDrawBoundingBox( mVolumeRenderConfig.imageData->GetMinimum(), mVolumeRenderConfig.imageData->GetMaximum() );
 			}
-
-			mVolumeRenderer.Render( mVolumeRenderConfig, false );
+			ASSERT( false ); //change in interfaces
+			//mVolumeRenderer.Render( mVolumeRenderConfig, false );
 		}
 		break;
 	case rt2DAlignedSlices:

@@ -73,6 +73,9 @@ public:
 	
 	Vector2u				m2DMultiSliceGrid;
 	size_t					m2DMultiSliceStep;
+	
+	
+	CgEffect mSceneSlicingCgEffect;
 };
 
 class RenderingExtension

@@ -119,6 +119,17 @@ SetViewAccordingToCamera( const Camera &camera )
 		);
 }
 
+GLViewSetup
+getViewSetupFromCamera( const Camera &camera )
+{
+	GLViewSetup setup;
+	
+	getProjectionAndViewMatricesFromCamera( camera, setup.projection, setup.view );
+	setup.modelView = setup.view;
+	setup.modelViewProj = setup.modelView * setup.projection;
+	return setup;
+}
+
 void
 getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView )
 {	

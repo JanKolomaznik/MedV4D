@@ -18,6 +18,8 @@ getCurrentGLSetup( GLViewSetup &aSetup )
 {
 	glGetDoublev( GL_PROJECTION_MATRIX, glm::value_ptr( aSetup.projection) );
 	glGetDoublev( GL_MODELVIEW_MATRIX, glm::value_ptr( aSetup.modelView ) );
+	aSetup.view = aSetup.modelView;
+	aSetup.model = glm::dmat4x4( 1.0 );
 	glGetIntegerv( GL_VIEWPORT, glm::value_ptr( aSetup.viewport ) );
 	CheckForGLError( "getCurrentGLSetup()" );
 };

@@ -13,6 +13,8 @@
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 #include <map>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 namespace M4D {
 namespace GUI {
@@ -94,15 +96,21 @@ public:
 
 	void
 	SetParameter( std::string aName, const int *aValue, size_t aCount );
+	
+	void
+	SetParameter( std::string aName, const glm::dmat4x4 &aMatrix );
 
 	void
 	SetParameter( std::string aName, const BoundingBox3D &aValue );
-
+	
 	void
 	SetTextureParameter( std::string aName, GLuint aTexture );
 
 	void
-	SetParameter( std::string aName, const M4D::Planef aPlane );
+	SetParameter( std::string aName, const M4D::Planef &aPlane );
+	
+	void
+	SetParameter( std::string aName, const M4D::GLViewSetup &aViewSetup );
 
 	void
 	SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform );
