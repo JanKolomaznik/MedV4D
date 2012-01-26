@@ -76,6 +76,7 @@ public:
 	
 	
 	CgEffect mSceneSlicingCgEffect;
+	CgEffect mBasicCgEffect;
 };
 
 class RenderingExtension

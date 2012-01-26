@@ -1,10 +1,10 @@
 
 struct ViewSetup
 {
-	double4x4 modelViewProj;
-	double4x4 modelMatrix;
-	double4x4 projMatrix;
-	double4x4 viewMatrix;
+	float4x4 modelViewProj;
+	float4x4 modelMatrix;
+	float4x4 projMatrix;
+	float4x4 viewMatrix;
 };
 
 struct ImageData3D

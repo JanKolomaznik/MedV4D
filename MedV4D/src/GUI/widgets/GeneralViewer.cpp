@@ -684,6 +684,7 @@ GeneralViewer::initializeRenderingEnvironment()
 	getViewerState().mVolumeRenderer.Initialize();
 	
 	getViewerState().mSceneSlicingCgEffect.Initialize( "data/shaders/SceneSlicing.cgfx" );
+	getViewerState().mBasicCgEffect.Initialize( "data/shaders/BasicShader.cgfx" );
 }
 
 bool
@@ -707,8 +708,12 @@ GeneralViewer::prepareForRenderingStep()
 		{
 			getViewerState().mVolumeRenderConfig.camera.SetAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
-			SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
+			/*SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
+			GLViewSetup tmpSetup;
+			getCurrentGLSetup( tmpSetup );*/
 			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.camera );
+			//LOG( "******************************\n" << tmpSetup );
+			//LOG( "------------------------------\n" << getViewerState().glViewSetup );
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -792,7 +797,9 @@ GeneralViewer::render()
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
-				M4D::GLDrawBoundingBox( bbox );
+				//M4D::GLDrawBoundingBox( bbox );
+				getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
+				getViewerState().mBasicCgEffect.ExecuteTechniquePass( "Basic", boost::bind( &M4D::GLDrawBoundingBox, bbox ) );
 			}
 			//Draw cut plane if enabled TODO - set color
 			handleCutPlane( getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane );
@@ -803,9 +810,10 @@ GeneralViewer::render()
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_DIFFUSE, Vector4f( 1.0f, 1.0f, 1.0f, 1.0f ).GetData() ) );
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );
 
-			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+			//LOG( getViewerState().glViewSetup );
+			/*if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				mRenderingExtension->preRender3D();	
-			}
+			}*/
 
 			try {
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );

@@ -1,0 +1,44 @@
+#include "DataStructures.inc"
+
+ViewSetup gViewSetup;
+
+VertexOutput
+vp_Basic(
+		float4 position  : POSITION,
+		float4 color     : COLOR0,
+		float3 texCoord  : TEXCOORD0,
+		uniform ViewSetup aViewSetup
+	)
+{
+	VertexOutput result;
+	result.position = mul(aViewSetup.modelViewProj, position);
+	result.color    = color;
+	result.texCoord = texCoord;
+	return result;
+}
+
+FragmentOutput
+fp_Basic(
+		float4 color    : COLOR0,
+		float3 texCoord : TEXCOORD0
+		)
+{
+	FragmentOutput output;
+	output.color = float4( 0.0f, 1.0f, 0.0f, 1.0f );
+
+	return output;
+}
+
+technique Basic  {
+	pass t0 {
+		VertexProgram = compile glslv vp_Basic(gViewSetup);
+		FragmentProgram = compile glslf fp_Basic();
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}

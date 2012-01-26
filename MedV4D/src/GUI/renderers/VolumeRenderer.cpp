@@ -112,8 +112,8 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		glLoadIdentity();
 		//Set viewing parameters
 		M4D::SetViewAccordingToCamera( aConfig.camera );
-	}*/
-	glMatrixMode(GL_MODELVIEW);
+	}
+	glMatrixMode(GL_MODELVIEW);*/
 	
 	size_t sliceCount = aConfig.sampleCount;
 	if( sliceCount > mMaxSampleCount ) {

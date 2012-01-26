@@ -126,7 +126,7 @@ getViewSetupFromCamera( const Camera &camera )
 	
 	getProjectionAndViewMatricesFromCamera( camera, setup.projection, setup.view );
 	setup.modelView = setup.view;
-	setup.modelViewProj = setup.modelView * setup.projection;
+	setup.modelViewProj = setup.projection * setup.modelView;
 	return setup;
 }
 

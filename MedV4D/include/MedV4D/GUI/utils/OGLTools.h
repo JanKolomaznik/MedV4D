@@ -62,6 +62,20 @@ struct GLViewSetup
 	//GLint view[4];
 };
 
+
+template< typename TType >
+std::ostream &
+operator<<( std::ostream &stream, const glm::detail::tmat4x4< TType > &matrix )
+{
+	for (size_t j = 0 ; j < 4; ++j) {
+		for (size_t i = 0 ; i < 4; ++i) {
+			stream << matrix[i][j] << "\t";
+		}
+		stream << std::endl;
+	}
+	return stream;
+}
+
 std::ostream &
 operator<<( std::ostream & stream, const GLViewSetup &setup );
 

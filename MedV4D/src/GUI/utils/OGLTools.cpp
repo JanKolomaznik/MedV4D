@@ -20,35 +20,20 @@ getCurrentGLSetup( GLViewSetup &aSetup )
 	glGetDoublev( GL_MODELVIEW_MATRIX, glm::value_ptr( aSetup.modelView ) );
 	aSetup.view = aSetup.modelView;
 	aSetup.model = glm::dmat4x4( 1.0 );
+	aSetup.modelViewProj = aSetup.projection * aSetup.modelView;
 	glGetIntegerv( GL_VIEWPORT, glm::value_ptr( aSetup.viewport ) );
 	CheckForGLError( "getCurrentGLSetup()" );
 };
 
+
 std::ostream &
 operator<<( std::ostream & stream, const GLViewSetup &setup )
 {
-	/*stream << "Model:\n[";
-	for( unsigned i = 0; i < 16; ++i ) {
-		if (i%4 == 0 && i != 0 ) {
-			stream << ";\n";
-		}
-		stream << "\t" << std::setw(9) << setup.modelView[i];
-		if( i %4 != 3 ) {
-			 stream << ",";
-		}
-	}
-	stream << "]\nProj:\n[";
-	for( unsigned i = 0; i < 16; ++i ) {
-		if (i%4 == 0 && i != 0 ) {
-			stream << ";\n";
-		}
-		stream << "\t"<< std::setw(9) << setup.proj[i];
-		if( i %4 != 3 ) {
-			 stream << ",";
-		}
-	}
-	stream << "]";*/
-	//stream << "Model:\n" << setup.modelView;
+	stream << "model:\n" << setup.model;
+	stream << "view:\n" << setup.view;
+	stream << "projection:\n" << setup.projection;
+	stream << "modelView:\n" << setup.modelView;
+	stream << "modelViewProj:\n" << setup.modelViewProj;
 	return stream;
 }
 

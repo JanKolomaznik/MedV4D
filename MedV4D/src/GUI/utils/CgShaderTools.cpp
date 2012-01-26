@@ -16,7 +16,7 @@ InitializeCg()
 	gCgContext = cgCreateContext();
 	CheckForCgError("creating context");
 	cgGLSetDebugMode( CG_FALSE );
-	cgSetParameterSettingMode(gCgContext, CG_DEFERRED_PARAMETER_SETTING);
+	cgSetParameterSettingMode(gCgContext, CG_IMMEDIATE_PARAMETER_SETTING/*CG_DEFERRED_PARAMETER_SETTING*/);
 	cgGLRegisterStates(gCgContext);
 	CheckForCgError("registering standard CgFX states");
 	cgGLSetManageTextureParameters(gCgContext, CG_TRUE);
@@ -135,12 +135,33 @@ CgEffect::SetParameter( std::string aName, int aValue )
 }
 
 void
+CgEffect::SetParameter( std::string aName, const glm::fmat4x4 &aMatrix )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	/*LOG( "baseType = " << cgGetTypeString( cgGetParameterBaseType( cgParameter ) ) );
+	LOG( "namedType = " << cgGetTypeString( cgGetParameterNamedType( cgParameter ) ) );*/
+
+	cgSetParameterValuefr( cgParameter, 16, glm::value_ptr( aMatrix ) );
+	CheckForCgError("set matrix parameter");
+	
+	/*glm::fmat4x4 tmp;
+	cgGetParameterValuefr( cgParameter, 16, glm::value_ptr( tmp ) );
+	LOG( aName << ":\n" << aMatrix << "tmp:\n" << tmp << "\n" );*/
+}
+
+void
 CgEffect::SetParameter( std::string aName, const glm::dmat4x4 &aMatrix )
 {
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
-//	ASSERT( )	TODO check type;
+	/*LOG( "baseType = " << cgGetTypeString( cgGetParameterBaseType( cgParameter ) ) );
+	LOG( "namedType = " << cgGetTypeString( cgGetParameterNamedType( cgParameter ) ) );*/
 
-	cgSetMatrixParameterdr( cgParameter, glm::value_ptr( aMatrix ) );
+	cgSetParameterValuedr( cgParameter, 16, glm::value_ptr( aMatrix ) );
+	CheckForCgError("set matrix parameter");
+	
+	/*glm::dmat4x4 tmp;
+	cgGetParameterValuedr( cgParameter, 16, glm::value_ptr( tmp ) );
+	LOG( aName << ":\n" << aMatrix << "tmp:\n" << tmp << "\n" );*/
 }
 
 void
@@ -190,10 +211,10 @@ CgEffect::SetParameter( std::string aName, const M4D::Planef &aPlane )
 void
 CgEffect::SetParameter( std::string aName, const M4D::GLViewSetup &aViewSetup )
 {
-	SetParameter( TO_STRING( aName << ".modelViewProj" ), aViewSetup.modelViewProj );
-	SetParameter( TO_STRING( aName << ".modelMatrix" ), aViewSetup.model );
-	SetParameter( TO_STRING( aName << ".projMatrix" ), aViewSetup.projection );
-	SetParameter( TO_STRING( aName << ".viewMatrix" ), aViewSetup.view );
+	SetParameter( TO_STRING( aName << ".modelViewProj" ), glm::fmat4x4(aViewSetup.modelViewProj) );
+	SetParameter( TO_STRING( aName << ".modelMatrix" ), glm::fmat4x4(aViewSetup.model) );
+	SetParameter( TO_STRING( aName << ".projMatrix" ), glm::fmat4x4(aViewSetup.projection) );
+	SetParameter( TO_STRING( aName << ".viewMatrix" ), glm::fmat4x4(aViewSetup.view) );
 }
 
 

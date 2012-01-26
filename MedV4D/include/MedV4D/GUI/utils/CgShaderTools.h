@@ -98,6 +98,9 @@ public:
 	SetParameter( std::string aName, const int *aValue, size_t aCount );
 	
 	void
+	SetParameter( std::string aName, const glm::fmat4x4 &aMatrix );
+	
+	void
 	SetParameter( std::string aName, const glm::dmat4x4 &aMatrix );
 
 	void
