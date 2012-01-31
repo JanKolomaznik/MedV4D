@@ -11,7 +11,7 @@ vp_Basic(
 	)
 {
 	VertexOutput result;
-	result.position = mul(aViewSetup.modelViewProj, position);
+	result.position = mul(position, aViewSetup.modelViewProj );
 	result.color    = color;
 	result.texCoord = texCoord;
 	return result;

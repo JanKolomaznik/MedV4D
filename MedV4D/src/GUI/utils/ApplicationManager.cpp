@@ -46,7 +46,13 @@ ApplicationManager::finalize()
 	OpenGLManager::finalize();
 
 	M4D::Dicom::DcmProvider::Shutdown();
+
+	mModes.clear();
+	mModules.clear();
+	mIconMap.clear();
+	QApplication::quit();
 	delete mApp;
+	LOG( "Application manager finalization" );
 }
 
 ApplicationManager::~ApplicationManager()

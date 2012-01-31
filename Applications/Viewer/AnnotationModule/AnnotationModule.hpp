@@ -11,9 +11,18 @@
 class AnnotationModule: public AModule
 {
 public:
+	AnnotationModule(): AModule( "Annotation Module" )
+	{}
+	
+	bool
+	isUnloadable()
+	{
+		return false;
+	}
 
+protected:
 	void
-	load()
+	loadModule()
 	{
 		ApplicationManager * appManager = ApplicationManager::getInstance();
 
@@ -33,23 +42,11 @@ public:
 	}
 
 	void
-	unload()
+	unloadModule()
 	{
 
 	}
-
-	bool
-	isUnloadable()
-	{
-		return false;
-	}
-
-	std::string
-	getName()
-	{
-		return "Annotation Module";
-	}
-protected:
+	
 	AnnotationEditorController::Ptr mViewerController;
 };
 

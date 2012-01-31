@@ -16,17 +16,11 @@ class ShoulderMeasurementModule: public AModule
 {
 public:
 
-	void
-	load();
-
-	void
-	unload();
+	ShoulderMeasurementModule(): AModule( "Shoulder Measurement Module" )
+	{}
 
 	bool
 	isUnloadable();
-
-	std::string
-	getName();
 
 	void
 	startMeasurement();
@@ -34,6 +28,12 @@ public:
 	void
 	stopMeasurement();
 protected:
+	void
+	loadModule();
+
+	void
+	unloadModule();
+	
 	ShoulderMeasurementController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
 };

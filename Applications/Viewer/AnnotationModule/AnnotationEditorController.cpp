@@ -79,6 +79,7 @@ AnnotationEditorController::AnnotationEditorController()
 
 AnnotationEditorController::~AnnotationEditorController()
 {
+	D_PRINT( "Destroying AnnotationEditorController" );
 	delete mSettingsDialog;
 }
 

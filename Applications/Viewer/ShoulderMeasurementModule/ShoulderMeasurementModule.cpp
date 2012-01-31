@@ -2,7 +2,7 @@
 
 
 void
-ShoulderMeasurementModule::load()
+ShoulderMeasurementModule::loadModule()
 {
 	ApplicationManager * appManager = ApplicationManager::getInstance();
 
@@ -22,7 +22,7 @@ ShoulderMeasurementModule::load()
 }
 
 void
-ShoulderMeasurementModule::unload()
+ShoulderMeasurementModule::unloadModule()
 {
 
 }
@@ -31,12 +31,6 @@ bool
 ShoulderMeasurementModule::isUnloadable()
 {
 	return false;
-}
-
-std::string
-ShoulderMeasurementModule::getName()
-{
-	return "Shoulder Measurement Module";
 }
 
 void

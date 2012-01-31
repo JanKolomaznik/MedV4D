@@ -11,14 +11,32 @@ class AModule
 public:
 	typedef boost::shared_ptr< AModule > Ptr;
 
-	AModule(): mLoaded( false )
-	{}
+	AModule( std::string aName ): mLoaded( false ), mName( aName )
+	{
+		LOG( "Constructing module" );
+	}
 
-	virtual void
-	load() = 0;
+	~AModule()
+	{
+		LOG( "Destroying \"" << getName() << "\"" );
+	}
+	
+	void
+	load()
+	{
+		LOG_CONT( "Loading \"" << getName() << "\"" );
+		loadModule();
+		LOG( "\t\tDONE" );
+	}
+	
 
-	virtual void
-	unload() = 0;
+	void
+	unload()
+	{
+		LOG_CONT( "Unloading \"" << getName() << "\"" );
+		unloadModule();
+		LOG( "\t\tDONE" );
+	}
 
 	virtual bool
 	isUnloadable() = 0;
@@ -29,10 +47,20 @@ public:
 		return mLoaded;
 	}
 
-	virtual std::string
-	getName() = 0;
+	std::string
+	getName()
+	{
+		return mName;
+	}
 protected:
+	virtual void
+	loadModule() = 0;
+	
+	virtual void
+	unloadModule() = 0;
+	
 	bool mLoaded;
+	std::string mName;
 };
 
 template< typename TModule >
