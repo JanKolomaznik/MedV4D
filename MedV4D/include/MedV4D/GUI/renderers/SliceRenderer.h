@@ -29,7 +29,7 @@ public:
 	Finalize();
 
 	virtual void
-	Render( RenderingConfiguration & aConfig, bool aSetupView = true );
+	Render( RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup );
 
 	const ColorTransformNameIDList&
 	GetAvailableColorTransforms()const

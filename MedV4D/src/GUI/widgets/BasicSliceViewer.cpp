@@ -88,7 +88,8 @@ BasicSliceViewer::RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer )
 						Vector< uint32, 2 >( (uint32)aSize.width(), (uint32)aSize.height() ), 
 						ztFIT );
 					//config.camera.SetAspectRatio( x );
-					mSliceRenderer.Render( config );
+					ASSERT( false ); //change in interfaces
+					//mSliceRenderer.Render( config );
 				}
 				break;
 			default:
@@ -232,7 +233,8 @@ BasicSliceViewer::render()
 		}
 		break;
 	case rt2DAlignedSlices:
-		mSliceRenderer.Render( mSliceRenderConfig );
+		ASSERT( false ); //change in interfaces
+		//mSliceRenderer.Render( mSliceRenderConfig );
 		break;
 	default:
 		ASSERT( false );

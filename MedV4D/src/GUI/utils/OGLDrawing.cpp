@@ -130,6 +130,17 @@ getViewSetupFromCamera( const Camera &camera )
 	return setup;
 }
 
+GLViewSetup
+getViewSetupFromOrthoCamera( const OrthoCamera &camera )
+{
+	GLViewSetup setup;
+	
+	getProjectionAndViewMatricesFromOrthoCamera( camera, setup.projection, setup.view );
+	setup.modelView = setup.view;
+	setup.modelViewProj = setup.projection * setup.modelView;
+	return setup;
+}
+
 void
 getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView )
 {	
@@ -140,6 +151,25 @@ getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aPro
  		camera.GetZNear(), 
  		camera.GetZFar()
 	);
+	
+	aView = glm::lookAt<double>( 
+		glm::dvec3( camera.GetEyePosition()[0], camera.GetEyePosition()[1], camera.GetEyePosition()[2] ),
+		glm::dvec3( camera.GetTargetPosition()[0], camera.GetTargetPosition()[1], camera.GetTargetPosition()[2] ),
+		glm::dvec3( camera.GetUpDirection()[0], camera.GetUpDirection()[1], camera.GetUpDirection()[2] )
+	);
+}
+
+void
+getProjectionAndViewMatricesFromOrthoCamera( const OrthoCamera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView )
+{
+	aProjection = glm::ortho(
+				camera.GetLeft(),
+				camera.GetRight(),
+				camera.GetBottom(),
+				camera.GetTop(),
+				camera.GetNear(),
+				camera.GetFar()
+			   );
 	
 	aView = glm::lookAt<double>( 
 		glm::dvec3( camera.GetEyePosition()[0], camera.GetEyePosition()[1], camera.GetEyePosition()[2] ),

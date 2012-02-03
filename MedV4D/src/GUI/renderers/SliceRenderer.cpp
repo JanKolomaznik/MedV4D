@@ -33,17 +33,15 @@ SliceRenderer::Finalize()
 
 
 void
-SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSetupView )
+SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
 	ASSERT( aConfig.imageData != NULL );
-
-	if( aSetupView ) {
-		SetToViewConfiguration2D( aConfig.viewConfig );
-	}
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
 	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
+	
+	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
 
 	std::string techniqueName;
 

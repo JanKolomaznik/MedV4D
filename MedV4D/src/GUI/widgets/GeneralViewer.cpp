@@ -26,7 +26,6 @@ handleCutPlane( bool aEnabled, const M4D::BoundingBox3D &aBBox, const Planef &aC
 	Vector< float, 3> vertices[6];
 	
 	unsigned count = M4D::GetPlaneVerticesInBoundingBox( aBBox, aCutPlane, vertices );
-
 	//Render n-gon
 	glBegin( GL_LINE_LOOP );
 		for( unsigned j = 0; j < count; ++j ) {
@@ -795,25 +794,26 @@ GeneralViewer::render()
 						getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
+			getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
-				//M4D::GLDrawBoundingBox( bbox );
-				getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
 				getViewerState().mBasicCgEffect.ExecuteTechniquePass( "Basic", boost::bind( &M4D::GLDrawBoundingBox, bbox ) );
 			}
 			//Draw cut plane if enabled TODO - set color
-			handleCutPlane( getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane );
+			getViewerState().mBasicCgEffect.ExecuteTechniquePass( 
+				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) ) 
+				);
 		
-			GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
+			/*GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_AMBIENT, Vector4f( 0.25f, 0.25f, 0.25f, 1.0f ).GetData() ) );
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_DIFFUSE, Vector4f( 1.0f, 1.0f, 1.0f, 1.0f ).GetData() ) );
-			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );
+			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );*/
 
 			//LOG( getViewerState().glViewSetup );
-			/*if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				mRenderingExtension->preRender3D();	
-			}*/
+			}
 
 			try {
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
@@ -821,7 +821,7 @@ GeneralViewer::render()
 				LOG( e.what() );
 			}
 
-			GL_CHECKED_CALL( glClear( GL_DEPTH_BUFFER_BIT ) );
+			GL_CHECKED_CALL( glClear( GL_DEPTH_BUFFER_BIT ) );//TODO disable depth storing during volume rendering
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				mRenderingExtension->postRender3D();	
 			}
@@ -848,7 +848,7 @@ GeneralViewer::render()
 					//SetToViewConfiguration2D( config.viewConfig );
 					
 					try {
-						getViewerState().mSliceRenderer.Render( config, false );
+						getViewerState().mSliceRenderer.Render( config, getViewerState().glViewSetup );
 					}catch( std::exception &e ) {
 						LOG( e.what() );
 					}

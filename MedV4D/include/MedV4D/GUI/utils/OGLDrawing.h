@@ -13,6 +13,7 @@
 #include "MedV4D/Imaging/FaceInfo.h"
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/GUI/utils/Camera.h"
+#include "MedV4D/GUI/utils/OrthoCamera.h"
 #include "MedV4D/GUI/utils/DrawingTools.h"
 
 namespace M4D {
@@ -30,6 +31,9 @@ getViewSetupFromCamera( const Camera &camera );
 
 void
 getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView );
+
+void
+getProjectionAndViewMatricesFromOrthoCamera( const OrthoCamera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView );
 
 void
 SetVolumeTextureCoordinateGeneration( const Vector< float, 3 > &minCoord, const Vector< float, 3 > &size );
