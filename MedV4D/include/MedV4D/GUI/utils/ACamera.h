@@ -43,6 +43,9 @@ public:
 	void
 	SetEyePosition( const Position &aPosition, const Position &aUpDirection );
 
+	void
+	SetUpDirection( const Direction & );
+		
 	const Direction &
 	GetUpDirection() const
 		{ return mUpDirection; }

@@ -6,6 +6,7 @@
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>
 #include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/OrthoCamera.h"
 #include "MedV4D/GUI/renderers/RendererTools.h"
 
 namespace M4D
@@ -52,9 +53,7 @@ struct SliceRenderer::RenderingConfiguration
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;
 	
-	Vector3f targetPos; //TODO - change
-	Vector3f up;
-	Vector3f eyePos;
+	OrthoCamera				camera;
 	Vector3f sliceCenter;
 	Vector3f sliceNormal;
 

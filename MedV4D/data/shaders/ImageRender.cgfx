@@ -839,6 +839,7 @@ technique IntegralTransferFunction1DJitter_3D {
 
 technique WLWindow_3D {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_WLWindow_3D( 
 							gImageData3D, 
 							float3( 

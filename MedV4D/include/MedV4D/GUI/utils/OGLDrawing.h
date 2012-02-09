@@ -29,6 +29,9 @@ SetViewAccordingToCamera( const Camera &camera );
 GLViewSetup
 getViewSetupFromCamera( const Camera &camera );
 
+GLViewSetup
+getViewSetupFromOrthoCamera( const OrthoCamera &camera );
+
 void
 getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aProjection, glm::dmat4x4 &aView );
 

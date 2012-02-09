@@ -27,18 +27,20 @@ enum ViewType
 
 struct MouseEventInfo
 {
-	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType ): event( aEvent ), viewType( aViewType )
+	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType )
 		{ }
 
-	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Vector3f aPos ): event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
+	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Vector3f aPos ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
 		{ }
 
-	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, Vector3f aDirection ): event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, Vector3f aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
 		{ }
 
-	MouseEventInfo( QMouseEvent *aEvent, ViewType aViewType, Vector3f aPoint, Vector3f aDirection ): event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Vector3f aPoint, Vector3f aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
 		{ }
 
+	GLViewSetup viewSetup;
+		
 	QMouseEvent *event;
 	ViewType viewType;
 

@@ -16,7 +16,7 @@ public:
 	typedef Vector< FloatType, 3 > Direction;
 	
 	OrthoCamera( const Position &eye = Position(), const Position &center = Position() ) 
-		: ACamera( eye, center )
+		: ACamera( eye, center ), mLeft( -1.0f ), mRight( 1.0f ), mBottom( -1.0f ), mTop( 1.0f ), mNear( 0.0f ), mFar( 1000.0f )
 	{ }
 	
 	SIMPLE_GET_SET_METHODS( FloatType, Left, mLeft );
@@ -25,6 +25,15 @@ public:
 	SIMPLE_GET_SET_METHODS( FloatType, Top, mTop );
 	SIMPLE_GET_SET_METHODS( FloatType, Near, mNear );
 	SIMPLE_GET_SET_METHODS( FloatType, Far, mFar );
+	
+	void
+	SetWindow( FloatType aWidth, FloatType aHeight )
+	{
+		mLeft = -0.5f*aWidth;
+		mRight = 0.5f*aWidth;
+		mTop = 0.5f*aHeight;
+		mBottom = -0.5f*aHeight;
+	}
 protected:
 	FloatType mLeft, mRight, mBottom, mTop, mNear, mFar;
 };

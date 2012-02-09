@@ -60,6 +60,16 @@ ACamera::SetEyePosition( const Position &aPosition, const Position &aUpDirection
 }
 
 void
+ACamera::SetUpDirection( const Direction & aUpDirection )
+{
+	mUpDirection = aUpDirection;
+	Ortogonalize( mTargetDirection, mUpDirection );
+	VectorNormalization( mUpDirection );
+
+	UpdateRightDirection();
+}
+
+void
 ACamera::YawAround( ACamera::FloatType angle )
 {
 	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, mUpDirection );
