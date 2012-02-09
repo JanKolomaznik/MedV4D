@@ -6,29 +6,22 @@
 
 ImageData3D gImageData3D;
 
+sampler3D gMaskData3D;
+
 float3 gSliceNormalTexCoords;
 sampler2D gNoiseMap;
 float gJitterStrength = 1.0f;
 float2 gNoiseMapSize;
 
-/*float4x4 gModelViewProj;// : glstate.matrix.modelview[0];
-float4x4 gModelMatrix;
-float4x4 gProjMatrix;
-float4x4 gViewMatrix;
-*/
 ViewSetup gViewSetup;
 
 //int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
 
-//float3 gLightPosition;
-//float3 gLightColor;
-
 Light gLight;
 float3 gEyePosition;
 float3 gViewDirection;
 
-sampler3D gMaskData3D;
 
 TransferFunction1D gTransferFunction1D;
 TransferFunction1D gIntegralTransferFunction1D;
@@ -696,6 +689,7 @@ void gp_GenerateSlice(
 //*********************** TRANSFER FUNCTIONS ****************
 technique TransferFunction1D_3DNoBlending {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
@@ -899,6 +893,7 @@ technique WLWindowBasic_3D  {
 
 technique SimpleRegionColorMap_3D {
 	pass t0 {
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_SimpleRegionColorMap_3D( 
 							gImageData3D, 
 							gMappedIntervalBands[1] - gMappedIntervalBands[0] 

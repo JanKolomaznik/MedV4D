@@ -837,11 +837,9 @@ GeneralViewer::render()
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = config.getCurrentRealSlice();
 						Vector3f hextents = 0.5f * getViewerState()._elementExtents;
-						LOG( "getViewerState().mSliceRenderConfig.sliceCenter = " << getViewerState().mSliceRenderConfig.sliceCenter );
-						LOG( "getViewerState().mSliceRenderConfig.sliceNormal = " << getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
-						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneWidth", 10.0f );
+						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneWidth", 2*hextents[plane] );
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
 						getViewerState().mSceneSlicingCgEffect.ExecuteTechniquePass( 
 									"SceneSlicing", 

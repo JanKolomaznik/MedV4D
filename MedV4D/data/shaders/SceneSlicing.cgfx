@@ -67,7 +67,7 @@ fp_sliceGeometry(
 	FragmentOutput output;
 
 	float dst = abs(dot(aPlaneNormal, (aPlanePoint - position)));
-	if ( dst < aPlaneWidth ) {
+	if ( dst < 0.5f*aPlaneWidth ) {
 		output.color.xyz = color;
 	} else if ( dst < 3*aPlaneWidth ) {
 		output.color.xyz = float4( 0.4f, 0.4f, 0.4f, 0.4f * dst/(3*aPlaneWidth));//color;
