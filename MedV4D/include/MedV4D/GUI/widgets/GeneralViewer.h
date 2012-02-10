@@ -49,15 +49,50 @@ class ViewerState : public BaseViewerState
 public:
 	typedef boost::shared_ptr< ViewerState > Ptr;
 	
-	GLTextureImage::Ptr	_textureData;
+	//GLTextureImage::Ptr	_textureData;
 
 	unsigned colorTransform;
+	
+	Vector3i
+	getMaxSlice()const
+	{
+		return mPrimaryImageExtents.maximum;
+	}
 
-	Vector< float, 3 > 			_regionRealMin;
+	Vector3i
+	getMinSlice()const
+	{
+		return mPrimaryImageExtents.minimum;
+	}
+	
+	Vector3f
+	getRealSize()const
+	{
+		return mPrimaryImageExtents.realMaximum - mPrimaryImageExtents.realMinimum;
+	}
+	
+	Vector3f
+	getRealCenter()const
+	{
+		return 0.5f * (mPrimaryImageExtents.realMaximum + mPrimaryImageExtents.realMinimum);
+	}
+	Vector3f
+	getMinimalElementExtents()const
+	{
+		return mPrimaryImageExtents.elementExtents;
+	}
+	
+	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
+	GLTextureImage::Ptr mPrimaryImageTexture;
+	
+	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
+	GLTextureImage::Ptr mSecondaryImageTexture;
+	
+	/*Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;
 	Vector< float, 3 >			_elementExtents;
 	Vector< int32, 3 > 			_regionMin;
-	Vector< int32, 3 >			_regionMax;
+	Vector< int32, 3 >			_regionMax;*/
 
 	//TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
 	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
@@ -65,14 +100,13 @@ public:
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
+	Vector2u				m2DMultiSliceGrid;
+	size_t					m2DMultiSliceStep;
 
 	M4D::GUI::Renderer::VolumeRenderer	mVolumeRenderer;
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
 	bool 					mEnableVolumeBoundingBox;
 	QualityMode				mQualityMode;
-	
-	Vector2u				m2DMultiSliceGrid;
-	size_t					m2DMultiSliceStep;
 	
 	
 	CgEffect mSceneSlicingCgEffect;
@@ -100,13 +134,13 @@ public:
 
 class GeneralViewer : 
 	public ViewerConstructionKit<   AGLViewer, 
-					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
+					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
 					>
 {
 	Q_OBJECT;
 public:
 	typedef ViewerConstructionKit<  AGLViewer, 
-					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
+					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
 					>	PredecessorType;
 
 

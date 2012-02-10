@@ -169,8 +169,8 @@ GeneralViewer::setCurrentSlice( int32 slice )
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
 	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = max( 
-								min( getViewerState()._regionMax[plane]-1, slice ), 
-								getViewerState()._regionMin[plane] );
+								min( getViewerState().getMaxSlice()[plane]-1, slice ), 
+								getViewerState().getMinSlice()[plane] );
 	notifyAboutSettingsChange();
 	update();
 }
@@ -722,14 +722,14 @@ GeneralViewer::prepareForRenderingStep()
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
 			CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-			Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane ); 
-			Vector2f regMax = VectorPurgeDimension( getViewerState()._regionRealMax, plane );
-			Vector2f size = regMax - regMin;
+			/*Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane ); 
+			Vector2f regMax = VectorPurgeDimension( getViewerState()._regionRealMax, plane );*/
+			Vector2f size = VectorPurgeDimension( getViewerState().getRealSize(), plane );
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
 			
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
-			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( 0.5f*(getViewerState()._regionRealMax + getViewerState()._regionRealMin) );
-			getViewerState().mSliceRenderConfig.sliceCenter = 0.5f*(getViewerState()._regionRealMax + getViewerState()._regionRealMin);
+			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
+			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
 			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.imageData->GetElementExtents()[plane];
 			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
 			Vector3f up;
@@ -836,7 +836,7 @@ GeneralViewer::render()
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = config.getCurrentRealSlice();
-						Vector3f hextents = 0.5f * getViewerState()._elementExtents;
+						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
 						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneWidth", 2*hextents[plane] );
@@ -954,28 +954,31 @@ bool
 GeneralViewer::PrepareData()
 {
 	try {
-		TryGetAndLockAllInputs();
+		TryGetAndLockAllAvailableInputs();
 	} catch (...) {
 		return false;
 	}
 
-	getViewerState()._regionMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMinimum();
+	getViewerState().mPrimaryImageExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetImageExtentsRecord();
+	getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
+	
+	/*getViewerState()._regionMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMinimum();
 	getViewerState()._regionMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMaximum();
 	getViewerState()._regionRealMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMinimum();
 	getViewerState()._regionRealMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMaximum();
-	getViewerState()._elementExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetElementExtents();
+	getViewerState()._elementExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetElementExtents();*/
 
-	getViewerState().mSliceRenderConfig.currentSlice = getViewerState()._regionMin;
+
 
 	//getViewerState()._textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
-	getViewerState()._textureData = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
+	//getViewerState()._textureData = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
 	ReleaseAllInputs();
 
+	getViewerState().mSliceRenderConfig.currentSlice = getViewerState().mPrimaryImageExtents.minimum;
+	getViewerState().mSliceRenderConfig.imageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
+	getViewerState().mVolumeRenderConfig.imageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
 
-	getViewerState().mSliceRenderConfig.imageData = &(getViewerState()._textureData->GetDimensionedInterface<3>());
-	getViewerState().mVolumeRenderConfig.imageData = &(getViewerState()._textureData->GetDimensionedInterface<3>());
-
-	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState()._textureData->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState()._textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
+	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMinimum()) );
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
 	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
 	resetView();
@@ -988,11 +991,11 @@ GeneralViewer::PrepareData()
 void	
 GeneralViewer::zoomFit( ZoomType zoomType )
 {
-	getViewerState().mSliceRenderConfig.viewConfig = GetOptimalViewConfiguration(
+	/*getViewerState().mSliceRenderConfig.viewConfig = GetOptimalViewConfiguration(//TODO
 			VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane ), 
 			VectorPurgeDimension( getViewerState()._regionRealMax, getViewerState().mSliceRenderConfig.plane ),
 			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ), 
-			zoomType );
+			zoomType );*/
 	emit settingsChanged();
 	update();
 }
@@ -1006,9 +1009,9 @@ GeneralViewer::setZoom( ZoomType zoomType )
 void
 GeneralViewer::setZoom( float aZoom )
 {
-	const Vector2f regionMin = VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane );
+	/*const Vector2f regionMin = VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane );//TODO
 	const Vector2f regionMax = VectorPurgeDimension( getViewerState()._regionRealMax, getViewerState().mSliceRenderConfig.plane );
-	getViewerState().mSliceRenderConfig.viewConfig = ViewConfiguration2D( regionMin + (0.5f * (regionMax - regionMin)), aZoom );
+	getViewerState().mSliceRenderConfig.viewConfig = ViewConfiguration2D( regionMin + (0.5f * (regionMax - regionMin)), aZoom );*/
 	emit settingsChanged();
 	update();
 }
