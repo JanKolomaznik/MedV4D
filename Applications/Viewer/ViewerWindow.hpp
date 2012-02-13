@@ -7,7 +7,7 @@
 #include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include "MedV4D/GUI/utils/ProxyRenderingExtension.h"
-#include "MedV4D/GUI/utils/DatasetManager.h"
+#include "MedV4D/GUI/managers/DatasetManager.h"
 #include "MedV4D/GUI/widgets/TransferFunction1DEditor.h"
 #include "MedV4D/GUI/widgets/ProgressInfoDialog.h"
 #include "MedV4D/GUI/widgets/MainWindow.h"

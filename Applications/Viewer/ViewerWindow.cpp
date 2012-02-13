@@ -6,7 +6,7 @@
 
 #include "MedV4D/GUI/widgets/PythonTerminal.h"
 #include "MedV4D/GUI/widgets/MultiDockWidget.h"
-#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
 #include "MedV4D/GUI/utils/ProxyRenderingExtension.h"
 #include "MedV4D/GUI/utils/ViewerAction.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"

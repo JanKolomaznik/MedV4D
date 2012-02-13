@@ -68,6 +68,13 @@ public:
 	}
 
 protected:
+	virtual M4D::GLTextureImage::Ptr
+	getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage );
+	
+	virtual M4D::GLTextureImage::Ptr
+	createNewTextureFromImage( const M4D::Imaging::AImage &aImage );
+	
+	
 	void
 	makeCurrent();
 	void

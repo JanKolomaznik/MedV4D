@@ -170,6 +170,7 @@ public:
 		rec.maximum = GetMaximum();
 		rec.realMinimum = GetRealMinimum();
 		rec.realMaximum = GetRealMaximum();
+		return rec;
 	}
 
         PointType

@@ -1,4 +1,4 @@
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 #include <QtGui>
 

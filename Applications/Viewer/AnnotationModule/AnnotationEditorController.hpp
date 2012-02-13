@@ -12,7 +12,7 @@
 #include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
 #include <algorithm>
 #include <boost/bind.hpp>
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 
 class AnnotationSettingsDialog;

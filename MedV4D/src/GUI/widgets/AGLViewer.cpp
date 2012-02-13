@@ -2,7 +2,7 @@
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
-#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
 
 namespace M4D
 {

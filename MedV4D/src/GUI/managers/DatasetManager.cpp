@@ -1,4 +1,4 @@
-#include "MedV4D/GUI/utils/DatasetManager.h"
+#include "MedV4D/GUI/managers/DatasetManager.h"
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 
 DatasetManager *fileManagerInstance = NULL;

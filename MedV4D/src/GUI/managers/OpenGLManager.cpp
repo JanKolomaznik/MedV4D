@@ -1,4 +1,4 @@
-#include "MedV4D/GUI/utils/OpenGLManager.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
 
 class DummyOGLWidget: public QGLWidget
 {
@@ -18,10 +18,11 @@ protected:
 
 
 struct TextureRecord
-	{
-		M4D::GLTextureImage::Ptr texture;
-		M4D::Common::TimeStamp sourceTimeStamp; //<Contents timestamp
-	};
+{
+	M4D::GLTextureImage::Ptr texture;
+	M4D::Common::TimeStamp editTimeStamp; //<Contents timestamp
+	M4D::Common::TimeStamp structTimeStamp;
+};
 typedef std::map< M4D::Common::TimeStamp::IDType, TextureRecord > TextureStorage;
 
 struct OpenGLManagerPimpl
@@ -93,21 +94,49 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 	ASSERT( mPimpl );
 	boost::unique_lock< boost::recursive_mutex > lock( mPimpl->mTextureMutex );
 
+	M4D::GLTextureImage::Ptr result;
+	result = getActualizedTextureFromImage( aImage );
+	
+	if ( result ) {
+		return result;
+	}
+	// texture not available yet
+	return createNewTextureFromImage( aImage );
+}
+
+M4D::GLTextureImage::Ptr
+OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage )
+{
+	//Image should be locked!!!
 	
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 
-	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
-
 	TextureStorage::iterator it = mPimpl->textureStorage.find( id );
 	if ( it != mPimpl->textureStorage.end() ) { //We already created one instance
-		if ( timestamp == it->second.sourceTimeStamp ) {
+
+		M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
+		if ( structTimestamp != it->second.structTimeStamp ) { //Dataset structure changed
+			return M4D::GLTextureImage::Ptr();
+		}
+		
+		if ( timestamp == it->second.editTimeStamp ) { //Dataset contents didn't changed - texture is actual
 			D_PRINT( "Returning valid instance" );
 			return it->second.texture;
 		} 
-		//it->second.texture->DeleteTexture();
 	}
+	return M4D::GLTextureImage::Ptr();
+}
 
+
+M4D::GLTextureImage::Ptr
+OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
+{
+	//Image should be locked!!!
+	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
+	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
+	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
+	
 	makeCurrent();
 	TextureRecord rec;
 	try {
@@ -119,10 +148,10 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 		LOG_ERR( "Problem with texture creation" );
 		throw;
 	}
-	rec.sourceTimeStamp = timestamp;
+	rec.structTimeStamp = structTimestamp;
+	rec.editTimeStamp = timestamp;
 	mPimpl->textureStorage[ id ] = rec;
 	doneCurrent();	
-	return rec.texture;		
 }
 
 void

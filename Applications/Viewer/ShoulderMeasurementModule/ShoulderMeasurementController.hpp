@@ -3,7 +3,7 @@
 
 #include <QtCore>
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include "MedV4D/GUI/utils/QtModelViewTools.h"
 #include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"

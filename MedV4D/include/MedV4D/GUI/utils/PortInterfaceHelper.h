@@ -112,6 +112,7 @@ PortInterfaceHelper< DatasetTypeVector >
 {
 	//TODO
 	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
+	mInputDatasets[0] = mInputPorts.GetPort(1).GetDatasetPtr();
 	//_THROW_ ErrorHandling::ETODO();
 }
 
@@ -122,6 +123,9 @@ PortInterfaceHelper< DatasetTypeVector >
 {
 	//TODO
 	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
+	mInputDatasets[0] = mInputPorts.GetPort(1).GetDatasetPtr();
+	
+	//bool result = mInputPorts.GetPort(0).TryLockDataset();
 	//_THROW_ ErrorHandling::ETODO();
 }
 

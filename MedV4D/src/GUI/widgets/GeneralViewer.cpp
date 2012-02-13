@@ -5,8 +5,8 @@
 
 #include "MedV4D/Imaging/ImageFactory.h"
 #include "MedV4D/GUI/utils/CameraManipulator.h"
-#include "MedV4D/GUI/utils/ViewerManager.h"
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 
 
 

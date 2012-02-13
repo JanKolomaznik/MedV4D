@@ -3,7 +3,7 @@
 
 #include "MedV4D/GUI/utils/OGLTools.h"
 #include <QtOpenGL>
-#include "MedV4D/GUI/utils/OpenGLManager.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
 
 
 

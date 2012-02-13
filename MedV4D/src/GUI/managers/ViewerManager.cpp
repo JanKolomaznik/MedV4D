@@ -1,11 +1,11 @@
-#include "MedV4D/GUI/utils/ViewerManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
 #include "MedV4D/GUI/utils/ViewerAction.h"
 #include <QtCore>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/bind/bind.hpp>
 
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 
 ViewerManager *viewerManagerInstance = NULL;
 //*******************************************************************************************

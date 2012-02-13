@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "MedV4D/GUI/utils/Module.h"
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "AnnotationModule/AnnotationEditorController.hpp"
 #include "MedV4D/Common/IDGenerator.h"
 

@@ -3,8 +3,8 @@
 
 #include <QtGui>
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
-#include "MedV4D/GUI/utils/ViewerManager.h"
-#include "MedV4D/GUI/utils/ApplicationManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
+#include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 //#include <boost/cast.hpp>
 #include "MedV4D/Common/Functors.h"

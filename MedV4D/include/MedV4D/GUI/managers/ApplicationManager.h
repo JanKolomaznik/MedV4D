@@ -2,9 +2,9 @@
 #define APPLICATION_MANAGER_H
 
 
-#include "MedV4D/GUI/utils/OpenGLManager.h"
-#include "MedV4D/GUI/utils/ViewerManager.h"
-#include "MedV4D/GUI/utils/DatasetManager.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
+#include "MedV4D/GUI/managers/ViewerManager.h"
+#include "MedV4D/GUI/managers/DatasetManager.h"
 #include "MedV4D/GUI/utils/Module.h"
 #include "MedV4D/GUI/utils/Settings.h"
 #include "MedV4D/GUI/widgets/MainWindow.h"
