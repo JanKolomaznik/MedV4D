@@ -46,10 +46,11 @@ protected:
 
 struct SliceRenderer::RenderingConfiguration
 {
-	RenderingConfiguration(): imageData( NULL ), plane( XY_PLANE ), currentSlice( 0 ), colorTransform( ctLUTWindow ), transferFunction( NULL ), enableInterpolation( true )
+	RenderingConfiguration(): primaryImageData( NULL ), secondaryImageData( NULL ), plane( XY_PLANE ), currentSlice( 0 ), colorTransform( ctLUTWindow ), transferFunction( NULL ), enableInterpolation( true )
 	{}
 
-	const GLTextureImage3D			*imageData;
+	const GLTextureImage3D			*primaryImageData;
+	const GLTextureImage3D			*secondaryImageData;
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;
 	
@@ -60,8 +61,8 @@ struct SliceRenderer::RenderingConfiguration
 	Vector3f
 	getCurrentRealSlice()const
 	{
-		if ( imageData ) {
-			return imageData->GetMinimum() + VectorMemberProduct( currentSlice, imageData->GetElementExtents() );
+		if ( primaryImageData ) {
+			return primaryImageData->GetMinimum() + VectorMemberProduct( currentSlice, primaryImageData->GetElementExtents() );
 		} else {
 			return Vector3f();
 		}

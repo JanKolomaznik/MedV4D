@@ -730,7 +730,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
 			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
 			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
-			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.imageData->GetElementExtents()[plane];
+			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData->GetElementExtents()[plane];
 			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
 			Vector3f up;
 			switch ( plane ) {
@@ -770,8 +770,8 @@ GeneralViewer::render()
 		{
 			glViewport(0, 0, width(), height());
 			
-			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.imageData->GetMinimum(), 
-						getViewerState().mVolumeRenderConfig.imageData->GetMaximum() );
+			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData->GetMinimum(), 
+						getViewerState().mVolumeRenderConfig.primaryImageData->GetMaximum() );
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
@@ -954,29 +954,27 @@ bool
 GeneralViewer::PrepareData()
 {
 	try {
-		TryGetAndLockAllAvailableInputs();
+		if( TryGetAndLockAllAvailableInputs() == 0 ){
+			return false;
+		};
 	} catch (...) {
 		return false;
 	}
 
-	getViewerState().mPrimaryImageExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetImageExtentsRecord();
-	getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
+	if ( ! mInputDatasets[0] ) return false;
+	M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] );
 	
-	/*getViewerState()._regionMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMinimum();
-	getViewerState()._regionMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMaximum();
-	getViewerState()._regionRealMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMinimum();
-	getViewerState()._regionRealMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMaximum();
-	getViewerState()._elementExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetElementExtents();*/
+	if ( ! primaryImage ) return false;
+	
+	getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
+	getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *primaryImage );
+	
 
-
-
-	//getViewerState()._textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
-	//getViewerState()._textureData = OpenGLManager::getInstance()->getTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )) );
 	ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = getViewerState().mPrimaryImageExtents.minimum;
-	getViewerState().mSliceRenderConfig.imageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
-	getViewerState().mVolumeRenderConfig.imageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
+	getViewerState().mSliceRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
+	getViewerState().mVolumeRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
 
 	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMinimum()) );
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );

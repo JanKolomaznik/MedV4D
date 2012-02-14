@@ -39,7 +39,7 @@ DatasetManager::~DatasetManager()
 ADatasetRecord::Ptr
 DatasetManager::getDatasetInfo( DatasetID aDatasetId )
 {
-	M4D::Multithreading::ScopedLock lock( mDatasetInfoAccessLock );
+	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
 
 	DatasetInfoMap::iterator it = mDatasetInfos.find( aDatasetId );
 	if ( it != mDatasetInfos.end() ) {
@@ -49,7 +49,7 @@ DatasetManager::getDatasetInfo( DatasetID aDatasetId )
 }
 
 DatasetID
-DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier )
+DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, bool aUseAsCurrent )
 {
 	if (!aProgressNotifier) {
 		_THROW_ EBadParameter( "Invalid progress notifier passed as parameter!" );
@@ -62,7 +62,8 @@ DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNoti
 			this,
 			aPath, 
 			aProgressNotifier,
-			id
+			id,
+			aUseAsCurrent
 			)
 			);
 	th.detach();
@@ -71,16 +72,16 @@ DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNoti
 }
 
 DatasetID
-DatasetManager::openFileBlocking( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier )
+DatasetManager::openFileBlocking( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, bool aUseAsCurrent )
 {
 	DatasetID id = mIdGenerator.NewID();
-	openFileHelper( aPath, aProgressNotifier, id );
+	openFileHelper( aPath, aProgressNotifier, id, aUseAsCurrent );
 	return id;
 }
 
 
 void
-DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, DatasetID aDatasetId )
+DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, DatasetID aDatasetId, bool aUseAsCurrent )
 {
 	M4D::Imaging::AImage::Ptr image;
 	if ( aPath.extension() == ".dcm" || aPath.extension() == ".DCM" ) {
@@ -92,17 +93,17 @@ DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier:
 	}
 
 	if (image) {
-		registerImage( aDatasetId, aPath, image );
+		registerImage( aDatasetId, aPath, image, aUseAsCurrent );
 	}
 	aProgressNotifier->finished();
 	//mProdconn.PutDataset( image );
 }
 
 void
-DatasetManager::registerImage( DatasetID aDatasetId, boost::filesystem::path aPath, M4D::Imaging::AImage::Ptr aImage )
+DatasetManager::registerImage( DatasetID aDatasetId, boost::filesystem::path aPath, M4D::Imaging::AImage::Ptr aImage, bool aUseAsCurrent )
 {
 	ASSERT( aDatasetId != 0 );
-	M4D::Multithreading::ScopedLock lock( mDatasetInfoAccessLock );
+	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
 
 	ImageRecord *rec = new ImageRecord();
 	ADatasetRecord::Ptr p = ADatasetRecord::Ptr( rec );
@@ -111,6 +112,18 @@ DatasetManager::registerImage( DatasetID aDatasetId, boost::filesystem::path aPa
 	rec->filePath = aPath;
 	rec->image = aImage;
 	mDatasetInfos[ aDatasetId ] = p;
+	
+	if ( aUseAsCurrent ) {
+		setCurrentDatasetInfo( aDatasetId );
+	}
+	
 	D_PRINT( "Dataset info added, id = " << aDatasetId << ", dataset count = " << mDatasetInfos.size() );
+}
+
+void
+DatasetManager::setCurrentDatasetInfo( DatasetID aDatasetId )
+{
+	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
+	mCurrentDatasetId = aDatasetId;
 }
 

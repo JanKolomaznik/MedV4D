@@ -104,11 +104,12 @@ protected:
 struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
-		: imageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
+		: primaryImageData( NULL ), secondaryImageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
 		transferFunction( NULL ), integralTransferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
 		integralTFEnabled( false ), sampleCount( 150 ), enableInterpolation(true ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
 	{ }
-	const GLTextureImage3D			*imageData;
+	const GLTextureImage3D			*primaryImageData;
+	const GLTextureImage3D			*secondaryImageData;
 	
 	int					colorTransform;
 	const GLTransferFunctionBuffer1D	*transferFunction;

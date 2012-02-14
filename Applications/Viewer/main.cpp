@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include <QWidget>
-#include "MedV4D/GUI/widgets/BasicSliceViewer.h"
 #include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 #include "ViewerWindow.hpp"
@@ -31,6 +30,7 @@ processCommandLine( int argc, char** argv )
 #ifdef EXTENSION_MODULES_ENABLED
 #include "AnnotationModule/AnnotationModule.hpp"
 #include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
+#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #endif
 void
 createModules()
@@ -40,6 +40,7 @@ createModules()
 #ifdef EXTENSION_MODULES_ENABLED	
 	appManager->addModule( createModule< AnnotationModule >() );
 	appManager->addModule( createModule< ShoulderMeasurementModule >() );
+	appManager->addModule( createModule< OrganSegmentationModule >() );
 #endif
 }
 

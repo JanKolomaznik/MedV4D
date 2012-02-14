@@ -94,7 +94,7 @@ enum TFConfigurationFlags{
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
-	ASSERT( aConfig.imageData != NULL );
+	ASSERT( aConfig.primaryImageData != NULL );
 
 	static int edgeOrder[8*12] = {
 		 10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
@@ -119,7 +119,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-	M4D::BoundingBox3D bbox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
+	M4D::BoundingBox3D bbox( aConfig.primaryImageData->GetMinimum(), aConfig.primaryImageData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
@@ -139,8 +139,8 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			);
 	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
-	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
+	mCgEffect.SetParameter( "gPrimaryImageData3D", *aConfig.primaryImageData );
+	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.primaryImageData->GetMappedInterval() );
 	mCgEffect.SetParameter( "gLight.position", aConfig.lightPosition );
 	mCgEffect.SetParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
 	mCgEffect.SetParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
@@ -152,7 +152,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	mCgEffect.SetParameter( "gMinID", (int)minId );
 	mCgEffect.SetParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetRealSize() );
+	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.primaryImageData->GetRealSize() );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );

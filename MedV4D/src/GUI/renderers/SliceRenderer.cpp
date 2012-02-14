@@ -35,10 +35,14 @@ SliceRenderer::Finalize()
 void
 SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
-	ASSERT( aConfig.imageData != NULL );
+	ASSERT( aConfig.primaryImageData != NULL );
 
-	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
+	mCgEffect.SetParameter( "gPrimaryImageData3D", *aConfig.primaryImageData );
+	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.primaryImageData->GetMappedInterval() );
+	if( aConfig.secondaryImageData ) {
+		mCgEffect.SetParameter( "gSecondaryImageData3D", *aConfig.secondaryImageData );
+	}
+	
 	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 	
 	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
@@ -77,9 +81,9 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 	mCgEffect.ExecuteTechniquePass( 
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
-				aConfig.imageData->GetMinimum(), 
-				aConfig.imageData->GetMaximum(), 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.imageData->GetElementExtents()[aConfig.plane], 
+				aConfig.primaryImageData->GetMinimum(), 
+				aConfig.primaryImageData->GetMaximum(), 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.primaryImageData->GetElementExtents()[aConfig.plane], 
 				aConfig.plane 
 				) 
 			); 

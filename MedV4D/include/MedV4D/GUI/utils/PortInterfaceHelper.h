@@ -25,6 +25,7 @@ template< typename DatasetTypeVector >
 class PortInterfaceHelper: public M4D::Imaging::MessageReceiverInterface
 {
 public:
+	static const size_t PortCount = boost::mpl::size< DatasetTypeVector >::value;
 	template< int ID >
 	struct Dataset { 
 		typedef boost::mpl::at< DatasetTypeVector, boost::mpl::int_< ID > > type;
@@ -50,7 +51,7 @@ public:
 	 * Same as TryGetAndLockAllInputs(), but check only connected ports
 	 **/
 
-	void
+	size_t
 	TryGetAndLockAllAvailableInputs();
 	/**
 	 * Releases all locked datasets and resets pointers
@@ -69,8 +70,8 @@ protected:
 	//typedef typename boost::fusion::result_of::as_vector<DatasetTypeVector>::type InputDatasetList;
 
 	//InputDatasetList			mInputDatasets;
-	M4D::Imaging::ADataset::ConstPtr		mInputDatasets[boost::mpl::size< DatasetTypeVector >::value];
-	M4D::Common::TimeStamp				mTimeStamps[boost::mpl::size< DatasetTypeVector >::value];
+	std::vector< M4D::Imaging::ADataset::ConstPtr >		mInputDatasets;//[boost::mpl::size< DatasetTypeVector >::value];
+	std::vector< M4D::Common::TimeStamp >			mTimeStamps;//[boost::mpl::size< DatasetTypeVector >::value];
 private:
 	struct PortCreator
 	{
@@ -98,7 +99,7 @@ private:
 
 template< typename DatasetTypeVector >
 PortInterfaceHelper< DatasetTypeVector >
-::PortInterfaceHelper() : mInputPorts( this )
+::PortInterfaceHelper() : mInputDatasets( PortInterfaceHelper< DatasetTypeVector >::PortCount ), mTimeStamps( PortInterfaceHelper< DatasetTypeVector >::PortCount ), mInputPorts( this )
 {
 	typedef typename boost::mpl::transform< DatasetTypeVector, M4D::Functors::MakeTypeBox >::type wrapedTypes;
 
@@ -112,18 +113,35 @@ PortInterfaceHelper< DatasetTypeVector >
 {
 	//TODO
 	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
-	mInputDatasets[0] = mInputPorts.GetPort(1).GetDatasetPtr();
+	mInputDatasets[1] = mInputPorts.GetPort(1).GetDatasetPtr();
 	//_THROW_ ErrorHandling::ETODO();
 }
 
 template< typename DatasetTypeVector >
-void
+size_t
 PortInterfaceHelper< DatasetTypeVector >
 ::TryGetAndLockAllAvailableInputs()
 {
 	//TODO
-	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
-	mInputDatasets[0] = mInputPorts.GetPort(1).GetDatasetPtr();
+	size_t locked_count = 0;
+	for( size_t i = 0; i < PortCount; ++i ) {
+		mInputDatasets[i] = M4D::Imaging::ADataset::ConstPtr();
+	}
+	for( size_t i = 0; i < PortCount; ++i ) {
+		if( mInputPorts.GetPort(i).IsPlugged() ) {
+			try {
+				++locked_count;
+				mInputDatasets[i] = mInputPorts.GetPort(i).GetDatasetPtr();
+			} catch (...) {
+				D_PRINT( "Dataset not available on port n." << i );
+			}
+		}
+	}
+	
+	return locked_count;
+	/*if( mInputPorts.GetPort(1).IsPlugged() ) {
+		mInputDatasets[1] = mInputPorts.GetPort(1).GetDatasetPtr();
+	}*/
 	
 	//bool result = mInputPorts.GetPort(0).TryLockDataset();
 	//_THROW_ ErrorHandling::ETODO();

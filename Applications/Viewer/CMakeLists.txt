@@ -40,6 +40,8 @@ IF( EXTENSION_MODULES_ENABLED )
 		"ShoulderMeasurementModule/Computations.cpp"
 		"ShoulderMeasurementModule/ShoulderMeasurementController.cpp"
 		"ShoulderMeasurementModule/ShoulderMeasurementModule.cpp"
+		"OrganSegmentationModule/OrganSegmentationModule.cpp"
+		"OrganSegmentationModule/OrganSegmentationController.cpp"
 	)
 	SET( EXTENSION_HEADERS
 		"AnnotationModule/AnnotationEditorController.hpp"
@@ -50,11 +52,15 @@ IF( EXTENSION_MODULES_ENABLED )
 		"ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
 		"ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
 		"ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
+		"OrganSegmentationModule/OrganSegmentationModule.hpp"
+		"OrganSegmentationModule/OrganSegmentationWidget.hpp"
+		"OrganSegmentationModule/OrganSegmentationController.hpp"
 		)
 	SET( EXTENSION_UIS
 		"AnnotationModule/AnnotationSettingsDialog.ui"
 		"AnnotationModule/AnnotationWidget.ui"
 		"ShoulderMeasurementModule/ShoulderMeasurementWidget.ui"
+		"OrganSegmentationModule/OrganSegmentationWidget.ui"
 		)
 ENDIF( EXTENSION_MODULES_ENABLED )
 
