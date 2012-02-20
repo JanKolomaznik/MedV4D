@@ -270,7 +270,9 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 {
 	//TODO improve
 	try {
-		TryGetAndLockAllInputs();
+		if ( TryGetAndLockAllAvailableInputs() == 0 ) {
+			return QString("NONE");
+		}
 	} catch (...) {
 		return QString("NONE");
 	}
@@ -953,6 +955,7 @@ GeneralViewer::IsDataPrepared()
 bool
 GeneralViewer::PrepareData()
 {
+	D_BLOCK_COMMENT( "Entering PrepareData() method", "Leaving PrepareData() method" );
 	try {
 		if( TryGetAndLockAllAvailableInputs() == 0 ){
 			return false;
@@ -961,20 +964,40 @@ GeneralViewer::PrepareData()
 		return false;
 	}
 
-	if ( ! mInputDatasets[0] ) return false;
-	M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] );
 	
-	if ( ! primaryImage ) return false;
+	if ( mInputDatasets[0] ) {
+		M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] );
+		if ( ! primaryImage ) return false;
 	
-	getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
-	getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *primaryImage );
-	
+		getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
+		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *primaryImage );
+	} else {
+		return false;
+	}
 
+	if ( mInputDatasets[1] ) {
+		M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[1] );
+		if ( secondaryImage ) {;
+			getViewerState().mSecondaryImageExtents = secondaryImage->GetImageExtentsRecord();
+			getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *secondaryImage );
+		} else {
+			getViewerState().mSecondaryImageTexture = M4D::GLTextureImage::Ptr();
+		}
+	}
+	
 	ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = getViewerState().mPrimaryImageExtents.minimum;
 	getViewerState().mSliceRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
 	getViewerState().mVolumeRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
+	if ( getViewerState().mSecondaryImageTexture ) {
+		getViewerState().mSliceRenderConfig.secondaryImageData = &(getViewerState().mSecondaryImageTexture->GetDimensionedInterface<3>());
+		getViewerState().mVolumeRenderConfig.secondaryImageData = &(getViewerState().mSecondaryImageTexture->GetDimensionedInterface<3>());
+		D_PRINT( "Secondary image prepared" );
+	} else {
+		getViewerState().mSliceRenderConfig.secondaryImageData = NULL;
+		getViewerState().mVolumeRenderConfig.secondaryImageData = NULL;
+	}
 
 	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMinimum()) );
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );

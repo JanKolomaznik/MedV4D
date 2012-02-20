@@ -20,6 +20,12 @@ enum ColorTransform
 	ctSimpleColorMap
 };
 
+enum MultiDatasetRenderingStyle
+{
+	mdrsOnlyPrimary,
+	mdrsMask
+};
+
 struct QStringNameIdPair
 {
 	QStringNameIdPair( QString aName, unsigned aId ): name( aName ), id( aId )

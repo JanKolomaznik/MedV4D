@@ -1,6 +1,8 @@
 #include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include "OrganSegmentationModule/OrganSegmentationWidget.hpp"
+
+#include "MedV4D/GUI/managers/DatasetManager.h"
 void
 OrganSegmentationModule::loadModule()
 {
@@ -33,11 +35,24 @@ OrganSegmentationModule::isUnloadable()
 	return false;
 }
 
+void 
+OrganSegmentationModule::createMask()
+{
+	ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
+	if( imageRecord && imageRecord->image ) {
+		const M4D::Imaging::AImageDim<3> & image = M4D::Imaging::AImageDim<3>::Cast( *(imageRecord->image) );
+		mMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >( image.GetImageExtentsRecord() );
+		
+		DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
+		mViewerController->mMask = mMask;
+	}
+}
+
 void
 OrganSegmentationModule::startSegmentationMode()
 {
 	ApplicationManager * appManager = ApplicationManager::getInstance();
-	appManager->createDockWidget( "Organ segmentation", Qt::RightDockWidgetArea, new OrganSegmentationWidget( mViewerController ) );
+	appManager->createDockWidget( "Organ segmentation", Qt::RightDockWidgetArea, new OrganSegmentationWidget( mViewerController, *this ) );
 
 	appManager->activateMode( mModeId );
 }

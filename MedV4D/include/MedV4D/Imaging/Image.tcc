@@ -259,6 +259,17 @@ Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > 
 }
 
 template< typename ElementType, unsigned Dim >
+inline ElementType &
+Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > &pos )
+{
+        Vector< int32, Dim > coords;
+        for ( unsigned i = 0; i < Dim; ++i ) {
+                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent );
+        }
+        return GetElement ( coords );
+}
+
+template< typename ElementType, unsigned Dim >
 ElementType *
 Image< ElementType, Dim >::GetPointer (
         typename Image< ElementType, Dim >::SizeType &size,

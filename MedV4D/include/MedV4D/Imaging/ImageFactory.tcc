@@ -175,6 +175,19 @@ ImageFactory::CreateEmptyImageFromExtents (
         return typename Image< ElementType, Dim >::Ptr ( img );
 }
 
+template< typename ElementType, unsigned tDim >
+typename Image< ElementType, tDim >::Ptr
+ImageFactory::CreateEmptyImageFromExtents (
+                ImageExtentsRecord< tDim > aImageExtents
+        )
+{
+	return CreateEmptyImageFromExtents< ElementType, tDim >( 
+				aImageExtents.minimum,
+				aImageExtents.maximum,
+				aImageExtents.elementExtents
+				);
+}
+
 template< typename ElementType >
 AImage::Ptr
 ImageFactory::CreateEmptyImage2D (

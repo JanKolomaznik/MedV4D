@@ -87,6 +87,18 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 				aConfig.plane 
 				) 
 			); 
+	
+	if( aConfig.secondaryImageData ) {
+		mCgEffect.ExecuteTechniquePass( 
+			"OverlayMask_3D", 
+			boost::bind( &M4D::GLDrawVolumeSlice3D, 
+				aConfig.secondaryImageData->GetMinimum(), 
+				aConfig.secondaryImageData->GetMaximum(), 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.secondaryImageData->GetElementExtents()[aConfig.plane], 
+				aConfig.plane 
+				) 
+			);
+	}
 }
 
 

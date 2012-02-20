@@ -6,6 +6,7 @@
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Common/ProgressNotifier.h"
 #include "MedV4D/Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/ConnectionInterface.h"
 
 #include <boost/thread/recursive_mutex.hpp>
 
@@ -23,6 +24,8 @@ struct ADatasetRecord
 
 struct ImageRecord: public ADatasetRecord 
 {
+	typedef boost::shared_ptr< ImageRecord > Ptr;
+	
 	boost::filesystem::path	filePath;
 
 	M4D::Imaging::AImage::Ptr image;
@@ -53,14 +56,35 @@ public:
 	ADatasetRecord::Ptr
 	getDatasetInfo( DatasetID aDatasetId );
 	
+	ImageRecord::Ptr
+	getImageInfo( DatasetID aDatasetId );
+	
 	ADatasetRecord::Ptr
 	getCurrentDatasetInfo() 
 	{
 		return getDatasetInfo( mCurrentDatasetId );
 	}
 	
+	ImageRecord::Ptr
+	getCurrentImageInfo() 
+	{
+		return getImageInfo( mCurrentDatasetId );
+	}
+	
 	void
 	setCurrentDatasetInfo( DatasetID aDatasetId );
+	
+	M4D::Imaging::ConnectionInterface &
+	primaryImageInputConnection()
+	{
+		return mPrimaryProdconn;
+	}
+	
+	M4D::Imaging::ConnectionInterface &
+	secondaryImageInputConnection()
+	{
+		return mSecondaryProdconn;
+	}
 
 protected:
 	typedef std::map< DatasetID, ADatasetRecord::Ptr > DatasetInfoMap;
@@ -80,6 +104,9 @@ protected:
 	boost::recursive_mutex mDatasetInfoAccessLock;
 	
 	DatasetID mCurrentDatasetId;
+	
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mPrimaryProdconn;
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mSecondaryProdconn;
 
 };
 

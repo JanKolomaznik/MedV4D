@@ -6,8 +6,31 @@
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include "MedV4D/GUI/utils/QtModelViewTools.h"
+#include "MedV4D/GUI/utils/DrawingMouseController.h"
 #include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
 
+class MaskDrawingMouseController: public ADrawingMouseController
+{
+public:
+	typedef boost::shared_ptr<MaskDrawingMouseController> Ptr;
+	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask ): mMask( aMask )
+	{ ASSERT( mMask ); }
+protected:	
+	void
+	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
+	{
+		Vector3f diff = 0.1f*(aEnd-aStart);
+		for( size_t i = 0; i <= 10; ++i ) {
+			try {
+				mMask->GetElementWorldCoords( aStart + float(i) * diff ) = 255;
+			} catch (...){
+				D_PRINT( "drawStep exception" );
+			}
+		}
+	}
+	
+	M4D::Imaging::Mask3D::Ptr mMask;
+};
 
 class OrganSegmentationController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -77,12 +100,14 @@ public:
 	void
 	render3D();
 
+	M4D::Imaging::Mask3D::Ptr	mMask;
 signals:
 	void
 	updateRequest();
 
 public slots:
-
+	void
+	toggleMaskDrawing( bool aToggle );
 
 protected:
 
@@ -92,7 +117,10 @@ public:
 	bool mOverlay;
 
 	M4D::Common::IDNumber mModeId;
+	
+	MaskDrawingMouseController::Ptr mMaskDrawingController;
 };
+
 
 
 #endif /*ORGAN_SEGMENTATION_CONTROLLER_H*/

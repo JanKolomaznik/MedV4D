@@ -13,7 +13,10 @@ public:
 	
 	Qt::MouseButton	mEditorInteractionButton;
 
-	APrimitiveCreationEventController(): mEditorInteractionButton( Qt::LeftButton ), mIsDrawing( false )
+	ADrawingMouseController(): mEditorInteractionButton( Qt::LeftButton ), mIsDrawing( false )
+	{}
+	
+	~ADrawingMouseController()
 	{}
 
 	bool
@@ -36,7 +39,7 @@ protected:
 	virtual void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd ) = 0;
 	
-	Mouse3DTrackInfo	mTrackInfo;
+	M4D::GUI::Viewer::Mouse3DTrackInfo	mTrackInfo;
 	bool mIsDrawing;
 };
 

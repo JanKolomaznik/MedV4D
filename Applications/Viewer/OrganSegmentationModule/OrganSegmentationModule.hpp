@@ -5,7 +5,7 @@
 #include <QtCore>
 #include "MedV4D/GUI/utils/Module.h"
 #include "MedV4D/GUI/managers/ApplicationManager.h"
-#include "ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
+#include "OrganSegmentationModule/OrganSegmentationWidget.hpp"
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include "MedV4D/Common/IDGenerator.h"
 
@@ -15,7 +15,7 @@
 class OrganSegmentationModule: public AModule
 {
 public:
-
+	friend class OrganSegmentationWidget;
 	OrganSegmentationModule(): AModule( "Organ Segmentation Module" )
 	{}
 
@@ -34,8 +34,13 @@ protected:
 	void
 	unloadModule();
 	
+	void 
+	createMask();
+	
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
+	
+	M4D::Imaging::Mask3D::Ptr	mMask;
 };
 
 

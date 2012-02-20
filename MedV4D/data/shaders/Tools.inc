@@ -1,4 +1,9 @@
+#ifndef TOOLS_INC
+#define TOOLS_INC
+
 #include "DataStructures.inc"
+
+
 #define DELTA (0.01)
 #define THRESHOLD (0.1)
 #define EPSILON (0.0000001f)
@@ -193,3 +198,5 @@ ApplyTransferFunction1D( float value, TransferFunction1D aTransferFunction1D )
 
 	return tex1D( aTransferFunction1D.data, remappedValue );
 }
+
+#endif /*TOOLS_INC*/

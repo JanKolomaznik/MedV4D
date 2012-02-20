@@ -1,3 +1,4 @@
+#include "Tools.inc"
 
 VertexOutput
 vertexPassThru
@@ -26,6 +27,21 @@ vp_VertexPassPosAsTexCoords(
 	return result;
 }
 
+FragmentOutput 
+fp_OverlayMask_3D( 
+		float3 aPosition : TEXCOORD0,
+		uniform ImageData3D aMaskData3D, 
+		uniform float4 aMaskColor
+		)
+{
+	FragmentOutput OUT;
+	float3 coordinates = texCoordsFromPosition( aPosition, aMaskData3D );
+	float value = step( tex3D( aMaskData3D.data, coordinates ).x, 0.5f );
+
+	OUT.color = aMaskColor;
+	OUT.color.a *= value;
+	return OUT;
+}
 
 FragmentOutput 
 fp_WLWindow_3D( 
@@ -42,9 +58,6 @@ fp_WLWindow_3D(
 	float multiplier = aWLWindow.z;
 
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	//Disable interpolation
-	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
-	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
 	float value = clamp( 
 			( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier,
 			0.0f,
@@ -98,7 +111,7 @@ fp_TransferFunction1D_3D(
 {
 	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
-
+		
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
 	//OUT.color = float4( coordinates, 1.0f );
 	//return OUT;

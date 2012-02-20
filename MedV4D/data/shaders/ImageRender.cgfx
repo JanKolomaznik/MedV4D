@@ -1,4 +1,4 @@
-#include "Tools.inc"
+#include "DataStructures.inc"
 
 ViewSetup gViewSetup;
 
@@ -10,10 +10,6 @@ bool gEnableInterpolation;
 sampler2D gNoiseMap;
 float gJitterStrength = 1.0f;
 float2 gNoiseMapSize;
-
-#include "ImageShaderPrograms.cgfx"
-
-
 
 ImageData3D gPrimaryImageData3D;
 ImageData3D gSecondaryImageData3D;
@@ -58,6 +54,10 @@ const int edgeOrder[96/*8*12*/];/* = {
 				};*/
 
 
+//INCLUDE SHADERS
+#include "Tools.inc"
+#include "ImageShaderPrograms.cgfx"
+
 
 
 
@@ -81,7 +81,6 @@ technique TransferFunction1D_3DNoBlending {
 		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = false;DepthFunc = LEqual;
 	}
 }
-
 
 technique TransferFunction1D_3D {
 	pass t0 {
@@ -226,8 +225,6 @@ technique WLWindow_3D {
 	}
 }
 
-
-
 technique WLWindowMIP_3D  {
 	pass t0 {
 		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
@@ -282,16 +279,18 @@ technique SimpleRegionColorMap_3D {
 	}
 }
 
-/*
-technique ColorMappedMask_3D {
+technique OverlayMask_3D {
 	pass t0 {
-		FragmentProgram = compile glslf fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
+		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile glslf fp_OverlayMask_3D( 
+							gSecondaryImageData3D, 
+							float4( 0.0f, 0.0f, 1.0f, 0.5f )
+							);
+		DepthTestEnable = false;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
 	}
+	
 }
 
-technique Test {
-	pass t0 {
-		FragmentProgram = compile glslf fp_Test();
-	}
-}
-*/

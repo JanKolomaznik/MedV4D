@@ -31,7 +31,7 @@ namespace Viewer
 class GeneralViewerFactory: public AViewerFactory
 {
 public:
-	GeneralViewerFactory() :mConnection( NULL )
+	GeneralViewerFactory() :mPrimaryConnection( NULL ), mSecondaryConnection( NULL )
 	{}
 	typedef boost::shared_ptr< GeneralViewerFactory > Ptr;
 
@@ -45,8 +45,11 @@ public:
 		if( mViewerController ) {
 			viewer->setViewerController( mViewerController );
 		}
-		if( mConnection ) {
-			mConnection->ConnectConsumer( viewer->InputPort()[0] );
+		if( mPrimaryConnection ) {
+			mPrimaryConnection->ConnectConsumer( viewer->InputPort()[0] );
+		}
+		if( mSecondaryConnection ) {
+			mSecondaryConnection->ConnectConsumer( viewer->InputPort()[1] );
 		}
 
 		viewer->setLUTWindow( Vector2f( 1500.0f,100.0f ) );
@@ -82,15 +85,20 @@ public:
 		mViewerController = aController;
 	}
 	void
-	setInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
+	setPrimaryInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
 	{
-		mConnection = &mProdconn;
+		mPrimaryConnection = &mProdconn;
 	}
-
+	void
+	setSecondaryInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
+	{
+		mSecondaryConnection = &mProdconn;
+	}
 protected:
 	RenderingExtension::Ptr mRenderingExtension;
 	AViewerController::Ptr	mViewerController;
-	M4D::Imaging::ConnectionInterface *mConnection;
+	M4D::Imaging::ConnectionInterface *mPrimaryConnection;
+	M4D::Imaging::ConnectionInterface *mSecondaryConnection;
 };
 
 } /*namespace Viewer*/
@@ -252,7 +260,8 @@ ViewerWindow::ViewerWindow()
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mRenderingExtension );
-	factory->setInputConnection( mProdconn );
+	factory->setPrimaryInputConnection( DatasetManager::getInstance()->primaryImageInputConnection() );
+	factory->setSecondaryInputConnection( DatasetManager::getInstance()->secondaryImageInputConnection() );
 	mViewerDesktop->setViewerFactory( factory );
 	LOG( "Viewer factory initialized" );
 
@@ -635,9 +644,10 @@ ViewerWindow::openFile()
 void 
 ViewerWindow::openFile( const QString &aPath )
 {
+	ASSERT( false );
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
-	mProdconn.PutDataset( image );
+	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 	
 	//M4D::Common::Clock clock;
 	
@@ -699,6 +709,7 @@ ViewerWindow::openFile( const QString &aPath )
 void 
 ViewerWindow::openDicom( const QString &aPath )
 {
+	ASSERT( false );
 	LOG( "Opening Dicom" );
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 
@@ -740,7 +751,7 @@ ViewerWindow::dataLoaded()
 	}
 	M4D::Imaging::AImage::Ptr image = iRec->image;
 
-	mProdconn.PutDataset( image );
+	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 	
 	//M4D::Common::Clock clock;
 	

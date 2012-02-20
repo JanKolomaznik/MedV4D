@@ -48,6 +48,17 @@ DatasetManager::getDatasetInfo( DatasetID aDatasetId )
 	return ADatasetRecord::Ptr();
 }
 
+ImageRecord::Ptr
+DatasetManager::getImageInfo( DatasetID aDatasetId )
+{
+	ADatasetRecord::Ptr rec = getDatasetInfo( aDatasetId );
+	if ( rec ) {
+		return boost::dynamic_pointer_cast< ImageRecord >( rec );
+	}
+	
+	return ImageRecord::Ptr();
+}
+
 DatasetID
 DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, bool aUseAsCurrent )
 {

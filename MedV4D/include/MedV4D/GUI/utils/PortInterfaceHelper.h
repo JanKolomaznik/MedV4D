@@ -130,8 +130,8 @@ PortInterfaceHelper< DatasetTypeVector >
 	for( size_t i = 0; i < PortCount; ++i ) {
 		if( mInputPorts.GetPort(i).IsPlugged() ) {
 			try {
-				++locked_count;
 				mInputDatasets[i] = mInputPorts.GetPort(i).GetDatasetPtr();
+				++locked_count;
 			} catch (...) {
 				D_PRINT( "Dataset not available on port n." << i );
 			}

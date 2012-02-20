@@ -15,31 +15,55 @@ OrganSegmentationController::~OrganSegmentationController()
 bool
 OrganSegmentationController::mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
+	if ( mMaskDrawingController ) {
+		if ( mMaskDrawingController->mouseMoveEvent( aViewerState, aEventInfo ) ) {
+			return true;
+		}
+	}
 	return ControllerPredecessor::mouseMoveEvent ( aViewerState, aEventInfo );
 }
 
 bool	
 OrganSegmentationController::mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
-	
+	if ( mMaskDrawingController ) {
+		if ( mMaskDrawingController->mouseDoubleClickEvent( aViewerState, aEventInfo ) ) {
+			return true;
+		}
+	}
 	return ControllerPredecessor::mouseDoubleClickEvent ( aViewerState, aEventInfo );
 }
 
 bool
 OrganSegmentationController::mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
+	if ( mMaskDrawingController ) {
+		if ( mMaskDrawingController->mousePressEvent( aViewerState, aEventInfo ) ) {
+			return true;
+		}
+	}
 	return ControllerPredecessor::mousePressEvent ( aViewerState, aEventInfo );
 }
 
 bool
 OrganSegmentationController::mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
+	if ( mMaskDrawingController ) {
+		if ( mMaskDrawingController->mouseReleaseEvent( aViewerState, aEventInfo ) ) {
+			return true;
+		}
+	}
 	return ControllerPredecessor::mouseReleaseEvent ( aViewerState, aEventInfo );
 }
 
 bool
 OrganSegmentationController::wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event )
 {
+	if ( mMaskDrawingController ) {
+		if ( mMaskDrawingController->wheelEvent( aViewerState, event ) ) {
+			return true;
+		}
+	}
 	return ControllerPredecessor::wheelEvent ( aViewerState, event );
 }
 
@@ -74,6 +98,16 @@ void
 OrganSegmentationController::render3D()
 {
 	
+}
+
+void
+OrganSegmentationController::toggleMaskDrawing( bool aToggle )
+{
+	if( aToggle ) {
+		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask ) );
+	} else {
+		mMaskDrawingController = MaskDrawingMouseController::Ptr();
+	}
 }
 
 

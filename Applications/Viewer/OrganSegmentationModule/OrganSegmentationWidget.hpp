@@ -8,19 +8,28 @@
 #include <iostream>
 #include <fstream>
 
+class OrganSegmentationModule;
+
 class OrganSegmentationWidget: public QWidget, public Ui::OrganSegmentationWidget
 {
 	Q_OBJECT;
 public:
-	OrganSegmentationWidget( OrganSegmentationController::Ptr aController ): mController( aController )
+	OrganSegmentationWidget( OrganSegmentationController::Ptr aController, OrganSegmentationModule &aModule ): mController( aController ), mModule( aModule )
 	{
 		ASSERT( aController );
 		setupUi( this );
 	}
 public slots:
+	void
+	createMask();
+	void
+	toggleDraw( bool aToggle );
+	void
+	updateTimestamp();
 
 protected:
 	OrganSegmentationController::Ptr mController;
+	OrganSegmentationModule &mModule;
 };
 
 

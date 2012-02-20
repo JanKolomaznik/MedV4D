@@ -104,9 +104,21 @@ protected:
 struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
-		: primaryImageData( NULL ), secondaryImageData( NULL ), colorTransform( ctMaxIntensityProjection ), 
-		transferFunction( NULL ), integralTransferFunction( NULL ), jitterEnabled( true ), jitterStrength( 1.0f ), shadingEnabled( true ), 
-		integralTFEnabled( false ), sampleCount( 150 ), enableInterpolation(true ), enableVolumeRestrictions( false ), enableCutPlane( false ), cutPlaneCameraTargetOffset( 0.0f )
+		: primaryImageData( NULL ), 
+		secondaryImageData( NULL ), 
+		colorTransform( ctMaxIntensityProjection ), 
+		transferFunction( NULL ), 
+		integralTransferFunction( NULL ), 
+		jitterEnabled( true ), 
+		jitterStrength( 1.0f ), 
+		shadingEnabled( true ), 
+		integralTFEnabled( false ), 
+		sampleCount( 150 ), 
+		enableInterpolation(true ), 
+		enableVolumeRestrictions( false ), 
+		enableCutPlane( false ), 
+		cutPlaneCameraTargetOffset( 0.0f ),
+		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{ }
 	const GLTextureImage3D			*primaryImageData;
 	const GLTextureImage3D			*secondaryImageData;
@@ -131,6 +143,8 @@ struct VolumeRenderer::RenderingConfiguration
 	bool					enableCutPlane;
 	Planef					cutPlane;
 	float					cutPlaneCameraTargetOffset;
+	
+	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 };
 
 

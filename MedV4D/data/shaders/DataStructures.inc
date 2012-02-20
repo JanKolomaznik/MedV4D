@@ -1,3 +1,5 @@
+#ifndef DATA_STRUCTURES_INC
+#define DATA_STRUCTURES_INC
 
 struct ViewSetup
 {
@@ -60,3 +62,5 @@ struct Plane
 	float3 point;
 	float3 normal;
 };
+
+#endif /*DATA_STRUCTURES_INC*/

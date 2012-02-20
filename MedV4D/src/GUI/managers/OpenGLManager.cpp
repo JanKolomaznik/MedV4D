@@ -121,7 +121,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 		}
 		
 		if ( timestamp == it->second.editTimeStamp ) { //Dataset contents didn't changed - texture is actual
-			D_PRINT( "Returning valid instance" );
+			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
 		} 
 	}
@@ -151,7 +151,9 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	rec.structTimeStamp = structTimestamp;
 	rec.editTimeStamp = timestamp;
 	mPimpl->textureStorage[ id ] = rec;
-	doneCurrent();	
+	doneCurrent();
+	D_PRINT( "Returning newly created texture instance" );
+	return rec.texture;
 }
 
 void

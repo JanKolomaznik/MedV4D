@@ -42,6 +42,7 @@ IF( EXTENSION_MODULES_ENABLED )
 		"ShoulderMeasurementModule/ShoulderMeasurementModule.cpp"
 		"OrganSegmentationModule/OrganSegmentationModule.cpp"
 		"OrganSegmentationModule/OrganSegmentationController.cpp"
+		"OrganSegmentationModule/OrganSegmentationWidget.cpp"
 	)
 	SET( EXTENSION_HEADERS
 		"AnnotationModule/AnnotationEditorController.hpp"

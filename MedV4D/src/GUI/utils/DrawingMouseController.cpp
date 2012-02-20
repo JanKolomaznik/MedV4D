@@ -4,14 +4,14 @@
 bool
 ADrawingMouseController::mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
 { 
-	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+	M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
 	
-	if ( state.viewType == vt2DAlignedSlices && mIsDrawing) {
+	if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices && mIsDrawing) {
 		Vector3f lastPos = mTrackInfo.mLastSpaceCoords;
 		Vector3f diff;
 		mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos(), aEventInfo.realCoordinates, diff );
 		
-		drawStep( lastPos, realCoordinates );
+		drawStep( lastPos, aEventInfo.realCoordinates );
 	}
 	return false; 
 }
@@ -25,9 +25,9 @@ ADrawingMouseController::mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerSta
 bool
 ADrawingMouseController::mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
 { 
-	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
+	M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
 	mTrackInfo.startTracking( aEventInfo.event->pos(), aEventInfo.event->globalPos(), aEventInfo.realCoordinates );
-	if ( state.viewType == vt2DAlignedSlices ) {
+	if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
 		if( aEventInfo.event->button() == mEditorInteractionButton ) {
 			mIsDrawing = true;
 			return true;

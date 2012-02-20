@@ -46,7 +46,15 @@ protected:
 
 struct SliceRenderer::RenderingConfiguration
 {
-	RenderingConfiguration(): primaryImageData( NULL ), secondaryImageData( NULL ), plane( XY_PLANE ), currentSlice( 0 ), colorTransform( ctLUTWindow ), transferFunction( NULL ), enableInterpolation( true )
+	RenderingConfiguration(): 
+		primaryImageData( NULL ), 
+		secondaryImageData( NULL ), 
+		plane( XY_PLANE ), 
+		currentSlice( 0 ), 
+		colorTransform( ctLUTWindow ), 
+		transferFunction( NULL ), 
+		enableInterpolation( true ),
+		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{}
 
 	const GLTextureImage3D			*primaryImageData;
@@ -73,6 +81,8 @@ struct SliceRenderer::RenderingConfiguration
 	Vector2f				lutWindow;
 	ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
+	
+	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 };
 
 

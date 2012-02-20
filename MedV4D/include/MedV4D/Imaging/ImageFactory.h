@@ -122,6 +122,12 @@ public:
                 Vector< float32, Dim >	elementExtents
         );
 
+	template< typename ElementType, unsigned tDim >
+        static typename Image< ElementType, tDim >::Ptr
+        CreateEmptyImageFromExtents (
+                ImageExtentsRecord< tDim > aImageExtents
+        );
+	
         /**
          * Method for custom empty 2D image creation.
          * ElementType is type of elements which will be contained

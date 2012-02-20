@@ -80,7 +80,17 @@
        <item row="2" column="0">
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>Start drawing</string>
+          <string>Draw</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="text">
+          <string>Update timestamp</string>
          </property>
         </widget>
        </item>
@@ -91,5 +101,59 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>createMask()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>11</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>toggleDraw(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>141</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>updateTimestamp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>310</x>
+     <y>17</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>createMask()</slot>
+  <slot>toggleDraw(bool)</slot>
+  <slot>updateTimestamp()</slot>
+ </slots>
 </ui>
