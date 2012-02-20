@@ -253,7 +253,7 @@ Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > 
 {
         Vector< int32, Dim > coords;
         for ( unsigned i = 0; i < Dim; ++i ) {
-                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent );
+                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent - 0.5f );
         }
         return GetElement ( coords );
 }
@@ -264,7 +264,7 @@ Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > 
 {
         Vector< int32, Dim > coords;
         for ( unsigned i = 0; i < Dim; ++i ) {
-                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent );
+                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent - 0.5f);
         }
         return GetElement ( coords );
 }

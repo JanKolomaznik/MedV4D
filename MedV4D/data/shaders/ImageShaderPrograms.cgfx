@@ -36,7 +36,7 @@ fp_OverlayMask_3D(
 {
 	FragmentOutput OUT;
 	float3 coordinates = texCoordsFromPosition( aPosition, aMaskData3D );
-	float value = step( tex3D( aMaskData3D.data, coordinates ).x, 0.5f );
+	float value = step( 0.5f, tex3D( aMaskData3D.data, coordinates ).x );
 
 	OUT.color = aMaskColor;
 	OUT.color.a *= value;

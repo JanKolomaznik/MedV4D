@@ -123,7 +123,9 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 		if ( timestamp == it->second.editTimeStamp ) { //Dataset contents didn't changed - texture is actual
 			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
-		} 
+		} else {
+			it->second.texture->DeleteTexture();
+		}
 	}
 	return M4D::GLTextureImage::Ptr();
 }
