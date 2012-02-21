@@ -2,6 +2,7 @@
 #define GL_TEXTURE_IMAGE_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <boost/cast.hpp>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/OGLTools.h"
@@ -19,6 +20,7 @@ struct GLTextureImageTyped;
 struct GLTextureImage
 {
 	typedef boost::shared_ptr< GLTextureImage > Ptr;
+	typedef boost::weak_ptr< GLTextureImage > WPtr;
 
 	GLTextureImage(): _linearInterpolation( false ), _gltextureID( 0 )
 	{ }
@@ -194,8 +196,15 @@ GLTextureImage::GetDimensionedInterface()
 
 
 
+void
+updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage );
 
-
+template < uint32 Dim >
+void
+updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aSubImage )
+{
+	ASSERT( false );
+}
 
 GLTextureImage::Ptr
 CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );

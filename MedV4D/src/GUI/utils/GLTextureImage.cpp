@@ -1,8 +1,24 @@
 #include "MedV4D/GUI/utils/GLTextureImage.h"
+#include <boost/cast.hpp>
 
 namespace M4D
 {
 
+void
+updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage )
+{
+	if ( aTexImage.GetDimension() != aSubImage.GetDimension() ) {
+		_THROW_ M4D::ErrorHandling::EBadParameter( "Texture and subimage have different dimension" );
+	}
+	switch ( aTexImage.GetDimension() ) {
+	case 2:
+		return updateTextureSubImageTyped< 2 >( aTexImage.GetDimensionedInterface<2>(), static_cast< const M4D::Imaging::AImageRegionDim<2> & >( aSubImage ) );
+	case 3:
+		return updateTextureSubImageTyped< 3 >( aTexImage.GetDimensionedInterface<3>(), static_cast< const M4D::Imaging::AImageRegionDim<3> & >( aSubImage ) );
+	default:
+		_THROW_ M4D::ErrorHandling::EBadParameter( "Image with wrong dimension - supported only 2 and 3" );
+	}
+}
 	
 GLTextureImage::Ptr
 CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation )

@@ -10,6 +10,7 @@
 
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "MedV4D/Common/Common.h"
 /**
  *  @addtogroup imaging Imaging Library
@@ -25,6 +26,8 @@ namespace Imaging {
 	typedef const ThisClass				ConstThisClass; \
 	typedef boost::shared_ptr< __VA_ARGS__ >	Ptr; \
 	typedef boost::shared_ptr< const __VA_ARGS__ >	ConstPtr; \
+	typedef boost::weak_ptr< __VA_ARGS__ >		WPtr; \
+	typedef boost::weak_ptr< const __VA_ARGS__ >	ConstWPtr; \
 	typedef ThisClass &				Reference;\
 	typedef const ThisClass &			ConstReference;\
 	typedef ThisClass *				SimplePointer;\
