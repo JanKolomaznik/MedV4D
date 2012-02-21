@@ -37,6 +37,9 @@ protected:
 	void 
 	createMask();
 	
+	void
+	updateTimestamp();
+	
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
 	

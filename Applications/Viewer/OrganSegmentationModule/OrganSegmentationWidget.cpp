@@ -17,5 +17,5 @@ OrganSegmentationWidget::toggleDraw( bool aToggle )
 void
 OrganSegmentationWidget::updateTimestamp()
 {
-	
+	mModule.updateTimestamp();
 }

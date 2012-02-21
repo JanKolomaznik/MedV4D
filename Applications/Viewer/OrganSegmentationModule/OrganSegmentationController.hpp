@@ -19,6 +19,7 @@ protected:
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
+		D_PRINT( "DRAW " << aStart );
 		Vector3f diff = 0.1f*(aEnd-aStart);
 		for( size_t i = 0; i <= 10; ++i ) {
 			try {

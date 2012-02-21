@@ -48,6 +48,17 @@ OrganSegmentationModule::createMask()
 	}
 }
 
+void 
+OrganSegmentationModule::updateTimestamp()
+{
+	ASSERT( mMask );
+	
+	M4D::Imaging::WriterBBoxInterface & mod = mMask->SetWholeDirtyBBox();
+	mod.SetModified();
+	
+	DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
+}
+
 void
 OrganSegmentationModule::startSegmentationMode()
 {
