@@ -441,8 +441,8 @@ lineAABBIntersections(
 
 	Vector< CoordType, 3 > t1 = VectorMemberDivision( v1, v );
 	Vector< CoordType, 3 > t2 = VectorMemberDivision( v2, v );
-	Vector< CoordType, 3 > minTs = M4D::min< CoordType, 3 >( t1, t2 );
-	Vector< CoordType, 3 > maxTs = M4D::max< CoordType, 3 >( t1, t2 );
+	Vector< CoordType, 3 > minTs = M4D::minVect< CoordType, 3 >( t1, t2 );
+	Vector< CoordType, 3 > maxTs = M4D::maxVect< CoordType, 3 >( t1, t2 );
 
 	float minT = M4D::max< CoordType, 3 >( minTs );
 	float maxT = M4D::min< CoordType, 3 >( maxTs );

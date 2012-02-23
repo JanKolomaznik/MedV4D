@@ -94,8 +94,6 @@ enum TFConfigurationFlags{
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
-	ASSERT( aConfig.primaryImageData != NULL );
-
 	static int edgeOrder[8*12] = {
 		 10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
 		 11,  8, 10,  5,  9,  6,  2,  1,  7,  3,  0,  4,
@@ -107,19 +105,24 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
 	};
 
-	/*if( aSetupView ) {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		//Set viewing parameters
-		M4D::SetViewAccordingToCamera( aConfig.camera );
+	GLTextureImageTyped<3>::Ptr primaryData = aConfig.primaryImageData.lock();
+	if ( !primaryData ) {
+		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
-	glMatrixMode(GL_MODELVIEW);*/
+	
+	mCgEffect.SetParameter( "gPrimaryImageData3D", *primaryData );
+	mCgEffect.SetParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
+	
+	GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
+	if( secondaryData ) {
+		mCgEffect.SetParameter( "gSecondaryImageData3D", *secondaryData );
+	}
 	
 	size_t sliceCount = aConfig.sampleCount;
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-	M4D::BoundingBox3D bbox( aConfig.primaryImageData->GetMinimum(), aConfig.primaryImageData->GetMaximum() );
+	M4D::BoundingBox3D bbox( primaryData->GetMinimum(), primaryData->GetMaximum() );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
@@ -139,8 +142,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			);
 	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
-	mCgEffect.SetParameter( "gPrimaryImageData3D", *aConfig.primaryImageData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.primaryImageData->GetMappedInterval() );
 	mCgEffect.SetParameter( "gLight.position", aConfig.lightPosition );
 	mCgEffect.SetParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
 	mCgEffect.SetParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
@@ -152,7 +153,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	mCgEffect.SetParameter( "gMinID", (int)minId );
 	mCgEffect.SetParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.primaryImageData->GetRealSize() );
+	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), primaryData->GetRealSize() );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );

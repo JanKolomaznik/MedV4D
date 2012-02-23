@@ -12,6 +12,7 @@ ADrawingMouseController::mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr
 		mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos(), aEventInfo.realCoordinates, diff );
 		
 		drawStep( lastPos, aEventInfo.realCoordinates );
+		state.viewerWindow->update();
 	}
 	return false; 
 }

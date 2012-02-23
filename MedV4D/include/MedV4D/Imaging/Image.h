@@ -238,6 +238,9 @@ public:
 	
 	inline ElementType &
         GetElementWorldCoords ( const Vector< float32, Dim > &pos );
+	
+	inline Vector< int32, Dim > 
+        GetElementCoordsFromWorldCoords ( const Vector< float32, Dim > &pos )const;
 
         /**
          * Method for lowlevel access to image data.

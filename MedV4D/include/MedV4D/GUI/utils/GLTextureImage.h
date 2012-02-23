@@ -97,18 +97,21 @@ struct GLTextureImage
 	GLTextureImageTyped< Dim > &
 	GetDimensionedInterface();
 	
-
 	SIMPLE_GET_SET_METHODS( bool, LinearInterpolation, _linearInterpolation );
 protected:
 	bool				_linearInterpolation;
 	//M4D::Imaging::AImage::Ptr	_image;
 	GLuint				_gltextureID;
+	
+	M4D::Common::TimeStamp	mSourceTimestamp;
 
 };
 
 template < uint32 Dim >
 struct GLTextureImageTyped: public GLTextureImage
 {
+	typedef boost::shared_ptr< GLTextureImageTyped > Ptr;
+	typedef boost::weak_ptr< GLTextureImageTyped > WPtr;
 	bool
 	Is1D()const
 	{ return Dim == 1; }
@@ -191,10 +194,18 @@ template< uint32 Dim >
 GLTextureImageTyped< Dim > &
 GLTextureImage::GetDimensionedInterface()
 {
-	return *boost::polymorphic_downcast< GLTextureImageTyped< Dim > *>( this );
+	return *boost::polymorphic_downcast< GLTextureImageTyped< Dim > *>( this ); //TODO
 }
 
-
+template< uint32 Dim >
+typename GLTextureImageTyped< Dim >::WPtr
+GLTextureGetDimensionedInterfaceWPtr( GLTextureImage::WPtr aTexture )
+{
+	GLTextureImage::Ptr tex = aTexture.lock();
+	if( tex ) {
+		return boost::dynamic_pointer_cast< GLTextureImageTyped< Dim > >( tex );
+	}
+}
 
 void
 updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage );

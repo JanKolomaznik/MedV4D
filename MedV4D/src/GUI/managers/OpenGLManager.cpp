@@ -139,20 +139,22 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
 	
-	makeCurrent();
 	TextureRecord rec;
-	try {
-		rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
-	} catch ( M4D::GLException &e) {
-		LOG_ERR( e.what() );
-		throw;
-	} catch ( ... ) {
-		LOG_ERR( "Problem with texture creation" );
-		throw;
+	makeCurrent();
+	{
+		try {
+			rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
+		} catch ( M4D::GLException &e) {
+			LOG_ERR( e.what() );
+			throw;
+		} catch ( ... ) {
+			LOG_ERR( "Problem with texture creation" );
+			throw;
+		}
+		rec.structTimeStamp = structTimestamp;
+		rec.editTimeStamp = timestamp;
+		mPimpl->textureStorage[ id ] = rec;
 	}
-	rec.structTimeStamp = structTimestamp;
-	rec.editTimeStamp = timestamp;
-	mPimpl->textureStorage[ id ] = rec;
 	doneCurrent();
 	D_PRINT( "Returning newly created texture instance" );
 	return rec.texture;

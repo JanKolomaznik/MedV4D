@@ -732,7 +732,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
 			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
 			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
-			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData->GetElementExtents()[plane];
+			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->GetElementExtents()[plane];
 			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
 			Vector3f up;
 			switch ( plane ) {
@@ -772,8 +772,8 @@ GeneralViewer::render()
 		{
 			glViewport(0, 0, width(), height());
 			
-			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData->GetMinimum(), 
-						getViewerState().mVolumeRenderConfig.primaryImageData->GetMaximum() );
+			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData.lock()->GetMinimum(), 
+						getViewerState().mVolumeRenderConfig.primaryImageData.lock()->GetMaximum() );
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
@@ -981,25 +981,25 @@ GeneralViewer::PrepareData()
 			getViewerState().mSecondaryImageExtents = secondaryImage->GetImageExtentsRecord();
 			getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *secondaryImage );
 		} else {
-			getViewerState().mSecondaryImageTexture = M4D::GLTextureImage::Ptr();
+			getViewerState().mSecondaryImageTexture.reset();
 		}
 	}
 	
 	ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = getViewerState().mPrimaryImageExtents.minimum;
-	getViewerState().mSliceRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
-	getViewerState().mVolumeRenderConfig.primaryImageData = &(getViewerState().mPrimaryImageTexture->GetDimensionedInterface<3>());
-	if ( getViewerState().mSecondaryImageTexture ) {
-		getViewerState().mSliceRenderConfig.secondaryImageData = &(getViewerState().mSecondaryImageTexture->GetDimensionedInterface<3>());
-		getViewerState().mVolumeRenderConfig.secondaryImageData = &(getViewerState().mSecondaryImageTexture->GetDimensionedInterface<3>());
+	getViewerState().mSliceRenderConfig.primaryImageData = GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mPrimaryImageTexture );
+	getViewerState().mVolumeRenderConfig.primaryImageData = GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mPrimaryImageTexture );
+	if ( getViewerState().mSecondaryImageTexture.lock() ) {
+		getViewerState().mSliceRenderConfig.secondaryImageData = GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mSecondaryImageTexture );
+		getViewerState().mVolumeRenderConfig.secondaryImageData = GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mSecondaryImageTexture );
 		D_PRINT( "Secondary image prepared" );
 	} else {
-		getViewerState().mSliceRenderConfig.secondaryImageData = NULL;
-		getViewerState().mVolumeRenderConfig.secondaryImageData = NULL;
+		getViewerState().mSliceRenderConfig.secondaryImageData.reset();
+		getViewerState().mVolumeRenderConfig.secondaryImageData.reset();
 	}
 
-	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMaximum() + getViewerState().mPrimaryImageTexture->GetDimensionedInterface< 3 >().GetMinimum()) );
+	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
 	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
 	resetView();

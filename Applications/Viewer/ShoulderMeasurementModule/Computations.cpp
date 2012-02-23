@@ -202,8 +202,8 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 	Vector3f minimum = aPoints[0];
 	Vector3f maximum = aPoints[0];
 	for ( size_t i = 1; i < aPoints.size(); ++i ) {
-		minimum = M4D::min< float, 3 >( static_cast< const Vector3f &>( minimum ), static_cast< const Vector3f &>( aPoints[i] ) );
-		maximum = M4D::max< float, 3 >( static_cast< const Vector3f &>( maximum ), static_cast< const Vector3f &>( aPoints[i] ) );
+		minimum = M4D::minVect< float, 3 >( static_cast< const Vector3f &>( minimum ), static_cast< const Vector3f &>( aPoints[i] ) );
+		maximum = M4D::maxVect< float, 3 >( static_cast< const Vector3f &>( maximum ), static_cast< const Vector3f &>( aPoints[i] ) );
 		/*D_PRINT( "point : " << aPoints[i] );
 		D_PRINT( "min : " << minimum );
 		D_PRINT( "max : " << maximum << "\n" );*/

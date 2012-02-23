@@ -251,22 +251,25 @@ template< typename ElementType, unsigned Dim >
 inline ElementType
 Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > &pos ) const
 {
-        Vector< int32, Dim > coords;
-        for ( unsigned i = 0; i < Dim; ++i ) {
-                coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent - 0.5f );
-        }
-        return GetElement ( coords );
+	return GetElement ( GetElementCoordsFromWorldCoords( pos ) );
 }
 
 template< typename ElementType, unsigned Dim >
 inline ElementType &
 Image< ElementType, Dim >::GetElementWorldCoords ( const Vector< float32, Dim > &pos )
 {
-        Vector< int32, Dim > coords;
+        return GetElement ( GetElementCoordsFromWorldCoords( pos ) );
+}
+
+template< typename ElementType, unsigned Dim >
+Vector< int32, Dim > 
+Image< ElementType, Dim >::GetElementCoordsFromWorldCoords ( const Vector< float32, Dim > &pos )const
+{
+	Vector< int32, Dim > coords;
         for ( unsigned i = 0; i < Dim; ++i ) {
                 coords[i] = ROUND ( pos[i] / this->_dimExtents[i].elementExtent - 0.5f);
         }
-        return GetElement ( coords );
+        return coords;
 }
 
 template< typename ElementType, unsigned Dim >

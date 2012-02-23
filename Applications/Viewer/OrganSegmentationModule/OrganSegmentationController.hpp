@@ -8,6 +8,9 @@
 #include "MedV4D/GUI/utils/QtModelViewTools.h"
 #include "MedV4D/GUI/utils/DrawingMouseController.h"
 #include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
+
+#include "MedV4D/Imaging/painting/Paint.h"
 
 class MaskDrawingMouseController: public ADrawingMouseController
 {
@@ -19,7 +22,15 @@ protected:
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
-		D_PRINT( "DRAW " << aStart );
+		try {
+			M4D::Imaging::painting::drawRectangleAlongLine( *mMask, 255, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
+		} catch (...){
+			D_PRINT( "drawStep exception" );
+		}
+		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetWholeDirtyBBox();
+		mod.SetModified();
+		OpenGLManager::getInstance()->getTextureFromImage(*mMask);
+		/*D_PRINT( "DRAW " << aStart );
 		Vector3f diff = 0.1f*(aEnd-aStart);
 		for( size_t i = 0; i <= 10; ++i ) {
 			try {
@@ -27,7 +38,7 @@ protected:
 			} catch (...){
 				D_PRINT( "drawStep exception" );
 			}
-		}
+		}*/
 	}
 	
 	M4D::Imaging::Mask3D::Ptr mMask;

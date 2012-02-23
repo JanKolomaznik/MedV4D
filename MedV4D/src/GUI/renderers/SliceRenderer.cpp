@@ -35,12 +35,17 @@ SliceRenderer::Finalize()
 void
 SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
 {
-	ASSERT( aConfig.primaryImageData != NULL );
-
-	mCgEffect.SetParameter( "gPrimaryImageData3D", *aConfig.primaryImageData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.primaryImageData->GetMappedInterval() );
-	if( aConfig.secondaryImageData ) {
-		mCgEffect.SetParameter( "gSecondaryImageData3D", *aConfig.secondaryImageData );
+	GLTextureImageTyped<3>::Ptr primaryData = aConfig.primaryImageData.lock();
+	if ( !primaryData ) {
+		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
+	}
+	
+	mCgEffect.SetParameter( "gPrimaryImageData3D", *primaryData );
+	mCgEffect.SetParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
+	
+	GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
+	if( secondaryData ) {
+		mCgEffect.SetParameter( "gSecondaryImageData3D", *secondaryData );
 	}
 	
 	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
@@ -81,20 +86,20 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 	mCgEffect.ExecuteTechniquePass( 
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
-				aConfig.primaryImageData->GetMinimum(), 
-				aConfig.primaryImageData->GetMaximum(), 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.primaryImageData->GetElementExtents()[aConfig.plane], 
+				primaryData->GetMinimum(), 
+				primaryData->GetMaximum(), 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->GetElementExtents()[aConfig.plane], 
 				aConfig.plane 
 				) 
 			); 
 	
-	if( aConfig.secondaryImageData ) {
+	if( secondaryData ) {
 		mCgEffect.ExecuteTechniquePass( 
 			"OverlayMask_3D", 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
-				aConfig.secondaryImageData->GetMinimum(), 
-				aConfig.secondaryImageData->GetMaximum(), 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * aConfig.secondaryImageData->GetElementExtents()[aConfig.plane], 
+				secondaryData->GetMinimum(), 
+				secondaryData->GetMaximum(), 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * secondaryData->GetElementExtents()[aConfig.plane], 
 				aConfig.plane 
 				) 
 			);

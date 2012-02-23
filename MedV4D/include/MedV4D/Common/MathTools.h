@@ -70,6 +70,17 @@ MOD( int64 a, int64 b )
 	return a % b;
 }*/
 
+template< typename TNumType, size_t tDim >
+inline TNumType
+max( const Vector< TNumType, tDim > &a ) {
+	TNumType res = a[0];
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( res < a[(unsigned int)i] ) {
+			res = a[(unsigned int)i];
+		}
+	}
+	return res;
+}
 
 template< typename NType >
 inline NType
@@ -91,6 +102,41 @@ max( NType a, NType b, NType c ) {
 
 template< typename NType >
 inline NType
+max( NType a, NType b, NType c, NType d ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
+	return max( max( a, b ), max( c, d ) );
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+maxVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = max( a[i], b[i] );
+	}
+	return res;
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+maxVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b, const Vector< TNumType, tDim > &c ) {
+	return maxVect< TNumType, tDim >( a, maxVect< TNumType, tDim >( b, c ) );
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+maxVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b, const Vector< TNumType, tDim > &c, const Vector< TNumType, tDim > &d ) {
+	return maxVect< TNumType, tDim >( maxVect< TNumType, tDim >( a, b ), maxVect< TNumType, tDim >( c, d ) );
+}
+
+
+
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+template< typename NType >
+inline NType
 min( NType a, NType b ) {
 	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
 	if( a>b ) return b;
@@ -107,50 +153,11 @@ min( NType a, NType b, NType c ) {
 	return min( a, c );
 }
 
-template< typename TNumType, size_t tDim >
-inline TNumType
-max( const Vector< TNumType, tDim > &a ) {
-	TNumType res = a[0];
-	for( size_t i = 1; i < tDim; ++i ) {
-		if ( res < a[(unsigned int)i] ) {
-			res = a[(unsigned int)i];
-		}
-	}
-	return res;
-}
-
-
-template< typename TNumType, size_t tDim >
-inline Vector< TNumType, tDim >
-max( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
-	Vector< TNumType, tDim > res;
-	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = max( a[i], b[i] );
-	}
-	return res;
-}
-
-
-template< typename TNumType, size_t tDim >
-inline Vector< TNumType, tDim >
-min( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
-	Vector< TNumType, tDim > res;
-	for( size_t i = 0; i < tDim; ++i ) {
-		res[i] = min( a[i], b[i] );
-	}
-	return res;
-}
-
-template< typename TNumType, size_t tDim >
-inline size_t
-maxIdx( const Vector< TNumType, tDim > &a ) {
-	size_t idx = 0;
-	for( size_t i = 1; i < tDim; ++i ) {
-		if ( a[idx] < a[(unsigned int)i] ) {
-			idx = i;
-		}
-	}
-	return idx;
+template< typename NType >
+inline NType
+min( NType a, NType b, NType c, NType d ) {
+	BOOST_STATIC_ASSERT( (boost::is_fundamental< NType >::value) );
+	return min( min( a, b ), min( c, d ) );
 }
 
 template< typename TNumType, size_t tDim >
@@ -163,6 +170,44 @@ min( const Vector< TNumType, tDim > &a ) {
 		}
 	}
 	return res;
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+minVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = min( a[i], b[i] );
+	}
+	return res;
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+minVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b, const Vector< TNumType, tDim > &c ) {
+	return minVect< TNumType, tDim >( a, minVect< TNumType, tDim >( b, c ) );
+}
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+minVect( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b, const Vector< TNumType, tDim > &c, const Vector< TNumType, tDim > &d ) {
+	return minVect< TNumType, tDim >( minVect< TNumType, tDim >( a, b ), minVect< TNumType, tDim >( c, d ) );
+}
+
+
+//******************************************************************************
+
+
+template< typename TNumType, size_t tDim >
+inline size_t
+maxIdx( const Vector< TNumType, tDim > &a ) {
+	size_t idx = 0;
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( a[idx] < a[(unsigned int)i] ) {
+			idx = i;
+		}
+	}
+	return idx;
 }
 
 template< typename TNumType, size_t tDim >

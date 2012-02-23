@@ -104,8 +104,8 @@ protected:
 struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
-		: primaryImageData( NULL ), 
-		secondaryImageData( NULL ), 
+		: //primaryImageData( NULL ), 
+		//secondaryImageData( NULL ), 
 		colorTransform( ctMaxIntensityProjection ), 
 		transferFunction( NULL ), 
 		integralTransferFunction( NULL ), 
@@ -120,8 +120,8 @@ struct VolumeRenderer::RenderingConfiguration
 		cutPlaneCameraTargetOffset( 0.0f ),
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{ }
-	const GLTextureImage3D			*primaryImageData;
-	const GLTextureImage3D			*secondaryImageData;
+	GLTextureImage3D::WPtr			primaryImageData;
+	GLTextureImage3D::WPtr			secondaryImageData;
 	
 	int					colorTransform;
 	const GLTransferFunctionBuffer1D	*transferFunction;

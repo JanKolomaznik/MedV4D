@@ -83,10 +83,12 @@ public:
 	}
 	
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
-	GLTextureImage::Ptr mPrimaryImageTexture;
+	GLTextureImage::WPtr mPrimaryImageTexture;
+	M4D::Common::TimeStamp mPrimaryEditTimestamp;
 	
 	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
-	GLTextureImage::Ptr mSecondaryImageTexture;
+	GLTextureImage::WPtr mSecondaryImageTexture;
+	M4D::Common::TimeStamp mSecondaryEditTimestamp;
 	
 	/*Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;

@@ -47,8 +47,8 @@ protected:
 struct SliceRenderer::RenderingConfiguration
 {
 	RenderingConfiguration(): 
-		primaryImageData( NULL ), 
-		secondaryImageData( NULL ), 
+		//primaryImageData( NULL ), 
+		//secondaryImageData( NULL ), 
 		plane( XY_PLANE ), 
 		currentSlice( 0 ), 
 		colorTransform( ctLUTWindow ), 
@@ -57,8 +57,8 @@ struct SliceRenderer::RenderingConfiguration
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{}
 
-	const GLTextureImage3D			*primaryImageData;
-	const GLTextureImage3D			*secondaryImageData;
+	GLTextureImage3D::WPtr			primaryImageData;
+	GLTextureImage3D::WPtr			secondaryImageData;
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;
 	
@@ -69,8 +69,10 @@ struct SliceRenderer::RenderingConfiguration
 	Vector3f
 	getCurrentRealSlice()const
 	{
-		if ( primaryImageData ) {
-			return primaryImageData->GetMinimum() + VectorMemberProduct( currentSlice, primaryImageData->GetElementExtents() );
+		GLTextureImageTyped<3>::Ptr primaryData = primaryImageData.lock();
+		
+		if ( primaryData ) {
+			return primaryData->GetMinimum() + VectorMemberProduct( currentSlice, primaryData->GetElementExtents() );
 		} else {
 			return Vector3f();
 		}
