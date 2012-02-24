@@ -732,7 +732,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
 			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
 			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
-			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->GetElementExtents()[plane];
+			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->getExtents().elementExtents[plane];
 			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
 			Vector3f up;
 			switch ( plane ) {
@@ -772,8 +772,8 @@ GeneralViewer::render()
 		{
 			glViewport(0, 0, width(), height());
 			
-			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData.lock()->GetMinimum(), 
-						getViewerState().mVolumeRenderConfig.primaryImageData.lock()->GetMaximum() );
+			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents().realMaximum, 
+						getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents().realMinimum );
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );

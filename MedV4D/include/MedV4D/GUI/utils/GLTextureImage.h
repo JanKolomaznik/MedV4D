@@ -36,8 +36,8 @@ struct GLTextureImage
 	{ return _gltextureID; }
 
 
-	virtual void
-	SetImage( const M4D::Imaging::AImageRegion &image ) = 0;
+	/*virtual void
+	SetImage( const M4D::Imaging::AImageRegion &image ) = 0;*/
 	
 	void
 	Reset();
@@ -46,8 +46,8 @@ struct GLTextureImage
 	IsPrepared()const;
 	*/
 
-	virtual void
-	PrepareTexture() = 0;
+	/*virtual void
+	PrepareTexture() = 0;*/
 
 	void
 	DeleteTexture()
@@ -60,9 +60,9 @@ struct GLTextureImage
 		}
 	}
 
-	void
+	/*void
 	SetLinearinterpolation( bool aLinearInterpolation )
-	{ _linearInterpolation = aLinearInterpolation; }
+	{ _linearInterpolation = aLinearInterpolation; }*/
 
 
 	/**
@@ -100,12 +100,12 @@ struct GLTextureImage
 	
 	SIMPLE_GET_SET_METHODS( bool, LinearInterpolation, _linearInterpolation );
 protected:
+	GLTextureImage( GLuint aTexID, bool aLinearInterpolation ): _linearInterpolation( aLinearInterpolation ), _gltextureID( aTexID )
+	{ ASSERT( aTexID ); }
+	
 	bool				_linearInterpolation;
 	//M4D::Imaging::AImage::Ptr	_image;
 	GLuint				_gltextureID;
-	
-	M4D::Common::TimeStamp	mSourceTimestamp;
-
 };
 
 template < uint32 Dim >
@@ -113,6 +113,11 @@ struct GLTextureImageTyped: public GLTextureImage
 {
 	typedef boost::shared_ptr< GLTextureImageTyped > Ptr;
 	typedef boost::weak_ptr< GLTextureImageTyped > WPtr;
+	
+	GLTextureImageTyped( GLuint aTexID, bool aLinearInterpolation, M4D::Imaging::ImageExtentsRecord< Dim > aExtents )
+	: GLTextureImage( aTexID, aLinearInterpolation ), mExtents( aExtents )
+	{ }
+	
 	bool
 	Is1D()const
 	{ return Dim == 1; }
@@ -137,8 +142,12 @@ struct GLTextureImageTyped: public GLTextureImage
 	uint32
 	GetDimension()const
 	{ return Dim; }
+	
+	const M4D::Imaging::ImageExtentsRecord< Dim > &
+	getExtents()const
+	{ return mExtents; }
 
-	Vector< float32, Dim >
+	/*Vector< float32, Dim >
 	GetMinimum()const
 	{ return _image->GetRealMinimum(); }
 
@@ -152,20 +161,27 @@ struct GLTextureImageTyped: public GLTextureImage
 
 	Vector< float32, Dim > 
 	GetElementExtents()const
-	{ return _image->GetElementExtents(); }
+	{ return mExtents.GetElementExtents(); }*/
 
 	Vector< float32, Dim >
 	GetElementExtentsInTextureSpace()const
 	{
-		return VectorMemberDivision( _image->GetElementExtents() / _image->GetSize() );
+		return VectorMemberDivision( mExtents.elementExtents, (mExtents.maximum-mExtents.minimum) );
 	}
 
-	Vector< uint32, Dim > 
-	GetSize()const
-	{ return _image->GetSize(); }
-
-
 	void
+	updateTexture( GLuint aTexID, M4D::Imaging::ImageExtentsRecord< Dim > aExtents )
+	{
+		DeleteTexture(); //TODO check texture
+		_gltextureID = aTexID;
+		mExtents = aExtents;
+	}
+	/*Vector< uint32, Dim > 
+	GetSize()const
+	{ return _image->GetSize(); }*/
+
+
+	/*void
 	SetImage( const M4D::Imaging::AImageRegion &image )
 	{ 
 		SetImage( static_cast<const M4D::Imaging::AImageRegionDim<Dim> &>( image ) );
@@ -185,10 +201,11 @@ struct GLTextureImageTyped: public GLTextureImage
 		DeleteTexture();
 		_gltextureID = GLPrepareTextureFromImageData( *_image, _linearInterpolation );
 		D_PRINT( "Created texture id = " << _gltextureID );
-	}
+	}*/
 
 protected:
-	typename M4D::Imaging::AImageRegionDim<Dim>::ConstPtr	_image;
+	//typename M4D::Imaging::AImageRegionDim<Dim>::ConstPtr	_image;
+	M4D::Imaging::ImageExtentsRecord< Dim > mExtents;
 };
 
 
@@ -220,32 +237,33 @@ updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Im
 }
 
 GLTextureImage::Ptr
-CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );
+createTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );
 
 template < uint32 Dim >
 GLTextureImage::Ptr
-CreateTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bool aLinearInterpolation = true )
+createTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bool aLinearInterpolation = true )
 {
 	typedef GLTextureImageTyped< Dim > TextureImage;
-	TextureImage * texture = new TextureImage;
-	texture->SetLinearinterpolation( aLinearInterpolation );
+	M4D::Imaging::ImageExtentsRecord< Dim > extents = image.GetImageExtentsRecord();
+	GLuint textureID = GLPrepareTextureFromImageData( image, aLinearInterpolation ); //TODO prevent loosing texture during exception
 
-	texture->SetImage( image );
-	texture->PrepareTexture();
-
-	return GLTextureImage::Ptr( texture );
+	return typename TextureImage::Ptr( new TextureImage( textureID, aLinearInterpolation, extents ) );
 }
 
 void
-RecreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image );
+recreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image );
 
 template < uint32 Dim >
 void
-RecreateTextureFromImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegion &image )
+recreateTextureFromImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &image )
 {
 	//TODO test image properties if same
-	aTexImage.SetImage( image );
-	aTexImage.PrepareTexture();
+	aTexImage.DeleteTexture();
+	
+	GLuint textureID = GLPrepareTextureFromImageData( image, aTexImage.GetLinearInterpolation() ); //TODO prevent loosing texture during exception
+	aTexImage.updateTexture( textureID, image.GetImageExtentsRecord() );
+	/*aTexImage.SetImage( image );
+	aTexImage.PrepareTexture();*/
 }
 
 typedef GLTextureImageTyped< 2 > GLTextureImage2D;

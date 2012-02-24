@@ -77,13 +77,13 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage3D &aImage )
 {
 	SetTextureParameter( TO_STRING( aName << ".data" ), aImage.GetTextureGLID() );
 
-	SetParameter( TO_STRING( aName << ".size" ), aImage.GetSize() );
+	SetParameter( TO_STRING( aName << ".size" ), aImage.getExtents().maximum - aImage.getExtents().minimum );
 
-	SetParameter( TO_STRING( aName << ".realSize" ), aImage.GetRealSize() );
+	SetParameter( TO_STRING( aName << ".realSize" ), aImage.getExtents().realMaximum - aImage.getExtents().realMinimum );
 
-	SetParameter( TO_STRING( aName << ".realMinimum" ), aImage.GetMinimum() );
+	SetParameter( TO_STRING( aName << ".realMinimum" ), aImage.getExtents().realMinimum );
 
-	SetParameter( TO_STRING( aName << ".realMaximum" ), aImage.GetMaximum() );
+	SetParameter( TO_STRING( aName << ".realMaximum" ), aImage.getExtents().realMaximum );
 }
 
 void

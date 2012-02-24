@@ -19,19 +19,7 @@ namespace M4D
 
 namespace Imaging {
 
-template< unsigned tDim >
-struct ImageExtentsRecord
-{
-	static const unsigned 	Dimension = tDim;
-	
-	Vector< float32, Dimension > realMinimum;
-	Vector< float32, Dimension > realMaximum;
-	Vector< int32, Dimension > minimum;
-	Vector< int32, Dimension > maximum;
-	
-	Vector< float32, Dimension > elementExtents;
-};
-	
+
 /**
  *
  **/

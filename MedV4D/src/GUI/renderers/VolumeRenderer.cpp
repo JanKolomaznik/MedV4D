@@ -122,7 +122,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-	M4D::BoundingBox3D bbox( primaryData->GetMinimum(), primaryData->GetMaximum() );
+	M4D::BoundingBox3D bbox( primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
@@ -153,7 +153,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	mCgEffect.SetParameter( "gMinID", (int)minId );
 	mCgEffect.SetParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), primaryData->GetRealSize() );
+	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), primaryData->getExtents().realMaximum-primaryData->getExtents().realMinimum );
 	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );

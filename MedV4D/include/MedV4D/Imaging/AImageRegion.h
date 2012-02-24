@@ -17,6 +17,19 @@ namespace M4D
 namespace Imaging {
 
 
+template< unsigned tDim >
+struct ImageExtentsRecord
+{
+	static const unsigned 	Dimension = tDim;
+	
+	Vector< float32, Dimension > realMinimum;
+	Vector< float32, Dimension > realMaximum;
+	Vector< int32, Dimension > minimum;
+	Vector< int32, Dimension > maximum;
+	
+	Vector< float32, Dimension > elementExtents;
+};
+	
 class AImageRegion
 {
 
@@ -52,6 +65,18 @@ public:
         typedef Vector< float, Dim >		ExtentType; // typedefs for gcc4.2 error that cannot parse these templates as default parameters
         typedef Vector< unsigned, Dim >		SizeType;
 
+	ImageExtentsRecord< Dimension >
+        GetImageExtentsRecord()const
+        {
+		ImageExtentsRecord< Dimension > rec;
+		rec.elementExtents = GetElementExtents();
+		rec.minimum = GetMinimum();
+		rec.maximum = GetMaximum();
+		rec.realMinimum = GetRealMinimum();
+		rec.realMaximum = GetRealMaximum();
+		return rec;
+	}
+	
         unsigned
         GetDimension() const {
                 return Dimension;

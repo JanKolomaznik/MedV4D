@@ -127,7 +127,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
 		} else {
-			M4D::RecreateTextureFromImage( *(it->second.texture), *(aImage.GetAImageRegion()) );
+			M4D::recreateTextureFromImage( *(it->second.texture), *(aImage.GetAImageRegion()) );
 			return it->second.texture;
 		}
 	}
@@ -149,7 +149,7 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	//makeCurrent();
 	{
 		try {
-			rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
+			rec.texture = M4D::createTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
 		} catch ( M4D::GLException &e) {
 			LOG_ERR( e.what() );
 			throw;

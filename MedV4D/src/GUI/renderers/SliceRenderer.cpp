@@ -86,9 +86,9 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 	mCgEffect.ExecuteTechniquePass( 
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
-				primaryData->GetMinimum(), 
-				primaryData->GetMaximum(), 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->GetElementExtents()[aConfig.plane], 
+				primaryData->getExtents().realMinimum, 
+				primaryData->getExtents().realMaximum, 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane], 
 				aConfig.plane 
 				) 
 			); 
@@ -97,9 +97,9 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 		mCgEffect.ExecuteTechniquePass( 
 			"OverlayMask_3D", 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
-				secondaryData->GetMinimum(), 
-				secondaryData->GetMaximum(), 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * secondaryData->GetElementExtents()[aConfig.plane], 
+				secondaryData->getExtents().realMinimum, 
+				secondaryData->getExtents().realMaximum, 
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * secondaryData->getExtents().elementExtents[aConfig.plane], 
 				aConfig.plane 
 				) 
 			);

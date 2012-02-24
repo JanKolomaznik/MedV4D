@@ -72,7 +72,7 @@ struct SliceRenderer::RenderingConfiguration
 		GLTextureImageTyped<3>::Ptr primaryData = primaryImageData.lock();
 		
 		if ( primaryData ) {
-			return primaryData->GetMinimum() + VectorMemberProduct( currentSlice, primaryData->GetElementExtents() );
+			return primaryData->getExtents().realMinimum + VectorMemberProduct( currentSlice, primaryData->getExtents().elementExtents );
 		} else {
 			return Vector3f();
 		}

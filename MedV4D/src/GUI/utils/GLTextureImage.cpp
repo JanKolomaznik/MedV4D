@@ -21,30 +21,30 @@ updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegi
 }
 	
 GLTextureImage::Ptr
-CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation )
+createTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation )
 {
 	switch ( image.GetDimension() ) {
 	case 2:
-		return CreateTextureFromImageTyped< 2 >( static_cast< const M4D::Imaging::AImageRegionDim<2> & >( image ), aLinearInterpolation );
+		return createTextureFromImageTyped< 2 >( static_cast< const M4D::Imaging::AImageRegionDim<2> & >( image ), aLinearInterpolation );
 	case 3:
-		return CreateTextureFromImageTyped< 3 >( static_cast< const M4D::Imaging::AImageRegionDim<3> & >( image ), aLinearInterpolation );
+		return createTextureFromImageTyped< 3 >( static_cast< const M4D::Imaging::AImageRegionDim<3> & >( image ), aLinearInterpolation );
 	default:
 		_THROW_ M4D::ErrorHandling::EBadParameter( "Image with wrong dimension - supported only 2 and 3" );
 	}
 }
 
 void
-RecreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image )
+recreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image )
 {
 	if ( aTexImage.GetDimension() != image.GetDimension() ) {
 		_THROW_ M4D::ErrorHandling::EBadParameter( "Texture and subimage have different dimension" );
 	}
 	switch ( image.GetDimension() ) {
 	case 2:
-		RecreateTextureFromImageTyped< 2 >( aTexImage.GetDimensionedInterface<2>(), static_cast< const M4D::Imaging::AImageRegionDim<2> & >( image ) );
+		recreateTextureFromImageTyped< 2 >( aTexImage.GetDimensionedInterface<2>(), static_cast< const M4D::Imaging::AImageRegionDim<2> & >( image ) );
 		break;
 	case 3:
-		RecreateTextureFromImageTyped< 3 >( aTexImage.GetDimensionedInterface<3>(), static_cast< const M4D::Imaging::AImageRegionDim<3> & >( image ) );
+		recreateTextureFromImageTyped< 3 >( aTexImage.GetDimensionedInterface<3>(), static_cast< const M4D::Imaging::AImageRegionDim<3> & >( image ) );
 		break;
 	default:
 		_THROW_ M4D::ErrorHandling::EBadParameter( "Image with wrong dimension - supported only 2 and 3" );
