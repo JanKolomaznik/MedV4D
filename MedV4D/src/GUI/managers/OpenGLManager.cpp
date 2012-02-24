@@ -1,4 +1,5 @@
 #include "MedV4D/GUI/managers/OpenGLManager.h"
+#include "MedV4D/Common/RAII.h"
 
 class DummyOGLWidget: public QGLWidget
 {
@@ -92,6 +93,7 @@ M4D::GLTextureImage::Ptr
 OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
 	ASSERT( mPimpl );
+	D_FUNCTION_COMMENT;
 	boost::unique_lock< boost::recursive_mutex > lock( mPimpl->mTextureMutex );
 
 	M4D::GLTextureImage::Ptr result;
@@ -107,6 +109,7 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 M4D::GLTextureImage::Ptr
 OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
+	D_FUNCTION_COMMENT;
 	//Image should be locked!!!
 	
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
@@ -114,7 +117,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 
 	TextureStorage::iterator it = mPimpl->textureStorage.find( id );
 	if ( it != mPimpl->textureStorage.end() ) { //We already created one instance
-
+		M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 		M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
 		if ( structTimestamp != it->second.structTimeStamp ) { //Dataset structure changed
 			return M4D::GLTextureImage::Ptr();
@@ -124,7 +127,8 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
 		} else {
-			it->second.texture->DeleteTexture();
+			M4D::RecreateTextureFromImage( *(it->second.texture), *(aImage.GetAImageRegion()) );
+			return it->second.texture;
 		}
 	}
 	return M4D::GLTextureImage::Ptr();
@@ -134,13 +138,15 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 M4D::GLTextureImage::Ptr
 OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
+	D_FUNCTION_COMMENT;
 	//Image should be locked!!!
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
 	
+	M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
-	makeCurrent();
+	//makeCurrent();
 	{
 		try {
 			rec.texture = M4D::CreateTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
@@ -155,7 +161,7 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 		rec.editTimeStamp = timestamp;
 		mPimpl->textureStorage[ id ] = rec;
 	}
-	doneCurrent();
+	//doneCurrent();
 	D_PRINT( "Returning newly created texture instance" );
 	return rec.texture;
 }

@@ -33,5 +33,23 @@ CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInt
 	}
 }
 
+void
+RecreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image )
+{
+	if ( aTexImage.GetDimension() != image.GetDimension() ) {
+		_THROW_ M4D::ErrorHandling::EBadParameter( "Texture and subimage have different dimension" );
+	}
+	switch ( image.GetDimension() ) {
+	case 2:
+		RecreateTextureFromImageTyped< 2 >( aTexImage.GetDimensionedInterface<2>(), static_cast< const M4D::Imaging::AImageRegionDim<2> & >( image ) );
+		break;
+	case 3:
+		RecreateTextureFromImageTyped< 3 >( aTexImage.GetDimensionedInterface<3>(), static_cast< const M4D::Imaging::AImageRegionDim<3> & >( image ) );
+		break;
+	default:
+		_THROW_ M4D::ErrorHandling::EBadParameter( "Image with wrong dimension - supported only 2 and 3" );
+	}
+}
+
 } /*namespace M4D*/
 

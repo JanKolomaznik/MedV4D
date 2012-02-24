@@ -53,6 +53,7 @@ struct GLTextureImage
 	DeleteTexture()
 	{
 		if( _gltextureID != 0 ) {
+			D_PRINT( "Deleting texture id = " << _gltextureID );
 			ASSERT( IsGLContextActive() );
 			GL_CHECKED_CALL( glDeleteTextures( 1, &_gltextureID ) );
 			_gltextureID = 0;
@@ -183,6 +184,7 @@ struct GLTextureImageTyped: public GLTextureImage
 
 		DeleteTexture();
 		_gltextureID = GLPrepareTextureFromImageData( *_image, _linearInterpolation );
+		D_PRINT( "Created texture id = " << _gltextureID );
 	}
 
 protected:
@@ -234,8 +236,21 @@ CreateTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bo
 	return GLTextureImage::Ptr( texture );
 }
 
+void
+RecreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image );
 
+template < uint32 Dim >
+void
+RecreateTextureFromImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegion &image )
+{
+	//TODO test image properties if same
+	aTexImage.SetImage( image );
+	aTexImage.PrepareTexture();
+}
+
+typedef GLTextureImageTyped< 2 > GLTextureImage2D;
 typedef GLTextureImageTyped< 3 > GLTextureImage3D;
+
 
 
 

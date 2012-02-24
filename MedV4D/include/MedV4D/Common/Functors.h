@@ -13,6 +13,7 @@
  */
 
 #include <functional>
+#include <boost/function.hpp>
 
 
 namespace M4D
@@ -59,6 +60,8 @@ struct PredicateAlwaysFalse
 	operator()( TType p )
 	{ return false; }
 };
+
+
 
 
 }//namespace Functors

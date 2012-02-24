@@ -28,6 +28,7 @@
 #include <string>
 #include <iomanip>
 #include <cassert>
+#include "MedV4D/Common/StringTools.h"
 
 extern std::string	____EXCEPTION_FILE_NAME;
 extern int		____EXCEPTION_LINE_NUMBER;
@@ -168,6 +169,7 @@ private:
 #endif /*DEBUG_LEVEL*/
 //----------------------------------------------------------------------------
 
+#define D_FUNCTION_COMMENT D_BLOCK_COMMENT( TO_STRING( "Entering " << __FUNCTION__ ), TO_STRING( "Leaving " << __FUNCTION__ ) );
 /**
  * Value used in exception debug prints.
  **/
