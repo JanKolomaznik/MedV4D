@@ -127,7 +127,12 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
 		} else {
-			M4D::recreateTextureFromImage( *(it->second.texture), *(aImage.GetAImageRegion()) );
+			Vector3i c1, c2;
+			M4D::Imaging::AImageDim<3>::Cast( aImage ).getChangedRegionSinceTimestamp( c1, c2, it->second.editTimeStamp );
+			LOG( "Edited : " << c1 << " => " << c2 );
+			M4D::updateTextureSubImage( *(it->second.texture), *(aImage.GetAImageRegion()), c1, c2 );
+			//M4D::recreateTextureFromImage( *(it->second.texture), *(aImage.GetAImageRegion()) );
+			it->second.editTimeStamp = timestamp;
 			return it->second.texture;
 		}
 	}

@@ -104,6 +104,8 @@ public:
         template< unsigned Dim >
         explicit ModificationBBox ( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max );
 
+	friend ModificationBBox mergeModificationBBoxes( const ModificationBBox &aFirst, const ModificationBBox &aSecond );
+	
         ~ModificationBBox() {
                 delete [] _first;
                 delete [] _second;
@@ -122,15 +124,61 @@ public:
         bool
         Incident ( const ModificationBBox & bbox ) const;
 
+	ModificationBBox( const ModificationBBox &aBBox ): _dimension( aBBox._dimension )
+	{
+		_first = new int32[_dimension];
+		_second = new int32[_dimension];
+
+		for ( unsigned i = 0; i < _dimension; ++i ) {
+			_first[i] = aBBox._first[i];
+			_second[i] = aBBox._second[i];
+		}
+	}
+	
+	ModificationBBox
+	operator=( const ModificationBBox &aBBox )const
+	{
+		return ModificationBBox( *this );
+	}
+	
+	void
+	merge( const ModificationBBox &aSecond )
+	{
+		if ( _dimension != aSecond._dimension ) {
+		_THROW_ ErrorHandling::EBadParameter( "Bounding boxes don't have same dimension" );
+		}
+		for ( unsigned i = 0; i < _dimension; ++i ) {
+			_first[i] = M4D::min( _first[i], aSecond._first[i] );
+			_second[i] = M4D::max( _second[i], aSecond._second[i] );
+		}
+	}
+	int32 *
+	getMinimum()
+	{ return _first; }
+	
+	int32 *
+	getMaximum()
+	{ return _second; }
+	
+	const int32 *
+	getMinimum()const
+	{ return _first; }
+	
+	const int32 *
+	getMaximum()const
+	{ return _second; }
 protected:
         ModificationBBox ( unsigned dim, int *first, int *second )
                         :_dimension ( dim ), _first ( first ), _second ( second ) {}
-
+                        
         unsigned	_dimension;
 
         int32 		*_first;
         int32 		*_second;
 };
+
+ModificationBBox
+mergeModificationBBoxes( const ModificationBBox &aFirst, const ModificationBBox &aSecond );
 
 class ModificationManager
 {
@@ -163,6 +211,9 @@ public:
 
         ChangeIterator
         GetChangeBBox ( const Common::TimeStamp & changeStamp );
+	
+	ConstChangeIterator
+        GetChangeBBox ( const Common::TimeStamp & changeStamp )const;
 
         ChangeIterator
         ChangesBegin();

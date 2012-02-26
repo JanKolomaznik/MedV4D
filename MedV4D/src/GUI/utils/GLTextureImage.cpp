@@ -4,7 +4,7 @@
 namespace M4D
 {
 
-void
+/*void
 updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage )
 {
 	if ( aTexImage.GetDimension() != aSubImage.GetDimension() ) {
@@ -18,7 +18,7 @@ updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegi
 	default:
 		_THROW_ M4D::ErrorHandling::EBadParameter( "Image with wrong dimension - supported only 2 and 3" );
 	}
-}
+}*/
 	
 GLTextureImage::Ptr
 createTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation )

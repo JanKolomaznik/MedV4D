@@ -114,7 +114,6 @@ template< typename ImageRegionType >
 GLuint
 GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterpolation );
 
-
 GLuint
 GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegion &image, bool linearInterpolation = true );
 
@@ -123,9 +122,21 @@ GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, 
 
 GLuint
 GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegionDim< 3 > &image, bool linearInterpolation = true );
+//**************************************************************************************
+template< typename ImageRegionType >
+void
+GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image, Vector2i aMinimum, Vector2i aMaximum );
 
+template< typename ImageRegionType >
+void
+GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image, Vector3i aMinimum, Vector3i aMaximum );
 
+void
+GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 2 > &image, Vector2i aMinimum, Vector2i aMaximum );
 
+void
+GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 3 > &image, Vector3i aMinimum, Vector3i aMaximum );
+//**************************************************************************************
 template< typename ImageRegionType >
 GLuint
 GLPrepareTextureFromMaskData( const ImageRegionType &image, bool linearInterpolation );

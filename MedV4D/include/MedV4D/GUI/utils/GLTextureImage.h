@@ -226,15 +226,27 @@ GLTextureGetDimensionedInterfaceWPtr( GLTextureImage::WPtr aTexture )
 	}
 }
 
-void
-updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage );
+
 
 template < uint32 Dim >
 void
-updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aSubImage )
+updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum )
 {
-	ASSERT( false );
+	//TODO some checks
+	M4D::GLUpdateTextureFromSubImageData( aTexImage.GetTextureGLID(), aImage, aMinimum, aMaximum );
 }
+
+template < uint32 Dim >
+void
+updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum )
+{
+	if ( aTexImage.GetDimension() != aSubImage.GetDimension() || Dim != aTexImage.GetDimension() ) {
+		_THROW_ M4D::ErrorHandling::EBadParameter( "Texture and subimage have different dimension" );
+	}
+	
+	updateTextureSubImageTyped< Dim >( aTexImage.GetDimensionedInterface<Dim>(), static_cast< const M4D::Imaging::AImageRegionDim<Dim> & >( aSubImage ), aMinimum, aMaximum );
+}
+
 
 GLTextureImage::Ptr
 createTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );

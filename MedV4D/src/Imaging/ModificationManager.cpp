@@ -132,6 +132,17 @@ ModificationBBox::Incident ( const ModificationBBox & bbox ) const
 
         return result;
 }
+
+ModificationBBox
+mergeModificationBBoxes( const ModificationBBox &aFirst, const ModificationBBox &aSecond )
+{
+	if ( aFirst._dimension != aSecond._dimension ) {
+		_THROW_ ErrorHandling::EBadParameter( "Bounding boxes don't have same dimension" );
+	}
+	ModificationBBox tmp = aFirst;
+	tmp.merge( aSecond );
+	return tmp;
+}
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -175,6 +186,15 @@ ModificationManager::GetChangeBBox ( const Common::TimeStamp & changeStamp )
         return std::find_if ( _changes.begin(), _changes.end(), ChangeTimestampComparator ( changeStamp ) );
 }
 
+ModificationManager::ConstChangeIterator
+ModificationManager::GetChangeBBox ( const Common::TimeStamp & changeStamp )const
+{
+
+        //TODO
+        Multithreading::RecursiveScopedLock lock ( _accessLock );
+
+        return std::find_if ( _changes.begin(), _changes.end(), ChangeTimestampComparator ( changeStamp ) );
+}
 
 ModificationManager::ChangeIterator
 ModificationManager::ChangesBegin()

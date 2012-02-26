@@ -22,12 +22,21 @@ protected:
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
+		float width = 10.0f;
+		Vector3f offset( width, width, width );
+		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
+		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
+		
+		Vector3i c1 = M4D::maxVect<int,3>( mMask->GetElementCoordsFromWorldCoords( minimum ), mMask->GetMinimum() );
+		Vector3i c2 = M4D::minVect<int,3>( mMask->GetElementCoordsFromWorldCoords( maximum ), mMask->GetMaximum() );
+		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetDirtyBBox( c1, c2 );
+		LOG( "EditedA : " << c1 << " => " << c2 );
 		try {
 			M4D::Imaging::painting::drawRectangleAlongLine( *mMask, 255, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
 		} catch (...){
 			D_PRINT( "drawStep exception" );
 		}
-		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetWholeDirtyBBox();
+		//M4D::Imaging::WriterBBoxInterface & mod = mMask->SetWholeDirtyBBox();
 		mod.SetModified();
 		OpenGLManager::getInstance()->getTextureFromImage(*mMask);
 		/*D_PRINT( "DRAW " << aStart );

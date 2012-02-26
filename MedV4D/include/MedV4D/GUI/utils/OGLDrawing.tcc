@@ -139,6 +139,92 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 	return texName;
 }
 
+template< typename ImageRegionType >
+void
+GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image, Vector2i aMinimum, Vector2i aMaximum )
+{
+	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 2);
+	
+	//Test whether image data have properties needed by OGL - continuous piece of memory
+	ASSERT( image.GetStride( 0 ) == 1 );
+	
+	
+	Vector2u size = aMaximum - aMinimum;
+	Vector2i offset = aMinimum - image.GetMinimum();
+
+	// opengl texture setup functions
+	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
+	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
+	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
+
+	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_2D, aTexture ) );
+	GL_ERROR_CLEAR_AFTER_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
+
+	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_2D ) ); //Opengl 3.3 throws error
+	
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, aTexture ) );
+
+	GL_CHECKED_CALL( glTexSubImage2D( 
+			GL_TEXTURE_2D,  
+			0,  
+			offset[0],  
+			offset[1],  
+			size[0], 
+			size[1], 
+			GL_RED, 
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
+			image.GetPointer()
+		       ) );
+
+	M4D::CheckForGLError( "OGL updating texture : " );
+	D_PRINT( "2D texture updated id = " << aTexture );
+}
+
+template< typename ImageRegionType >
+void
+GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image, Vector3i aMinimum, Vector3i aMaximum )
+{
+	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 3);
+	
+	//Test whether image data have properties needed by OGL - continuous piece of memory
+	ASSERT( image.GetStride( 0 ) == 1 );
+	ASSERT( glIsTexture( aTexture ) );
+	
+	Vector3u size = aMaximum - aMinimum;
+	Vector3i offset = aMinimum - image.GetMinimum();
+
+	// opengl texture setup functions
+	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
+	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) ) );
+	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_IMAGE_HEIGHT, image.GetStride( 2 ) / image.GetStride( 1 ) ) );
+	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
+	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
+	
+	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_3D, aTexture ) );
+	GL_ERROR_CLEAR_AFTER_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
+
+	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_3D ) ); //Opengl 3.3 throws error
+	
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_3D, aTexture ) );
+
+	GL_CHECKED_CALL( glTexSubImage3D( 
+			GL_TEXTURE_3D,  
+			0,  
+			offset[0],  
+			offset[1],  
+			offset[2],  
+			size[0], 
+			size[1], 
+			size[2],  
+			GL_RED, 
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
+			image.GetPointer() + offset * image.GetStride()
+		       ) );
+
+	M4D::CheckForGLError( "OGL updating texture : " );
+	D_PRINT( "3D texture updated id = " << aTexture );
+}
+
 
 template< typename ImageRegionType >
 GLuint

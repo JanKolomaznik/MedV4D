@@ -568,6 +568,20 @@ GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegionDim< 3 > &image, 
 	return 0;
 }
 
+void
+GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 2 > &image, Vector2i aMinimum, Vector2i aMaximum )
+{
+	TYPE_TEMPLATE_SWITCH_MACRO( image.GetElementTypeID(), GLUpdateTextureFromSubImageData2D( aTexture, static_cast< const M4D::Imaging::ImageRegion< TTYPE, 2 > &>( image ), aMinimum, aMaximum ); return; );
+}
+
+void
+GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 3 > &image, Vector3i aMinimum, Vector3i aMaximum )
+{
+	TYPE_TEMPLATE_SWITCH_MACRO( image.GetElementTypeID(), GLUpdateTextureFromSubImageData3D( aTexture, static_cast< const M4D::Imaging::ImageRegion< TTYPE, 3 > &>( image ), aMinimum, aMaximum ); return; );
+}
+
+void
+GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 3 > &image, Vector3i aMinimum, Vector3i aMaximum );
 
 GLuint
 GLPrepareTextureFromMaskData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation )
