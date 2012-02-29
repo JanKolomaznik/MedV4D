@@ -393,6 +393,38 @@ Image< ElementType, Dim >::GetWholeDirtyBBox() const
 }
 
 template< typename ElementType, unsigned Dim >
+void
+Image< ElementType, Dim >::getChangedRegionSinceTimestamp( 
+		typename Image< ElementType, Dim >::PointType &aMinimum, 
+		typename Image< ElementType, Dim >::PointType &aMaximum, 
+		const Common::TimeStamp &aTimestamp 
+		) const
+{
+	const ModificationManager & manager = GetModificationManager();
+	ModificationManager::ConstChangeIterator it = manager.GetChangeBBox( aTimestamp );
+	if ( it == manager.ChangesEnd() ) {
+		aMinimum = this->GetMinimum();
+		aMaximum = this->GetMaximum();
+		return;
+	}
+	//PointType tmpMin = it->
+	ModificationBBox bbox = (*it)->GetBoundingBox();
+	++it;
+	while( it != manager.ChangesEnd() ) {
+		bbox.merge( (*it)->GetBoundingBox() );
+		++it;
+	}
+	DIMENSION_TEMPLATE_SWITCH_MACRO ( _sourceDimension, {
+                aMinimum = SourcePosInImage< DIM > ( Vector<int,DIM>( bbox.getMinimum() ) );
+                aMaximum = SourcePosInImage< DIM > ( Vector<int,DIM>( bbox.getMaximum() ) );
+        } );
+	aMinimum = M4D::maxVect<int,Dimension>( aMinimum, this->GetMinimum() );
+        aMaximum = M4D::minVect<int,Dimension>( aMaximum, this->GetMaximum() );
+/*	aMinimum = PointType( bbox.getMinimum() );
+	aMaximum = PointType( bbox.getMaximum() );*/
+}
+
+template< typename ElementType, unsigned Dim >
 const ModificationManager &
 Image< ElementType, Dim >::GetModificationManager() const
 {

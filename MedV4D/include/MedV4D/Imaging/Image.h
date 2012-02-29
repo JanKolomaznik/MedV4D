@@ -330,6 +330,9 @@ public:
          **/
         ReaderBBoxInterface::Ptr
         GetWholeDirtyBBox() const;
+	
+	void
+	getChangedRegionSinceTimestamp( PointType &aMinimum, PointType &aMaximum, const Common::TimeStamp &aTimestamp ) const;
 
         const ModificationManager &
         GetModificationManager() const;
@@ -390,10 +393,24 @@ protected:
         template< unsigned SDim >
         Vector< int32, SDim >
         PosInSource ( Vector< int32, Dimension > pos ) const {
+		ASSERT( SDim == _sourceDimension );
                 Vector< int32, SDim > result ( _pointerCoordinatesInSource );
                 pos -= this->_minimum;
                 for ( unsigned i=0; i<Dimension; ++i ) {
                         result[_dimOrder[i]] += pos[i];
+                }
+                return result;
+        }
+
+        template< unsigned SDim >
+        Vector< int32, Dimension >
+        SourcePosInImage ( Vector< int32, SDim > pos ) const {
+		ASSERT( SDim == _sourceDimension );
+		Vector< int32, SDim > tmp( _pointerCoordinatesInSource );
+		pos -= tmp;
+                Vector< int32, Dimension > result( this->_minimum );
+                for ( unsigned i=0; i<Dimension; ++i ) {
+                        result[i] += pos[_dimOrder[i]];
                 }
                 return result;
         }

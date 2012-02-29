@@ -106,7 +106,9 @@ DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier:
 	if (image) {
 		registerImage( aDatasetId, aPath, image, aUseAsCurrent );
 	}
-	aProgressNotifier->finished();
+	if( aProgressNotifier ) {
+		aProgressNotifier->finished();
+	}
 	//mProdconn.PutDataset( image );
 }
 
@@ -136,5 +138,15 @@ DatasetManager::setCurrentDatasetInfo( DatasetID aDatasetId )
 {
 	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
 	mCurrentDatasetId = aDatasetId;
+}
+
+void
+DatasetManager::clearAll()
+{
+	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
+	
+	mPrimaryProdconn.PutDataset(
+	mCurrentDatasetId = 0;
+	mDatasetInfos.clear();
 }
 

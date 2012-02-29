@@ -37,6 +37,9 @@ protected:
 	void 
 	createMask();
 	
+	void 
+	loadMask();
+	
 	void
 	updateTimestamp();
 	

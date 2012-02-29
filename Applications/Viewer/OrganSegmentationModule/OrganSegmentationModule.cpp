@@ -3,6 +3,10 @@
 #include "OrganSegmentationModule/OrganSegmentationWidget.hpp"
 
 #include "MedV4D/GUI/managers/DatasetManager.h"
+
+#include <QtGui>
+#include <QtCore>
+
 void
 OrganSegmentationModule::loadModule()
 {
@@ -45,6 +49,39 @@ OrganSegmentationModule::createMask()
 		
 		DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
 		mViewerController->mMask = mMask;
+	}
+}
+
+void 
+OrganSegmentationModule::loadMask()
+{
+	try {
+	QString fileName = QFileDialog::getOpenFileName(/*ApplicationManager::getInstance()->*/NULL, /*tr(*/"Load Mask"/*)*/ );
+
+	if ( !fileName.isEmpty() ) {
+
+		DatasetID mDatasetId = DatasetManager::getInstance()->openFileBlocking( std::string( fileName.toLocal8Bit().data() ) );
+		
+		ADatasetRecord::Ptr rec = DatasetManager::getInstance()->getDatasetInfo( mDatasetId );
+		if ( !rec ) {
+			D_PRINT( "Loaded dataset record not available" );
+			return;
+		}
+		ImageRecord * iRec = dynamic_cast< ImageRecord * >( rec.get() );
+		if ( !iRec ) {
+			D_PRINT( "Loaded dataset isn't image" );
+		}
+		M4D::Imaging::AImage::Ptr image = iRec->image;
+		mMask = M4D::Imaging::Mask3D::Cast( image );
+		
+		DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
+		mViewerController->mMask = mMask;
+	}
+	} catch ( std::exception &e ) {
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	}
+	catch (...) {
+		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
 	}
 }
 

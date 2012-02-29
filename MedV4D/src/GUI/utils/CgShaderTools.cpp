@@ -16,7 +16,7 @@ InitializeCg()
 	gCgContext = cgCreateContext();
 	CheckForCgError("creating context");
 	cgGLSetDebugMode( CG_FALSE );
-	cgSetParameterSettingMode(gCgContext, CG_IMMEDIATE_PARAMETER_SETTING/*CG_DEFERRED_PARAMETER_SETTING*/);
+	cgSetParameterSettingMode(gCgContext, /*CG_IMMEDIATE_PARAMETER_SETTING*/CG_DEFERRED_PARAMETER_SETTING);
 	cgGLRegisterStates(gCgContext);
 	CheckForCgError("registering standard CgFX states");
 	cgGLSetManageTextureParameters(gCgContext, CG_TRUE);

@@ -23,6 +23,8 @@ public slots:
 	void
 	createMask();
 	void
+	loadMask();
+	void
 	toggleDraw( bool aToggle );
 	void
 	updateTimestamp();

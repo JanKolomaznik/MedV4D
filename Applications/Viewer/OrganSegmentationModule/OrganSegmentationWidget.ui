@@ -23,12 +23,38 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Model based</string>
       </attribute>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>90</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Model ...</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="loadMaskButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>90</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Mask ...</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -109,8 +135,8 @@
    <slot>createMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>54</x>
-     <y>60</y>
+     <x>62</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -125,8 +151,8 @@
    <slot>toggleDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>96</x>
-     <y>89</y>
+     <x>104</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -141,12 +167,28 @@
    <slot>updateTimestamp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>239</x>
-     <y>66</y>
+     <x>299</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
      <y>17</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadMaskButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>loadMask()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>51</y>
     </hint>
    </hints>
   </connection>
@@ -155,5 +197,6 @@
   <slot>createMask()</slot>
   <slot>toggleDraw(bool)</slot>
   <slot>updateTimestamp()</slot>
+  <slot>loadMask()</slot>
  </slots>
 </ui>

@@ -227,26 +227,8 @@ public:
         virtual typename AImageRegionDim< Dimension >::ConstPtr
         GetAImageRegionDim() const = 0;
 	
-	void
-	getChangedRegionSinceTimestamp( PointType &aMinimum, PointType &aMaximum, const Common::TimeStamp &aTimestamp ) const
-	{
-		const ModificationManager & manager = GetModificationManager();
-		ModificationManager::ConstChangeIterator it = manager.GetChangeBBox( aTimestamp );
-		if ( it == manager.ChangesEnd() ) {
-			aMinimum = _minimum;
-			aMaximum = _maximum;
-			return;
-		}
-		//PointType tmpMin = it->
-		ModificationBBox bbox = (*it)->GetBoundingBox();
-		++it;
-		while( it != manager.ChangesEnd() ) {
-			bbox.merge( (*it)->GetBoundingBox() );
-			++it;
-		}
-		aMinimum = PointType( bbox.getMinimum() );
-		aMaximum = PointType( bbox.getMaximum() );
-	}
+	virtual void
+	getChangedRegionSinceTimestamp( PointType &aMinimum, PointType &aMaximum, const Common::TimeStamp &aTimestamp ) const = 0;
 
 protected:
         PointType		_minimum;

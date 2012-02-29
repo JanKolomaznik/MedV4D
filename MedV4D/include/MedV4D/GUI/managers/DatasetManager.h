@@ -85,6 +85,9 @@ public:
 	{
 		return mSecondaryProdconn;
 	}
+	
+	void
+	clearAll();
 
 protected:
 	typedef std::map< DatasetID, ADatasetRecord::Ptr > DatasetInfoMap;
