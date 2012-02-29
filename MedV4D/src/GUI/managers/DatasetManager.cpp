@@ -145,7 +145,7 @@ DatasetManager::clearAll()
 {
 	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
 	
-	mPrimaryProdconn.PutDataset(
+	//mPrimaryProdconn.PutDataset( 
 	mCurrentDatasetId = 0;
 	mDatasetInfos.clear();
 }
