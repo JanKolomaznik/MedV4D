@@ -41,6 +41,9 @@ protected:
 	loadMask();
 	
 	void
+	computeStats();
+
+	void
 	loadModel();
 	
 	void

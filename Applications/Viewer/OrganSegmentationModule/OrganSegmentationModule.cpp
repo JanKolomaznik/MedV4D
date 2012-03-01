@@ -84,6 +84,62 @@ OrganSegmentationModule::loadMask()
 		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
 	}
 }
+//************************************************************************************
+M4D::Imaging::Mask3D::SliceRegion::PointType 
+FindMaskCenterOfGravity( const M4D::Imaging::Mask3D::SliceRegion &region )
+{
+	MaskType::SliceRegion::PointType sum;
+	MaskType::SliceRegion::PointType min = region.GetMinimum();
+	MaskType::SliceRegion::PointType idx;
+	MaskType::SliceRegion::PointType max = region.GetMaximum();
+	int32 count = 0;
+	for( idx = min; idx[1] < max[1]; ++idx[1] ) {
+		for( idx[0] = min[0]; idx[0] < max[0]; ++idx[0] ) {
+			//LOG( idx << " -> " << (int16)region.GetElement( idx ) );
+			if( region.GetElement( idx ) != 0 ) {
+				++count;
+				sum += idx;
+			}
+		}
+	}
+	
+	if( count == 0 ) {
+		_THROW_ M4D::ErrorHandling::ExceptionBase( "Center of gravity unable to find." );
+	}
+	return M4D::Imaging::Mask3D::SliceRegion::PointType( sum[0] / count, sum[1] / count );
+}
+
+void
+GetPoles( const M4D::Imaging::Mask3D & mask, M4D::Imaging::Mask3D::PointType &north, M4D::Imaging::Mask3D::PointType &south )
+{
+	int32 southSliceCoord = mask.GetMinimum()[2];
+	int32 northSliceCoord = mask.GetMaximum()[2]-1;
+	M4D::Imaging::Mask3D::SliceRegion southRegion = mask.GetSlice( southSliceCoord );
+	M4D::Imaging::Mask3D::SliceRegion northRegion = mask.GetSlice( northSliceCoord );
+
+	/*M4D::Imaging::Mask2D::Ptr tmp = mask.GetRestrictedImage( southRegion );
+	ImageFactory::DumpImage( "pom.dump", *tmp );
+	tmp = mask.GetRestrictedImage( northRegion );
+	ImageFactory::DumpImage( "pom2.dump", *tmp );*/
+
+	MaskType::SliceRegion::PointType southTmp = FindMaskCenterOfGravity( southRegion );
+	MaskType::SliceRegion::PointType northTmp = FindMaskCenterOfGravity( northRegion );
+
+	south = M4D::Imaging::Mask3D::PointType( southTmp[0], southTmp[1], southSliceCoord );
+	north = M4D::Imaging::Mask3D::PointType( northTmp[0], northTmp[1], northSliceCoord );
+
+	D_PRINT( "South pole = " << south );
+	D_PRINT( "North pole = " << north );
+}
+
+void
+OrganSegmentationModule::computeStats()
+{
+	M4D::Imaging::Mask3D::PointType north;
+	M4D::Imaging::Mask3D::PointType south;
+	GetPoles( *mMask, north, south );
+	M4D::Imaging::Transformation trans = M4D::Imaging::GetTransformation ( north, south, mMask->GetElementExtents() );
+}
 
 void
 OrganSegmentationModule::loadModel()

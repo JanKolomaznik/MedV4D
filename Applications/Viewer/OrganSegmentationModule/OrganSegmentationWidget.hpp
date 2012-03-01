@@ -25,6 +25,8 @@ public slots:
 	void
 	loadMask();
 	void
+	loadModel();
+	void
 	toggleDraw( bool aToggle );
 	void
 	updateTimestamp();

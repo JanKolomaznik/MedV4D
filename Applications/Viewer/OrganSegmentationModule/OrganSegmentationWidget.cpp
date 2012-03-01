@@ -15,6 +15,12 @@ OrganSegmentationWidget::loadMask()
 }
 
 void
+OrganSegmentationWidget::loadModel()
+{
+	mModule.loadModel();
+}
+
+void
 OrganSegmentationWidget::toggleDraw( bool aToggle )
 {
 	mController->toggleMaskDrawing( aToggle );

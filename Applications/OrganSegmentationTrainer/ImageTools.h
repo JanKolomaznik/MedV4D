@@ -1,7 +1,7 @@
 #ifndef IMAGE_TOOLS_H
 #define IMAGE_TOOLS_H
 
-#include "Imaging/Imaging.h"
+#include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/Common/Common.h"
 
 #include <boost/filesystem.hpp>

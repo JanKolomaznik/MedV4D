@@ -135,8 +135,8 @@
    <slot>createMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>62</x>
-     <y>54</y>
+     <x>55</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -151,8 +151,8 @@
    <slot>toggleDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>81</y>
+     <x>55</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -167,8 +167,8 @@
    <slot>updateTimestamp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>54</y>
+     <x>103</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
@@ -192,11 +192,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>loadModel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>102</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
   <slot>toggleDraw(bool)</slot>
   <slot>updateTimestamp()</slot>
   <slot>loadMask()</slot>
+  <slot>loadModel()</slot>
  </slots>
 </ui>
