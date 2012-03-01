@@ -85,6 +85,23 @@ OrganSegmentationModule::loadMask()
 	}
 }
 
+void
+OrganSegmentationModule::loadModel()
+{
+	try {
+	QString fileName = QFileDialog::getOpenFileName(/*ApplicationManager::getInstance()->*/NULL, /*tr(*/"Load Mask"/*)*/ );
+
+	if ( !fileName.isEmpty() ) {
+		mProbModel = M4D::Imaging::CanonicalProbModel::LoadFromFile( std::string( fileName.toLocal8Bit().data() ) );
+	}
+	} catch ( std::exception &e ) {
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	}
+	catch (...) {
+		QMessageBox::critical ( NULL, "Exception", "Problem with model loading" );
+	}
+}
+
 void 
 OrganSegmentationModule::updateTimestamp()
 {

@@ -11,6 +11,7 @@
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 
 #include "MedV4D/Imaging/painting/Paint.h"
+#include "MedV4D/Imaging/CanonicalProbModel.h"
 
 class MaskDrawingMouseController: public ADrawingMouseController
 {

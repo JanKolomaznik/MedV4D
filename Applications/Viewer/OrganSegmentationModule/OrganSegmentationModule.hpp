@@ -41,12 +41,17 @@ protected:
 	loadMask();
 	
 	void
+	loadModel();
+	
+	void
 	updateTimestamp();
 	
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
 	
 	M4D::Imaging::Mask3D::Ptr	mMask;
+	
+	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
 };
 
 
