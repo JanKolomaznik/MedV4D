@@ -45,11 +45,18 @@ OrganSegmentationModule::createMask()
 	ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
 	if( imageRecord && imageRecord->image ) {
 		const M4D::Imaging::AImageDim<3> & image = M4D::Imaging::AImageDim<3>::Cast( *(imageRecord->image) );
-		mMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >( image.GetImageExtentsRecord() );
+		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >( image.GetImageExtentsRecord() );
 		
-		DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
-		mViewerController->mMask = mMask;
+		prepareMask( tmpMask );
 	}
+}
+
+void
+OrganSegmentationModule::prepareMask( M4D::Imaging::Mask3D::Ptr aMask )
+{
+	mMask = aMask;
+	DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
+	mViewerController->mMask = mMask;
 }
 
 void 
@@ -72,10 +79,54 @@ OrganSegmentationModule::loadMask()
 			D_PRINT( "Loaded dataset isn't image" );
 		}
 		M4D::Imaging::AImage::Ptr image = iRec->image;
-		mMask = M4D::Imaging::Mask3D::Cast( image );
+		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::Mask3D::Cast( image );
 		
-		DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
-		mViewerController->mMask = mMask;
+		prepareMask( tmpMask );
+	}
+	} catch ( std::exception &e ) {
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	}
+	catch (...) {
+		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
+	}
+}
+
+void 
+OrganSegmentationModule::loadIndexFile()
+{
+	try {
+	QString fileName = QFileDialog::getOpenFileName(/*ApplicationManager::getInstance()->*/NULL, /*tr(*/"Load Mask"/*)*/ );
+
+	if ( !fileName.isEmpty() ) {
+		std::fstream file( fileName.toLocal8Bit().data() );
+		std::string first, second;
+		
+		file >> first;
+		file >> second;
+		file.close();
+		
+		Path dir( fileName.toLocal8Bit().data() );
+		dir = dir.parent_path();
+
+		
+		Path imageFile = dir;
+		imageFile /= first;
+		Path maskFile = dir;
+		maskFile /= second;
+		
+			
+			//D_PRINT( "Loading training image number '" << i << "' from file '" << imageFile.string() <<"'." );
+			M4D::Imaging::AImage::Ptr aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( imageFile.string() );
+			mImage = Image16_3D::Cast( aimage );
+			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( aimage );
+			
+			//D_PRINT( "Loading training mask number '" << i << "' from file '" << maskFile.string() <<"'." );
+			aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( maskFile.string() );
+			M4D::Imaging::Mask3D::Ptr mask = M4D::Imaging::Mask3D::Cast( aimage );
+			
+			prepareMask(mask);
+			
+		
 	}
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
@@ -88,10 +139,10 @@ OrganSegmentationModule::loadMask()
 M4D::Imaging::Mask3D::SliceRegion::PointType 
 FindMaskCenterOfGravity( const M4D::Imaging::Mask3D::SliceRegion &region )
 {
-	MaskType::SliceRegion::PointType sum;
-	MaskType::SliceRegion::PointType min = region.GetMinimum();
-	MaskType::SliceRegion::PointType idx;
-	MaskType::SliceRegion::PointType max = region.GetMaximum();
+	M4D::Imaging::Mask3D::SliceRegion::PointType sum;
+	M4D::Imaging::Mask3D::SliceRegion::PointType min = region.GetMinimum();
+	M4D::Imaging::Mask3D::SliceRegion::PointType idx;
+	M4D::Imaging::Mask3D::SliceRegion::PointType max = region.GetMaximum();
 	int32 count = 0;
 	for( idx = min; idx[1] < max[1]; ++idx[1] ) {
 		for( idx[0] = min[0]; idx[0] < max[0]; ++idx[0] ) {
@@ -122,8 +173,8 @@ GetPoles( const M4D::Imaging::Mask3D & mask, M4D::Imaging::Mask3D::PointType &no
 	tmp = mask.GetRestrictedImage( northRegion );
 	ImageFactory::DumpImage( "pom2.dump", *tmp );*/
 
-	MaskType::SliceRegion::PointType southTmp = FindMaskCenterOfGravity( southRegion );
-	MaskType::SliceRegion::PointType northTmp = FindMaskCenterOfGravity( northRegion );
+	M4D::Imaging::Mask3D::SliceRegion::PointType southTmp = FindMaskCenterOfGravity( southRegion );
+	M4D::Imaging::Mask3D::SliceRegion::PointType northTmp = FindMaskCenterOfGravity( northRegion );
 
 	south = M4D::Imaging::Mask3D::PointType( southTmp[0], southTmp[1], southSliceCoord );
 	north = M4D::Imaging::Mask3D::PointType( northTmp[0], northTmp[1], northSliceCoord );
@@ -135,10 +186,51 @@ GetPoles( const M4D::Imaging::Mask3D & mask, M4D::Imaging::Mask3D::PointType &no
 void
 OrganSegmentationModule::computeStats()
 {
+	if( !mImage || !mMask || !mProbModel ) {
+		QMessageBox::critical ( NULL, "Exception", QString( "Neco chybi" ) );
+		return;
+	}
 	M4D::Imaging::Mask3D::PointType north;
 	M4D::Imaging::Mask3D::PointType south;
+	M4D::Imaging::Mask3D::PointType idx;
+	M4D::Imaging::Mask3D::PointType minimum = mImage->GetMinimum();
+	M4D::Imaging::Mask3D::PointType maximum = mImage->GetMaximum();
+	Vector3f rmin = mImage->GetRealMinimum();
+	Vector3f rmax = mImage->GetRealMaximum();
+	Vector3f extents = mMask->GetElementExtents();
 	GetPoles( *mMask, north, south );
-	M4D::Imaging::Transformation trans = M4D::Imaging::GetTransformation ( north, south, mMask->GetElementExtents() );
+	M4D::Imaging::Transformation trans = M4D::Imaging::GetTransformation ( north, south, extents );
+	
+	int count = 0;
+	int failOut = 0;
+	int failIn = 0;
+	int ok = 0;
+	int maskCount = 0;
+	for( idx[2] = minimum[2]; idx[2] < maximum[2]; ++idx[2] ) {
+		for( idx[1] = minimum[1]; idx[1] < maximum[1]; ++idx[1] ) {
+			for( idx[0] = minimum[0]; idx[0] < maximum[0]; ++idx[0] ) {
+				int16 val = mImage->GetElement( idx );
+				uint8 maskVal = mMask->GetElement( idx );
+				Vector3f pos = rmin + VectorMemberProduct<int,float,3>(idx-minimum, extents );
+				//float ratio = mProbModel->LogRatioProbabilityIntesityPositionDependent( val, trans( pos ) );
+				float ratio = mProbModel->LogRatioCombination( trans( pos ), val, 0.0f, 0.0f, 1.0f );
+				float threshold = 0.3;
+				if( ratio < threshold && maskVal > 100 ) ++failOut;
+				if( ratio >= threshold && maskVal < 100 ) ++failIn;
+				if( ratio >= threshold && maskVal > 100 ) ++ok;
+				if( maskVal > 100 ) ++maskCount;
+				//D_PRINT( ratio );
+				++count;
+			}	
+		}	
+	}
+	D_PRINT( "count = " << count );
+	D_PRINT( "maskCount = " << maskCount );
+	D_PRINT( "failIn = " << failIn << " : " << float( failIn )/ maskCount * 100.0f );
+	D_PRINT( "failOut = " << failOut << " : " << float( failOut )/ maskCount  * 100.0f );
+	D_PRINT( "ok = " << ok << " : " << float( ok )/ maskCount  * 100.0f );
+	D_PRINT( "size = " << mImage->GetSize() << "; " << VectorCoordinateProduct(mImage->GetSize()) );
+	
 }
 
 void

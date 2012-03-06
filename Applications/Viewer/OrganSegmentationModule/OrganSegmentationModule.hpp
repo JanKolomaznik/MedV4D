@@ -15,6 +15,7 @@
 class OrganSegmentationModule: public AModule
 {
 public:
+	typedef M4D::Imaging::Image< int16, 3 > Image16_3D;
 	friend class OrganSegmentationWidget;
 	OrganSegmentationModule(): AModule( "Organ Segmentation Module" )
 	{}
@@ -40,6 +41,9 @@ protected:
 	void 
 	loadMask();
 	
+	void 
+	loadIndexFile();
+
 	void
 	computeStats();
 
@@ -49,10 +53,14 @@ protected:
 	void
 	updateTimestamp();
 	
+	void
+	prepareMask( M4D::Imaging::Mask3D::Ptr aMask );
+	
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
 	
 	M4D::Imaging::Mask3D::Ptr	mMask;
+	Image16_3D::Ptr mImage;
 	
 	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
 };

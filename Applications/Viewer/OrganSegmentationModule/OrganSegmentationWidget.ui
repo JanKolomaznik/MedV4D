@@ -55,6 +55,32 @@
         <string>Load Mask ...</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_5">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>10</y>
+         <width>85</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load index...</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_6">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>50</y>
+         <width>85</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Compute stats...</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -135,8 +161,8 @@
    <slot>createMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>34</y>
+     <x>57</x>
+     <y>47</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -151,8 +177,8 @@
    <slot>toggleDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>41</y>
+     <x>57</x>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -167,8 +193,8 @@
    <slot>updateTimestamp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>103</x>
-     <y>34</y>
+     <x>196</x>
+     <y>47</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
@@ -183,8 +209,8 @@
    <slot>loadMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>65</x>
-     <y>87</y>
+     <x>76</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>312</x>
@@ -199,12 +225,44 @@
    <slot>loadModel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>45</y>
+     <x>66</x>
+     <y>70</y>
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
      <y>102</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>loadIndex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>310</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>computeStats()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>180</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>173</y>
     </hint>
    </hints>
   </connection>
@@ -215,5 +273,7 @@
   <slot>updateTimestamp()</slot>
   <slot>loadMask()</slot>
   <slot>loadModel()</slot>
+  <slot>loadIndex()</slot>
+  <slot>computeStats()</slot>
  </slots>
 </ui>

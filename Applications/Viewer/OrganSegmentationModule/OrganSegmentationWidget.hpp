@@ -27,6 +27,10 @@ public slots:
 	void
 	loadModel();
 	void
+	computeStats();
+	void
+	loadIndex();
+	void
 	toggleDraw( bool aToggle );
 	void
 	updateTimestamp();
