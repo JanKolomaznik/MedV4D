@@ -3,9 +3,9 @@
 
 #include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
 #include <cuda.h>
+#include "MedV4D/Common/Common.h"
 
-
-
+__device__ int lutUpdated;
 
 #define min_valid(a, b) (a < b ? a == 0 ? b : a : b == 0 ? a : b)
 __device__ uint32
@@ -18,6 +18,16 @@ ValidMin( uint32 data[], uint idx, uint syStride, uint szStride )
 	return min_valid( value, value3 );
 }
 
+__global__ void 
+CopyMask( Buffer3D< uint8 > inBuffer, Buffer3D< uint32 > outBuffer )
+{ 
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < inBuffer.mLength ) {
+		outBuffer.mData[idx] = inBuffer.mData[idx]!=0 ? idx+1 : 0;
+	}
+}
 
 __global__ void 
 InitLut( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )

@@ -1,6 +1,6 @@
 #include "MedV4D/Imaging/cuda/detail/WatershedTransformation.cuh"
+#include "MedV4D/Imaging/ImageRegion.h"
 
-__device__ int wshedUpdated;
 
 template< typename RegionType >
 void

@@ -1,5 +1,6 @@
 
 
+OPTION( MEDV4D_CUDA_ENABLED "Enable CUDA support" OFF )
 OPTION( USE_TBB "Use Threading Building Blocks" OFF )
 IF(USE_TBB)
 	ADD_DEFINITIONS(-DUSE_TBB)

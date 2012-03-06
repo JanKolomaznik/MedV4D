@@ -14,7 +14,8 @@ SET(CG_ENABLED true CACHE BOOL "Enable components with Cg shader dependencies." 
 SET(OLD_M4D_WIDGETS_ENABLED false CACHE BOOL "Enable if you want to use old set of widgets" )
 SET(DEVIL_ENABLED false CACHE BOOL "Enable if you want to use DevIL" )
 SET(PYTHON_ENABLED false CACHE BOOL "Enable if you want to use Python" )
-
+SET(MEDV4D_CUDA_ENABLED false CACHE BOOL "Enable CUDA support" )
+#OPTION( MEDV4D_CUDA_ENABLED "Enable CUDA support" false )
 
 IF(NOT MEDV4D_CMAKE_SOURCE_DIR)
 	SET(MEDV4D_CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/.." )

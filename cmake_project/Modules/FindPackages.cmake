@@ -11,6 +11,7 @@ INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/Functions.cmake" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindQt4ForM4D.cmake" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/StandardCompileOptions.cmake" )
 
+#***************************************************************************
 IF( ${PYTHON_ENABLED} MATCHES "ON" )
 	#Do some checking
 	SET(BOOST_PYTHON python)
@@ -18,20 +19,31 @@ IF( ${PYTHON_ENABLED} MATCHES "ON" )
 	FIND_PACKAGE( PythonLibs REQUIRED ) #TODO  handle release/debug
 ENDIF( ${PYTHON_ENABLED} MATCHES "ON" )
 
+#***************************************************************************
 SET(Boost_USE_MULTITHREADED ON)
 FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread ${BOOST_PYTHON})
-
+#***************************************************************************
 FIND_PACKAGE(OpenGL REQUIRED)
+#***************************************************************************
+
+IF( MEDV4D_CUDA_ENABLED )
+	FIND_PACKAGE(CUDA REQUIRED)
+	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_13;-code=compute_13;--use_fast_math )
+ENDIF( MEDV4D_CUDA_ENABLED )
+#***************************************************************************
+
 
 IF( ${VTK_ENABLED} MATCHES "ON" )
 	INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindVTKForM4D.cmake" )
 ENDIF( ${VTK_ENABLED} MATCHES "ON" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindDCMTKForM4D.cmake" )
+#***************************************************************************
 
 
 SET(LIBRARY_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../lib)
 SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 
+#***************************************************************************
 IF( ${CG_ENABLED} MATCHES "ON" )
 	#Do some checking
 	FIND_PACKAGE( Cg REQUIRED )
@@ -41,6 +53,7 @@ IF( ${CG_ENABLED} MATCHES "ON" )
 	#MESSAGE( STATUS "CG libs: ${CG_SHADER_LIBRARIES}"
 ENDIF( ${CG_ENABLED} MATCHES "ON" )
 
+#***************************************************************************
 IF( ${DEVIL_ENABLED} MATCHES "ON" )
 	#Do some checking
 	FIND_PACKAGE( DevIL REQUIRED )
@@ -67,21 +80,24 @@ ELSE(WIN32)
 	#SET(ADDITIONAL_LIBRARY_DIR ${ADDITIONAL_LIBRARY_DIR} "/usr/lib/x86_64-linux-gnu/")
 ENDIF(WIN32)
 
+#***************************************************************************
 IF(USE_TBB)
 	SET(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} tbb tbbmalloc)
 ENDIF(USE_TBB)
 
+#***************************************************************************
 
 SET( LIB_DIRS_3RD_PARTY ${VTK_LIBRARY_DIRS} ${DCMTK_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} ${QT_LIBRARY_DIR} ${CG_SHADER_LIBRARY_DIRS} 
 			${DEVIL_LIBRARY_DIRS} ${ADDITIONAL_LIBRARY_DIR}  )
 SET( LIBRARIES_3RD_PARTY ${VTK_LIBRARIES} ${DCMTK_LIBRARIES} ${QT_LIBRARIES} ${ADDITIONAL_LIBRARIES} ${OPENGL_LIBRARY} ${Boost_LIBRARIES} ${CG_SHADER_LIBRARIES} 
-			${DEVIL_LIBRARIES} ${PYTHON_LIBRARIES} ${PYTHON_DEBUG_LIBRARIES} )
+			${DEVIL_LIBRARIES} ${PYTHON_LIBRARIES} ${PYTHON_DEBUG_LIBRARIES} ${CUDA_LIBRARIES} )
 SET( INCLUDE_DIRS_3RD_PARTY ${VTK_INCLUDE_DIRS} ${DCMTK_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${QT_INCLUDES} ${CG_SHADER_INCLUDE_DIRS} 
-			${OPENGL_INCLUDE_DIR} ${DEVIL_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} )
+			${OPENGL_INCLUDE_DIR} ${DEVIL_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} )
 MESSAGE( STATUS "VTK libs: ${VTK_LIBRARIES} ")
 MESSAGE( STATUS "DCMTK libs: ${DCMTK_LIBRARIES} ")
 MESSAGE( STATUS "QT libs: ${QT_LIBRARIES} ")
 MESSAGE( STATUS "OpenGL libs: ${OPENGL_LIBRARY} ")
+MESSAGE( STATUS "CUDA libs: ${CUDA_LIBRARIES} ")
 MESSAGE( STATUS "Boost libs: ${Boost_LIBRARIES} ")
 MESSAGE( STATUS "CG libs: ${CG_SHADER_LIBRARIES} ")
 MESSAGE( STATUS "DevIL libs: ${DEVIL_LIBRARIES}")

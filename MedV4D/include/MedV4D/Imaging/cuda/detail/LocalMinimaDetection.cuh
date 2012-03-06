@@ -3,6 +3,7 @@
 
 #include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
 #include <cuda.h>
+#include "MedV4D/Common/Common.h"
 
 template< typename TElement >
 struct LocalMinima3DFtor

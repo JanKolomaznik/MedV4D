@@ -1,9 +1,87 @@
 #ifndef CUDA_FILTERS_UTILS_CUH
 #define CUDA_FILTERS_UTILS_CUH
 
-#define GLM_FORCE_CUDA
-#include <glm/glm.hpp>
+#include <cuda.h>
+#include "MedV4D/Common/Common.h"
+#include "MedV4D/Imaging/ImageRegion.h"
 
+//#define GLM_FORCE_CUDA
+//#include <glm/glm.hpp>
+#define MAX_BLOCK_SIZE 10
+#define MAX_SHARED_MEMORY 1024
+
+inline int3
+Vector3iToInt3( const Vector3i &v )
+{
+	return make_int3( v[0], v[1], v[2] );
+}
+
+inline uint3
+Vector3uToUint3( const Vector3u &v )
+{
+	return make_uint3( v[0], v[1], v[2] );
+}
+
+__device__ inline int
+IdxFromCoordStrides( int3 coords, int3 strides )
+{
+	return coords.x * strides.x + coords.y * strides.y + coords.z * strides.z;
+}
+
+template < typename TType3 >
+__device__ __host__ inline int3
+toInt3( const TType3 &arg )
+{
+	return make_int3( arg.x, arg.y, arg.z );
+}
+
+template < typename TType3 >
+__device__ __host__ inline uint3
+toUint3( const TType3 &arg )
+{
+	return make_uint3( arg.x, arg.y, arg.z );
+}
+
+__device__ __host__ inline int3 
+operator+( const int3 &a, const int3 & b )
+{
+	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__device__ __host__ inline uint3 
+operator+( const uint3 &a, const uint3 & b )
+{
+	return make_uint3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__device__ __host__ inline int3 
+operator+( const int3 &a, const uint3 & b )
+{
+	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__device__ __host__ inline int3 
+operator+( const uint3 &a, const int3 & b )
+{
+	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__host__ inline std::ostream &
+operator<<( std::ostream &stream, const dim3 &v )
+{
+	stream << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
+	return stream;
+}
+
+inline dim3
+splitCountTo2dGrid( size_t aCount )
+{
+	uint threshold = 1<<15;
+	if( aCount > threshold ) {
+		return dim3( threshold, (aCount + threshold -1)/ threshold, 1 );
+	}
+	return dim3( aCount, 1, 1 );
+}
 
 template< typename TElement >
 struct Buffer1D
@@ -29,6 +107,68 @@ struct Buffer3D
 	TElement	*mData;
 };
 
+__device__ int3
+GetBlockCoordinates( int3 blockResolution, uint blockId )
+{
+	int3 result;
+	result.z = blockId / (blockResolution.x * blockResolution.y);
+	blockId = blockId % (blockResolution.x * blockResolution.y);
+	result.y = blockId / blockResolution.x;
+	blockId = blockId % blockResolution.x;
+	result.x = blockId;
+	return result;
+}
+
+__device__ int3
+GetBlockOrigin( dim3 blockSize, int3 blockCoords )
+{
+	return make_int3( 
+			blockSize.x * blockCoords.x, 
+			blockSize.y * blockCoords.y,
+			blockSize.z * blockCoords.z
+		   );
+}
+
+__device__ bool
+ProjectionToInterval( int3 &v, const int3 &min, const int3 &max )
+{
+	bool result = false;
+	if ( v.x < min.x ) {
+		result |= true;
+		v.x = min.x;
+	}
+	if ( v.x >= max.x ) {
+		result |= true;
+		v.x = max.x - 1;
+	}
+	if ( v.y < min.y ) {
+		result |= true;
+		v.y = min.y;
+	}
+	if ( v.y >= max.y ) {
+		result |= true;
+		v.y = max.y - 1;
+	}
+	if ( v.z < min.z ) {
+		result |= true;
+		v.z = min.z;
+	}
+	if ( v.z >= max.z ) {
+		result |= true;
+		v.z = max.z - 1;
+	}
+	return result;
+}
+
+int3
+GetBlockResolution( uint3 volumeSize, dim3 blockSize, int3 radius )
+{
+	return make_int3(
+		       ( volumeSize.x + blockSize.x -1 - 2*radius.x ) / (blockSize.x - 2*radius.x),
+		       ( volumeSize.y + blockSize.y -1 - 2*radius.y ) / (blockSize.y - 2*radius.y),
+		       ( volumeSize.z + blockSize.z -1 - 2*radius.z ) / (blockSize.z - 2*radius.z)
+			);
+}
 
 
 template< typename TElement, unsigned tRadius, unsigned syStride, unsigned szStride >
@@ -133,5 +273,70 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride, idx );
 	}
 }
+
+template< typename TElement >
+Buffer1D< TElement >
+CudaAllocateBuffer( size_t aLength )
+{
+	TElement *pointer;
+	cudaError_t eCode = cudaMalloc( &pointer, aLength * sizeof(TElement) );
+	if ( eCode != cudaSuccess ) {
+		_THROW_ EAllocationFailed( "CUDA allocation failed" );
+	}
+	D_PRINT( "CUDA allocated \t" << aLength * sizeof(TElement) << " bytes\nelement size\t" 
+			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(pointer) << " to 0x" << size_t(pointer+aLength) << std::dec );
+	return Buffer1D< TElement >( aLength, pointer );
+}
+
+template< typename TElement >
+Buffer1D< TElement >
+cudaBufferFromThrustDeviceVector( thrust::device_vector< TElement > & aVector )
+{
+	iadfas;
+}
+
+template< typename TElement >
+Buffer3D< TElement >
+CudaPrepareBuffer( Vector3u aSize )
+{
+	uint3 size = Vector3uToUint3( aSize );
+	int3 strides = make_int3( 1, size.x, size.x * size.y );
+	size_t length = size.x*size.y*size.z;
+	TElement * dataPointer;
+	cudaError_t eCode = cudaMalloc( &dataPointer, length * sizeof(TElement) );
+	if ( eCode != cudaSuccess ) {
+		_THROW_ EAllocationFailed( "CUDA allocation failed" );
+	}
+	D_PRINT( "CUDA allocated \t" << length * sizeof(TElement) << " bytes\nelement size\t" 
+			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(dataPointer) << " to 0x" << size_t(dataPointer+length) << std::dec );
+	return Buffer3D< TElement >( size, strides, length, dataPointer );
+}
+
+template< typename TElement >
+Buffer3D< TElement >
+CudaBuffer3DFromImageRegion( const M4D::Imaging::ImageRegion< TElement, 3 > &region )
+{
+	return CudaPrepareBuffer<TElement>( region.GetSize() );
+}
+
+template< typename TElement >
+Buffer3D< TElement >
+CudaBuffer3DFromImageRegionCopy( const M4D::Imaging::ImageRegion< TElement, 3 > &region )
+{
+	Buffer3D< TElement > buffer = CudaBuffer3DFromImageRegion( region );
+	cudaMemcpy( buffer.mData, region.GetPointer(), buffer.mLength * sizeof(TElement), cudaMemcpyHostToDevice );
+	return buffer;
+}
+
+#define CheckCudaErrorState( aErrorMessage ) \
+{\
+	cudaError_t err = cudaGetLastError();\
+	D_PRINT( aErrorMessage ); \
+	if( cudaSuccess != err) {\
+		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( aErrorMessage << " : " << cudaGetErrorString( err) ) );\
+	}\
+}\
+
+
 
 #endif //CUDA_FILTERS_UTILS_CUH

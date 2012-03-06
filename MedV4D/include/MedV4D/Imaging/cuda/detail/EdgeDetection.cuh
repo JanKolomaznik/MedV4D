@@ -1,6 +1,10 @@
 #ifndef EDGE_DETECTION_CUH
 #define EDGE_DETECTION_CUH
 
+#include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
+#include <cuda.h>
+#include "MedV4D/Common/Common.h"
+
 template< typename TElement >
 struct SobelFilter3DFtor
 {

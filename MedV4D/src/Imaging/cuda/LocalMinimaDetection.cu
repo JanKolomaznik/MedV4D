@@ -1,5 +1,13 @@
 #include "MedV4D/Imaging/cuda/detail/LocalMinimaDetection.cuh"
+#include "MedV4D/Imaging/cuda/detail/ConnectedComponentLabeling.cuh"
+#include "MedV4D/Imaging/Image.h"
+#include "MedV4D/Imaging/ImageRegion.h"
+#include <thrust/scan.h>
+#include <thrust/device_vector.h>
 
+//TODO - handle in a better way
+void
+ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut );
 
 template< typename RegionType >
 void
@@ -52,7 +60,9 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	D_PRINT( "ALLOCATE output buffer" );
 	Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
 	D_PRINT( "ALLOCATE LUT buffer" );
-	Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength +1 ); //+1 is due to shift of labels after parallelScan
+	//Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength +1 ); //+1 is due to shift of labels after parallelScan
+	thrust::device_vector<uint32> lutVector(outBuffer.mLength +1);
+	Buffer1D< uint32 > lut = cudaBufferFromThrustDeviceVector( lutVector );
 
 	LocalMinimaRegions3DFtor< TElement > filter( aThreshold );
 

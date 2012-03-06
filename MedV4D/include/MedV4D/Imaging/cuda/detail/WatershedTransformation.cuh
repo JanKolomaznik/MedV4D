@@ -1,9 +1,11 @@
 #ifndef WATERSHED_TRANSFORMATION_CUH
 #define WATERSHED_TRANSFORMATION_CUH
 
+#include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
+#include <cuda.h>
+#include "MedV4D/Common/Common.h"
 
-
-
+__device__ int wshedUpdated;
 
 template< typename TElement >
 struct RegionBorderDetection3DFtor

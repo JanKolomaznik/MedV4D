@@ -1,8 +1,5 @@
 #include "MedV4D/Imaging/cuda/detail/ConnectedComponentLabeling.cuh"
 
-
-__device__ int lutUpdated;
-
 void
 ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
 {
