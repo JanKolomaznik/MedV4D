@@ -2,6 +2,7 @@
 #define CUDA_FILTERS_UTILS_CUH
 
 #include <cuda.h>
+#include <thrust/device_vector.h>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Imaging/ImageRegion.h"
 
@@ -292,7 +293,7 @@ template< typename TElement >
 Buffer1D< TElement >
 cudaBufferFromThrustDeviceVector( thrust::device_vector< TElement > & aVector )
 {
-	iadfas;
+	return Buffer1D< TElement >( aVector.size(), thrust::raw_pointer_cast(&aVector[0]) );
 }
 
 template< typename TElement >

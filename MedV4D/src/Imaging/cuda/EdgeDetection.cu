@@ -37,3 +37,14 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 	cudaFree( outBuffer.mData );
 	CheckCudaErrorState( "Free memory" );
 }
+
+template void Sobel3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::ImageRegion< int8, 3 > output, int8 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::ImageRegion< uint8, 3 > output, uint8 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::ImageRegion< int16, 3 > output, int16 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::ImageRegion< uint16, 3 > output, uint16 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::ImageRegion< int32, 3 > output, int32 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint32 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::ImageRegion< int64, 3 > output, int64 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::ImageRegion< uint64, 3 > output, uint64 threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::ImageRegion< float, 3 > output, float threshold );
+template void Sobel3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::ImageRegion< double, 3 > output, double threshold );

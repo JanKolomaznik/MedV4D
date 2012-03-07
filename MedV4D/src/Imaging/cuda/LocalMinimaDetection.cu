@@ -3,6 +3,7 @@
 #include "MedV4D/Imaging/Image.h"
 #include "MedV4D/Imaging/ImageRegion.h"
 #include <thrust/scan.h>
+#include <thrust/fill.h>
 #include <thrust/device_vector.h>
 
 //TODO - handle in a better way
@@ -98,10 +99,13 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After ConsolidationScanImage()" );
 
-	cudaMemset( lut.mData, 0, sizeof( uint32 ) * lut.mLength );
+	//cudaMemset( lut.mData, 0, sizeof( uint32 ) * lut.mLength );
+	thrust::fill( lutVector.begin(), lutVector.end(), 0 );
+
 	MarkUsedIds<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 	CheckCudaErrorState( "After MarkUsedIds()" );
-	parallelScan< uint32, Sum< uint32 >, 512 >( lut, lut, Sum< uint32 >() );
+	//parallelScan< uint32, Sum< uint32 >, 512 >( lut, lut, Sum< uint32 >() );
+	thrust::exclusive_scan( lutVector.begin(), lutVector.end(), lutVector.begin() );
 	CheckCudaErrorState( "After parallelScan()" );
 	UpdateLabelsFromScan<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 	CheckCudaErrorState( "After UpdateLabelsFromScan()" );
@@ -118,3 +122,25 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	cudaFree( inBuffer.mData );
 
 }
+
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output, int8 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output, uint8 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::MaskRegion3D output, int16 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::MaskRegion3D output, uint16 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::MaskRegion3D output, int32 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::MaskRegion3D output, uint32 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::MaskRegion3D output, int64 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output, uint64 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output, float aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output, double aThreshold );
+
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, int8 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint8 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, int16 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint16 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, int32 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint32 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, int64 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint64 aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, float aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, double aThreshold );
