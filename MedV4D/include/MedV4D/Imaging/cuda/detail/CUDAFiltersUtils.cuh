@@ -108,7 +108,7 @@ struct Buffer3D
 	TElement	*mData;
 };
 
-__device__ int3
+__device__ inline int3
 GetBlockCoordinates( int3 blockResolution, uint blockId )
 {
 	int3 result;
@@ -120,7 +120,7 @@ GetBlockCoordinates( int3 blockResolution, uint blockId )
 	return result;
 }
 
-__device__ int3
+__device__ inline int3
 GetBlockOrigin( dim3 blockSize, int3 blockCoords )
 {
 	return make_int3( 
@@ -130,7 +130,7 @@ GetBlockOrigin( dim3 blockSize, int3 blockCoords )
 		   );
 }
 
-__device__ bool
+__device__ inline bool
 ProjectionToInterval( int3 &v, const int3 &min, const int3 &max )
 {
 	bool result = false;
@@ -161,7 +161,7 @@ ProjectionToInterval( int3 &v, const int3 &min, const int3 &max )
 	return result;
 }
 
-int3
+inline int3
 GetBlockResolution( uint3 volumeSize, dim3 blockSize, int3 radius )
 {
 	return make_int3(

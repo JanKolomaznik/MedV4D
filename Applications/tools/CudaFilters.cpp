@@ -1,9 +1,12 @@
 #include "MedV4D/Common/Common.h"
-#include "Imaging/Imaging.h"
+#include "MedV4D/Imaging/Imaging.h"
 #undef min
 #undef max
 #include <tclap/CmdLine.h>
-#include "CudaFilters.h"
+#include "MedV4D/Imaging/cuda/ConnectedComponentLabeling.h"
+#include "MedV4D/Imaging/cuda/EdgeDetection.h"
+#include "MedV4D/Imaging/cuda/LocalMinimaDetection.h"
+#include "MedV4D/Imaging/cuda/WatershedTransformation.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -26,7 +29,7 @@ main( int argc, char **argv )
 	/*---------------------------------------------------------------------*/
 
 		//Define cmd arguments
-	TCLAP::ValueArg<std::string> operatorTypeArg( "o", "operator", "Applied operator", true, "", "Name of applied operator" );
+	TCLAP::ValueArg<std::string> operatorTypeArg( "o", "operator", "Applied operator", true, "", "Name of applied operator (SOBEL, MIN, BORDERS, CCL, WSHED/WATERSHED, WSHED2/WATERSHED2" );
 	cmd.add( operatorTypeArg );
 
 	TCLAP::ValueArg<double> thresholdArg( "t", "threshold", "Edge threshold value", false, 0, "Numeric type of image element" );
@@ -36,22 +39,27 @@ main( int argc, char **argv )
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
 	cmd.add( inFilenameArg );
 
-	TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", true, "", "filename2" );
+	TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", false, "", "filename2" );
 	cmd.add( outFilenameArg );
 
 	cmd.parse( argc, argv );
 
 	/***************************************************/
 
-	std::string inFilename = inFilenameArg.getValue();
-	std::string outFilename = outFilenameArg.getValue();
-
 	std::string operatorName = operatorTypeArg.getValue();
 	operatorName = boost::to_upper_copy( operatorName );
+	
+	boost::filesystem::path inFilename = inFilenameArg.getValue();
+	boost::filesystem::path outFilename;
+	if ( outFilenameArg.isSet() ) {
+		outFilename = outFilenameArg.getValue();
+	} else {
+		outFilename = inFilename.stem() + "_" + operatorName + inFilename.extension();
+	}
 
 	std::cout << "Loading file '" << inFilename << "' ..."; std::cout.flush();
 	M4D::Imaging::AImage::Ptr image = 
-			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
+			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename.string() );
 	std::cout << "Done\n";
 
 
@@ -67,7 +75,7 @@ main( int argc, char **argv )
 
 			Sobel3D( typedImage->GetRegion(), outputImage->GetRegion(), static_cast< TTYPE >( threshold ) );
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
 			std::cout << "Done\n";
 		);
 	} else if ( operatorName == "MIN" ) {
@@ -86,7 +94,7 @@ main( int argc, char **argv )
 			std::cout << "Done\n";*/
 			LocalMinima3D( typedImage->GetRegion(), outputImage->GetRegion(), threshold );
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
 			std::cout << "Done\n";
 		);
 	} else if ( operatorName == "BORDERS" ) {
@@ -97,7 +105,7 @@ main( int argc, char **argv )
 
 			RegionBorderDetection3D( typedImage->GetRegion(), outputImage->GetRegion() );
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
 			std::cout << "Done\n";
 		);
 	} else if ( operatorName == "CCL" ) {
@@ -105,7 +113,7 @@ main( int argc, char **argv )
 		M4D::Imaging::Image< uint32, 3 >::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( inImage->GetMinimum(), inImage->GetMaximum(), inImage->GetElementExtents() );
 		ConnectedComponentLabeling3D( inImage->GetRegion(), outputImage->GetRegion() );
 		std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-		M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
+		M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
 		std::cout << "Done\n";
 	} else if ( operatorName == "WSHED" || operatorName == "WATERSHED") {
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
@@ -131,7 +139,7 @@ main( int argc, char **argv )
 			std::cout << "Done\n";
 
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-			M4D::Imaging::ImageFactory::DumpImage( outFilename, *labelImage );
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *labelImage );
 			std::cout << "Done\n";
 		);
 	} else if ( operatorName == "WSHED2" || operatorName == "WATERSHED2") {
@@ -153,7 +161,7 @@ main( int argc, char **argv )
 			std::cout << "Done\n";
 
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
-			M4D::Imaging::ImageFactory::DumpImage( outFilename, *labelImage );
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *labelImage );
 			std::cout << "Done\n";
 		);
 	} else {

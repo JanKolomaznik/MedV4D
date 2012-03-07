@@ -777,6 +777,9 @@ ViewerWindow::dataLoaded()
 
 	//applyTransferFunction();
 	
+	
+	
+	
 	typedef M4D::Imaging::Histogram64 Histogram;
 	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
@@ -801,8 +804,11 @@ ViewerWindow::dataLoaded()
 	tfHistogram->seal();
 
 	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+	
+	
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
+	
 
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();

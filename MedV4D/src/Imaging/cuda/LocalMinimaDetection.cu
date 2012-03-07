@@ -6,6 +6,31 @@
 #include <thrust/fill.h>
 #include <thrust/device_vector.h>
 
+__global__ void 
+MarkUsedIds( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
+{ 
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < outBuffer.mLength ) {
+		lut.mData[ outBuffer.mData[idx] ] = 1;
+	}
+}
+
+__global__ void 
+UpdateLabelsFromScan( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < buffer.mLength ) {
+		uint label = buffer.mData[idx];
+		buffer.mData[idx] = lut.mData[label];
+	}
+}
+
+
+
 //TODO - handle in a better way
 void
 ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut );
@@ -118,7 +143,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	CheckCudaErrorState( "Copy back" );
 
 	cudaFree( outBuffer.mData );
-	cudaFree( lut.mData );
+	//cudaFree( lut.mData );
 	cudaFree( inBuffer.mData );
 
 }

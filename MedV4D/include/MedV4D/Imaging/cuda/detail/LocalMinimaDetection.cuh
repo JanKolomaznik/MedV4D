@@ -99,27 +99,10 @@ ConsolidationScanImage( Buffer3D< TElement > inBuffer, Buffer3D< uint32 > buffer
 }
 
 __global__ void 
-MarkUsedIds( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
-{ 
-	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int idx = blockId * blockDim.x + threadIdx.x;
-
-	if ( idx < outBuffer.mLength ) {
-		lut.mData[ outBuffer.mData[idx] ] = 1;
-	}
-}
+MarkUsedIds( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut );
 
 __global__ void 
-UpdateLabelsFromScan( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
-{
-	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int idx = blockId * blockDim.x + threadIdx.x;
-
-	if ( idx < buffer.mLength ) {
-		uint label = buffer.mData[idx];
-		buffer.mData[idx] = lut.mData[label];
-	}
-}
+UpdateLabelsFromScan( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut );
 
 
 #endif //LOCAL_MINIMA_DETECTION_CUH
