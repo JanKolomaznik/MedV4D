@@ -202,7 +202,7 @@ ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::Im
 		CheckCudaErrorState( "End of iteration" );
 	}
 	cudaThreadSynchronize();*/
-	D_PRINT( "Computations took " << clock.SecondsPassed() )
+	LOG( "ConnectedComponentLabeling3D computations took " << clock.SecondsPassed() )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );

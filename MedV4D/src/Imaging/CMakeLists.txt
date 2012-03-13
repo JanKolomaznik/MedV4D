@@ -121,6 +121,7 @@ SET( CUDA_IMAGING_SOURCES
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/ConnectedComponentLabeling.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/EdgeDetection.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/LocalMinimaDetection.cu"
+	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/RegionAdjacencyGraph.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/WatershedTransformation.cu"
 	)
 

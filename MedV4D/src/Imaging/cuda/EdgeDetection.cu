@@ -29,7 +29,7 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 					);
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After kernel execution" );
-	D_PRINT( "Computations took " << clock.SecondsPassed() )
+	LOG( "Sobel3D computations took " << clock.SecondsPassed() )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(TElement), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );

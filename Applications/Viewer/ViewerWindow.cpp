@@ -783,7 +783,7 @@ ViewerWindow::dataLoaded()
 	typedef M4D::Imaging::Histogram64 Histogram;
 	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
-	statusbar->showMessage("Computing histogram...");
+	/*statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
 	Histogram::Ptr histogram;
@@ -813,5 +813,5 @@ ViewerWindow::dataLoaded()
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();
 
-	statusbar->clearMessage();
+	statusbar->clearMessage();*/
 }

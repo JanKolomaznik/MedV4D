@@ -62,7 +62,7 @@ LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename Reg
 					);
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After kernel execution" );
-	D_PRINT( "Computations took " << clock.SecondsPassed() )
+	LOG( "LocalMinima3D computations took " << clock.SecondsPassed() )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );
@@ -137,7 +137,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After relabeling" );
 
-	D_PRINT( "Computations took " << clock.SecondsPassed() )
+	LOG( "LocalMinimaRegions3D computations took " << clock.SecondsPassed() )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );

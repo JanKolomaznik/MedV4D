@@ -81,7 +81,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	}
 
 	cudaThreadSynchronize();
-	D_PRINT( "Computations took " << clock.SecondsPassed() << " and " << i << " iterations" )
+	LOG( "WatershedTransformation3D computations took " << clock.SecondsPassed() << " and " << i << " iterations" )
 
 	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	cudaFree( labeledRegionsBuffer.mData );
