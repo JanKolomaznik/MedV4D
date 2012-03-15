@@ -46,8 +46,9 @@ public:
 	}
 };
 
+template< typename TEType >
 __global__ void 
-preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, EdgeHashTable aEdgeHashMap, int3 blockResolution )
+preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< EType > aGradientBuffer, EdgeHashTable aEdgeHashMap, int3 blockResolution )
 {
 	__shared__ uint32 inData[MAX_SHARED_MEMORY];
 	
@@ -65,6 +66,7 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, EdgeHashTable a
 	int3 coordinates = blockOrigin + threadIdx;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
 	int idx = IdxFromCoordStrides( coordinates, aRegionBuffer.mStrides );
+	int idx2 = IdxFromCoordStrides( coordinates, aGradientBuffer.mStrides );
 
 	
 	FillSharedMemory3D_8x8x8< uint32, cRadius, syStride, szStride >( inData, sidx, aRegionBuffer.mData, aRegionBuffer.mStrides, size, blockOrigin, coordinates, idx );
@@ -73,16 +75,19 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, EdgeHashTable a
 
 	uint32 current = inData[sidx];
 	uint32 second = inData[sidx+1];
-	float weight = 1.0f;
+	TEType val = aGradientBuffer.mData[idx2];
 	if ( current != second ) {
+		float weight = max( val, aGradientBuffer.mData[idx2+1] );
 		aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
 	second = inData[sidx+syStride];
 	if ( current != second ) {
+		float weight = max( val, aGradientBuffer.mData[idx2+aGradientBuffer.mStrides.y] );
 		aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
 	second = inData[sidx+szStride];
 	if ( current != second ) {
+		float weight = max( val, aGradientBuffer.mData[idx2+aGradientBuffer.mStrides.z] );
 		aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
 }
