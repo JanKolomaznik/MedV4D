@@ -24,8 +24,9 @@ struct EdgeRecord
 
 class EdgeHashTable: public Buffer1D<EdgeRecord>
 {
+public:
 	__device__ void 
-	insertEdge( EdgeRecord & aEdge )
+	insertEdge( const EdgeRecord & aEdge )
 	{
 		size_t idx = aEdge.edgeCombIdx % mLength;
 		while ( true ) {

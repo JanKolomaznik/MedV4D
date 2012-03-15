@@ -46,7 +46,7 @@ ENDIF( ${DEVIL_ENABLED} MATCHES "ON" )
 
 IF( MEDV4D_CUDA_ENABLED )
 	FIND_PACKAGE(CUDA REQUIRED)
-	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_13;-code=compute_13;--use_fast_math )
+	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_20;-code=compute_20;--use_fast_math )
 	ADD_DEFINITIONS( -DUSE_CUDA )
 ENDIF( MEDV4D_CUDA_ENABLED )
 #**************************************************************
