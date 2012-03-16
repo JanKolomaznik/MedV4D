@@ -49,7 +49,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledMarkerRegions );
 	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
 	Buffer3D< SignedElement > tmpBuffer = CudaPrepareBuffer<SignedElement>( aInput.GetSize() );
-	int3 radius = make_int3( 1, 1, 1 );
+	//int3 radius = make_int3( 1, 1, 1 );
 
 
 	dim3 blockSize1D( 512 );

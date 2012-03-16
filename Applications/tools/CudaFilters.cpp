@@ -7,6 +7,7 @@
 #include "MedV4D/Imaging/cuda/EdgeDetection.h"
 #include "MedV4D/Imaging/cuda/LocalMinimaDetection.h"
 #include "MedV4D/Imaging/cuda/WatershedTransformation.h"
+#include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -163,9 +164,14 @@ main( int argc, char **argv )
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
 			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *labelImage );
 			std::cout << "Done\n";
+			
+			std::cout << "Adjacency graph ..."; std::cout.flush();
+			createAdjacencyGraph( labelImage->GetRegion(), typedImage->GetRegion(), 0 );
+			std::cout << "Done\n";
 		);
 	} else {
 		std::cout << operatorName << " is not valid operator";
+		return 1;
 	}
 
 	/*---------------------------------------------------------------------*/
