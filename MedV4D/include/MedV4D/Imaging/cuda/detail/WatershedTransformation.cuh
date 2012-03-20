@@ -45,7 +45,12 @@ InitWatershedBuffers( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TEType 
 
 template< typename TInEType, typename TTmpEType >
 __global__ void 
-WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > inputBuffer, Buffer3D< TTmpEType > tmpBuffer, int3 blockResolution, TTmpEType infinity )
+WShedEvolution( Buffer3D< TInEType > inputBuffer, 
+		Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TTmpEType > tmpBuffer, 
+		/*Buffer3D< uint32 > labeledRegionsBuffer2, Buffer3D< TTmpEType > tmpBuffer2,*/ 
+		int3 blockResolution, 
+		TTmpEType infinity 
+		)
 {
 	__shared__ uint32 labels[MAX_SHARED_MEMORY];
 	__shared__ TTmpEType tmpValues[MAX_SHARED_MEMORY];
@@ -143,9 +148,9 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 		int minIdx = -1;
 		TInEType value = inputBuffer.mData[ idx ];
 		TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
-		for ( int i = sidx-1; i <= sidx+1; ++i ) {
+		for ( int i = sidx-szStride; i <= sidx+szStride; i+=szStride ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
-				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
+				for ( int k = j-1; k <= j+1; ++k ) {
 					if( tmpValues[ k ] < minVal ) {
 						minVal = tmpValues[ k ];
 						minIdx = k;
@@ -154,10 +159,13 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 			}
 		}
 		if( minIdx != -1 ) {
-			labeledRegionsBuffer.mData[ idx ] = labels[ minIdx ];
 			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
+			labeledRegionsBuffer.mData[ idx ] = labels[ minIdx ];
 			wshedUpdated = 1;
-		}
+		} /*else {
+			tmpBuffer2.mData[ idx ] = tmpValues[sidx];
+			labeledRegionsBuffer2.mData[ idx ] = labels[ sidx ];
+		}*/
 		/*
 		for( unsigned it = 0; it < 2; ++it ) {
 			TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );

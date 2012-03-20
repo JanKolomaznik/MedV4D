@@ -1,6 +1,44 @@
 #include "MedV4D/Imaging/cuda/detail/WatershedTransformation.cuh"
 #include "MedV4D/Imaging/ImageRegion.h"
 
+__device__ uint64 foundZero;
+
+__global__ void 
+isNonzeroKernel( Buffer3D< uint32 > buffer, int3 blockResolution )
+{
+	int3 blockCoordinates = GetBlockCoordinates( blockResolution, __mul24(blockIdx.y, gridDim.x) + blockIdx.x );
+	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
+	int3 coordinates = blockOrigin + threadIdx;
+	int3 size = toInt3( buffer.mSize );
+
+	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
+	int idx = IdxFromCoordStrides( coordinates, buffer.mStrides );
+
+	if ( !projected ) {
+		if( buffer.mData[idx] == 0 ) {
+			atomicAdd( &foundZero, 1 );
+		}
+	}
+}
+
+uint64
+isNonzero( Buffer3D< uint32 > buffer )
+{
+	CheckCudaErrorState( "Before isNonzero()" );
+	uint64 foundZero = 0;
+	cudaMemcpyToSymbol( "foundZero", &(foundZero = 0), sizeof(uint64), 0, cudaMemcpyHostToDevice );
+
+	dim3 blockSize( 8, 8, 8 );
+	int3 blockResolution = GetBlockResolution( buffer.mSize, blockSize, make_int3(0,0,0) );
+	dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
+
+	isNonzeroKernel<<< gridSize, blockSize >>>( buffer, blockResolution );
+	cudaThreadSynchronize();
+	cudaMemcpyFromSymbol( &foundZero, "foundZero", sizeof(uint64), 0, cudaMemcpyDeviceToHost );
+
+	CheckCudaErrorState( "After isNonzero()" );
+	return foundZero;
+}
 
 template< typename RegionType >
 void
@@ -44,13 +82,21 @@ template< typename TEType >
 void
 WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput )
 {
+	D_PRINT( "Before " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
+	//typedef typename TypeTraits< TEType >::SuperiorSignedType SignedElement;
 	typedef typename TypeTraits< TEType >::SignedClosestType SignedElement;
 	int wshedUpdated = 1;
 	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledMarkerRegions );
 	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
 	Buffer3D< SignedElement > tmpBuffer = CudaPrepareBuffer<SignedElement>( aInput.GetSize() );
-	//int3 radius = make_int3( 1, 1, 1 );
 
+	/*Buffer3D< uint32 > labeledRegionsBuffer2 = CudaBuffer3DFromImageRegion( aLabeledMarkerRegions );
+	Buffer3D< SignedElement > tmpBuffer2 = CudaPrepareBuffer<SignedElement>( aInput.GetSize() );
+	ASSERT( labeledRegionsBuffer.mStrides == labeledRegionsBuffer2.mStrides );
+	ASSERT( tmpBuffer.mStrides == tmpBuffer2.mStrides );*/
+
+	//int3 radius = make_int3( 1, 1, 1 );
+	D_PRINT( "After allocation in " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
 
 	dim3 blockSize1D( 512 );
 	dim3 gridSize1D( (inputBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
@@ -61,38 +107,75 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 
 	M4D::Common::Clock clock;
 	D_PRINT( "InitWatershedBuffers()" );
+	D_PRINT( "TypeTraits<SignedElement>::Max = " << TypeTraits<SignedElement>::Max );
 	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<SignedElement>::Max );
 
 	unsigned i = 0;
-	while (wshedUpdated != 0 && i < 51) {
+	while (wshedUpdated != 0 && i < 1000) {
 		cudaMemcpyToSymbol( "wshedUpdated", &(wshedUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
-		//D_PRINT( "WShedEvolution()" );
 		WShedEvolution<<< gridSize3D, blockSize3D >>>( 
-					labeledRegionsBuffer,
-				       	inputBuffer,	
+					inputBuffer,
+					labeledRegionsBuffer,	
 					tmpBuffer,
 					blockResolution3D, 
 					TypeTraits<SignedElement>::Max
 					);
 
+		/*if( i % 2 == 0 ) {
+			D_PRINT( "WShedEvolution() - 0" );
+			WShedEvolution<<< gridSize3D, blockSize3D >>>( 
+					inputBuffer,
+					labeledRegionsBuffer,	
+					tmpBuffer,
+					labeledRegionsBuffer2,	
+					tmpBuffer2,
+					blockResolution3D, 
+					TypeTraits<SignedElement>::Max
+					);
+		} else {
+			D_PRINT( "WShedEvolution() - 1" );
+			WShedEvolution<<< gridSize3D, blockSize3D >>>( 
+					inputBuffer,
+					labeledRegionsBuffer2,	
+					tmpBuffer2,
+					labeledRegionsBuffer,	
+					tmpBuffer,
+					blockResolution3D, 
+					TypeTraits<SignedElement>::Max
+					);
+		}*/
+		
+		
+		cudaThreadSynchronize();
 		cudaMemcpyFromSymbol( &wshedUpdated, "wshedUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 		++i;
 	}
-
-	cudaThreadSynchronize();
+	D_PRINT( "wshedUpdated = " << wshedUpdated );
+	
 	LOG( "WatershedTransformation3D computations took " << clock.SecondsPassed() << " and " << i << " iterations" )
 
+	LOG( "number of zero voxels = " << isNonzero( labeledRegionsBuffer ) );
+	
 	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+	/*if( i % 2 == 0 ) {
+		cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+	} else {
+		cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer2.mData, labeledRegionsBuffer2.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+	}*/
 	cudaFree( labeledRegionsBuffer.mData );
 	cudaFree( inputBuffer.mData );
 
+	/*cudaFree( labeledRegionsBuffer2.mData );
+	cudaFree( tmpBuffer2.mData );*/
 
 	/*typename M4D::Imaging::Image< SignedElement, 3 >::Ptr tmpDebugImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< SignedElement, 3 >( aLabeledMarkerRegions.GetMinimum(), aLabeledMarkerRegions.GetMaximum(), aLabeledMarkerRegions.GetElementExtents() );
 	cudaMemcpy(tmpDebugImage->GetRegion().GetPointer(), tmpBuffer.mData, labeledRegionsBuffer.mLength * sizeof(SignedElement), cudaMemcpyDeviceToHost );
 	M4D::Imaging::ImageFactory::DumpImage( "Intermediate.dump", *tmpDebugImage );
 */
 	cudaFree( tmpBuffer.mData );
+
+	D_PRINT( "After " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
 }
 
 template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output );
