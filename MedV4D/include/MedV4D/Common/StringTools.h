@@ -53,6 +53,17 @@ Macro for a better usage of the class defined above.
 */
 #define TO_STRING(MSG) ( std::string(ToString() << MSG) )
 
+inline std::string
+bytesToHumanReadableFormat( size_t aBytes ) 
+{
+	if ( (aBytes >> 20) > 0 ) {
+		return TO_STRING( float( aBytes ) / (1024*1024) << " MB" );
+	}
+	if ( (aBytes >> 10) > 0 ) {
+		return TO_STRING( float( aBytes ) / (1024) << " KB" );
+	}
+	return TO_STRING( aBytes << " bytes" );
+}
 
 /** @} */
 

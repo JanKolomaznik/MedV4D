@@ -5,11 +5,25 @@
 #include <thrust/device_vector.h>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Imaging/ImageRegion.h"
+#include <string>
 
 //#define GLM_FORCE_CUDA
 //#include <glm/glm.hpp>
 #define MAX_BLOCK_SIZE 10
 #define MAX_SHARED_MEMORY 1024
+
+
+inline std::string
+cudaMemoryInfoText()
+{
+	size_t free;
+	size_t total;
+	cudaError_t err = cudaMemGetInfo( &free, &total);
+	if( cudaSuccess != err) {
+		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( "Failed to get CUDA memory info : " << cudaGetErrorString( err) ) );
+	}
+	return TO_STRING( "Free memory: " << bytesToHumanReadableFormat( free ) << "; Total memory " <<  bytesToHumanReadableFormat( total ) << "; Occupied: " << 100.0f * float(total - free)/total << "%");
+}
 
 inline int3
 Vector3iToInt3( const Vector3i &v )
@@ -43,16 +57,40 @@ toUint3( const TType3 &arg )
 	return make_uint3( arg.x, arg.y, arg.z );
 }
 
+__device__ __host__ inline bool
+operator==( const int3 &a, const int3 & b )
+{
+	return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
+}
+
+__device__ __host__ inline bool
+operator==( const uint3 &a, const uint3 & b )
+{
+	return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
+}
+
 __device__ __host__ inline int3 
 operator+( const int3 &a, const int3 & b )
 {
 	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
 }
 
+__device__ __host__ inline int3 
+operator-( const int3 &a, const int3 & b )
+{
+	return make_int3( a.x - b.x, a.y - b.y, a.z - b.z );
+}
+
 __device__ __host__ inline uint3 
 operator+( const uint3 &a, const uint3 & b )
 {
 	return make_uint3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__device__ __host__ inline uint3 
+operator-( const uint3 &a, const uint3 & b )
+{
+	return make_uint3( a.x - b.x, a.y - b.y, a.z - b.z );
 }
 
 __device__ __host__ inline int3 
@@ -62,9 +100,21 @@ operator+( const int3 &a, const uint3 & b )
 }
 
 __device__ __host__ inline int3 
+operator-( const int3 &a, const uint3 & b )
+{
+	return make_int3( a.x - b.x, a.y - b.y, a.z - b.z );
+}
+
+__device__ __host__ inline int3 
 operator+( const uint3 &a, const int3 & b )
 {
 	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
+}
+
+__device__ __host__ inline int3 
+operator-( const uint3 &a, const int3 & b )
+{
+	return make_int3( a.x - b.x, a.y - b.y, a.z - b.z );
 }
 
 __host__ inline std::ostream &
@@ -274,6 +324,25 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride, idx );
 	}
 }
+
+template< typename TInElement, typename TOutElement, typename TFilter >
+__global__ void 
+FilterSimple3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuffer, int3 blockResolution, TFilter filter )
+{
+	int3 blockCoordinates = GetBlockCoordinates( blockResolution, __mul24(blockIdx.y, gridDim.x) + blockIdx.x );
+	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
+	int3 coordinates = blockOrigin + threadIdx;
+	int3 size = toInt3( inBuffer.mSize );
+
+	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
+	int idx1 = IdxFromCoordStrides( coordinates, inBuffer.mStrides );
+	int idx2 = IdxFromCoordStrides( coordinates, outBuffer.mStrides );
+
+	if ( !projected ) {
+		filter( inBuffer.mData[ idx1 ], outBuffer.mData[ idx2 ] );
+	}
+}
+
 
 template< typename TElement >
 Buffer1D< TElement >

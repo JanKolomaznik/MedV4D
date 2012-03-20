@@ -8,6 +8,7 @@
 #include "MedV4D/Imaging/cuda/LocalMinimaDetection.h"
 #include "MedV4D/Imaging/cuda/WatershedTransformation.h"
 #include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
+#include "MedV4D/Imaging/cuda/SimpleFilters.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -35,6 +36,9 @@ main( int argc, char **argv )
 
 	TCLAP::ValueArg<double> thresholdArg( "t", "threshold", "Edge threshold value", false, 0, "Numeric type of image element" );
 	cmd.add( thresholdArg );
+	
+	TCLAP::ValueArg<double> belowThresholdArg( "b", "below", "Below threshold value", false, 0, "Numeric type of image element" );
+	cmd.add( belowThresholdArg );
 
 	/*---------------------------------------------------------------------*/
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
@@ -75,6 +79,27 @@ main( int argc, char **argv )
 			IMAGE_TYPE::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 
 			Sobel3D( typedImage->GetRegion(), outputImage->GetRegion(), static_cast< TTYPE >( threshold ) );
+			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
+			std::cout << "Done\n";
+		);
+	} else if ( operatorName == "THRESHOLD" ) {
+		
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
+			M4D::Imaging::Mask3D::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+
+			TTYPE threshold = TypeTraits<TTYPE>::Min;
+			TTYPE belowThreshold = TypeTraits<TTYPE>::Max;
+			if (thresholdArg.isSet() ) {
+				threshold = TTYPE( thresholdArg.getValue() );
+			}
+			if (belowThresholdArg.isSet() ) {
+				belowThreshold = TTYPE( belowThresholdArg.getValue() );
+			}
+			
+			thresholding3D( typedImage->GetRegion(), outputImage->GetRegion(), static_cast< TTYPE >( threshold ), static_cast< TTYPE >( belowThreshold ) );
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
 			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *outputImage );
 			std::cout << "Done\n";
