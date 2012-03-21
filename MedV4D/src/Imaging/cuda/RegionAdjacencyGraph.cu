@@ -116,9 +116,10 @@ template< typename TEType >
 __global__ void 
 preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TEType > aGradientBuffer, EdgeHashTable aEdgeHashMap, int3 blockResolution )
 {
+	const size_t EDGE_HASH_TABLE_SIZE = 3*8*8*8;
 	__shared__ uint32 inData[10*10*10];
-	__shared__ EdgeRecord edges[ 3*8*8*8 ];
-	
+	__shared__ EdgeRecord edgeHashTable[ EDGE_HASH_TABLE_SIZE ];
+	size_t hashingIndex = 3*( (threadIdx.z * blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) +  threadIdx.x );
 	const int cBlockDim = 8;
 	const int cRadius = 1;
 	const uint syStride = cBlockDim+2*cRadius;
@@ -154,22 +155,29 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 	if ( current != second ) {
 		float weight = max( val, aGradientBuffer.mData[idx2+1] );
 		//assert( second );
-		if( second ) aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
+		if( second ) hashEdge( edgeHashTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second, weight ) );//aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
 	second = inData[sidx+syStride];
 	//second = aRegionBuffer.mData[idx+aRegionBuffer.mStrides.y];
 	if ( current != second ) {
 		float weight = max( val, aGradientBuffer.mData[idx2+aGradientBuffer.mStrides.y] );
 		//assert( second );
-		if( second ) aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
+		if( second ) hashEdge( edgeHashTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second, weight ) );//aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
 	second = inData[sidx+szStride];
 	//second = aRegionBuffer.mData[idx+aRegionBuffer.mStrides.z];
 	if ( current != second ) {
 		float weight = max( val, aGradientBuffer.mData[idx2+aGradientBuffer.mStrides.z] );
 		//assert( second );
-		if( second ) aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
+		if( second ) hashEdge( edgeHashTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second, weight ) );//aEdgeHashMap.insertEdge( EdgeRecord( current, second, weight ) );
 	}
+	__syncthreads();
+	for( size_t i = 0; i < 3; ++i ) {
+		if( edgeHashTable[hashingIndex + i].edgeCombIdx != 0 ) {
+			aEdgeHashMap.insertEdge( edgeHashTable[hashingIndex + i] );
+		}
+	}
+	
 }
 
 template< typename TEType >
