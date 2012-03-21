@@ -53,7 +53,7 @@ struct CompareEdge : public thrust::binary_function< EdgeRecord, EdgeRecord, boo
 {
 	__host__ __device__ bool operator()( const EdgeRecord &aEdgeA, const EdgeRecord &aEdgeB ) const 
 	{
-		if ( aEdgeA.edgeCombIdx == 0 ) return false;
+		if ( aEdgeA.edgeCombIdx == 0 ) return false;//aEdgeB.edgeCombIdx == 0;
 		if ( aEdgeB.edgeCombIdx == 0 ) return true;
 		
 		return aEdgeA.edgeCombIdx < aEdgeB.edgeCombIdx;
@@ -111,6 +111,22 @@ public:
 		hashEdge( mData, mLength, aEdge );
 	}
 };
+
+__global__ void 
+fillVertexNeighbors( const EdgeRecord *aEdges, size_t aEdgeCount, VertexRecord *aVertices, size_t aVertexCount )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < aEdgeCount-1 ) {
+		uint first = aEdges[idx].edgeCombIdx >> 32;
+		uint second = aEdges[idx+1].edgeCombIdx >> 32;
+		if( first != second ) {
+			aVertices[ second ].edgeStart = idx+1;
+		}
+	}
+}
+
 
 template< typename TEType >
 __global__ void 
@@ -182,14 +198,11 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 template< typename TEType >
 void
-computeRegionAdjacencyGraph( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< VertexRecord > &aVertices )
+computeRegionAdjacencyGraph( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, size_t &aEdgeCount, thrust::device_vector< VertexRecord > &aVertices )
 {
 	int3 radius = make_int3( 1, 1, 1 );
 
-	EdgeHashTable edgeHashMap( aEdges.size()/2, thrust::raw_pointer_cast(&aEdges[0]) );
-
-	dim3 blockSize1D( 512 );
-	dim3 gridSize1D( (aEdges.size() + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+	EdgeHashTable edgeHashMap( aEdges.size(), thrust::raw_pointer_cast(&aEdges[0]) );
 
 	dim3 blockSize3D( 8, 8, 8 );
 	int3 blockResolution3D = GetBlockResolution( aRegionBuffer.mSize, blockSize3D, make_int3(0,0,0) );
@@ -212,13 +225,28 @@ computeRegionAdjacencyGraph( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType
 	//D_PRINT( "debug created " << testedgeCount << " edges" );
 	D_PRINT( "Time after preallocationOfAdjacencyGraph() " << clock.SecondsPassed() );
 
-	thrust::transform( aEdges.begin(), aEdges.begin() + aEdges.size()/2, aEdges.begin() + aEdges.size()/2, GetSymmetricEdge() );
-	D_PRINT( "Graph mirrored" );
+	aEdgeCount = thrust::count_if( aEdges.begin(), aEdges.end(), IsValidEdge() );
+	ASSERT( aEdges.size() > 2*aEdgeCount );
 	thrust::sort( aEdges.begin(), aEdges.end(), CompareEdge() );
-	D_PRINT( "edges sorted" );
-	size_t edgeCount = thrust::count_if( aEdges.begin(), aEdges.end(), IsValidEdge() );
+	
+
+	D_COMMAND( EdgeRecord rec = aEdges[aEdgeCount-1]; ); ASSERT( rec.edgeCombIdx != 0 );
+	D_COMMAND( rec = aEdges[aEdgeCount]; ); ASSERT( rec.edgeCombIdx == 0 );
+
+	thrust::transform( aEdges.begin(), aEdges.begin() + aEdgeCount, aEdges.begin() + aEdgeCount, GetSymmetricEdge() );
+	D_PRINT( "Time after graph mirroring " << clock.SecondsPassed() );
+	aEdgeCount *= 2;
+	thrust::sort( aEdges.begin(), aEdges.begin() + aEdgeCount, CompareEdge() );
+	D_PRINT( "Time after edge sorting " << clock.SecondsPassed() );
+	D_PRINT( "created " << aEdgeCount << " edges" );
+
+	D_PRINT( "Filling info for vertices" );
+	dim3 blockSize1D( 512 );
+	dim3 gridSize1D( (aEdgeCount + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+
+	fillVertexNeighbors<<< gridSize1D, blockSize1D >>>( thrust::raw_pointer_cast(&aEdges[0]), aEdgeCount, thrust::raw_pointer_cast(&aVertices[0]), aVertices.size() );
+	
 	LOG( "computeRegionAdjacencyGraph computations took " << clock.SecondsPassed() );
-	D_PRINT( "created " << edgeCount << " edges" );
 }
 
 template< typename TEType >
@@ -232,10 +260,11 @@ createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegio
 
 	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
 
-	thrust::device_vector< VertexRecord > vertices( 2/*aRegionCount*/ );
+	thrust::device_vector< VertexRecord > vertices( aRegionCount+10 );
 	thrust::device_vector< EdgeRecord > edges( aRegionCount*25 );
+	size_t edgeCount = 0;
 	D_PRINT( "After allocation in " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
-	computeRegionAdjacencyGraph( labeledRegionsBuffer, inputBuffer, edges, vertices );
+	computeRegionAdjacencyGraph( labeledRegionsBuffer, inputBuffer, edges, edgeCount, vertices );
 	D_PRINT( "After " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
 }
 

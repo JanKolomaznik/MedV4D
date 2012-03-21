@@ -47,7 +47,7 @@ template< typename TInEType, typename TTmpEType >
 __global__ void 
 WShedEvolution( Buffer3D< TInEType > inputBuffer, 
 		Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TTmpEType > tmpBuffer, 
-		/*Buffer3D< uint32 > labeledRegionsBuffer2, Buffer3D< TTmpEType > tmpBuffer2,*/ 
+		Buffer3D< uint32 > labeledRegionsBuffer2, Buffer3D< TTmpEType > tmpBuffer2,
 		int3 blockResolution, 
 		TTmpEType infinity 
 		)
@@ -158,14 +158,18 @@ WShedEvolution( Buffer3D< TInEType > inputBuffer,
 				}
 			}
 		}
+		TTmpEType tmpVal;
+		uint32 label;
 		if( minIdx != -1 ) {
-			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
-			labeledRegionsBuffer.mData[ idx ] = labels[ minIdx ];
+			tmpVal = tmpValues[minIdx] + value;
+			label = labels[ minIdx ];
 			wshedUpdated = 1;
-		} /*else {
-			tmpBuffer2.mData[ idx ] = tmpValues[sidx];
-			labeledRegionsBuffer2.mData[ idx ] = labels[ sidx ];
-		}*/
+		} else {
+			tmpVal = tmpValues[sidx];
+			label = labels[ sidx ];
+		}
+		tmpBuffer2.mData[ idx ] = tmpVal;
+		labeledRegionsBuffer2.mData[ idx ] = label;
 		/*
 		for( unsigned it = 0; it < 2; ++it ) {
 			TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
