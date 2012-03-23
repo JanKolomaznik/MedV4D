@@ -191,7 +191,9 @@ main( int argc, char **argv )
 			std::cout << "Done\n";
 			
 			std::cout << "Adjacency graph ..."; std::cout.flush();
-			createAdjacencyGraph( labelImage->GetRegion(), typedImage->GetRegion(), 0 );
+			WeightedUndirectedGraph graph;
+			createAdjacencyGraph( graph, labelImage->GetRegion(), typedImage->GetRegion() );
+			computeMinCut( graph );
 			std::cout << "Done\n";
 		);
 	} else {

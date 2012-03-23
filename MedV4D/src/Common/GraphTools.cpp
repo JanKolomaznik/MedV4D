@@ -1,4 +1,8 @@
 #include "MedV4D/Common/GraphTools.h"
+#include "MedV4D/Common/Debug.h"
+#include "MedV4D/Common/Log.h"
+#include "MedV4D/Common/TimeMeasurement.h"
+
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -7,6 +11,18 @@
 #include <boost/property_map/property_map.hpp>
 #include <boost/typeof/typeof.hpp>
 
+
+void
+computeMinCut( WeightedUndirectedGraph & aGraph )
+{
+	M4D::Common::Clock clock;
+	//BOOST_AUTO( parities, boost::make_one_bit_color_map(num_vertices(aGraph), get(boost::vertex_index, aGraph)) );
+	
+	float w = boost::stoer_wagner_min_cut(aGraph, get(boost::edge_weight, aGraph)/*, boost::parity_map(parities)*/);
+	LOG( "min cut weight = " << w );
+	D_PRINT( "Time after computeMinCut " << clock.SecondsPassed() );
+}
+
 struct edge_t
 {
   unsigned long first;
@@ -14,7 +30,7 @@ struct edge_t
 };
 /*
 // A graphic of the min-cut is available at <http://www.boost.org/doc/libs/release/libs/graph/doc/stoer_wagner_imgs/stoer_wagner.cpp.gif>
-int main()
+int test()
 {
 	using namespace std;
 
@@ -23,7 +39,7 @@ int main()
 		boost::vecS, 
 		boost::undirectedS,
 		boost::no_property, 
-		boost::property<boost::edge_weight_t, int> 
+		boost::property<boost::edge_weight_t, float> 
 		> undirected_graph;
 		
 	typedef boost::graph_traits<undirected_graph>::vertex_descriptor vertex_descriptor;
