@@ -15,6 +15,7 @@ struct DataBuff
   DataBuff( void *dat, size_t lenght)
     : data( dat)
     , len(lenght)
+    , filled( 0 )
   {}
 
   DataBuff() {}
@@ -26,6 +27,7 @@ struct DataBuff
 
   void *data;
   size_t len;
+  size_t filled;
 };
 
 typedef std::vector< DataBuff > DataBuffs;
@@ -44,7 +46,7 @@ typedef std::vector< DataBuff > DataBuffs;
 class OutStream
 {
 public:
-	OutStream(MediumAccessor *accessor, bool shared = true);
+	OutStream( MediumAccessor::Ptr accessor );
 
 	virtual ~OutStream();
 	// Serialization support for DataSetSerializators
@@ -55,6 +57,8 @@ public:
 	void Put(const T what)
 	{
 		_accessor->PutData( (const void *)&what, sizeof(T));
+		
+		mProcessedBytes += sizeof(T);
 	}
   
 	template< typename T>
@@ -70,25 +74,27 @@ protected:
   	OutStream();
 
 	void
-	Init( MediumAccessor *accessor, bool shared = true );
+	Init( MediumAccessor::Ptr accessor );
 
-	MediumAccessor 	*_accessor;
+	MediumAccessor::Ptr _accessor;
 	bool		_shared;
+	size_t		mProcessedBytes;
 };
 
 class InStream
 {
 public:
-	InStream(MediumAccessor *accessor, bool shared = true);
+	InStream( MediumAccessor::Ptr accessor );
 
 	virtual ~InStream();
 
 	template< typename T>
 	void GetDataBuf( DataBuffs &bufs)
 	{
-		for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
+		for( DataBuffs::iterator it=bufs.begin(); it != bufs.end(); it++)
 		{
-			_accessor->GetData(it->data, it->len);
+			it->filled = _accessor->GetData(it->data, it->len);
+			mProcessedBytes += it->filled;
 			if( _needSwapBytes )
 			{
 				SwapDataBuf<T>(*it);
@@ -99,8 +105,9 @@ public:
 	template< typename T>
 	void GetDataBuf( DataBuff &buf)
 	{
-		_accessor->GetData(buf.data, buf.len);
-			
+		buf.filled = _accessor->GetData(buf.data, buf.len);
+		mProcessedBytes += buf.filled;
+		//TODO handle not if not read whole
 		if( _needSwapBytes )
 		{
 			SwapDataBuf<T>(buf);
@@ -110,7 +117,11 @@ public:
 	template< typename T>
 	void Get( T &what)
 	{
-		_accessor->GetData( (void *)&what, sizeof(T));
+		size_t bytes = _accessor->GetData( (void *)&what, sizeof(T));
+		mProcessedBytes +=  bytes;
+		if ( bytes != sizeof(T) ) {
+			_THROW_ ErrorHandling::ExceptionBase( TO_STRING( "Stream single data read failed. Data already processed: " << mProcessedBytes << " bytes" ) );
+		}
 		if( _needSwapBytes ) {
 			SwapBytes<T>( what );
 		}
@@ -124,6 +135,10 @@ public:
 		DataBuff buffer = DataBuff( static_cast< void * >( what ), aCount * sizeof( T ) );
 
 		GetDataBuf< T >( buffer );
+		if ( buffer.filled < aCount * sizeof( T ) ) {
+			_THROW_ ErrorHandling::ExceptionBase( TO_STRING( "Stream multiple data read failed: wanted " << (aCount * sizeof( T )) 
+						<< " bytes; read " << buffer.filled << " bytes. Data already processed: " << mProcessedBytes << " bytes" ) );
+		}
 	}
 	
 	bool
@@ -133,7 +148,7 @@ protected:
 	InStream();
 	
 	void
-	Init( MediumAccessor *accessor, bool shared = true );
+	Init( MediumAccessor::Ptr accessor );
 
 	template< typename T>
 	void SwapDataBuf( DataBuff &buf)
@@ -145,8 +160,9 @@ protected:
 	}
 	
 	uint8 		_needSwapBytes;
-	MediumAccessor 	*_accessor;
+	MediumAccessor::Ptr _accessor;
 	bool		_shared;
+	size_t		mProcessedBytes;
 };
 
 

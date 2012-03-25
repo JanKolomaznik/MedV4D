@@ -4,6 +4,8 @@
 #include "MedV4D/Common/IOStreams.h"
 #include "MedV4D/Common/fileAccessor.h"
 #include <string>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 namespace M4D
 {
@@ -16,28 +18,22 @@ class FOutStream: public OutStream
 public:
 	FOutStream(const char *file): OutStream(  )
 	{ 
-		FileAccessor *acc = NULL;
+		FileAccessor::Ptr acc;
 		try {
-			acc = new FileAccessor( file, MODE_WRITE );
-			Init( acc, false );
+			acc = boost::make_shared< FileAccessor>( file, MODE_WRITE );
+			Init( acc );
 		} catch (...) {
-			if( NULL == acc ) {
-				delete acc;
-			}
 			_THROW_ EFileProblem( file );
 		}
 	}
 
 	FOutStream(std::string file): OutStream(  )
 	{ 
-		FileAccessor *acc = NULL;
+		FileAccessor::Ptr acc;
 		try {
-			acc = new FileAccessor( file, MODE_WRITE );
-			Init( acc, false );
+			acc = boost::make_shared< FileAccessor>( file, MODE_WRITE );
+			Init( acc );
 		} catch (...) {
-			if( NULL == acc ) {
-				delete acc;
-			}
 			_THROW_ EFileProblem( file );
 		}
 	}
@@ -52,28 +48,22 @@ class FInStream: public InStream
 public:
 	FInStream(const char *file): InStream( )
 	{ 
-		FileAccessor *acc = NULL;
+		FileAccessor::Ptr acc;
 		try {
-			acc = new FileAccessor( file, MODE_READ );
-			Init( acc, false );
+			acc = boost::make_shared< FileAccessor>( file, MODE_READ );
+			Init( acc );
 		} catch (...) {
-			if( NULL == acc ) {
-				delete acc;
-			}
 			_THROW_ EFileProblem( file );
 		}
 	}
 
 	FInStream(std::string file): InStream( )
 	{
-		FileAccessor *acc = NULL;
+		FileAccessor::Ptr acc;
 		try {
-			acc = new FileAccessor( file, MODE_READ );
-			Init( acc, false );
+			acc = boost::make_shared< FileAccessor>( file, MODE_READ );
+			Init( acc );
 		} catch (...) {
-			if( NULL == acc ) {
-				delete acc;
-			}
 			_THROW_ EFileProblem( file );
 		}
        	}

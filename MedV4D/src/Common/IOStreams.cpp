@@ -7,26 +7,25 @@ namespace M4D
 namespace IO
 {
 /////////////////////////////////////////////////////////////////////////////
-OutStream::OutStream(MediumAccessor *accessor, bool shared )
-	: _accessor(accessor)
+OutStream::OutStream(MediumAccessor::Ptr accessor )
+	: _accessor(accessor), mProcessedBytes( 0 )
 {
+	ASSERT( accessor );
 	Init( accessor );
 }
 
 OutStream::OutStream()
-	: _accessor(NULL)
+	: _accessor(), mProcessedBytes( 0 )
 {
 }
 
 OutStream::~OutStream()
 {
-	if( !_shared && NULL != _accessor ) {
-		delete _accessor;
-	}
+	D_PRINT( "Destroying OutStream, processed: " << mProcessedBytes << " bytes" );
 }
 
 void
-OutStream::Init( MediumAccessor *accessor, bool shared  )
+OutStream::Init( MediumAccessor::Ptr accessor )
 {
 	if( accessor == NULL ) {
 		_THROW_ EBadParameter( "NULL pointer" );
@@ -43,6 +42,7 @@ OutStream::PutDataBuf( const DataBuffs &bufs)
 	for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
 	{
 		_accessor->PutData(it->data, it->len);
+		mProcessedBytes += it->len;
 	}
 }
 /////////////////////////////////////////////////////////////////////////////
@@ -50,33 +50,33 @@ void
 OutStream::PutDataBuf( const DataBuff &buf)
 {
 	_accessor->PutData(buf.data, buf.len);
+	mProcessedBytes += buf.len;
 }
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
-InStream::InStream(MediumAccessor *accessor, bool shared )
-	: _accessor(accessor)
+InStream::InStream(MediumAccessor::Ptr accessor )
+	: _accessor(accessor), mProcessedBytes( 0 )
 {
-	Init( accessor, shared );
+	ASSERT( accessor );
+	Init( accessor );
 }
 
 InStream::InStream()
-	: _accessor(NULL), _shared( false )
+	: _accessor(), mProcessedBytes( 0 )
 {
 
 }
 
 InStream::~InStream()
 {
-	if( !_shared && NULL != _accessor ) {
-		delete _accessor;
-	}
+	D_PRINT( "Destroying InStream, processed: " << mProcessedBytes << " bytes" );
 }
 
 void
-InStream::Init( MediumAccessor *accessor, bool shared )
+InStream::Init( MediumAccessor::Ptr accessor )
 {
-	if( accessor == NULL ) {
+	if( !accessor ) {
 		_THROW_ EBadParameter( "NULL pointer" );
 	}
 	_accessor = accessor;

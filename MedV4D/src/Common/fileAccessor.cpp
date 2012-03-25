@@ -23,6 +23,7 @@ FileAccessor::FileAccessor(const Path &file, OpenMode mode) {
 void
 FileAccessor::Open(const char *file, OpenMode mode)
 {
+	stream_.exceptions( std::ios::failbit | std::ios::badbit | std::ios::eofbit );
 	switch( mode ) {
 	case MODE_READ:
 		stream_.open(file, fstream::in | fstream::binary);
@@ -33,6 +34,7 @@ FileAccessor::Open(const char *file, OpenMode mode)
 	default:
 		ASSERT( false );
 	}
+	
 	if(stream_.fail()) {
 		stream_.close();
 		_THROW_ ErrorHandling::ExceptionBase( 
@@ -42,6 +44,7 @@ FileAccessor::Open(const char *file, OpenMode mode)
 
 /////////////////////////////////////////////////////////////////////////////
 FileAccessor::~FileAccessor() {
+	stream_.flush();
 	stream_.close();
 }
 /////////////////////////////////////////////////////////////////////////////
@@ -49,6 +52,7 @@ void
 FileAccessor::PutData(const void *data, size_t length) 
 {
 	stream_.write((const char*)data, length);
+	//stream_.flush();
 }
 /////////////////////////////////////////////////////////////////////////////
 size_t 

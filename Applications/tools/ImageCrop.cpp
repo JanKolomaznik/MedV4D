@@ -1,6 +1,6 @@
 #include "MedV4D/Common/Common.h"
 #include "Filtering.h"
-#include "Imaging/Image.h"
+#include "MedV4D/Imaging/Image.h"
 #undef min
 #undef max
 #include <tclap/CmdLine.h>

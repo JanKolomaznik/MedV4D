@@ -65,16 +65,20 @@ ImageFactory::SerializeImage ( M4D::IO::OutStream &stream, const Image< ElementT
                 D_PRINT ( "Buffered saving of image" );
                 typename Image< ElementType, Dimension >::SizeType size;
                 typename Image< ElementType, Dimension >::PointType strides;
-                ElementType * pointer = image.GetPointer ( size,	strides );
+                ElementType * pointer = image.GetPointer ( size, strides );
                 //TODO check invariants needed for buffered load
-                stream.Put< ElementType > ( pointer, VectorCoordinateProduct ( size ) );
+                stream.Put< ElementType >( pointer, VectorCoordinateProduct ( size ) );
         } else {
                 D_PRINT ( "Slow saving of image" );
                 typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+		D_COMMAND( size_t i = 0; );
                 while ( !iterator.IsEnd() ) {
                         stream.Put<ElementType> ( *iterator );
                         ++iterator;
+			D_COMMAND( ++i; );
                 }
+                D_PRINT( "Element count = " << VectorCoordinateProduct( image.GetSize() ) << " written = " << i );
+                ASSERT( i == VectorCoordinateProduct( image.GetSize() ) );
         }
 
 

@@ -350,7 +350,7 @@ createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion
 
 	thrust::copy( edges.begin(), edges.begin() + edgeCount, host_edges.begin() );
 	thrust::copy( edgeWeights.begin(), edgeWeights.begin() + edgeCount, host_weights.begin() );
-	aGraph = WeightedUndirectedGraph( host_edges.begin(), host_edges.end(), host_weights.begin(), regionCount );
+	aGraph = WeightedUndirectedGraph( host_edges.begin(), host_edges.end(), host_weights.begin(), regionCount+1 );
 	LOG( "createAdjacencyGraph() computations took " << clock.SecondsPassed() );
 }
 

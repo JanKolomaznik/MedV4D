@@ -87,6 +87,7 @@ ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, 
         uint32 eoDataset = 0;
         stream.Get<uint32> ( eoDataset );
         if ( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+		D_PRINT( std::hex << DUMP_END_MAGIC_NUMBER << " expected, but " << eoDataset << " read " );
                 _THROW_ EWrongStreamEnd();
         }
 }
@@ -169,6 +170,7 @@ ImageFactory::DeserializeImageFromStream ( M4D::IO::InStream &stream )
         delete [] elementExtents;
 
         if ( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+		D_PRINT( std::hex << DUMP_END_MAGIC_NUMBER << " expected, but " << eoDataset << " read " );
                 _THROW_ EWrongStreamEnd();
         }
 

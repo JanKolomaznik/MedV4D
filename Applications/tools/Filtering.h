@@ -1,9 +1,9 @@
 #ifndef FILTERING_H
 #define FILTERING_H
 
-#include "Imaging/AFilter.h"
-#include "Imaging/PipelineContainer.h"
-#include "Imaging/filters/ImageConvertor.h"
+#include "MedV4D/Imaging/AFilter.h"
+#include "MedV4D/Imaging/PipelineContainer.h"
+#include "MedV4D/Imaging/filters/ImageConvertor.h"
 
 class FinishHook: public M4D::Imaging::MessageReceiverInterface
 {
