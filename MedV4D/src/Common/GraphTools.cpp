@@ -10,24 +10,88 @@
 #include <boost/graph/stoer_wagner_min_cut.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/typeof/typeof.hpp>
-
-
-void
-computeMinCut( WeightedUndirectedGraph & aGraph )
-{
-	M4D::Common::Clock clock;
-	//BOOST_AUTO( parities, boost::make_one_bit_color_map(num_vertices(aGraph), get(boost::vertex_index, aGraph)) );
-	
-	float w = boost::stoer_wagner_min_cut(aGraph, get(boost::edge_weight, aGraph)/*, boost::parity_map(parities)*/);
-	LOG( "min cut weight = " << w );
-	D_PRINT( "Time after computeMinCut " << clock.SecondsPassed() );
-}
+#include <boost/graph/bipartite.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <vector>
 
 struct edge_t
 {
   unsigned long first;
   unsigned long second;
 };
+
+void
+computeMinCut( WeightedUndirectedGraph & aGraph )
+{
+	M4D::Common::Clock clock;
+	
+	//size_t comp = boost::is_bipartite( aGraph );
+	std::vector<int> component(boost::num_vertices(aGraph));
+	size_t comp = boost::connected_components(aGraph, &component[0]);
+	
+	LOG( "Number of components = " << comp );
+	
+	BOOST_AUTO( parities, boost::make_one_bit_color_map(num_vertices(aGraph), get(boost::vertex_index, aGraph)) );
+	
+	
+	
+	/*edge_t edges[] = {{3, 4}, {3, 6}, {3, 5}, {0, 4}, {0, 1}, {0, 6}, {0, 7},
+	{0, 5}, {0, 2}, {4, 1}, {1, 6}, {1, 5}, {6, 7}, {7, 5}, {5, 2}, {3, 4}};
+
+	// for each of the 16 edges, define the associated edge weight. ws[i] is the weight for the edge
+	// that is described by edges[i].
+	float ws[] = {0, 3, 1, 3, 1, 2, 6, 1, 8, 1, 1, 80, 2, 1, 1, 4};
+	
+	aGraph = WeightedUndirectedGraph(edges, edges + 16, ws, 8, 16);*/
+	
+	
+	float w = boost::stoer_wagner_min_cut(aGraph, get(boost::edge_weight, aGraph), boost::parity_map(parities));
+	LOG( "min cut weight = " << w );
+	
+	
+	std::pair<WeightedUndirectedGraph::edge_iterator, WeightedUndirectedGraph::edge_iterator> es = boost::edges(aGraph);
+	
+	WeightedUndirectedGraphTraits::edge_iterator ei, ei_end;
+	for (boost::tie(ei, ei_end) = boost::edges(aGraph); ei != ei_end; ++ei) {
+		WeightedUndirectedGraphTraits::edge_descriptor e = *ei;
+		WeightedUndirectedGraphTraits::vertex_descriptor u = boost::source(e, aGraph);
+		WeightedUndirectedGraphTraits::vertex_descriptor v = boost::target(e, aGraph);
+		if( 
+			( get(parities, u ) || get(parities, v ) )
+			&& !( get(parities, u ) && get(parities, v ) ) 
+			)
+		{
+			std::cout << "aaa " << u+1 << " - " << v+1 << " : " << get(boost::edge_weight, aGraph)[ e ] << std::endl;
+		}
+	}
+	
+	/*for( WeightedUndirectedGraph::edge_iterator it = es.first; it != es.second; ++it ) {
+		if( 
+			( get(parities, it->first ) || get(parities, it->second ) )
+			&& !( get(parities, it->first ) && get(parities, it->second ) ) 
+			)
+		{
+			std::cout << "aaa " << it->first << " - " << it->second << std::endl;
+		}
+	}*/
+	std::cout << "One set of vertices consists of:" << std::endl;
+	size_t i;
+	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
+	if (get(parities, i))
+	std::cout << i+1 << " - " << boost::out_degree( i, aGraph ) << std::endl;
+	}
+	std::cout << std::endl;
+
+	std::cout << "The other set of vertices consists of:" << std::endl;
+	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
+	if (!get(parities, i))
+	std::cout << i+1 << " - " << boost::out_degree( i, aGraph ) << std::endl;
+	}
+	std::cout << std::endl;
+	D_PRINT( "Time after computeMinCut " << clock.SecondsPassed() );
+}
+
+
 /*
 // A graphic of the min-cut is available at <http://www.boost.org/doc/libs/release/libs/graph/doc/stoer_wagner_imgs/stoer_wagner.cpp.gif>
 int test()

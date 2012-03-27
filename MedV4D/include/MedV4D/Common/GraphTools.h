@@ -12,6 +12,8 @@ typedef boost::adjacency_list<
 		boost::property<boost::edge_weight_t, float> 
 		> WeightedUndirectedGraph;
 
+typedef boost::graph_traits < WeightedUndirectedGraph > WeightedUndirectedGraphTraits;
+		
 void
 computeMinCut( WeightedUndirectedGraph & aGraph );
 

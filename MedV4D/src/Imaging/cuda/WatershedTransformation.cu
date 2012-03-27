@@ -21,6 +21,7 @@ isNonzeroKernel( Buffer3D< uint32 > buffer, int3 blockResolution )
 	}
 }
 
+
 uint64
 isNonzero( Buffer3D< uint32 > buffer )
 {
