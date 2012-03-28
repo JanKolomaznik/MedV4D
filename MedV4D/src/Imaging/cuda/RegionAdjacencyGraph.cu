@@ -152,27 +152,27 @@ struct WeightTransformation
 	}
 };
 
-#define ID 432
+#define ID 8065
 
 inline __device__ bool
-hashEdge( EdgeRecord *aTable, float *aWeights, size_t aSize, const EdgeRecord &aEdge, float aWeight )
+hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdge, float aWeight )
 {
-	size_t idx = (0x2C87*(aEdge.edgeCombIdx % 0xC2FF97889)+0x159732CF) % aSize;
+	int idx = (0x87L*(aEdge.edgeCombIdx % 0xF97889L)+0x1732CFL) % aSize;
 	//size_t counter = 0;
 	//if( aEdge.edgeCombIdx == 0) 
 		//atomicAdd( &edgeInsertions, 1 );
-	
+	int init = idx;
 	bool inserted = false;
 	while ( !inserted ) {
 		if ( aTable[idx].edgeCombIdx == 0 ) {
 			if ( atomicCAS( &(aTable[idx].edgeCombIdx), uint64(0), aEdge.edgeCombIdx ) == 0 ) {
 				atomicAdd( aWeights + idx, aWeight );
 				inserted = true;
-				/*if( aEdge.first == ID || aEdge.second == ID ) {
+				if( aEdge.first == ID || aEdge.second == ID ) {
 					atomicAdd( &edgeInsertions, 1 );
-					printf( "----- %i %i **** %i added\n", aEdge.first, aEdge.second, idx );
-				};*/
-				return true;
+					printf( "----- %i %i **** %x %i-%i added\n", aEdge.first, aEdge.second, aEdge.edgeCombIdx, init, idx );
+				};
+				return idx;
 			}
 		} else {
 			if ( aTable[idx].edgeCombIdx == aEdge.edgeCombIdx ) {
@@ -184,11 +184,12 @@ hashEdge( EdgeRecord *aTable, float *aWeights, size_t aSize, const EdgeRecord &a
 					atomicAdd( &edgeInsertions, 1 );
 					printf( "----- %i %i **** %i actualized\n", aEdge.first, aEdge.second, idx );
 				};*/
-				return false;
+				return -1;
 			}
 		}
 		idx = (idx+1) % aSize;
 	}
+	return false;
 }
 
 
@@ -203,7 +204,7 @@ public:
 	EdgeHashTable( size_t aLength, EdgeRecord *aData, float *aWeights ): Buffer1D<EdgeRecord>( aLength, aData ), mWeights( aLength, aWeights )
 	{ }
 
-	__device__ bool 
+	__device__ int 
 	insertEdge( const EdgeRecord & aEdge, float aWeight )
 	{
 		return hashEdge( mData, mWeights.mData, mLength, aEdge, aWeight );
@@ -233,8 +234,11 @@ __global__ void
 preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TEType > aGradientBuffer, EdgeHashTable aEdgeHashMap, int3 blockResolution )
 {
 	const int cBlockDim = 8;
-	const size_t EDGE_HASH_TABLE_SIZE = 3*cBlockDim*cBlockDim*cBlockDim;
-	size_t threadCount = blockDim.x * blockDim.y * blockDim.z;
+	const int EDGE_HASH_TABLE_SIZE = 3*cBlockDim*cBlockDim*cBlockDim;
+	int threadCount = blockDim.x * blockDim.y * blockDim.z;
+	
+	assert( EDGE_HASH_TABLE_SIZE == 3*threadCount );
+
 	__shared__ uint32 inData[10*10*10];
 	__shared__ EdgeRecord edgeHashTable[ EDGE_HASH_TABLE_SIZE ];
 	__shared__ float edgeWeightTable[ EDGE_HASH_TABLE_SIZE ];
@@ -256,7 +260,8 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 	
 	FillSharedMemory3D_8x8x8< uint32, cRadius, syStride, szStride >( inData, sidx, aRegionBuffer.mData, aRegionBuffer.mStrides, size, blockOrigin, coordinates, idx );
-	
+	__shared__ int tmp;
+	tmp = -1;
 	__syncthreads();
 	if ( !projected ) {
 
@@ -273,9 +278,14 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 			if ( current != second ) {
 				float weight = max( val, aGradientBuffer.mData[ idx2 + ((int*)(&aGradientBuffer.mStrides))[i] ] );
 				//assert( second );
-				//if( second == 554 ) atomicAdd( &edgeInsertions, 1 );
+				
 				if( second ) {
-					hashEdge( edgeHashTable, edgeWeightTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second ), weight );
+					int idx = hashEdge( edgeHashTable, edgeWeightTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second ), weight );
+					if( second == ID && idx != -1 ) {
+						//atomicCAS(&tmp, -1, idx );
+						tmp = idx;
+						printf("XXX\n");
+					}
 					/*if( hashEdge( edgeHashTable, edgeWeightTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second ), weight ) && second == 554 ) {
 						atomicAdd( &edgeInsertions, 1 );
 						printf( "-----first %i", current );
@@ -285,8 +295,9 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 		}
 	}
 	__syncthreads();
+	int hashingIndex = (threadIdx.z * blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) +  threadIdx.x;
 	/*if( threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0 ) {
-		for( size_t i = 0; i < EDGE_HASH_TABLE_SIZE; ++i ) {
+		for( size_t i = 0; i < 3*threadCount; ++i ) {
 			int res = aEdgeHashMap.insertEdge( edgeHashTable[hashingIndex + i], edgeWeightTable[hashingIndex + i]  );
 			if( (edgeHashTable[i].first == ID || edgeHashTable[i].second == ID ) ) {
 				atomicAdd( &edgeInsertions, 1 );
@@ -294,18 +305,30 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 			};
 		}
 	}*/
-	int hashingIndex = (threadIdx.z * blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) +  threadIdx.x;
-	/*if( blockIdx.x == 0 && blockIdx.y == 0 && blockIdx.z == 0 ) {
-		printf( "Thread %i %i %i - %i\n", threadIdx.x, threadIdx.y, threadIdx.z, hashingIndex );
+	/*int tmp = 3*threadCount / 8;
+	if( threadIdx.y == 0 && threadIdx.z == 0 ) {
+		for( size_t i = threadIdx.x*tmp; i < (threadIdx.x+1)*tmp; ++i ) {
+			int res = aEdgeHashMap.insertEdge( edgeHashTable[hashingIndex + i], edgeWeightTable[hashingIndex + i]  );
+			if( (edgeHashTable[i].first == ID || edgeHashTable[i].second == ID ) ) {
+				atomicAdd( &edgeInsertions, 1 );
+				printf( "****** %i %i %i\n", edgeHashTable[hashingIndex + i].first, edgeHashTable[hashingIndex + i].second, res );
+			};
+		}
 	}*/
-	for( size_t i = 0; i < 3; ++i ) {
+	
+	/*if( blockIdx.x == 0 && blockIdx.y == 0 && blockIdx.z == 0 ) {
+		printf( "Thread %i %i %i - %i / %i\n", threadIdx.x, threadIdx.y, threadIdx.z, hashingIndex, threadCount );
+	}*/
+	for( int i = 0; i < 3; ++i ) {
+		if( tmp == hashingIndex + i*threadCount ) {
+			printf( "position of %i idx = %i processed\n", ID, tmp );
+		}
 		if( edgeHashTable[hashingIndex + i*threadCount].edgeCombIdx != 0 ) {
 			int res = aEdgeHashMap.insertEdge( edgeHashTable[hashingIndex + i*threadCount], edgeWeightTable[hashingIndex + i*threadCount]  );
-			/*if( (edgeHashTable[hashingIndex + i*threadCount].first == ID || edgeHashTable[hashingIndex + i*threadCount].second == ID ) ) {
+			if( (edgeHashTable[hashingIndex + i*threadCount].first == ID || edgeHashTable[hashingIndex + i*threadCount].second == ID ) ) {
 				atomicAdd( &edgeInsertions, 1 );
 				printf( "****** %i %i %i\n", edgeHashTable[hashingIndex + i*threadCount].first, edgeHashTable[hashingIndex + i*threadCount].second, res );
-			};*/
-			
+			};
 		}
 	}
 	
@@ -344,24 +367,24 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 	D_PRINT( "edges located: " << aEdgeCount );
 	//thrust::sort( aEdges.begin(), aEdges.end(), CompareEdge() );
 
-	LOG( "search for XXX" );
+	/*LOG( "search for XXX" );
 	for( int i = 0; i < aEdges.size(); ++i ) {
 		if ( ((EdgeRecord)aEdges[i]).first == ID || ((EdgeRecord)aEdges[i]).second == ID ) {
 			LOG( "-*-*-*-*- " << ((EdgeRecord)aEdges[i]).first << " - " << ((EdgeRecord)aEdges[i]).second );
 		}
-	}
+	}*/
 	thrust::sort( 
 			thrust::make_zip_iterator( thrust::make_tuple( aEdges.begin(), aEdgeWeights.begin() ) ), 
 			thrust::make_zip_iterator( thrust::make_tuple( aEdges.end(), aEdgeWeights.end() ) ), 
 			CompareEdge() 
 			);
 
-	LOG( "search for XXX2" );
+	/*LOG( "search for XXX2" );
 	for( int i = 0; i < aEdges.size(); ++i ) {
 		if ( ((EdgeRecord)aEdges[i]).first == ID || ((EdgeRecord)aEdges[i]).second == ID ) {
 			LOG( "-*-*-*-*- " << ((EdgeRecord)aEdges[i]).first << " - " << ((EdgeRecord)aEdges[i]).second );
 		}
-	}
+	}*/
 
 	D_COMMAND( EdgeRecord rec = aEdges[aEdgeCount-1]; ); ASSERT( rec.edgeCombIdx != 0 );
 	D_COMMAND( rec = aEdges[aEdgeCount]; ); ASSERT( rec.edgeCombIdx == 0 );
@@ -466,12 +489,12 @@ createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion
 	thrust::copy( edgeWeights.begin(), edgeWeights.begin() + edgeCount, host_weights.begin() );
 	aGraph = WeightedUndirectedGraph( host_edges.begin(), host_edges.end(), host_weights.begin(), regionCount );
 
-	LOG( "search for ssss" );
+	/*LOG( "search for ssss" );
 	for( int i = 0; i < edgeCount; ++i ) {
 		if ( host_edges[i].first == ID - 1 || host_edges[i].second == ID - 1 ) {
 			LOG( "-*-*-*-*- " << host_edges[i].first << " - " << host_edges[i].second );
 		}
-	}
+	}*/
 
 	LOG( "createAdjacencyGraph() computations took " << clock.SecondsPassed() );
 }

@@ -44,6 +44,14 @@ computeMinCut( WeightedUndirectedGraph & aGraph )
 	
 	aGraph = WeightedUndirectedGraph(edges, edges + 16, ws, 8, 16);*/
 	
+	size_t i;
+	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
+		if (boost::out_degree( i, aGraph ) == 0) {
+			std::cout << i+1 << " - degree " << boost::out_degree( i, aGraph ) << std::endl;
+		}
+	}
+	
+	
 	
 	float w = boost::stoer_wagner_min_cut(aGraph, get(boost::edge_weight, aGraph), boost::parity_map(parities));
 	LOG( "min cut weight = " << w );
@@ -65,17 +73,8 @@ computeMinCut( WeightedUndirectedGraph & aGraph )
 		}
 	}
 	
-	/*for( WeightedUndirectedGraph::edge_iterator it = es.first; it != es.second; ++it ) {
-		if( 
-			( get(parities, it->first ) || get(parities, it->second ) )
-			&& !( get(parities, it->first ) && get(parities, it->second ) ) 
-			)
-		{
-			std::cout << "aaa " << it->first << " - " << it->second << std::endl;
-		}
-	}*/
 	std::cout << "One set of vertices consists of:" << std::endl;
-	size_t i;
+	
 	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
 	if (get(parities, i))
 	std::cout << i+1 << " - " << boost::out_degree( i, aGraph ) << std::endl;
