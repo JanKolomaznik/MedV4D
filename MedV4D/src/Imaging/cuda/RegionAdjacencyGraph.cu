@@ -161,17 +161,17 @@ hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdg
 	//size_t counter = 0;
 	//if( aEdge.edgeCombIdx == 0) 
 		//atomicAdd( &edgeInsertions, 1 );
-	int init = idx;
-	bool inserted = false;
-	while ( !inserted ) {
+	//int init = idx;
+	//bool inserted = false;
+	while ( true ) {
 		if ( aTable[idx].edgeCombIdx == 0 ) {
 			if ( atomicCAS( &(aTable[idx].edgeCombIdx), uint64(0), aEdge.edgeCombIdx ) == 0 ) {
 				atomicAdd( aWeights + idx, aWeight );
-				inserted = true;
-				if( aEdge.first == ID || aEdge.second == ID ) {
+				//inserted = true;
+				/*if( aEdge.first == ID || aEdge.second == ID ) {
 					atomicAdd( &edgeInsertions, 1 );
 					printf( "----- %i %i **** %x %i-%i added\n", aEdge.first, aEdge.second, aEdge.edgeCombIdx, init, idx );
-				};
+				};*/
 				return idx;
 			}
 		} else {
@@ -179,7 +179,7 @@ hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdg
 				//atomicAdd( &(aTable[idx].count), aEdge.count );
 				//atomicAdd( &(aTable[idx].weight), aEdge.weight );
 				atomicAdd( aWeights + idx, aWeight );
-				inserted = true;
+				//inserted = true;
 				/*if( aEdge.first == ID || aEdge.second == ID ) {
 					atomicAdd( &edgeInsertions, 1 );
 					printf( "----- %i %i **** %i actualized\n", aEdge.first, aEdge.second, idx );
@@ -237,7 +237,7 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 	const int EDGE_HASH_TABLE_SIZE = 3*cBlockDim*cBlockDim*cBlockDim;
 	int threadCount = blockDim.x * blockDim.y * blockDim.z;
 	
-	assert( EDGE_HASH_TABLE_SIZE == 3*threadCount );
+	//assert( EDGE_HASH_TABLE_SIZE == 3*threadCount );
 
 	__shared__ uint32 inData[10*10*10];
 	__shared__ EdgeRecord edgeHashTable[ EDGE_HASH_TABLE_SIZE ];
@@ -260,10 +260,10 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 	
 	FillSharedMemory3D_8x8x8< uint32, cRadius, syStride, szStride >( inData, sidx, aRegionBuffer.mData, aRegionBuffer.mStrides, size, blockOrigin, coordinates, idx );
-	__shared__ int tmp;
-	tmp = -1;
+	//__shared__ int tmp;
+	//tmp = -1;
 	__syncthreads();
-	if ( !projected ) {
+	if ( true || !projected ) {
 
 		//uint32 current = aRegionBuffer.mData[idx];
 		uint32 current = inData[sidx];
@@ -281,11 +281,11 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 				
 				if( second ) {
 					int idx = hashEdge( edgeHashTable, edgeWeightTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second ), weight );
-					if( second == ID && idx != -1 ) {
+					/*if( second == ID && atomicCAS(&tmp, -1, idx ) == -1 ) {
 						//atomicCAS(&tmp, -1, idx );
-						tmp = idx;
-						printf("XXX\n");
-					}
+						//tmp = idx;
+						printf("XXX %i\n", idx);
+					}*/
 					/*if( hashEdge( edgeHashTable, edgeWeightTable, EDGE_HASH_TABLE_SIZE, EdgeRecord( current, second ), weight ) && second == 554 ) {
 						atomicAdd( &edgeInsertions, 1 );
 						printf( "-----first %i", current );
@@ -320,15 +320,15 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 		printf( "Thread %i %i %i - %i / %i\n", threadIdx.x, threadIdx.y, threadIdx.z, hashingIndex, threadCount );
 	}*/
 	for( int i = 0; i < 3; ++i ) {
-		if( tmp == hashingIndex + i*threadCount ) {
+		/*if( tmp == hashingIndex + i*threadCount ) {
 			printf( "position of %i idx = %i processed\n", ID, tmp );
-		}
+		}*/
 		if( edgeHashTable[hashingIndex + i*threadCount].edgeCombIdx != 0 ) {
 			int res = aEdgeHashMap.insertEdge( edgeHashTable[hashingIndex + i*threadCount], edgeWeightTable[hashingIndex + i*threadCount]  );
-			if( (edgeHashTable[hashingIndex + i*threadCount].first == ID || edgeHashTable[hashingIndex + i*threadCount].second == ID ) ) {
+			/*if( (edgeHashTable[hashingIndex + i*threadCount].first == ID || edgeHashTable[hashingIndex + i*threadCount].second == ID ) ) {
 				atomicAdd( &edgeInsertions, 1 );
 				printf( "****** %i %i %i\n", edgeHashTable[hashingIndex + i*threadCount].first, edgeHashTable[hashingIndex + i*threadCount].second, res );
-			};
+			};*/
 		}
 	}
 	
@@ -346,8 +346,8 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 	int3 blockResolution3D = GetBlockResolution( aRegionBuffer.mSize, blockSize3D, make_int3(0,0,0) );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
-	int edgeInsertions;
-	cudaMemcpyToSymbol( "edgeInsertions", &(edgeInsertions = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
+	//int edgeInsertions;
+	//cudaMemcpyToSymbol( "edgeInsertions", &(edgeInsertions = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
 	M4D::Common::Clock clock;
 	CheckCudaErrorState( "Before preallocationOfAdjacencyGraph()" );
@@ -355,8 +355,8 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 		<<< gridSize3D, blockSize3D >>>( aRegionBuffer, aGradientBuffer, edgeHashMap, blockResolution3D );
 	cudaThreadSynchronize();
 	
-	cudaMemcpyFromSymbol( &edgeInsertions, "edgeInsertions", sizeof(int), 0, cudaMemcpyDeviceToHost );
-	D_PRINT( "edge insertions " << edgeInsertions );
+	//cudaMemcpyFromSymbol( &edgeInsertions, "edgeInsertions", sizeof(int), 0, cudaMemcpyDeviceToHost );
+	//D_PRINT( "edge insertions " << edgeInsertions );
 
 	CheckCudaErrorState( "After preallocationOfAdjacencyGraph()" );
 	//size_t testedgeCount = thrust::count_if( aEdges.begin(), aEdges.end(), IsValidEdge() );

@@ -13,6 +13,15 @@
 #define MAX_SHARED_MEMORY 1024
 
 
+__device__ inline float 
+atomicFloatCAS(float *address, float old, float val)
+{
+	int i_val = __float_as_int(val);
+	int tmp0 = __float_as_int(old);
+
+	return __int_as_float( atomicCAS((int *)address, tmp0, i_val) );
+}
+
 inline std::string
 cudaMemoryInfoText()
 {
