@@ -59,7 +59,7 @@ tryPullFromVertex( VertexList aVertices, int aVertex, float aResidualCapacity )
 }
 
 __device__ void
-pushToVertes( VertexList aVertices, int aVertex, float aPushedFlow )
+pushToVertex( VertexList aVertices, int aVertex, float aPushedFlow )
 {
 	atomicAdd( &(aVertices.getExcess( aVertex )), aPushedFlow );
 }
@@ -79,7 +79,7 @@ pushKernel( EdgeList aEdges, VertexList aVertices )
 		if ( label1 > label2 && residualCapacity > 0 ) {
 			float pushedFlow = tryPullFromVertex( aVertices, v1, residualCapacity );
 			if( pushedFlow > 0.0f ) {
-				pushToVertes( aVertices, v2, pushedFlow );
+				pushToVertex( aVertices, v2, pushedFlow );
 				updateResiduals( aEdges, edgeIdx, pushedFlow );
 				pushSuccessful = 1;
 			}
