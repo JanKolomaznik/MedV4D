@@ -11,6 +11,7 @@
 
 __device__ int pushSuccessful;
 __device__ int relabelSuccessful;
+__device__ int bfsFrontNotEmpty;
 
 
 
@@ -152,6 +153,85 @@ relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels 
 	}
 }
 //*********************************************************************************************************
+
+__global__ void
+bfsKernel( EdgeList aEdges, VertexList aVertices, bool *aFrontier, bool *aFrontierNew, bool *aVisited, int aStep )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int edgeIdx = blockId * blockDim.x + threadIdx.x;
+
+	if ( edgeIdx < aEdges.size() ) {
+		EdgeRecord rec = aEdges.getEdge( edgeIdx );
+		if ( aFrontier[ rec.first ] ) {
+			if ( !aVisited[ rec.second ] ) {
+				aFrontierNew[ rec.second ] = true;
+				bfsFrontNotEmpty = 1;
+			}
+		}
+	}
+}
+
+__global__ void
+bfsMarkVisitedKernel( VertexList aVertices, bool *aFrontier, bool *aVisited, int aStep )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int vertexIdx = blockId * blockDim.x + threadIdx.x;
+
+	if ( vertexIdx < aVertices.size() && vertexIdx > 0 ) {
+		if ( aFrontier[vertexIdx] ) {
+			aVisited[vertexIdx] = true;
+		}
+	}
+}
+
+void
+bfsSearch( EdgeList aEdges, VertexList aVertices, int aStart )
+{
+	dim3 blockSize1D( 512 );
+	dim3 vertexGridSize1D( (aVertices.size() + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+	dim3 edgeGridSize1D( (aEdges.size() + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+
+	thrust::device_vector< bool > frontier( aVertices.size() );
+	thrust::device_vector< bool > frontier2( aVertices.size() );
+	thrust::device_vector< bool > visited( aVertices.size() );
+
+	int bfsFrontNotEmpty;
+	
+	frontier[ aStart ] = true;
+	visited[ aStart ] = true;
+
+	int bfsStepCount = 0;
+	do {
+		++bfsStepCount;
+		cudaMemcpyToSymbol( "bfsFrontNotEmpty", &(bfsFrontNotEmpty = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
+		
+		thrust::fill( frontier2.begin(), frontier2.end(), false );
+
+		bfsKernel<<< edgeGridSize1D, blockSize1D >>>( 
+						aEdges, 
+						aVertices, 
+						thrust::raw_pointer_cast(&frontier[0]), 
+						thrust::raw_pointer_cast(&frontier2[0]),
+						thrust::raw_pointer_cast(&visited[0]),
+						bfsStepCount
+						);
+		cudaThreadSynchronize();
+		
+		bfsMarkVisitedKernel<<< vertexGridSize1D, blockSize1D >>>( 
+						aVertices, 
+						thrust::raw_pointer_cast(&frontier2[0]), 
+						thrust::raw_pointer_cast(&visited[0]),
+						bfsStepCount
+						);
+
+		cudaThreadSynchronize();
+		
+		frontier.swap( frontier2 );
+		cudaMemcpyFromSymbol( &bfsFrontNotEmpty, "bfsFrontNotEmpty", sizeof(int), 0, cudaMemcpyDeviceToHost );
+		CheckCudaErrorState( TO_STRING( "After BFS iteration n. " << bfsStepCount ) );
+	} while ( bfsFrontNotEmpty > 0 );
+}
+
 void
 initLabels( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
 {
