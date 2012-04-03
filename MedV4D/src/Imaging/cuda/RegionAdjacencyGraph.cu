@@ -4,6 +4,7 @@
 #include "MedV4D/Imaging/ImageRegion.h"
 
 #include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
+#include "MedV4D/Imaging/cuda/GraphDefinitions.h"
 
 #include <thrust/device_vector.h>
 #include <thrust/sort.h>
@@ -60,31 +61,7 @@ computeRegionVolumes( Buffer3D< uint32 > buffer, size_t regionCount )
 }
 
 
-struct VertexRecord
-{
-	size_t edgeStart;
-};
 
-struct EdgeRecord
-{
-	__host__ __device__  
-	EdgeRecord( uint32 aFirst, uint32 aSecond )
-	{
-		first = min( aFirst, aSecond );
-		second = max( aFirst, aSecond );
-	}
-	__host__ __device__  
-	EdgeRecord(): edgeCombIdx(0)
-	{ }
-
-	union {
-		uint64 edgeCombIdx;
-		struct {
-			uint32 second;
-			uint32 first;
-		};
-	};
-};
 
 struct GetSymmetricEdge : public thrust::unary_function< EdgeRecord, EdgeRecord >
 {
