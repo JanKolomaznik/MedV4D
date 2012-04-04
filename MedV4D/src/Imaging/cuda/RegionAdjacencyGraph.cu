@@ -144,28 +144,32 @@ hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdg
 	//int init = idx;
 	//bool inserted = false;
 	while ( true ) {
+		/*if( aEdge.first == 1 && aEdge.second == 8 ) {
+					//atomicAdd( &edgeInsertions, 1 );
+					printf( "going through %i %i **** %i/%i added\n", aTable[idx].first, aTable[idx].second, idx, aSize );
+		};*/
 		if ( aTable[idx].edgeCombIdx == 0 ) {
-			if ( atomicCAS( &(aTable[idx].edgeCombIdx), uint64(0), aEdge.edgeCombIdx ) == 0 ) {
+			uint64 old = atomicCAS( &(aTable[idx].edgeCombIdx), uint64(0), aEdge.edgeCombIdx );
+			if ( old == 0 || old == aEdge.edgeCombIdx ) {
 				atomicAdd( aWeights + idx, aWeight );
 				//inserted = true;
-				/*if( aEdge.first == ID || aEdge.second == ID ) {
-					atomicAdd( &edgeInsertions, 1 );
-					printf( "----- %i %i **** %x %i-%i added\n", aEdge.first, aEdge.second, aEdge.edgeCombIdx, init, idx );
-				};*/
+				if( aEdge.first == 1 && aEdge.second == 8 ) {
+					//atomicAdd( &edgeInsertions, 1 );
+					printf( "----- %i %i **** %i/%i added\n", aEdge.first, aEdge.second, idx, aSize );
+				};
 				return idx;
 			}
-		} else {
-			if ( aTable[idx].edgeCombIdx == aEdge.edgeCombIdx ) {
-				//atomicAdd( &(aTable[idx].count), aEdge.count );
-				//atomicAdd( &(aTable[idx].weight), aEdge.weight );
-				atomicAdd( aWeights + idx, aWeight );
-				//inserted = true;
-				/*if( aEdge.first == ID || aEdge.second == ID ) {
-					atomicAdd( &edgeInsertions, 1 );
-					printf( "----- %i %i **** %i actualized\n", aEdge.first, aEdge.second, idx );
-				};*/
-				return -1;
-			}
+		}
+		if ( aTable[idx].edgeCombIdx == aEdge.edgeCombIdx ) {
+			//atomicAdd( &(aTable[idx].count), aEdge.count );
+			//atomicAdd( &(aTable[idx].weight), aEdge.weight );
+			atomicAdd( aWeights + idx, aWeight );
+			//inserted = true;
+			/*if( aEdge.first == ID || aEdge.second == ID ) {
+				atomicAdd( &edgeInsertions, 1 );
+				printf( "----- %i %i **** %i actualized\n", aEdge.first, aEdge.second, idx );
+			};*/
+			return -1;
 		}
 		idx = (idx+1) % aSize;
 	}
@@ -353,6 +357,8 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 			LOG( "-*-*-*-*- " << ((EdgeRecord)aEdges[i]).first << " - " << ((EdgeRecord)aEdges[i]).second );
 		}
 	}*/
+	//thrust::copy( aEdges.begin(), aEdges.end(), std::ostream_iterator<EdgeRecord>(std::cout, "\n") );
+
 	thrust::sort( 
 			thrust::make_zip_iterator( thrust::make_tuple( aEdges.begin(), aEdgeWeights.begin() ) ), 
 			thrust::make_zip_iterator( thrust::make_tuple( aEdges.end(), aEdgeWeights.end() ) ), 
@@ -361,7 +367,7 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 
 	thrust::transform( aEdgeWeights.begin(), aEdgeWeights.begin() + aEdgeCount, aEdgeWeights.begin(), WeightTransformation() );
 
-	//thrust::copy( aEdgeWeights.begin(), aEdgeWeights.begin() + aEdgeCount, std::ostream_iterator<float>(std::cout, "\n"));
+	//thrust::copy_if( aEdges.begin(), aEdges.begin() + aEdgeCount, std::ostream_iterator<EdgeRecord>(std::cout, "\n"), IsValidEdge() );
 
 	/*LOG( "search for XXX2" );
 	for( int i = 0; i < aEdges.size(); ++i ) {
