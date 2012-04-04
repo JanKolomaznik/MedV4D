@@ -146,9 +146,26 @@ splitCountTo2dGrid( size_t aCount )
 template< typename TElement >
 struct Buffer1D
 {
-	Buffer1D( size_t aLength, TElement *aData ): mData( aData ), mLength( aLength )
+	Buffer1D( size_t aLength, TElement *aData, bool aDealloc ): mDealloc( false/*aDealloc*/ ), mData( aData ), mLength( aLength )
 	{ /*empty*/ }
 
+	__device__ __host__ int
+	size() const
+	{ return mLength; }
+	
+	__host__
+	~Buffer1D()
+	{
+		if( mDealloc ) {
+			D_PRINT( "1D buffer Deallocation :" << std::hex << size_t( mData ) );
+			cudaFree( mData );
+			mData = NULL;
+			mLength = 0;
+		}
+	}
+
+	bool mDealloc;
+	int mCount;
 	size_t		mLength;
 	TElement	*mData;
 };
@@ -156,10 +173,24 @@ struct Buffer1D
 template< typename TElement >
 struct Buffer3D
 {
-	Buffer3D( uint3 aSize, int3 aStrides, TElement *aData ): mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aSize.x*aSize.y*aSize.z )
+	Buffer3D( uint3 aSize, int3 aStrides, TElement *aData, bool aDealloc ): mDealloc( false/*aDealloc*/ ), mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aSize.x*aSize.y*aSize.z )
 	{ /*empty*/ }
-	Buffer3D( uint3 aSize, int3 aStrides, size_t aLength, TElement *aData ): mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aLength )
+	Buffer3D( uint3 aSize, int3 aStrides, size_t aLength, TElement *aData, bool aDealloc ): mDealloc( false/*aDealloc*/ ), mCount( 1 ), mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aLength )
 	{ /*empty*/ }
+
+	__host__
+	~Buffer3D()
+	{
+		if( mDealloc ) {
+			D_PRINT( "3D buffer Deallocation :" << std::hex << size_t( mData ) );
+			cudaFree( mData );
+			mData = NULL;
+			mLength = 0;
+		}
+	}
+
+	bool mDealloc;
+	int mCount;
 
 	uint3		mSize;
 	int3		mStrides;
@@ -364,14 +395,14 @@ CudaAllocateBuffer( size_t aLength )
 	}
 	D_PRINT( "CUDA allocated \t" << aLength * sizeof(TElement) << " bytes\nelement size\t" 
 			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(pointer) << " to 0x" << size_t(pointer+aLength) << std::dec );
-	return Buffer1D< TElement >( aLength, pointer );
+	return Buffer1D< TElement >( aLength, pointer, true );
 }
 
 template< typename TElement >
 Buffer1D< TElement >
 cudaBufferFromThrustDeviceVector( thrust::device_vector< TElement > & aVector )
 {
-	return Buffer1D< TElement >( aVector.size(), thrust::raw_pointer_cast(&aVector[0]) );
+	return Buffer1D< TElement >( aVector.size(), thrust::raw_pointer_cast(&aVector[0]), false );
 }
 
 template< typename TElement >
@@ -388,7 +419,7 @@ CudaPrepareBuffer( Vector3u aSize )
 	}
 	D_PRINT( "CUDA allocated \t" << length * sizeof(TElement) << " bytes\nelement size\t" 
 			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(dataPointer) << " to 0x" << size_t(dataPointer+length) << std::dec );
-	return Buffer3D< TElement >( size, strides, length, dataPointer );
+	return Buffer3D< TElement >( size, strides, length, dataPointer, true );
 }
 
 template< typename TElement >
@@ -407,15 +438,24 @@ CudaBuffer3DFromImageRegionCopy( const M4D::Imaging::ImageRegion< TElement, 3 > 
 	return buffer;
 }
 
-#define CheckCudaErrorState( aErrorMessage ) \
+#define CUDA_CHECK_RESULT_MSG( aErrorMessage, ... ) \
 {\
-	cudaError_t err = cudaGetLastError();\
-	D_PRINT( aErrorMessage ); \
-	if( cudaSuccess != err) {\
+	cudaError_t err = __VA_ARGS__ ;\
+	if( cudaSuccess != err ) {\
+		D_PRINT( aErrorMessage ); \
 		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( aErrorMessage << " : " << cudaGetErrorString( err) ) );\
 	}\
-}\
+}
 
+#define CUDA_CHECK_RESULT( ... ) \
+	CUDA_CHECK_RESULT_MSG( #__VA_ARGS__, __VA_ARGS__ )
+
+#define CheckCudaErrorState( aErrorMessage ) \
+	CUDA_CHECK_RESULT_MSG( aErrorMessage, cudaGetLastError() );
+
+
+
+	
 
 
 #endif //CUDA_FILTERS_UTILS_CUH

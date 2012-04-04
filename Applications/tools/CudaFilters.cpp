@@ -7,7 +7,7 @@
 #include "MedV4D/Imaging/cuda/EdgeDetection.h"
 #include "MedV4D/Imaging/cuda/LocalMinimaDetection.h"
 #include "MedV4D/Imaging/cuda/WatershedTransformation.h"
-#include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
+#include "MedV4D/Imaging/cuda/GraphOperations.h"
 #include "MedV4D/Imaging/cuda/SimpleFilters.h"
 
 #include <boost/algorithm/string.hpp>
@@ -191,9 +191,10 @@ main( int argc, char **argv )
 			std::cout << "Done\n";
 			
 			std::cout << "Adjacency graph ..."; std::cout.flush();
-			WeightedUndirectedGraph graph;
+			pushRelabelMaxFlow( labelImage->GetRegion(), typedImage->GetRegion() );
+			/*WeightedUndirectedGraph graph;
 			createAdjacencyGraph( graph, labelImage->GetRegion(), typedImage->GetRegion() );
-			computeMinCut( graph );
+			computeMinCut( graph );*/
 			std::cout << "Done\n";
 		);
 	} else {

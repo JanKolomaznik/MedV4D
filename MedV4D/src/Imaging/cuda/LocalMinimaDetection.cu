@@ -33,7 +33,7 @@ UpdateLabelsFromScan( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
 
 //TODO - handle in a better way
 void
-ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut );
+ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > &outBuffer, Buffer1D< uint32 > &lut );
 
 template< typename RegionType >
 void
@@ -85,7 +85,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
 	D_PRINT( "ALLOCATE output buffer" );
 	Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
-	D_PRINT( "ALLOCATE LUT buffer" );
+	//D_PRINT( "ALLOCATE LUT buffer" );
 	//Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength +1 ); //+1 is due to shift of labels after parallelScan
 	thrust::device_vector<uint32> lutVector(outBuffer.mLength +1);
 	Buffer1D< uint32 > lut = cudaBufferFromThrustDeviceVector( lutVector );
@@ -115,8 +115,10 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 
 
 	cudaThreadSynchronize();
-
+	
+	D_PRINT( "CCL call in LocalMinimaRegions3D()" );
 	ConnectedComponentLabeling3DNoAllocation( outBuffer, lut );
+	D_PRINT( "Returned from CCL call in LocalMinimaRegions3D()" );
 
 	CheckCudaErrorState( "Before ConsolidationScanImage()" );
 	ConsolidationScanImage<<< gridSize3D, blockSize3D >>>( inBuffer, outBuffer, lut, blockResolution3D );

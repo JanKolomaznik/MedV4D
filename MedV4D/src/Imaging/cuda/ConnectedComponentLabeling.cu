@@ -100,7 +100,7 @@ ScanImage( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut, int3 blockResoluti
 
 
 void
-ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
+ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > &outBuffer, Buffer1D< uint32 > &lut )
 {
 	LOG_CONT( "CCL started ... " );
 	int lutUpdated = 0;

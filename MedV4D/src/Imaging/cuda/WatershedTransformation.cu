@@ -124,8 +124,6 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 					TypeTraits<SignedElement>::Max
 					);*/
 
-		if( i % 2 == 0 ) {
-			D_PRINT( "WShedEvolution() - 0" );
 			WShedEvolution<<< gridSize3D, blockSize3D >>>( 
 					inputBuffer,
 					labeledRegionsBuffer,	
@@ -135,19 +133,9 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 					blockResolution3D, 
 					TypeTraits<SignedElement>::Max
 					);
-		} else {
-			D_PRINT( "WShedEvolution() - 1" );
-			WShedEvolution<<< gridSize3D, blockSize3D >>>( 
-					inputBuffer,
-					labeledRegionsBuffer2,	
-					tmpBuffer2,
-					labeledRegionsBuffer,	
-					tmpBuffer,
-					blockResolution3D, 
-					TypeTraits<SignedElement>::Max
-					);
-		}
-		
+		using std::swap;
+		swap( labeledRegionsBuffer, labeledRegionsBuffer2 );
+		swap( tmpBuffer, tmpBuffer2 );
 		
 		cudaThreadSynchronize();
 		cudaMemcpyFromSymbol( &wshedUpdated, "wshedUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
@@ -159,12 +147,8 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 
 	LOG( "number of zero voxels = " << isNonzero( labeledRegionsBuffer ) );
 	
-	//cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
-	if( i % 2 == 0 ) {
-		cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
-	} else {
-		cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer2.mData, labeledRegionsBuffer2.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
-	}
+	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+	
 	cudaFree( labeledRegionsBuffer.mData );
 	cudaFree( inputBuffer.mData );
 

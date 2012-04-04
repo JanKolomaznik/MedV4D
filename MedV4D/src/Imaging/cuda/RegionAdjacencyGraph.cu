@@ -3,8 +3,11 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Imaging/ImageRegion.h"
 
-#include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
+//#include "MedV4D/Imaging/cuda/AdjacencyGraph.h"
+#include "MedV4D/Common/GraphTools.h"
 #include "MedV4D/Imaging/cuda/GraphDefinitions.h"
+
+#include "MedV4D/Imaging/cuda/detail/RegionAdjacencyGraph.cuh"
 
 #include <thrust/device_vector.h>
 #include <thrust/sort.h>
@@ -42,7 +45,7 @@ computeRegionVolumes( Buffer3D< uint32 > buffer, size_t regionCount )
 	CheckCudaErrorState( "Before computeRegionVolumes()" );
 	
 	thrust::device_vector< uint32 > volumes( regionCount );
-	Buffer1D< uint32 > volBuf( volumes.size(), thrust::raw_pointer_cast(&volumes[0]) );
+	Buffer1D< uint32 > volBuf( volumes.size(), thrust::raw_pointer_cast(&volumes[0]), false );
 
 	dim3 blockSize( 8, 8, 8 );
 	int3 blockResolution = GetBlockResolution( buffer.mSize, blockSize, make_int3(0,0,0) );
@@ -174,11 +177,11 @@ class EdgeHashTable: public Buffer1D<EdgeRecord>
 {
 public:
 	EdgeHashTable( thrust::device_vector< EdgeRecord > &aVect, thrust::device_vector< float > &aWeights )
-		: Buffer1D<EdgeRecord>( aVect.size(), thrust::raw_pointer_cast(&aVect[0]) ), 
-		mWeights( aWeights.size(), thrust::raw_pointer_cast(&aWeights[0]) )
+		: Buffer1D<EdgeRecord>( aVect.size(), thrust::raw_pointer_cast(&aVect[0]), false ), 
+		mWeights( aWeights.size(), thrust::raw_pointer_cast(&aWeights[0]), false )
 	{ }
 
-	EdgeHashTable( size_t aLength, EdgeRecord *aData, float *aWeights ): Buffer1D<EdgeRecord>( aLength, aData ), mWeights( aLength, aWeights )
+	EdgeHashTable( size_t aLength, EdgeRecord *aData, float *aWeights ): Buffer1D<EdgeRecord>( aLength, aData, false ), mWeights( aLength, aWeights, false )
 	{ }
 
 	__device__ int 
@@ -244,7 +247,7 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 		//uint32 current = aRegionBuffer.mData[idx];
 		uint32 current = inData[sidx];
-		if( current == ID ) printf( "current %i \n", current );
+		//if( current == ID ) printf( "current %i \n", current );
 		//uint32 second = aRegionBuffer.mData[idx+1];
 		TEType val = aGradientBuffer.mData[idx2];
 		if( current == 0 ) return;
@@ -313,7 +316,7 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 template< typename TEType >
 void
-fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > aEdgeWeights, size_t &aEdgeCount )
+fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aEdgeWeights, size_t &aEdgeCount )
 {
 		int3 radius = make_int3( 1, 1, 1 );
 
@@ -355,6 +358,10 @@ fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBu
 			thrust::make_zip_iterator( thrust::make_tuple( aEdges.end(), aEdgeWeights.end() ) ), 
 			CompareEdge() 
 			);
+
+	thrust::transform( aEdgeWeights.begin(), aEdgeWeights.begin() + aEdgeCount, aEdgeWeights.begin(), WeightTransformation() );
+
+	//thrust::copy( aEdgeWeights.begin(), aEdgeWeights.begin() + aEdgeCount, std::ostream_iterator<float>(std::cout, "\n"));
 
 	/*LOG( "search for XXX2" );
 	for( int i = 0; i < aEdges.size(); ++i ) {
@@ -448,7 +455,7 @@ createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion
 	D_PRINT( "After " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
 
 
-	thrust::transform( edgeWeights.begin(), edgeWeights.begin() + edgeCount, edgeWeights.begin(), WeightTransformation() );
+	//thrust::transform( edgeWeights.begin(), edgeWeights.begin() + edgeCount, edgeWeights.begin(), WeightTransformation() );
 
 	thrust::transform( edges.begin(), edges.begin() + edgeCount, edges.begin(), EdgeHelper() ); //Remove
 	/*thrust::transform( 
