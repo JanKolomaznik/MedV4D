@@ -70,7 +70,7 @@ tryToPushFromTo( VertexList &aVertices, int aFrom, int aTo, EdgeList &aEdges, in
 			pushToVertex( aVertices, aTo, pushedFlow );
 			updateResiduals( aEdges, aEdgeIdx, pushedFlow, aFrom, aTo );
 			pushSuccessful = 1;
-			printf( "Push successfull\n" );
+			printf( "Push successfull from %i to %i (edge %i), flow = %f\n", aFrom, aTo, aEdgeIdx, pushedFlow );
 		}
 	}
 }
@@ -167,14 +167,15 @@ relabelPhase2Kernel( EdgeList aEdges, VertexList aVertices, bool *aEnabledVertic
 }
 
 __global__ void
-relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels )
+relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels, int aSource, int aSink )
 {
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
 	int vertexIdx = blockId * blockDim.x + threadIdx.x;
 
 	if ( vertexIdx < aVertices.size() && vertexIdx > 0 ) {
-		if ( aEnabledVertices[ vertexIdx ] ) {
+		if ( vertexIdx != aSource && vertexIdx != aSink && aEnabledVertices[ vertexIdx ] ) {
 			aVertices.getLabel( vertexIdx ) = aLabels[ vertexIdx ];
+			printf( "vertexIdx %i label = %i excess = %f\n", vertexIdx, aLabels[ vertexIdx ], aVertices.mExcessArray[ vertexIdx ] );
 			relabelSuccessful = 1;
 		}
 	}
@@ -336,13 +337,17 @@ push( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
 	dim3 blockSize1D( 512 );
 	dim3 gridSize1D( (aEdges.size() + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 
+	thrust::device_ptr<float > sourceExcess( aVertices.mExcessArray + aSource );
+	thrust::device_ptr<float > sinkExcess( aVertices.mExcessArray + aSink );
+
 	//D_PRINT( "gridSize1D " << gridSize1D.x << "; " << gridSize1D.y << "; " << gridSize1D.z );
 	static const float SOURCE_EXCESS = 1000000.0f;
 	int pushSuccessful;
 	D_COMMAND( M4D::Common::Clock clock; );
 	size_t pushIterations = 0;
 	do {
-		CUDA_CHECK_RESULT( cudaMemcpy( (void*)(aVertices.mExcessArray + aSource), (void*)(&SOURCE_EXCESS), sizeof(float), cudaMemcpyHostToDevice ) );
+		//CUDA_CHECK_RESULT( cudaMemcpy( (void*)(aVertices.mExcessArray + aSource), (void*)(&SOURCE_EXCESS), sizeof(float), cudaMemcpyHostToDevice ) );
+		*sourceExcess = SOURCE_EXCESS;
 
 		++pushIterations;
 		CUDA_CHECK_RESULT( cudaMemcpyToSymbol( "pushSuccessful", &(pushSuccessful = 0), sizeof(int), 0, cudaMemcpyHostToDevice ) );
@@ -355,10 +360,12 @@ push( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
 
 		CUDA_CHECK_RESULT( cudaMemcpyFromSymbol( &pushSuccessful, "pushSuccessful", sizeof(int), 0, cudaMemcpyDeviceToHost ) );
 		
+		D_PRINT( "-----------------------------------" );
+		
 	} while ( pushSuccessful > 0 );
 
-	D_PRINT( "Push iteration count = " << pushIterations << "; took " << clock.SecondsPassed() );
-	return pushIterations > 0;
+	D_PRINT( "Push iteration count = " << pushIterations << "; Sink excess = " << *sinkExcess << "; took " << clock.SecondsPassed());
+	return pushIterations > 1;
 }
 
 bool
@@ -396,7 +403,9 @@ relabel( EdgeList &aEdges, VertexList &aVertices, thrust::device_vector< bool > 
 	relabelPhase3Kernel<<< vertexGridSize1D, blockSize1D >>>( 
 					aVertices, 
 					thrust::raw_pointer_cast(&aEnabledVertices[0]), 
-					thrust::raw_pointer_cast(&aLabels[0]) 
+					thrust::raw_pointer_cast(&aLabels[0]),
+					aSource,
+					aSink 
 					);
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After relabelPhase3Kernel()" );
@@ -428,9 +437,15 @@ pushRelabelMaxFlow( EdgeList &aEdges, VertexList &aVertices, int aSourceID, int 
 
 	initLabels( aEdges, aVertices, aSourceID, aSinkID );
 
-	bool res = push( aEdges, aVertices, aSourceID, aSinkID );
+	bool res = true;
+	size_t iteration = 0;
+	while( res ) {
+		bool pushRes = push( aEdges, aVertices, aSourceID, aSinkID );
 
-	res = relabel( aEdges, aVertices, tmpEnabledVertex, tmpLabels, aSourceID, aSinkID );
+		res = relabel( aEdges, aVertices, tmpEnabledVertex, tmpLabels, aSourceID, aSinkID );
+		++iteration;
+		D_PRINT( "Finished iteration n.: " << iteration << "; Push sucessful = " << pushRes );
+	}
 	D_PRINT( "Leaving inner pushRelabelMaxFlow()" );
 }
 

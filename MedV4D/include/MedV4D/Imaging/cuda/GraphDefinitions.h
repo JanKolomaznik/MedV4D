@@ -51,6 +51,13 @@ struct EdgeRecord
 	
 };
 
+inline std::ostream &
+operator<<( std::ostream & stream, const EdgeRecord &aEdge )
+{
+	stream << "[ " << aEdge.first << " -> " << aEdge.second << " ]";
+	return stream;
+}
+
 struct EdgeList
 {
 	EdgeList( thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aWeights, thrust::device_vector< EdgeResidualsRecord > &aResiduals, int aEdgeCount )
