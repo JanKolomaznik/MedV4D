@@ -128,7 +128,7 @@ struct WeightTransformation
 {
 	__host__ __device__ float operator()( const float &aWeight ) const 
 	{
-		return 1.0f / (1.0f + aWeight);
+		return 1000.0f / (1.0f + aWeight); //TODO better
 	}
 };
 

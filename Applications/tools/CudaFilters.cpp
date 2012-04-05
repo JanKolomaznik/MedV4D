@@ -197,6 +197,35 @@ main( int argc, char **argv )
 			computeMinCut( graph );*/
 			std::cout << "Done\n";
 		);
+	} else if ( operatorName == "WSHED2CPU") {
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			TTYPE threshold = TypeTraits<TTYPE>::Max;
+			if (thresholdArg.isSet() ) {
+				threshold = TTYPE( thresholdArg.getValue() );
+			}
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
+			M4D::Imaging::Image< uint32, 3 >::Ptr labelImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+			
+			std::cout << "Finding local minima ..."; std::cout.flush();
+			LocalMinimaRegions3D( typedImage->GetRegion(), labelImage->GetRegion(), threshold );
+			std::cout << "Done\n";
+
+			std::cout << "Watershed transformation ..."; std::cout.flush();
+			WatershedTransformation3D( labelImage->GetRegion(), typedImage->GetRegion(), labelImage->GetRegion() );
+			std::cout << "Done\n";
+
+			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
+			M4D::Imaging::ImageFactory::DumpImage( outFilename.string(), *labelImage );
+			std::cout << "Done\n";
+			
+			std::cout << "Adjacency graph ..."; std::cout.flush();
+			//pushRelabelMaxFlow( labelImage->GetRegion(), typedImage->GetRegion() );
+			WeightedUndirectedGraph graph;
+			createAdjacencyGraph( graph, labelImage->GetRegion(), typedImage->GetRegion() );
+			computeMinCut( graph );
+			std::cout << "Done\n";
+		);
 	} else {
 		std::cout << operatorName << " is not valid operator";
 		return 1;

@@ -8,6 +8,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/one_bit_color_map.hpp>
 #include <boost/graph/stoer_wagner_min_cut.hpp>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/graph/bipartite.hpp>
@@ -90,6 +91,63 @@ computeMinCut( WeightedUndirectedGraph & aGraph )
 	D_PRINT( "Time after computeMinCut " << clock.SecondsPassed() );
 }
 
+
+void
+computeMaxFlow( WeightedBidirectionalGraph & aGraph )
+{
+	/*std::vector<int> component(boost::num_vertices(aGraph));
+	size_t comp = boost::connected_components(aGraph, &component[0]);
+	
+	LOG( "Number of components = " << comp );
+	
+	WeightedBidirectionalGraphTraits::vertex_descriptor src;
+	WeightedBidirectionalGraphTraits::vertex_descriptor sink;
+	float flow = boost::boykov_kolmogorov_max_flow( aGraph, src, sink );
+	
+	
+	LOG( "Flow = " << flow );*/
+	
+	
+/*	using namespace boost;
+
+  typedef adjacency_list_traits < vecS, vecS, directedS > Traits;
+  typedef adjacency_list < vecS, vecS, directedS,
+    property < vertex_name_t, std::string,
+    property < vertex_index_t, long,
+    property < vertex_color_t, boost::default_color_type,
+    property < vertex_distance_t, long,
+    property < vertex_predecessor_t, Traits::edge_descriptor > > > > >,
+
+    property < edge_capacity_t, long,
+    property < edge_residual_capacity_t, long,
+    property < edge_reverse_t, Traits::edge_descriptor > > > > Graph;
+
+  Graph g;
+  property_map < Graph, edge_capacity_t >::type
+      capacity = get(edge_capacity, g);
+  property_map < Graph, edge_residual_capacity_t >::type
+      residual_capacity = get(edge_residual_capacity, g);
+  property_map < Graph, edge_reverse_t >::type rev = get(edge_reverse, g);
+  Traits::vertex_descriptor s, t;
+  read_dimacs_max_flow(g, capacity, rev, s, t);
+
+  std::vector<default_color_type> color(num_vertices(g));
+  std::vector<long> distance(num_vertices(g));
+  long flow = boykov_kolmogorov_max_flow(g ,s, t);
+
+  std::cout << "c  The total flow:" << std::endl;
+  std::cout << "s " << flow << std::endl << std::endl;
+
+  std::cout << "c flow values:" << std::endl;
+  graph_traits < Graph >::vertex_iterator u_iter, u_end;
+  graph_traits < Graph >::out_edge_iterator ei, e_end;
+  for (boost::tie(u_iter, u_end) = vertices(g); u_iter != u_end; ++u_iter)
+    for (boost::tie(ei, e_end) = out_edges(*u_iter, g); ei != e_end; ++ei)
+      if (capacity[*ei] > 0)
+        std::cout << "f " << *u_iter << " " << target(*ei, g) << " "
+          << (capacity[*ei] - residual_capacity[*ei]) << std::endl;
+	*/
+}
 
 /*
 // A graphic of the min-cut is available at <http://www.boost.org/doc/libs/release/libs/graph/doc/stoer_wagner_imgs/stoer_wagner.cpp.gif>

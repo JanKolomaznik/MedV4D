@@ -12,6 +12,7 @@
 __device__ int pushSuccessful;
 __device__ int relabelSuccessful;
 __device__ int bfsFrontNotEmpty;
+__device__ int cutFound;
 
 
 
@@ -70,7 +71,7 @@ tryToPushFromTo( VertexList &aVertices, int aFrom, int aTo, EdgeList &aEdges, in
 			pushToVertex( aVertices, aTo, pushedFlow );
 			updateResiduals( aEdges, aEdgeIdx, pushedFlow, aFrom, aTo );
 			pushSuccessful = 1;
-			printf( "Push successfull from %i to %i (edge %i), flow = %f\n", aFrom, aTo, aEdgeIdx, pushedFlow );
+			//printf( "Push successfull from %i to %i (edge %i), flow = %f\n", aFrom, aTo, aEdgeIdx, pushedFlow );
 		}
 	}
 }
@@ -92,8 +93,6 @@ pushKernel( EdgeList aEdges, VertexList aVertices )
 		} else if ( label1 < label2 ) {
 			tryToPushFromTo( aVertices, v2, v1, aEdges, edgeIdx, residualCapacities.getResidual( v2 < v1 ) );
 		}
-
-		
 	}
 
 	/*if ( label1 > label2 && residualCapacity > 0 ) {
@@ -117,7 +116,7 @@ relabelPhase1Kernel( VertexList aVertices, bool *aEnabledVertices )
 	}
 }
 
-__device__ void
+/*__device__ void
 loadEdgeV1V2L1L2( EdgeList &aEdges, VertexList &aVertices, int aEdgeIdx, int &aV1, int &aV2, int &aLabel1, int &aLabel2 )
 {
 	EdgeRecord rec = aEdges.getEdge( aEdgeIdx );
@@ -126,7 +125,7 @@ loadEdgeV1V2L1L2( EdgeList &aEdges, VertexList &aVertices, int aEdgeIdx, int &aV
 
 	aLabel1 = aVertices.getLabel( aV1 );
 	aLabel2 = aVertices.getLabel( aV2 );
-}
+}*/
 
 __device__ void
 trySetNewHeight( int *aLabels, int aVertexIdx, int label )
@@ -144,20 +143,22 @@ relabelPhase2Kernel( EdgeList aEdges, VertexList aVertices, bool *aEnabledVertic
 	if ( edgeIdx < aEdges.size() ) {
 		int v1, v2;
 		int label1, label2;
-		loadEdgeV1V2L1L2( aEdges, aVertices, edgeIdx, v1, v2, label1, label2 );
+		EdgeResidualsRecord residualCapacities;
+		loadEdgeV1V2L1L2C( aEdges, aVertices, edgeIdx, v1, v2, label1, label2, residualCapacities );
 
 		bool v1Enabled = aEnabledVertices[v1];
 		bool v2Enabled = aEnabledVertices[v2];
 
 		if ( v1Enabled ) {
-			if( label1 < label2 || v2 == aSink ) { //TODO check if edge is saturated in case its leading down
+			if( label1 <= label2 || residualCapacities.getResidual( v1 < v2 ) <= 0.0f || v2 == aSink/* || v2 == aSource*/ ) { //TODO check if edge is saturated in case its leading down
 				trySetNewHeight( aLabels, v1, label2+1 );
 			} else {
+				//printf( "%i -> %i, l1 %i l2 %i label1\n", v1, v2, label1, label2 );
 				aEnabledVertices[v1] = false;
 			}
 		}
 		if ( v2Enabled ) {
-			if( label2 < label1 || v1 == aSink ) { //TODO check if edge is saturated in case its leading down
+			if( label2 <= label1 || residualCapacities.getResidual( v2 < v1 ) <= 0.0f || v1 == aSink/* || v1 == aSource*/  ) { //TODO check if edge is saturated in case its leading down
 				trySetNewHeight( aLabels, v2, label1+1 );
 			} else {
 				aEnabledVertices[v2] = false;
@@ -173,10 +174,12 @@ relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels,
 	int vertexIdx = blockId * blockDim.x + threadIdx.x;
 
 	if ( vertexIdx < aVertices.size() && vertexIdx > 0 ) {
-		if ( vertexIdx != aSource && vertexIdx != aSink && aEnabledVertices[ vertexIdx ] ) {
+		if ( vertexIdx != aSink && aEnabledVertices[ vertexIdx ] ) {
+			//printf( "vertexIdx %i orig label %i, label = %i excess = %f\n", vertexIdx, aVertices.getLabel( vertexIdx ), aLabels[ vertexIdx ], aVertices.mExcessArray[ vertexIdx ] );
 			aVertices.getLabel( vertexIdx ) = aLabels[ vertexIdx ];
-			printf( "vertexIdx %i label = %i excess = %f\n", vertexIdx, aLabels[ vertexIdx ], aVertices.mExcessArray[ vertexIdx ] );
-			relabelSuccessful = 1;
+			if ( vertexIdx != aSource ) {
+				relabelSuccessful = 1;
+			}
 		}
 	}
 }
@@ -184,18 +187,18 @@ relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels,
 
 struct DummyOperation
 {
-	__device__ void
+	__device__ bool
 	processEdge( const EdgeRecord &rec, int edgeIdx, int aStep, bool aFirst )
-	{ /*empty*/ }
+	{ return true; }
 
 	__device__ void
 	processVertex( int vertexIdx, int aStep )
 	{ /*empty*/ }
 };
 
-struct SetLabelOperation: public DummyOperation
+struct SetLabelAsDistance: public DummyOperation
 {
-	SetLabelOperation( int *aLabels ): mLabels( aLabels )
+	SetLabelAsDistance( int *aLabels ): mLabels( aLabels )
 	{}
 
 	__device__ void
@@ -205,6 +208,34 @@ struct SetLabelOperation: public DummyOperation
 		mLabels[vertexIdx] = aStep; 
 	}
 	int *mLabels;
+};
+
+struct SetLabelAsDistanceSkipSaturatedEdgesOpposite: public SetLabelAsDistance
+{
+	SetLabelAsDistanceSkipSaturatedEdgesOpposite( int *aLabels, EdgeResidualsRecord * aResiduals, float *aExcess ): SetLabelAsDistance( aLabels ), mResiduals( aResiduals ), mExcess( aExcess )
+	{}
+	__device__ bool
+	processEdge( const EdgeRecord &rec, int edgeIdx, int aStep, bool aFirst )
+	{ 
+		bool res = mResiduals[edgeIdx].getResidual( !aFirst ) > 0.0f;
+		if( !res ) printf( "%i saturated distance\n", aStep );
+		return true;//res;
+		//return true; 
+	}
+
+	__device__ void
+	processVertex( int vertexIdx, int aStep )
+	{ 	
+		CUDA_ASSERT( vertexIdx != 0 );
+		mLabels[vertexIdx] = aStep;
+		if ( mExcess[vertexIdx] > 0.0f ) {
+			printf( "excess found on distance %i\n", aStep );
+			cutFound = 0;
+		}
+	}
+
+	EdgeResidualsRecord * mResiduals;
+	float *mExcess;
 };
 
 template< typename TOperation >
@@ -217,15 +248,15 @@ bfsKernel( EdgeList aEdges, VertexList aVertices, bool *aFrontier, bool *aFronti
 	if ( edgeIdx < aEdges.size() ) {
 		EdgeRecord rec = aEdges.getEdge( edgeIdx );
 		if ( aFrontier[ rec.first ] ) {
-			aOperation.processEdge( rec, edgeIdx, aStep, true );
-			if ( !aVisited[ rec.second ] ) {
+			bool res = aOperation.processEdge( rec, edgeIdx, aStep, true );
+			if ( res && !aVisited[ rec.second ] ) {
 				aFrontierNew[ rec.second ] = true;
 				bfsFrontNotEmpty = 1;
 			}
 		}
 		if ( aFrontier[ rec.second ] ) {
-			aOperation.processEdge( rec, edgeIdx, aStep, false );
-			if ( !aVisited[ rec.first ] ) {
+			bool res = aOperation.processEdge( rec, edgeIdx, aStep, false );
+			if ( res && !aVisited[ rec.first ] ) {
 				aFrontierNew[ rec.first ] = true;
 				bfsFrontNotEmpty = 1;
 			}
@@ -247,6 +278,29 @@ bfsMarkVisitedKernel( VertexList aVertices, bool *aFrontier, bool *aVisited, int
 		}
 	}
 }
+
+__global__ void
+printNonZeroExcessKernel( VertexList aVertices )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int vertexIdx = blockId * blockDim.x + threadIdx.x;
+
+	if ( vertexIdx < aVertices.size() && vertexIdx > 0 ) {
+		if ( aVertices.getExcess(vertexIdx) > 0.0f ) {
+			printf( "Vertex %i - excess %f; label %i \n", vertexIdx, aVertices.getExcess(vertexIdx), aVertices.getLabel(vertexIdx) );
+		}
+	}
+}
+
+void
+printNonZeroExcess( VertexList &aVertices )
+{
+	dim3 blockSize1D( 512 );
+	dim3 vertexGridSize1D( (aVertices.size() + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+		
+	printNonZeroExcessKernel<<< vertexGridSize1D, blockSize1D >>>( aVertices );
+}
+
 
 template< typename TOperation >
 int
@@ -319,7 +373,7 @@ void
 initLabels( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
 {
 	D_COMMAND( M4D::Common::Clock clock; );
-	int h = 1 + bfsSearch( aEdges, aVertices, aSource, SetLabelOperation( aVertices.mLabelArray ) );
+	int h = 1 + bfsSearch( aEdges, aVertices, aSource, SetLabelAsDistance( aVertices.mLabelArray ) );
 	thrust::transform( 
 			thrust::device_pointer_cast( aVertices.mLabelArray + 1 ), 
 			thrust::device_pointer_cast( aVertices.mLabelArray + aVertices.size() ), 
@@ -327,7 +381,55 @@ initLabels( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
 			RevertLabels( h )
 			);
 
+	thrust::device_ptr<int> sourceLabel( aVertices.mLabelArray + aSource );
+	thrust::device_ptr<int> sinkLabel( aVertices.mLabelArray + aSink );
+	D_PRINT( "SRC label original = " << *sourceLabel );
+	D_PRINT( "DST label original = " << *sinkLabel );
+
+	*sinkLabel = 0;
 	D_PRINT( "init labels execution time = " << clock.SecondsPassed() );
+	//thrust::copy( thrust::device_pointer_cast( aVertices.mLabelArray + 1 ), thrust::device_pointer_cast( aVertices.mLabelArray + aVertices.size() ), std::ostream_iterator<int>(std::cout, "\n"));
+}
+
+void
+globalRelabel( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
+{
+	D_COMMAND( M4D::Common::Clock clock; );
+	int h = 1 + bfsSearch( aEdges, aVertices, aSink, SetLabelAsDistance( aVertices.mLabelArray ) );
+	/*thrust::transform( 
+			thrust::device_pointer_cast( aVertices.mLabelArray + 1 ), 
+			thrust::device_pointer_cast( aVertices.mLabelArray + aVertices.size() ), 
+			thrust::device_pointer_cast( aVertices.mLabelArray + 1 ),
+			RevertLabels( h )
+			);*/
+
+	thrust::device_ptr<int> sourceLabel( aVertices.mLabelArray + aSource );
+	thrust::device_ptr<int> sinkLabel( aVertices.mLabelArray + aSink );
+	D_PRINT( "SRC label original = " << *sourceLabel );
+	D_PRINT( "DST label original = " << *sinkLabel );
+
+	//*sinkLabel = 0;
+	D_PRINT( "globalRelabel execution time = " << clock.SecondsPassed() );
+	//thrust::copy( thrust::device_pointer_cast( aVertices.mLabelArray + 1 ), thrust::device_pointer_cast( aVertices.mLabelArray + aVertices.size() ), std::ostream_iterator<int>(std::cout, "\n"));
+}
+
+bool
+testForCut( EdgeList &aEdges, VertexList &aVertices, int aSource, int aSink )
+{
+	D_COMMAND( M4D::Common::Clock clock; );
+	thrust::device_vector< int > distances( aVertices.size() );
+	
+	int cutFound = 1;
+	CUDA_CHECK_RESULT( cudaMemcpyToSymbol( "cutFound", &(cutFound = 1), sizeof(int), 0, cudaMemcpyHostToDevice ) );
+
+	int h = bfsSearch( aEdges, aVertices, aSink, SetLabelAsDistanceSkipSaturatedEdgesOpposite( distances.data().get(), aEdges.mEdgeResiduals, aVertices.mExcessArray ) );
+
+	CUDA_CHECK_RESULT( cudaMemcpyFromSymbol( &cutFound, "cutFound", sizeof(int), 0, cudaMemcpyDeviceToHost ) );
+
+	D_PRINT( "testForCut execution time = " << clock.SecondsPassed() );
+	D_PRINT( "SOURCE dst through unsaturated edges = " << distances[aSource] );
+	D_PRINT( "CUT FOUND = " << cutFound );
+	return distances[aSource] == 0;
 	//thrust::copy( thrust::device_pointer_cast( aVertices.mLabelArray + 1 ), thrust::device_pointer_cast( aVertices.mLabelArray + aVertices.size() ), std::ostream_iterator<int>(std::cout, "\n"));
 }
 
@@ -435,8 +537,10 @@ pushRelabelMaxFlow( EdgeList &aEdges, VertexList &aVertices, int aSourceID, int 
 	CheckCudaErrorState( "tmpEnabledVertex allocation" );
 	D_PRINT( "tmpEnabledVertex allocated : " << cudaMemoryInfoText() );
 
-	initLabels( aEdges, aVertices, aSourceID, aSinkID );
+	M4D::Common::Clock clock;
 
+	initLabels( aEdges, aVertices, aSourceID, aSinkID );
+	testForCut( aEdges, aVertices, aSourceID, aSinkID );
 	bool res = true;
 	size_t iteration = 0;
 	while( res ) {
@@ -444,8 +548,15 @@ pushRelabelMaxFlow( EdgeList &aEdges, VertexList &aVertices, int aSourceID, int 
 
 		res = relabel( aEdges, aVertices, tmpEnabledVertex, tmpLabels, aSourceID, aSinkID );
 		++iteration;
-		D_PRINT( "Finished iteration n.: " << iteration << "; Push sucessful = " << pushRes );
+		D_PRINT( "Finished iteration n.: " << iteration << "; Push sucessful = " << pushRes << "; seconds passed: " << clock.secondsPassed() );
+		if( iteration % 20 == 0 ) {
+			//globalRelabel( aEdges, aVertices, aSourceID, aSinkID );
+			//testForCut( aEdges, aVertices, aSourceID, aSinkID );
+		}
 	}
+
+	LOG( "Push relabel took " << clock.secondsPassed() << " seconds" );
+	printNonZeroExcess( aVertices );
 	D_PRINT( "Leaving inner pushRelabelMaxFlow()" );
 }
 
