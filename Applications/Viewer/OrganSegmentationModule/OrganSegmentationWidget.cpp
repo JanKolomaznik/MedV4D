@@ -39,6 +39,18 @@ OrganSegmentationWidget::toggleDraw( bool aToggle )
 }
 
 void
+OrganSegmentationWidget::toggleBiMaskDraw( bool aToggle )
+{
+	mController->toggleBiMaskDrawing( aToggle );
+}
+
+void
+OrganSegmentationWidget::changedMarkerType()
+{
+	mController->changeMarkerType( foregroundRadioButton->isChecked() );
+}
+
+void
 OrganSegmentationWidget::updateTimestamp()
 {
 	mModule.updateTimestamp();

@@ -1,7 +1,7 @@
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include <algorithm>
 
-OrganSegmentationController::OrganSegmentationController()
+OrganSegmentationController::OrganSegmentationController(): mBrushValue( 255 )
 {
 
 	
@@ -104,9 +104,28 @@ void
 OrganSegmentationController::toggleMaskDrawing( bool aToggle )
 {
 	if( aToggle ) {
-		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask ) );
+		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask, 255 ) );
 	} else {
 		mMaskDrawingController = MaskDrawingMouseController::Ptr();
+	}
+}
+
+void
+OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
+{
+	if( aToggle ) {
+		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask, mBrushValue ) );
+	} else {
+		mMaskDrawingController = MaskDrawingMouseController::Ptr();
+	}
+}
+
+void
+OrganSegmentationController::changeMarkerType( bool aForeground )
+{
+	mBrushValue = aForeground ? 255 : 100;
+	if( mMaskDrawingController ) {
+			mMaskDrawingController->setBrushValue( mBrushValue );
 	}
 }
 

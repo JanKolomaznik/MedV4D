@@ -17,8 +17,14 @@ class MaskDrawingMouseController: public ADrawingMouseController
 {
 public:
 	typedef boost::shared_ptr<MaskDrawingMouseController> Ptr;
-	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask ): mMask( aMask )
+	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask, uint8 aBrushValue=255 ): mMask( aMask ), mBrushValue( aBrushValue )
 	{ ASSERT( mMask ); }
+	
+	void
+	setBrushValue( uint8 aBrushValue )
+	{
+			mBrushValue = aBrushValue;
+	}
 protected:	
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
@@ -33,7 +39,7 @@ protected:
 		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetDirtyBBox( c1, c2 );
 		LOG( "EditedA : " << c1 << " => " << c2 );
 		try {
-			M4D::Imaging::painting::drawRectangleAlongLine( *mMask, 255, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
+			M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
 		} catch (...){
 			D_PRINT( "drawStep exception" );
 		}
@@ -52,6 +58,7 @@ protected:
 	}
 	
 	M4D::Imaging::Mask3D::Ptr mMask;
+	uint8 mBrushValue;
 };
 
 class OrganSegmentationController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
@@ -131,6 +138,11 @@ public slots:
 	void
 	toggleMaskDrawing( bool aToggle );
 
+	void
+	toggleBiMaskDrawing( bool aToggle );
+	
+	void
+	changeMarkerType( bool aForeground );
 protected:
 
 public:
@@ -141,6 +153,8 @@ public:
 	M4D::Common::IDNumber mModeId;
 	
 	MaskDrawingMouseController::Ptr mMaskDrawingController;
+	
+	uint8 mBrushValue;
 };
 
 

@@ -284,7 +284,8 @@ technique OverlayMask_3D {
 		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile glslf fp_OverlayMask_3D( 
 							gSecondaryImageData3D, 
-							float4( 0.0f, 0.0f, 1.0f, 0.5f )
+							float4( 0.0f, 0.0f, 1.0f, 0.5f ),
+							float4( 0.0f, 1.0f, 0.0f, 0.5f )
 							);
 		DepthTestEnable = false;
 		CullFaceEnable = false;

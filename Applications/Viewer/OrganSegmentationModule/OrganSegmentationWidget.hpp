@@ -33,6 +33,10 @@ public slots:
 	void
 	toggleDraw( bool aToggle );
 	void
+	toggleBiMaskDraw( bool aToggle );
+	void
+	changedMarkerType();
+	void
 	updateTimestamp();
 
 protected:

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>312</width>
-    <height>270</height>
+    <width>311</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,11 +19,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -86,6 +86,57 @@
       <attribute name="title">
        <string>Graph cut</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButton_7">
+         <property name="text">
+          <string>Draw</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Marker type</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QRadioButton" name="foregroundRadioButton">
+            <property name="text">
+             <string>Foreground</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>Background</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
@@ -165,7 +216,7 @@
      <y>47</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
+     <x>0</x>
      <y>11</y>
     </hint>
    </hints>
@@ -209,11 +260,11 @@
    <slot>loadMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>76</x>
-     <y>110</y>
+     <x>84</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
+     <x>310</x>
      <y>51</y>
     </hint>
    </hints>
@@ -225,11 +276,11 @@
    <slot>loadModel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>66</x>
-     <y>70</y>
+     <x>74</x>
+     <y>60</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
+     <x>310</x>
      <y>102</y>
     </hint>
    </hints>
@@ -266,6 +317,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>foregroundRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>changedMarkerType()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>308</x>
+     <y>167</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>changedMarkerType()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>211</x>
+     <y>95</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>toggleBiMaskDraw(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>134</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>308</x>
+     <y>10</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
@@ -275,5 +374,7 @@
   <slot>loadModel()</slot>
   <slot>loadIndex()</slot>
   <slot>computeStats()</slot>
+  <slot>toggleBiMaskDraw(bool)</slot>
+  <slot>changedMarkerType()</slot>
  </slots>
 </ui>
