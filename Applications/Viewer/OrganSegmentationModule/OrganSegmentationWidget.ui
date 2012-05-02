@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>311</width>
-    <height>216</height>
+    <height>227</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -201,8 +201,47 @@
      </widget>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Mask Operations</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="mSaveMaskButton">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Save Mask</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="FilePathComboBox" name="widget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FilePathComboBox</class>
+   <extends>QWidget</extends>
+   <header>MedV4D/GUI/widgets/FilePathComboBox.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -344,7 +383,7 @@
      <y>95</y>
     </hint>
     <hint type="destinationlabel">
-     <x>311</x>
+     <x>310</x>
      <y>203</y>
     </hint>
    </hints>

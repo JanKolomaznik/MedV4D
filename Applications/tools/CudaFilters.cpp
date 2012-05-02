@@ -39,6 +39,9 @@ main( int argc, char **argv )
 	
 	TCLAP::ValueArg<double> belowThresholdArg( "b", "below", "Below threshold value", false, 0, "Numeric type of image element" );
 	cmd.add( belowThresholdArg );
+	
+	TCLAP::ValueArg<std::string> markerMaskPath( "m", "markers", "Markers file", false, 0, "Filename" );
+	cmd.add( belowThresholdArg );
 
 	/*---------------------------------------------------------------------*/
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
@@ -61,6 +64,8 @@ main( int argc, char **argv )
 	} else {
 		outFilename = inFilename.stem() + "_" + operatorName + inFilename.extension();
 	}
+	
+	boost::filesystem::path markersPath( markerMaskPath.getValue() );
 
 	std::cout << "Loading file '" << inFilename << "' ..."; std::cout.flush();
 	M4D::Imaging::AImage::Ptr image = 
@@ -191,6 +196,8 @@ main( int argc, char **argv )
 			std::cout << "Done\n";
 			
 			std::cout << "Adjacency graph ..."; std::cout.flush();
+			
+			//M4D::Imaging::AImage::Ptr markers = M4D::Imaging::ImageFactory::LoadDumpedImage( markersPath.string() );
 			pushRelabelMaxFlow( labelImage->GetRegion(), typedImage->GetRegion() );
 			/*WeightedUndirectedGraph graph;
 			createAdjacencyGraph( graph, labelImage->GetRegion(), typedImage->GetRegion() );

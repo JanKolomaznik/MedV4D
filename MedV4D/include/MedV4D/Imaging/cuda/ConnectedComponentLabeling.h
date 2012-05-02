@@ -4,4 +4,4 @@
 void
 ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::ImageRegion< uint32, 3 > output );
 
-#endif CONNECTED_COMPONENT_LABELING_H
+#endif //CONNECTED_COMPONENT_LABELING_H
