@@ -320,7 +320,7 @@ preallocationOfAdjacencyGraph( Buffer3D< uint32 > aRegionBuffer, Buffer3D< TETyp
 
 template< typename TEType >
 void
-fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aEdgeWeights, size_t &aEdgeCount )
+fillEdgeList( const Buffer3D< uint32 > &aRegionBuffer, const Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aEdgeWeights, size_t &aEdgeCount )
 {
 		int3 radius = make_int3( 1, 1, 1 );
 

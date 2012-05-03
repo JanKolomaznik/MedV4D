@@ -7,7 +7,7 @@
 
 template< typename TEType >
 void
-fillEdgeList( Buffer3D< uint32 > &aRegionBuffer, Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aEdgeWeights, size_t &aEdgeCount );
+fillEdgeList( const Buffer3D< uint32 > &aRegionBuffer, const Buffer3D< TEType > &aGradientBuffer, thrust::device_vector< EdgeRecord > &aEdges, thrust::device_vector< float > &aEdgeWeights, size_t &aEdgeCount );
 
 
 #endif //CUDA_REGION_ADJACENCY_GRAPH_CUH

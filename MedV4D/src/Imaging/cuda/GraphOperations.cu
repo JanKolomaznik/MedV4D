@@ -5,39 +5,50 @@
 #include "MedV4D/Imaging/cuda/detail/RegionAdjacencyGraph.cuh"
 #include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
 
+void
+getMarkedRegionsIDs( const Buffer3D< uint32 > &aLabeledRegions, uint32 aRegionCount, const Buffer3D< uint8 > &aMarkers )
+{
+
+}
 
 
 template< typename TEType >
 void
-pushRelabelMaxFlow( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput )
+pushRelabelMaxFlow( const Buffer3D< uint32 > &aLabeledRegions, const Buffer3D< TEType > &aInput )
 {
-	
-
 	CheckCudaErrorState( "Before pushRelabelMaxFlow() toplevel code" );
 	M4D::Common::Clock clock;
-	D_PRINT( "Before " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
-	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledMarkerRegions );
 	
 	thrust::device_ptr<uint32 > res = thrust::max_element( 
-						thrust::device_pointer_cast( labeledRegionsBuffer.mData ), 
-						thrust::device_pointer_cast( labeledRegionsBuffer.mData+labeledRegionsBuffer.mLength ) 
+						thrust::device_pointer_cast( aLabeledRegions.mData ), 
+						thrust::device_pointer_cast( aLabeledRegions.mData+aLabeledRegions.mLength ) 
 						);
 	size_t regionCount = *res;
 	D_PRINT( "Region count " << regionCount );
-
-
-	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
 
 	thrust::device_vector< EdgeRecord > edges( regionCount*25 );
 	thrust::device_vector< float > edgeWeights( edges.size() );
 
 	size_t edgeCount = 0;
 	D_PRINT( "After allocation in " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
-	fillEdgeList( labeledRegionsBuffer, inputBuffer, edges, edgeWeights, edgeCount );
+	fillEdgeList( aLabeledRegions, aInput, edges, edgeWeights, edgeCount );
 	D_PRINT( "After fillEdgeList() : " << cudaMemoryInfoText() );
 	//thrust::copy( edgeWeights.begin(), edgeWeights.begin() + edgeCount, std::ostream_iterator<float>(std::cout, "\n"));
 
 	pushRelabelMaxFlow( edgeCount, regionCount, edges, edgeWeights, 1, regionCount - 1 ); //TODO - sink source
+}
+
+template< typename TEType >
+void
+pushRelabelMaxFlow( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput )
+{
+	CheckCudaErrorState( "Before pushRelabelMaxFlow() toplevel code" );
+	M4D::Common::Clock clock;
+	D_PRINT( "Before " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
+	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledRegions );
+	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
+
+	pushRelabelMaxFlow( labeledRegionsBuffer, inputBuffer );
 
 	cudaFree( labeledRegionsBuffer.mData );
 	cudaFree( inputBuffer.mData );
