@@ -5,10 +5,32 @@
 #include "MedV4D/Imaging/cuda/detail/RegionAdjacencyGraph.cuh"
 #include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
 
+
+__global__ void 
+getMarkedRegionsIDsKernel( Buffer3D< uint32 > aLabeledRegions, uint32 aRegionCount, Buffer3D< uint8 > aMarkers, bool *aMarkedRegions1, bool *aMarkedRegions2 )
+{ 
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < aMarkers.mLength ) {
+		uint8 val = aMarkers.mData[idx];
+		if ( val > 0 ) {
+			uint32 tmp = aLabeledRegions.mData[idx];
+			
+			if( val > 240 ) {
+				aMarkedRegions2[tmp] = true;
+			} else {
+				aMarkedRegions1[tmp] = true;
+			}
+		}
+	}
+}
+
 void
 getMarkedRegionsIDs( const Buffer3D< uint32 > &aLabeledRegions, uint32 aRegionCount, const Buffer3D< uint8 > &aMarkers )
 {
-
+	thrust::device_vector< bool > markedRegions1( aRegionCount+1, false );
+	thrust::device_vector< bool > markedRegions2( aRegionCount+1, false );
 }
 
 
