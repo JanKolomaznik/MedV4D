@@ -32,7 +32,13 @@
 */
 #include <QtOpenGL>
 
+#ifdef DEBUG_LEVEL
 #define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
+#else
+#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; }
+#endif /*DEBUG_LEVEL*/
+
+
 #define GL_ERROR_CLEAR_AFTER_CALL( ... ) { __VA_ARGS__ ; glGetError(); }
 
 namespace M4D
