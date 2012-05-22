@@ -116,6 +116,21 @@ ApplicationManager::loadIcons()
 	"finest_quality"*/
 }
 
+
+ApplicationManager::BackgroundTaskFuture
+ApplicationManager::executeBackgroundTask( const boost::function< void () > &aFtor, const QString &aDescription )
+{
+	boost::packaged_task<void> task( aFtor );
+	boost::unique_future<void> uniqueFut = task.get_future();
+	BackgroundTaskFuture fut = boost::move( uniqueFut );
+	
+	boost::thread backThread( boost::move( task ) ); // launch task on a thread
+	//TODO better GUI response
+	
+	
+	return fut;
+}
+
 int
 ApplicationManager::exec()
 {

@@ -55,3 +55,18 @@ OrganSegmentationWidget::updateTimestamp()
 {
 	mModule.updateTimestamp();
 }
+
+void
+OrganSegmentationWidget::buttonPressed()
+{
+	QObject * obj = sender();
+	if (obj == buttonComputeWatersheds) {
+		mModule.computeWatershedTransformation();
+		return;
+	}
+	if (obj == buttonRunSegmentation) {
+		mModule.computeSegmentation();
+		return;
+	}
+	
+}

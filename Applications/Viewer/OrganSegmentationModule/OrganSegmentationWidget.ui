@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>311</width>
-    <height>227</height>
+    <width>366</width>
+    <height>276</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,8 +22,11 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -87,15 +90,18 @@
        <string>Graph cut</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_7">
-         <property name="text">
-          <string>Draw</string>
+       <item row="3" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox">
@@ -123,18 +129,29 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButton_7">
+         <property name="text">
+          <string>Draw</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
-        </spacer>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="buttonComputeWatersheds">
+         <property name="text">
+          <string>Watersheds</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="buttonRunSegmentation">
+         <property name="text">
+          <string>Segmentation</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -198,6 +215,11 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Test</string>
+      </attribute>
      </widget>
     </widget>
    </item>
@@ -404,6 +426,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>buttonComputeWatersheds</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>buttonPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonRunSegmentation</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>buttonPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>35</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>207</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
@@ -415,5 +469,6 @@
   <slot>computeStats()</slot>
   <slot>toggleBiMaskDraw(bool)</slot>
   <slot>changedMarkerType()</slot>
+  <slot>buttonPressed()</slot>
  </slots>
 </ui>

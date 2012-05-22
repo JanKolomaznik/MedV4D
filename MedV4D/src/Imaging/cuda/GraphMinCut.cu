@@ -105,6 +105,7 @@ pushKernel( EdgeList aEdges, VertexList aVertices )
 		}*/
 }
 //*********************************************************************************************************
+#define MAX_LABEL MAX_INT32
 __global__ void
 relabelPhase1Kernel( VertexList aVertices, bool *aEnabledVertices )
 {
@@ -149,8 +150,8 @@ relabelPhase2Kernel( EdgeList aEdges, VertexList aVertices, bool *aEnabledVertic
 		bool v1Enabled = aEnabledVertices[v1];
 		bool v2Enabled = aEnabledVertices[v2];
 
-		if ( v1Enabled ) {
-			if( label1 <= label2 || residualCapacities.getResidual( v1 < v2 ) <= 0.0f || v2 == aSink/* || v2 == aSource*/ ) { //TODO check if edge is saturated in case its leading down
+		if ( v1Enabled ) { //TODO - check if set to maximum is right
+			if( label1 <= label2 || residualCapacities.getResidual( v1 < v2 ) <= 0.0f/* || v2 == aSink*//* || v2 == aSource*/ ) { //TODO check if edge is saturated in case its leading down
 				trySetNewHeight( aLabels, v1, label2+1 );
 			} else {
 				//printf( "%i -> %i, l1 %i l2 %i label1\n", v1, v2, label1, label2 );
@@ -158,7 +159,7 @@ relabelPhase2Kernel( EdgeList aEdges, VertexList aVertices, bool *aEnabledVertic
 			}
 		}
 		if ( v2Enabled ) {
-			if( label2 <= label1 || residualCapacities.getResidual( v2 < v1 ) <= 0.0f || v1 == aSink/* || v1 == aSource*/  ) { //TODO check if edge is saturated in case its leading down
+			if( label2 <= label1 || residualCapacities.getResidual( v2 < v1 ) <= 0.0f/* || v1 == aSink*//* || v1 == aSource*/  ) { //TODO check if edge is saturated in case its leading down
 				trySetNewHeight( aLabels, v2, label1+1 );
 			} else {
 				aEnabledVertices[v2] = false;
@@ -176,9 +177,14 @@ relabelPhase3Kernel( VertexList aVertices, bool *aEnabledVertices, int *aLabels,
 	if ( vertexIdx < aVertices.size() && vertexIdx > 0 ) {
 		if ( vertexIdx != aSink && aEnabledVertices[ vertexIdx ] ) {
 			//printf( "vertexIdx %i orig label %i, label = %i excess = %f\n", vertexIdx, aVertices.getLabel( vertexIdx ), aLabels[ vertexIdx ], aVertices.mExcessArray[ vertexIdx ] );
-			aVertices.getLabel( vertexIdx ) = aLabels[ vertexIdx ];
-			if ( vertexIdx != aSource ) {
-				relabelSuccessful = 1;
+			int newLabel = aLabels[ vertexIdx ];
+			//if (newLabel != MAX_LABEL) 
+			{
+				aVertices.getLabel( vertexIdx ) = newLabel;
+				if ( vertexIdx != aSource ) {
+					relabelSuccessful = 1;
+					//printf("relabel %i\n", vertexIdx);
+				}
 			}
 		}
 	}
@@ -487,6 +493,7 @@ relabel( EdgeList &aEdges, VertexList &aVertices, thrust::device_vector< bool > 
 	cudaThreadSynchronize();
 	CheckCudaErrorState( "After relabelPhase1Kernel()" );
 	
+	//thrust::fill( aLabels.begin(), aLabels.end(), MAX_LABEL );
 	relabelPhase2Kernel<<< edgeGridSize1D, blockSize1D >>>( 
 					aEdges, 
 					aVertices, 

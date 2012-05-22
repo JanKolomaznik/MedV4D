@@ -56,11 +56,20 @@ protected:
 	void
 	prepareMask( M4D::Imaging::Mask3D::Ptr aMask );
 	
+	void
+	computeWatershedTransformation();
+	
+	void
+	computeSegmentation();
+	
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
 	
 	M4D::Imaging::Mask3D::Ptr	mMask;
 	Image16_3D::Ptr mImage;
+	
+	M4D::Imaging::Image< uint32, 3 >::Ptr mWatersheds;
+	M4D::Imaging::AImage::Ptr mGradientImage;
 	
 	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
 };

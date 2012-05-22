@@ -39,6 +39,8 @@ public slots:
 	void
 	updateTimestamp();
 
+	void
+	buttonPressed();
 protected:
 	OrganSegmentationController::Ptr mController;
 	OrganSegmentationModule &mModule;

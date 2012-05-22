@@ -40,8 +40,8 @@ main( int argc, char **argv )
 	TCLAP::ValueArg<double> belowThresholdArg( "b", "below", "Below threshold value", false, 0, "Numeric type of image element" );
 	cmd.add( belowThresholdArg );
 	
-	TCLAP::ValueArg<std::string> markerMaskPath( "m", "markers", "Markers file", false, 0, "Filename" );
-	cmd.add( belowThresholdArg );
+	TCLAP::ValueArg<std::string> markerMaskPath( "m", "markers", "Markers file", false, "", "Filename" );
+	cmd.add( markerMaskPath );
 
 	/*---------------------------------------------------------------------*/
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );

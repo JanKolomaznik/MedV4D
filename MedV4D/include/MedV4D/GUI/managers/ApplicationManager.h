@@ -16,6 +16,8 @@
 #include <tbb/tbb.h>
 #endif
 
+#include <boost/thread/future.hpp>
+
 
 
 #define GET_SETTINGS( NAME, TYPE, DEFAULT ) \
@@ -142,6 +144,21 @@ public:
 	{
 		mIconsDirName = aIconsDirName;
 	}
+	
+	typedef boost::shared_future<void> BackgroundTaskFuture;
+	
+	BackgroundTaskFuture
+	executeBackgroundTask( const boost::function< void () > &aFtor, const QString &aDescription );
+	
+	template < typename TFunctor >
+	BackgroundTaskFuture
+	executeBackgroundTask( const TFunctor &aFtor, const QString &aDescription )
+	{
+		boost::function< void () > func = aFtor;
+		return executeBackgroundTask( func, aDescription );
+	}
+	
+	
 public slots:
 	void
 	updateGUIRequest()

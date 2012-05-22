@@ -29,6 +29,12 @@ protected:
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
+		drawMaskStep( aStart, aEnd );
+	}
+	
+	void
+	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd )
+	{
 		float width = 10.0f;
 		Vector3f offset( width, width, width );
 		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
