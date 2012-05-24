@@ -1,0 +1,48 @@
+/**
+ * #define DECLARE_TEMPLATE_INSTANCE template void function( TemplatedType< TTYPE > aInput );
+ * #include "MedV4D/Common/DeclareTemplateNumericInstances.h"
+ **/
+
+#undef TTYPE
+
+#define TTYPE uint8
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE int8
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE uint16
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE int16
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE uint32
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE int32
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE uint64
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE int64
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE float32
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#define TTYPE float64
+DECLARE_TEMPLATE_INSTANCE;
+#undef TTYPE
+
+#undef DECLARE_TEMPLATE_INSTANCE

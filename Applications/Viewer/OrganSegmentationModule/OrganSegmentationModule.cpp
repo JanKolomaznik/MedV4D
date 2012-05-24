@@ -290,42 +290,17 @@ OrganSegmentationModule::computeWatershedTransformation()
 	ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
 	if( imageRecord && imageRecord->image ) {
 		
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( imageRecord->image->GetElementTypeID(),
-			TTYPE threshold = TypeTraits<TTYPE>::Max;
-			
-			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
-			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( imageRecord->image );
-			IMAGE_TYPE::Ptr gradientImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
-
-			Sobel3D( typedImage->GetRegion(), gradientImage->GetRegion(), static_cast< TTYPE >( 0 ) );
-			mGradientImage = gradientImage;
-			
-			
-			mWatersheds = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
-			
-			std::cout << "Finding local minima ..."; std::cout.flush();
-			LocalMinimaRegions3D( gradientImage->GetRegion(), mWatersheds->GetRegion(), threshold );
-			std::cout << "Done\n";
-
-			std::cout << "Watershed transformation ..."; std::cout.flush();
-			WatershedTransformation3D( mWatersheds->GetRegion(), typedImage->GetRegion(), mWatersheds->GetRegion() );
-			std::cout << "Done\n";
-		);
-		//DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mWatersheds );
-		//mViewerController->mMask = mMask;
+		mGraphCutSegmentationWrapper.setInputImage( imageRecord->image );
+		
+		mGraphCutSegmentationWrapper.computeGradientImage();
+		mGraphCutSegmentationWrapper.computeWatershedTransformation();
 	}
 }
 
 void
 OrganSegmentationModule::computeSegmentation()
 {
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( mGradientImage->GetElementTypeID(),
-		typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
-		IMAGE_TYPE::Ptr typedGradientImage = IMAGE_TYPE::Cast( mGradientImage );
-		
-		pushRelabelMaxFlow( mWatersheds->GetRegion(), typedGradientImage->GetRegion() );
-		
-	);
+	mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
 }
 
 /*void

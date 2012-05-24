@@ -134,7 +134,7 @@ struct WeightTransformation
 
 #define ID 8065
 
-inline __device__ bool
+inline __device__ int
 hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdge, float aWeight )
 {
 	int idx = (0x87L*(aEdge.edgeCombIdx % 0xF97889L)+0x1732CFL) % aSize;
@@ -173,7 +173,7 @@ hashEdge( EdgeRecord *aTable, float *aWeights, int aSize, const EdgeRecord &aEdg
 		}
 		idx = (idx+1) % aSize;
 	}
-	return false;
+	//return false;
 }
 
 
@@ -489,7 +489,44 @@ createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion
 	LOG( "createAdjacencyGraph() computations took " << clock.SecondsPassed() );
 }
 
-template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int8, 3 > aInput );
+
+template< typename TEType >
+void
+createAdjacencyGraph( WeightedEdgeListGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput )
+{
+	M4D::Common::Clock clock;
+
+	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledMarkerRegions );
+	size_t regionCount = *(thrust::max_element( thrust::device_pointer_cast( labeledRegionsBuffer.mData ), thrust::device_pointer_cast( labeledRegionsBuffer.mData+labeledRegionsBuffer.mLength ) ));
+	thrust::device_vector< EdgeRecord > edges( regionCount*25 );
+	thrust::device_vector< float > edgeWeights( edges.size() );
+	size_t edgeCount = 0;
+	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
+
+	fillEdgeList( labeledRegionsBuffer, inputBuffer, edges, edgeWeights, edgeCount );
+
+	aGraph.mVertexCount = regionCount;
+	aGraph.mEdges.resize( edgeCount );
+	aGraph.mWeights.resize( edgeCount );
+
+	thrust::host_vector< EdgeRecord > host_edges(edgeCount);
+	thrust::copy( edges.begin(), edges.begin() + edgeCount, host_edges.begin() );
+
+	std::copy( reinterpret_cast<const WeightedEdgeListGraph::EdgeRecord*>(&host_edges[0]), reinterpret_cast<const WeightedEdgeListGraph::EdgeRecord*>(&host_edges[0]) + edgeCount, aGraph.mEdges.begin() );
+	//thrust::transform( edges.begin(), edges.begin() + edgeCount, aGraph.mEdges.begin(), ConvertEdgeRecords() );
+	//
+	thrust::copy( edgeWeights.begin(), edgeWeights.begin() + edgeCount, aGraph.mWeights.begin() );
+
+	LOG( "createAdjacencyGraph() computations took " << clock.SecondsPassed() );
+}
+
+#define DECLARE_TEMPLATE_INSTANCE template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TTYPE, 3 > aInput );
+#include "MedV4D/Common/DeclareTemplateNumericInstances.h"
+
+#define DECLARE_TEMPLATE_INSTANCE template void createAdjacencyGraph( WeightedEdgeListGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TTYPE, 3 > aInput );
+#include "MedV4D/Common/DeclareTemplateNumericInstances.h"
+
+/*template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int8, 3 > aInput );
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint8, 3 > aInput );
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int16, 3 > aInput );
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint16, 3 > aInput );
@@ -498,7 +535,7 @@ template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imagin
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int64, 3 > aInput );
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint64, 3 > aInput );
 template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< float, 3 > aInput );
-template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< double, 3 > aInput );
+template void createAdjacencyGraph( WeightedUndirectedGraph &aGraph, M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< double, 3 > aInput );*/
 
 /*template void createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int8, 3 > aInput, size_t aRegionCount );
 template void createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint8, 3 > aInput, size_t aRegionCount );

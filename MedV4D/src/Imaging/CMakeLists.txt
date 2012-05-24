@@ -58,6 +58,7 @@ SET( IMAGING_HEADERS
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/FilterComputation.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/filterIDsEnum.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/GeometricalObject.h"
+	"${MEDV4D_IMAGING_INCLUDE_DIR}/GraphCutSegmentation.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/GeometricalObjectTypeOperations.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/GeometryDatasetFactory.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/Histogram.h"

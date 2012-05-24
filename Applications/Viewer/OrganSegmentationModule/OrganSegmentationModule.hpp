@@ -9,6 +9,8 @@
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include "MedV4D/Common/IDGenerator.h"
 
+#include "MedV4D/Imaging/GraphCutSegmentation.h"
+
 
 
 
@@ -68,8 +70,7 @@ protected:
 	M4D::Imaging::Mask3D::Ptr	mMask;
 	Image16_3D::Ptr mImage;
 	
-	M4D::Imaging::Image< uint32, 3 >::Ptr mWatersheds;
-	M4D::Imaging::AImage::Ptr mGradientImage;
+	GraphCutSegmentationWrapper	mGraphCutSegmentationWrapper;
 	
 	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
 };
