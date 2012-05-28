@@ -67,6 +67,51 @@ protected:
 	uint8 mBrushValue;
 };
 
+class RegionMarkingMouseController: public ADrawingMouseController
+{
+public:
+	typedef boost::shared_ptr<RegionMarkingMouseController> Ptr;
+	RegionMarkingMouseController( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions ): mRegions( aRegions )
+	{ ASSERT( mRegions ); }
+	
+	void
+	setValuesSet( boost::shared_ptr< std::set< uint32 > > aValues )
+	{
+		mValues = aValues;
+	}
+protected:	
+	void
+	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
+	{
+		ASSERT( aValues );
+		ASSERT( mRegions );
+		drawMaskStep( aStart, aEnd );
+	}
+	
+	void
+	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd )
+	{
+		float width = 10.0f;
+		Vector3f offset( width, width, width );
+		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
+		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
+		
+		Vector3i c1 = M4D::maxVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( minimum ), mRegions->GetMinimum() );
+		Vector3i c2 = M4D::minVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( maximum ), mRegions->GetMaximum() );
+		try {
+			M4D::Imaging::painting::getValuesFromRectangleAlongLine( *mRegions, *mValues, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
+			//M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
+		} catch (...){
+			D_PRINT( "drawStep exception" );
+		}
+	}
+	
+	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
+	boost::shared_ptr< std::set< uint32 > > mValues;
+};
+
+
+
 class OrganSegmentationController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
 	Q_OBJECT;
@@ -158,7 +203,7 @@ public:
 
 	M4D::Common::IDNumber mModeId;
 	
-	MaskDrawingMouseController::Ptr mMaskDrawingController;
+	ADrawingMouseController::Ptr mMaskDrawingController;
 	
 	uint8 mBrushValue;
 };

@@ -106,7 +106,7 @@ OrganSegmentationController::toggleMaskDrawing( bool aToggle )
 	if( aToggle ) {
 		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask, 255 ) );
 	} else {
-		mMaskDrawingController = MaskDrawingMouseController::Ptr();
+		mMaskDrawingController.reset();
 	}
 }
 
@@ -114,9 +114,9 @@ void
 OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 {
 	if( aToggle ) {
-		mMaskDrawingController = MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask, mBrushValue ) );
+		mMaskDrawingController = RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule->mGraphCutSegmentationWrapper.mWatersheds ) );
 	} else {
-		mMaskDrawingController = MaskDrawingMouseController::Ptr();
+		mMaskDrawingController.reset();
 	}
 }
 
