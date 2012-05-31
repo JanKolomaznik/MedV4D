@@ -30,6 +30,13 @@ public:
 
 	void
 	stopSegmentationMode();
+	
+	GraphCutSegmentationWrapper &
+	getGraphCutSegmentationWrapper()
+	{
+		return mGraphCutSegmentationWrapper;
+	}
+		
 protected:
 	void
 	loadModule();

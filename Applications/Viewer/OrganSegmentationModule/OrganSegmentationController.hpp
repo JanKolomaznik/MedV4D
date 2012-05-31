@@ -71,11 +71,13 @@ class RegionMarkingMouseController: public ADrawingMouseController
 {
 public:
 	typedef boost::shared_ptr<RegionMarkingMouseController> Ptr;
-	RegionMarkingMouseController( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions ): mRegions( aRegions )
+	typedef std::set< uint32 > ValuesSet;
+	
+	RegionMarkingMouseController( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions, boost::shared_ptr< ValuesSet > aValues = boost::shared_ptr< ValuesSet >() ): mRegions( aRegions ), mValues( aValues )
 	{ ASSERT( mRegions ); }
 	
 	void
-	setValuesSet( boost::shared_ptr< std::set< uint32 > > aValues )
+	setValuesSet( boost::shared_ptr< ValuesSet > aValues )
 	{
 		mValues = aValues;
 	}
@@ -83,7 +85,7 @@ protected:
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
-		ASSERT( aValues );
+		ASSERT( mValues );
 		ASSERT( mRegions );
 		drawMaskStep( aStart, aEnd );
 	}
@@ -107,10 +109,11 @@ protected:
 	}
 	
 	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
-	boost::shared_ptr< std::set< uint32 > > mValues;
+	boost::shared_ptr< ValuesSet > mValues;
 };
 
 
+class OrganSegmentationModule;
 
 class OrganSegmentationController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
@@ -129,7 +132,7 @@ public:
 	typedef M4D::GUI::Viewer::ViewerController ControllerPredecessor;
 	typedef M4D::GUI::Viewer::RenderingExtension RenderingExtPredecessor;
 
-	OrganSegmentationController();
+	OrganSegmentationController( OrganSegmentationModule &aModule );
 	~OrganSegmentationController();
 
 	void
@@ -202,6 +205,8 @@ public:
 	bool mOverlay;
 
 	M4D::Common::IDNumber mModeId;
+	
+	OrganSegmentationModule &mModule;
 	
 	ADrawingMouseController::Ptr mMaskDrawingController;
 	

@@ -1,7 +1,8 @@
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
+#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #include <algorithm>
 
-OrganSegmentationController::OrganSegmentationController(): mBrushValue( 255 )
+OrganSegmentationController::OrganSegmentationController( OrganSegmentationModule &aModule ): mModule( aModule ), mBrushValue( 255 )
 {
 
 	
@@ -78,6 +79,7 @@ OrganSegmentationController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aI
 {
 	
 }
+
 void
 OrganSegmentationController::preRender3D()
 {
@@ -114,7 +116,7 @@ void
 OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 {
 	if( aToggle ) {
-		mMaskDrawingController = RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule->mGraphCutSegmentationWrapper.mWatersheds ) );
+		mMaskDrawingController = RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule.getGraphCutSegmentationWrapper().mWatersheds, mModule.getGraphCutSegmentationWrapper().mForegroundMarkers ) );
 	} else {
 		mMaskDrawingController.reset();
 	}
@@ -122,11 +124,19 @@ OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 
 void
 OrganSegmentationController::changeMarkerType( bool aForeground )
-{
-	mBrushValue = aForeground ? 255 : 100;
-	if( mMaskDrawingController ) {
-			mMaskDrawingController->setBrushValue( mBrushValue );
+{	
+	if (mMaskDrawingController && dynamic_cast<RegionMarkingMouseController *>( mMaskDrawingController.get()) ) {
+		RegionMarkingMouseController &controller = dynamic_cast<RegionMarkingMouseController &>(*mMaskDrawingController);
+		if ( aForeground ) {
+			controller.setValuesSet( mModule.getGraphCutSegmentationWrapper().mForegroundMarkers );
+		} else {
+			controller.setValuesSet( mModule.getGraphCutSegmentationWrapper().mBackgroundMarkers );
+		}
 	}
+	/*mBrushValue = aForeground ? 255 : 100;
+	if( mMaskDrawingController && boost::dynamic_pointer_cast<>( mMaskDrawingController ) ) {
+			mMaskDrawingController->setBrushValue( mBrushValue );
+	}*/
 }
 
 

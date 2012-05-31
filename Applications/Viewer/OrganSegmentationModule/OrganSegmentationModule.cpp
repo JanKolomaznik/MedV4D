@@ -20,7 +20,7 @@ OrganSegmentationModule::loadModule()
 {
 	ApplicationManager * appManager = ApplicationManager::getInstance();
 
-	mViewerController = OrganSegmentationController::Ptr( new OrganSegmentationController );
+	mViewerController = OrganSegmentationController::Ptr( new OrganSegmentationController( *this ) );
 
 	mModeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
 	mViewerController->setModeId( mModeId );

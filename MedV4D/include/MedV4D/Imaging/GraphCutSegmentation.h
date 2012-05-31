@@ -17,6 +17,9 @@
 class GraphCutSegmentationWrapper
 {
 public:
+	GraphCutSegmentationWrapper(): mForegroundMarkers( boost::make_shared< std::set<uint32> >() ), mBackgroundMarkers( boost::make_shared< std::set<uint32> >() )
+	{ }
+	
 	void
 	setInputImage( M4D::Imaging::AImage::Ptr aInputImage )
 	{
@@ -29,6 +32,8 @@ public:
 		mInputImage.reset();
 		mWatersheds.reset();
 		mGradientImage.reset();
+		mForegroundMarkers = boost::make_shared< std::set<uint32> >();
+		mBackgroundMarkers = boost::make_shared< std::set<uint32> >();
 	}
 //protected:
 	void
@@ -87,6 +92,9 @@ public:
 	M4D::Imaging::AImage::Ptr mGradientImage;
 	
 	WeightedEdgeListGraph::Ptr mGraph;
+	
+	boost::shared_ptr< std::set< uint32 > > mForegroundMarkers;
+	boost::shared_ptr< std::set< uint32 > > mBackgroundMarkers;
 };
 
 
