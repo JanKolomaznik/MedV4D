@@ -122,6 +122,9 @@ public:
         virtual ADataset::ConstPtr
         GetDatasetReadOnlyPtr() const = 0;
 
+	virtual bool
+	IsDatasetAvailable() const = 0;
+	
 
         /**
          * Sets object, which will be listening messages going through
@@ -324,6 +327,12 @@ public:
                 }
                 return boost::static_pointer_cast< const ADataset > ( _dataset );
         }
+
+        bool
+	IsDatasetAvailable() const
+	{
+                return _dataset != NULL;
+	}
 protected:
         mutable typename DatasetType::Ptr _dataset;
 };

@@ -506,6 +506,7 @@ createAdjacencyGraph( WeightedEdgeListGraph &aGraph, M4D::Imaging::ImageRegion< 
 	fillEdgeList( labeledRegionsBuffer, inputBuffer, edges, edgeWeights, edgeCount );
 
 	aGraph.mVertexCount = regionCount;
+	aGraph.mEdgeCount = edgeCount;
 	aGraph.mEdges.resize( edgeCount );
 	aGraph.mWeights.resize( edgeCount );
 

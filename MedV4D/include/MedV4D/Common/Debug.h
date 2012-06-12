@@ -26,6 +26,7 @@
 #ifdef DEBUG_LEVEL
 #include <iostream>
 #include <string>
+#include <boost/format.hpp>
 #include <iomanip>
 #include <cassert>
 #include "MedV4D/Common/StringTools.h"

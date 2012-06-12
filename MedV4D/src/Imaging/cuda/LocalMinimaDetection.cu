@@ -66,8 +66,8 @@ LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename Reg
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );
-	cudaFree( inBuffer.mData );
-	cudaFree( outBuffer.mData );
+	//cudaFree( inBuffer.mData );
+	//cudaFree( outBuffer.mData );
 	CheckCudaErrorState( "Free memory" );
 }
 
@@ -76,6 +76,7 @@ template< typename RegionType >
 void
 LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
 {
+	CheckCudaErrorState( "Entering LocalMinimaRegions3D()" );
 	typedef typename RegionType::ElementType TElement;
 	
 	ASSERT( output.GetSize() == input.GetSize() );
@@ -85,6 +86,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
 	D_PRINT( "ALLOCATE output buffer" );
 	Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
+	CheckCudaErrorState( "After Buffer3D allocation" );
 	//D_PRINT( "ALLOCATE LUT buffer" );
 	//Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength +1 ); //+1 is due to shift of labels after parallelScan
 	thrust::device_vector<uint32> lutVector(outBuffer.mLength +1);
@@ -144,9 +146,9 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );
 
-	cudaFree( outBuffer.mData );
+	//cudaFree( outBuffer.mData );
 	//cudaFree( lut.mData );
-	cudaFree( inBuffer.mData );
+	//cudaFree( inBuffer.mData );
 
 }
 

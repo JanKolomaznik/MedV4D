@@ -143,6 +143,16 @@ splitCountTo2dGrid( size_t aCount )
 	return dim3( aCount, 1, 1 );
 }
 
+struct ReferenceCounter {
+	typedef size_t size_type;
+
+	explicit ReferenceCounter(): mReferenceCount( 1 ) {
+		// Nothing to do.
+	}
+
+	size_type mReferenceCount;
+};
+
 template< typename TElement >
 struct Buffer1D
 {
@@ -173,29 +183,142 @@ struct Buffer1D
 template< typename TElement >
 struct Buffer3D
 {
-	Buffer3D( uint3 aSize, int3 aStrides, TElement *aData, bool aDealloc ): mDealloc( false/*aDealloc*/ ), mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aSize.x*aSize.y*aSize.z )
+	__host__
+	Buffer3D( uint3 aSize, int3 aStrides, TElement *aData ): mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aSize.x*aSize.y*aSize.z ), mReferenceCount( new ReferenceCounter )
 	{ /*empty*/ }
-	Buffer3D( uint3 aSize, int3 aStrides, size_t aLength, TElement *aData, bool aDealloc ): mDealloc( false/*aDealloc*/ ), mCount( 1 ), mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aLength )
+
+	__host__
+	Buffer3D( uint3 aSize, int3 aStrides, size_t aLength, TElement *aData ): mSize( aSize ), mStrides( aStrides ), mData( aData ), mLength( aLength ), mReferenceCount( new ReferenceCounter )
 	{ /*empty*/ }
+
+	__host__
+	Buffer3D(const Buffer3D &aOther): mSize( aOther.mSize ), mStrides( aOther.mStrides ), mData( aOther.mData ), mLength( aOther.mLength ), mReferenceCount( aOther.mReferenceCount )
+	{
+		retain();
+	}
+
+	__host__
+	Buffer3D( uint3 aSize ): mSize( aSize ), mReferenceCount( new ReferenceCounter )
+	{ 
+		allocate();
+	}
+
+	__host__
+	Buffer3D( const Vector3u &aSize ): mSize( Vector3uToUint3(aSize) ), mReferenceCount( new ReferenceCounter )
+	{
+		try {
+			allocate();
+		} catch( ... ) {
+			delete mReferenceCount;
+			throw;
+		}
+	}
+
+	
 
 	__host__
 	~Buffer3D()
 	{
-		if( mDealloc ) {
-			D_PRINT( "3D buffer Deallocation :" << std::hex << size_t( mData ) );
+		release();
+	}
+
+	__host__ Buffer3D &
+	operator=( Buffer3D other )
+	{
+		swap( other );
+		return *this;
+	}
+
+	
+
+	__host__ void 
+	swap( Buffer3D &aOther ) {
+		std::swap( mSize, aOther.mSize );
+		std::swap( mStrides, aOther.mStrides );
+		std::swap( mLength, aOther.mLength );
+		std::swap( mData, aOther.mData );
+		std::swap( mReferenceCount, aOther.mReferenceCount );
+	}
+
+	uint3		mSize;
+	int3		mStrides;
+	size_t		mLength;
+	TElement		*mData;
+	ReferenceCounter *mReferenceCount;
+
+
+private:
+	
+	__host__ void 
+	retain() 
+	{
+		++( mReferenceCount->mReferenceCount );
+	}
+
+	__host__ void 
+	release() 
+	{
+		ASSERT( 0 < mReferenceCount->mReferenceCount && "Only call release for reference counts greater than 0." );
+
+		--( mReferenceCount->mReferenceCount );
+		if ( 0 == mReferenceCount->mReferenceCount ) {
+			D_PRINT( 
+				boost::str( 
+					boost::format( "CUDA Deallocating \t%1% bytes\nelement size\t %2% bytes\nfrom address %3% to %4%" ) 
+					% (mLength * sizeof(TElement)) 
+					% sizeof(TElement) 
+					% boost::io::group(std::hex, std::showbase, size_t(mData) ) 
+					% boost::io::group(std::hex, std::showbase, size_t(mData+mLength) ) ) 
+				);
+
+
 			cudaFree( mData );
 			mData = NULL;
 			mLength = 0;
 		}
 	}
 
-	bool mDealloc;
-	int mCount;
+	__host__ void
+	allocate()
+	{
+		/*cudaPitchedPtr pitchedDevPtr;
+		cudaExtent extent;
+		extent.width = mSize.x;
+		extent.height = mSize.y;
+		extent.depth = mSize.z;
 
-	uint3		mSize;
-	int3		mStrides;
-	size_t		mLength;
-	TElement	*mData;
+		cudaError_t errCode = cudaMalloc3D( &pitchedDevPtr, extent );
+		if ( errCode != cudaSuccess ) {
+			_THROW_ EAllocationFailed( "CUDA Buffer3D allocation failed" );
+		}
+
+		mStrides.x = 1;
+		mStrides.y = pitchedDevPtr.pitch / sizeof(TElement);
+		mStrides.z = mStrides.y * mSize.y;
+		mLength = mStrides.z * mSize.z;
+		mData = pitchedDevPtr.ptr;
+
+		ASSERT( pitchedDevPtr.pitch == mStrides.y * sizeof(TElement) );*/
+
+		mStrides.x = 1;
+		mStrides.y = mSize.x;
+		mStrides.z = mStrides.y * mSize.y;
+		mLength = mSize.x*mSize.y*mSize.z;
+		
+		cudaError_t errCode = cudaMalloc( &mData, mLength * sizeof(TElement) );
+		if ( errCode != cudaSuccess ) {
+			_THROW_ EAllocationFailed( "CUDA Buffer3D allocation failed" );
+		}
+
+		D_PRINT( 
+			boost::str( 
+			boost::format( "CUDA allocated \t%1% bytes\nelement size\t %2% bytes\nfrom address %3% to %4%" ) 
+			% (mLength * sizeof(TElement)) 
+			% sizeof(TElement) 
+			% boost::io::group(std::hex, std::showbase, size_t(mData) ) 
+			% boost::io::group(std::hex, std::showbase, size_t(mData+mLength) ) ) 
+			);
+	}
 };
 
 __device__ inline int3
@@ -409,7 +532,7 @@ template< typename TElement >
 Buffer3D< TElement >
 CudaPrepareBuffer( Vector3u aSize )
 {
-	uint3 size = Vector3uToUint3( aSize );
+	/*uint3 size = Vector3uToUint3( aSize );
 	int3 strides = make_int3( 1, size.x, size.x * size.y );
 	size_t length = size.x*size.y*size.z;
 	TElement * dataPointer;
@@ -419,7 +542,8 @@ CudaPrepareBuffer( Vector3u aSize )
 	}
 	D_PRINT( "CUDA allocated \t" << length * sizeof(TElement) << " bytes\nelement size\t" 
 			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(dataPointer) << " to 0x" << size_t(dataPointer+length) << std::dec );
-	return Buffer3D< TElement >( size, strides, length, dataPointer, true );
+	return Buffer3D< TElement >( size, strides, length, dataPointer );*/
+	return Buffer3D< TElement >( aSize );
 }
 
 template< typename TElement >

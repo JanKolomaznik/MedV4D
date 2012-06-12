@@ -301,6 +301,7 @@ void
 OrganSegmentationModule::computeSegmentation()
 {
 	mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
+	mGraphCutSegmentationWrapper.extendGraph();
 }
 
 /*void

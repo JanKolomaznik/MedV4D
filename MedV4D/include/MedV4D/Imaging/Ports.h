@@ -73,6 +73,9 @@ public:
                 return _connection;
         }
 
+        virtual bool
+	IsDatasetAvailable() const = 0;
+
         /**
          * Method to unplug port from connection object - if already
          * disconnected do nothing.
@@ -287,6 +290,9 @@ public:
                 return GetDatasetTypedPtr();
         }
 
+        bool
+	IsDatasetAvailable() const;
+	
         void
         Plug ( ConnectionInterface & connection );
 
@@ -342,6 +348,9 @@ public:
                 return GetDatasetTypedPtr();
         }
 
+        bool
+	IsDatasetAvailable() const;
+	
         void
         Plug ( ConnectionInterface & connection );
 

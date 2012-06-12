@@ -74,8 +74,8 @@ RegionBorderDetection3D( RegionType input, M4D::Imaging::MaskRegion3D output )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );
-	cudaFree( inBuffer.mData );
-	cudaFree( outBuffer.mData );
+	//cudaFree( inBuffer.mData );
+	//cudaFree( outBuffer.mData );
 	CheckCudaErrorState( "Free memory" );
 }
 
@@ -149,17 +149,17 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	
 	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	
-	cudaFree( labeledRegionsBuffer.mData );
-	cudaFree( inputBuffer.mData );
+	//cudaFree( labeledRegionsBuffer.mData );
+	//cudaFree( inputBuffer.mData );
 
-	cudaFree( labeledRegionsBuffer2.mData );
-	cudaFree( tmpBuffer2.mData );
+	//cudaFree( labeledRegionsBuffer2.mData );
+	//cudaFree( tmpBuffer2.mData );
 
 	/*typename M4D::Imaging::Image< SignedElement, 3 >::Ptr tmpDebugImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< SignedElement, 3 >( aLabeledMarkerRegions.GetMinimum(), aLabeledMarkerRegions.GetMaximum(), aLabeledMarkerRegions.GetElementExtents() );
 	cudaMemcpy(tmpDebugImage->GetRegion().GetPointer(), tmpBuffer.mData, labeledRegionsBuffer.mLength * sizeof(SignedElement), cudaMemcpyDeviceToHost );
 	M4D::Imaging::ImageFactory::DumpImage( "Intermediate.dump", *tmpDebugImage );
 */
-	cudaFree( tmpBuffer.mData );
+	//cudaFree( tmpBuffer.mData );
 
 	D_PRINT( "After " << __FUNCTION__ << ": " << cudaMemoryInfoText() );
 }

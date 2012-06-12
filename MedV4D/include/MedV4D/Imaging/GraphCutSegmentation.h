@@ -17,7 +17,9 @@
 class GraphCutSegmentationWrapper
 {
 public:
-	GraphCutSegmentationWrapper(): mForegroundMarkers( boost::make_shared< std::set<uint32> >() ), mBackgroundMarkers( boost::make_shared< std::set<uint32> >() )
+	typedef std::set<uint32> MarkerSet;
+	
+	GraphCutSegmentationWrapper(): mForegroundMarkers( boost::make_shared< MarkerSet >() ), mBackgroundMarkers( boost::make_shared< MarkerSet >() )
 	{ }
 	
 	void
@@ -84,6 +86,37 @@ public:
 			IMAGE_TYPE::Ptr gradientImage = IMAGE_TYPE::Cast( mGradientImage );
 			createAdjacencyGraph( *mGraph, mWatersheds->GetRegion(), gradientImage->GetRegion() );
 		);
+		
+		LOG( boost::str( boost::format( "Graph info :\nVertex count = %1% \nEdge count = %2%" ) % mGraph->mVertexCount % mGraph->mEdgeCount ) );
+	}
+	
+	void
+	extendGraph()
+	{
+		ASSERT( mGraph );
+		ASSERT( mForegroundMarkers );
+		ASSERT( mBackgroundMarkers );
+		
+		mExtendedGraph = boost::make_shared<WeightedEdgeListGraph>();
+		*mExtendedGraph = *mGraph;
+		
+		size_t sourceID = mGraph->mVertexCount + 1;
+		size_t sinkID = mGraph->mVertexCount + 2;
+		mExtendedGraph->mVertexCount += 2;
+		mExtendedGraph->mEdges.resize( mGraph->mEdgeCount + mForegroundMarkers->size() + mBackgroundMarkers->size() + 10 );
+		
+		for( MarkerSet::iterator it = mForegroundMarkers->begin(); it != mForegroundMarkers->end(); ++it ) {
+			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( sourceID, *it ) );
+			mExtendedGraph->mWeights.push_back( 1000 );
+			++mExtendedGraph->mEdgeCount;
+		}
+		for( MarkerSet::iterator it = mBackgroundMarkers->begin(); it != mBackgroundMarkers->end(); ++it ) {
+			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( sinkID, *it ) );
+			mExtendedGraph->mWeights.push_back( 1000 );
+			++mExtendedGraph->mEdgeCount;
+		}
+		
+		LOG( boost::str( boost::format( "Adding %1% foreground marker edges and %2% background marker edges" ) % mForegroundMarkers->size() % mBackgroundMarkers->size() ) );
 	}
 	
 	M4D::Imaging::AImage::Ptr mInputImage;
@@ -93,8 +126,10 @@ public:
 	
 	WeightedEdgeListGraph::Ptr mGraph;
 	
-	boost::shared_ptr< std::set< uint32 > > mForegroundMarkers;
-	boost::shared_ptr< std::set< uint32 > > mBackgroundMarkers;
+	WeightedEdgeListGraph::Ptr mExtendedGraph;
+	
+	boost::shared_ptr< MarkerSet > mForegroundMarkers;
+	boost::shared_ptr< MarkerSet > mBackgroundMarkers;
 };
 
 

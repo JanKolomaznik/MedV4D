@@ -128,9 +128,10 @@ PortInterfaceHelper< DatasetTypeVector >
 		mInputDatasets[i] = M4D::Imaging::ADataset::ConstPtr();
 	}
 	for( size_t i = 0; i < PortCount; ++i ) {
-		if( mInputPorts.GetPort(i).IsPlugged() ) {
+		M4D::Imaging::InputPort& port = mInputPorts.GetPort(i);
+		if( port.IsPlugged() && port.IsDatasetAvailable() ) {
 			try {
-				mInputDatasets[i] = mInputPorts.GetPort(i).GetDatasetPtr();
+				mInputDatasets[i] = port.GetDatasetPtr();
 				++locked_count;
 			} catch (...) {
 				D_PRINT( "Dataset not available on port n." << i );

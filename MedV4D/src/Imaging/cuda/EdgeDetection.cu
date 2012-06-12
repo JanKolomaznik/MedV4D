@@ -33,8 +33,8 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(TElement), cudaMemcpyDeviceToHost );
 	CheckCudaErrorState( "Copy back" );
-	cudaFree( inBuffer.mData );
-	cudaFree( outBuffer.mData );
+	//cudaFree( inBuffer.mData );
+	//cudaFree( outBuffer.mData );
 	CheckCudaErrorState( "Free memory" );
 }
 

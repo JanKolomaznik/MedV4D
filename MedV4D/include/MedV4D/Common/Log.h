@@ -4,6 +4,8 @@
 #include <ostream>
 #include <iomanip>
 #include <string>
+#include <boost/format.hpp>
+
 
 /**
  *  @ingroup common

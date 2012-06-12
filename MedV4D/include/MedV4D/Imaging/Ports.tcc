@@ -16,6 +16,9 @@
  *  @{
  */
 
+
+#include <boost/cast.hpp>
+
 namespace M4D
 {
 namespace Imaging {
@@ -28,7 +31,7 @@ InputPortTyped< DatasetType >
         if ( this->_connection == NULL ) {
                 _THROW_ Port::EDisconnected ( *this );
         }
-        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTyped();
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTyped();
 }
 
 template< typename DatasetType >
@@ -39,7 +42,18 @@ InputPortTyped< DatasetType >
         if ( this->_connection == NULL ) {
                 _THROW_ Port::EDisconnected ( *this );
         }
-        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTypedPtr();
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->GetDatasetReadOnlyTypedPtr();
+}
+
+template< typename DatasetType >
+bool
+InputPortTyped< DatasetType >
+::IsDatasetAvailable() const
+{
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->IsDatasetAvailable();
 }
 
 template< typename DatasetType >
@@ -83,7 +97,7 @@ OutputPortTyped< DatasetType >
         if ( this->_connection == NULL ) {
                 _THROW_ Port::EDisconnected ( *this );
         }
-        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTyped();
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTyped();
 }
 
 template< typename DatasetType >
@@ -94,7 +108,18 @@ OutputPortTyped< DatasetType >
         if ( this->_connection == NULL ) {
                 _THROW_ Port::EDisconnected ( *this );
         }
-        return static_cast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTypedPtr();
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->GetDatasetTypedPtr();
+}
+
+template< typename DatasetType >
+bool
+OutputPortTyped< DatasetType >
+::IsDatasetAvailable() const
+{
+        if ( this->_connection == NULL ) {
+                _THROW_ Port::EDisconnected ( *this );
+        }
+        return boost::polymorphic_downcast< IdealConnectionInterface *> ( this->_connection )->IsDatasetAvailable();
 }
 
 template< typename DatasetType >
