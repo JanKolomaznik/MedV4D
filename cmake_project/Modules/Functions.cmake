@@ -225,7 +225,7 @@ FUNCTION(ADD_MEDV4D_EXECUTABLE prog_name)
 	#MESSAGE( STATUS "${prog_name} headers : ${MEDV4D_EXECUTABLE_HEADERS}" )
 
 	FILTER_HEADERS_FOR_MOC( "${MEDV4D_EXECUTABLE_HEADERS}" mocinput )
-	QT4_WRAP_CPP(mocoutput ${mocinput})
+	QT4_WRAP_CPP(mocoutput ${mocinput}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED ) #Define is workaround for moc bug
 	QT4_ADD_RESOURCES(rccoutput ${MEDV4D_EXECUTABLE_RESOURCES} )
 	QT4_WRAP_UI(uioutput ${MEDV4D_EXECUTABLE_UIS} )
 	ADD_EXECUTABLE( ${prog_name} ${MEDV4D_EXECUTABLE_SOURCES} ${uioutput} ${MEDV4D_EXECUTABLE_HEADERS} ${tcc_files} ${mocoutput} ${rccoutput} )
