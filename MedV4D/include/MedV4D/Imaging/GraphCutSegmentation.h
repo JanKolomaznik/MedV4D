@@ -100,23 +100,32 @@ public:
 		mExtendedGraph = boost::make_shared<WeightedEdgeListGraph>();
 		*mExtendedGraph = *mGraph;
 		
-		size_t sourceID = mGraph->mVertexCount + 1;
-		size_t sinkID = mGraph->mVertexCount + 2;
+		mSourceID = mGraph->mVertexCount + 1;
+		mSinkID = mGraph->mVertexCount + 2;
 		mExtendedGraph->mVertexCount += 2;
-		mExtendedGraph->mEdges.resize( mGraph->mEdgeCount + mForegroundMarkers->size() + mBackgroundMarkers->size() + 10 );
+		mExtendedGraph->mEdges.reserve( mGraph->mEdgeCount + mForegroundMarkers->size() + mBackgroundMarkers->size() + 10 );
 		
 		for( MarkerSet::iterator it = mForegroundMarkers->begin(); it != mForegroundMarkers->end(); ++it ) {
-			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( sourceID, *it ) );
+			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( mSourceID, *it ) );
 			mExtendedGraph->mWeights.push_back( 1000 );
 			++mExtendedGraph->mEdgeCount;
 		}
 		for( MarkerSet::iterator it = mBackgroundMarkers->begin(); it != mBackgroundMarkers->end(); ++it ) {
-			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( sinkID, *it ) );
+			mExtendedGraph->mEdges.push_back( WeightedEdgeListGraph::EdgeRecord( mSinkID, *it ) );
 			mExtendedGraph->mWeights.push_back( 1000 );
 			++mExtendedGraph->mEdgeCount;
 		}
-		
+		ASSERT( mExtendedGraph->mEdgeCount == mExtendedGraph->mEdges.size() );
+		ASSERT( mExtendedGraph->mEdgeCount == mExtendedGraph->mWeights.size() );
 		LOG( boost::str( boost::format( "Adding %1% foreground marker edges and %2% background marker edges" ) % mForegroundMarkers->size() % mBackgroundMarkers->size() ) );
+	}
+
+	void
+	executeGraphCut()
+	{
+		ASSERT( mExtendedGraph );
+
+
 	}
 	
 	M4D::Imaging::AImage::Ptr mInputImage;
@@ -127,6 +136,8 @@ public:
 	WeightedEdgeListGraph::Ptr mGraph;
 	
 	WeightedEdgeListGraph::Ptr mExtendedGraph;
+	size_t mSourceID;
+	size_t mSinkID;
 	
 	boost::shared_ptr< MarkerSet > mForegroundMarkers;
 	boost::shared_ptr< MarkerSet > mBackgroundMarkers;

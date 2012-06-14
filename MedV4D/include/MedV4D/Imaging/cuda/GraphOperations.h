@@ -18,4 +18,7 @@ void
 pushRelabelMaxFlow( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput );
 
 
+void
+minGraphCut( WeightedEdgeListGraph &aGraph, std::vector< bool > &aComponentSet, int aSourceID, int aSinkID );
+
 #endif //ADJACENCY_GRAPH_H

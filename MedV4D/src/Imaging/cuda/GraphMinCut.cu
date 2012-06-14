@@ -1,6 +1,7 @@
 #include "MedV4D/Imaging/cuda/detail/CUDAFiltersUtils.cuh"
 #include <cuda.h>
 #include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/GraphTools.h"
 
 #include "MedV4D/Imaging/cuda/detail/GraphMinCut.cuh"
 
@@ -602,4 +603,24 @@ pushRelabelMaxFlow( size_t aEdgeCount, size_t aVertexCount, thrust::device_vecto
 template< typename TEType >
 void
 pushRelabelMaxFlow( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput );
+
+
+void
+minGraphCut( WeightedEdgeListGraph &aGraph, std::vector< bool > &aComponentSet, int aSourceID, int aSinkID )
+{
+	thrust::device_vector< EdgeRecord > edges( aGraph.mEdgeCount );
+	thrust::device_vector< float > weights( aGraph.mEdgeCount );
+
+	
+
+	thrust::host_vector< EdgeRecord > host_edges(aGraph.mEdgeCount);
+	std::copy( aGraph.mEdges.begin(), aGraph.mEdges.end(), reinterpret_cast<WeightedEdgeListGraph::EdgeRecord*>(&host_edges[0]) );
+	thrust::copy( host_edges.begin(), host_edges.end(), edges.begin() );
+	host_edges.clear();
+
+	thrust::copy( aGraph.mWeights.begin(), aGraph.mWeights.end(), weights.begin() );
+
+	pushRelabelMaxFlow( aGraph.mEdgeCount, aGraph.mVertexCount, edges, weights, aSourceID, aSinkID );
+}
+
 
