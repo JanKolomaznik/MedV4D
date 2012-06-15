@@ -167,17 +167,21 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
 	
 	std::string techniqueName;
+	GLTransferFunctionBuffer1D::ConstPtr transferFunction;
+	GLTransferFunctionBuffer1D::ConstPtr integralTransferFunction;
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
-			if ( !aConfig.transferFunction ) {
+			transferFunction = aConfig.transferFunction.lock();
+			if ( !transferFunction ) {
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
 
-			mCgEffect.SetParameter( "gTransferFunction1D", *(aConfig.transferFunction) );
+			mCgEffect.SetParameter( "gTransferFunction1D", *transferFunction );
 
-			if( aConfig.integralTransferFunction ) {
-				mCgEffect.SetParameter( "gIntegralTransferFunction1D", *(aConfig.integralTransferFunction) );
+			integralTransferFunction = aConfig.integralTransferFunction.lock();
+			if( integralTransferFunction ) {
+				mCgEffect.SetParameter( "gIntegralTransferFunction1D", *integralTransferFunction );
 			}
 			unsigned configurationMask = 0;
 

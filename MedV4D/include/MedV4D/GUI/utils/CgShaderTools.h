@@ -8,7 +8,6 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include "MedV4D/GUI/utils/DrawingTools.h"
-#include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/Camera.h"
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/GUI/utils/TransferFunctionBuffer.h"

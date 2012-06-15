@@ -18,6 +18,15 @@ struct ImageData3D
 	float3 realMaximum;
 };
 
+struct UnsignedImageData3D
+{
+	usampler3D data: TEX0;
+	int3 size;
+	float3 realSize;
+	float3 realMinimum;
+	float3 realMaximum;
+};
+
 struct TransferFunction1D
 {
 	sampler1D data: TEX1;

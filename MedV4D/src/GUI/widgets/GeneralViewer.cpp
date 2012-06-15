@@ -134,12 +134,12 @@ GeneralViewer::setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFuncti
 	//getViewerState().mTFunctionBuffer = aTFunctionBuffer;
 	
 	makeCurrent();
-	getViewerState().mTransferFunctionBufferInfo.tfGLBuffer = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );	
+	getViewerState().mTransferFunctionBufferInfo.tfGLBuffer = createGLTransferFunctionBuffer1D( *aTFunctionBuffer );	
 	//getViewerState().mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
 	doneCurrent();
 
-	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
-	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
+	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
 
 	notifyAboutSettingsChange();
 	update();
@@ -150,9 +150,9 @@ GeneralViewer::setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunct
 {
 	getViewerState().mTransferFunctionBufferInfo = aTFunctionBufferInfo;
 
-	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
-	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer.get();
-	getViewerState().mVolumeRenderConfig.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer.get();
+	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	getViewerState().mVolumeRenderConfig.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;
 
 	notifyAboutSettingsChange();
 	update();

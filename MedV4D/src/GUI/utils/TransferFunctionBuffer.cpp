@@ -125,7 +125,7 @@ TransferFunctionBuffer1D::SetMappedInterval( TransferFunctionBuffer1D::MappedInt
 
 
 GLTransferFunctionBuffer1D::Ptr
-CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction )
+createGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction )
 {
 	if ( aTransferFunction.Size() == 0 ) {
 		_THROW_ ErrorHandling::EBadParameter( "Transfer function buffer of 0 size" );

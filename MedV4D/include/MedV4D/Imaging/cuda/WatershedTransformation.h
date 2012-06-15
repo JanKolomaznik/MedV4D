@@ -7,7 +7,7 @@ RegionBorderDetection3D( InRegionType input,  M4D::Imaging::MaskRegion3D output 
 
 template< typename TEType >
 void
-WatershedTransformation3D( 
+watershedTransformation3D( 
 			M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, 
 			M4D::Imaging::ImageRegion< TEType, 3 > aInput, 
 			M4D::Imaging::ImageRegion< uint32, 3 > aOutput );

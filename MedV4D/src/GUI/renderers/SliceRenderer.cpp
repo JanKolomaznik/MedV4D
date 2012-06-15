@@ -53,7 +53,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
 
 	std::string techniqueName;
-
+	GLTransferFunctionBuffer1D::ConstPtr transferFunction;
 	switch ( aConfig.colorTransform ) {
 	case ctLUTWindow:
 		{
@@ -63,13 +63,11 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 		break;
 	case ctTransferFunction1D:
 		{
-			if ( !aConfig.transferFunction ) {
+			transferFunction = aConfig.transferFunction.lock();
+			if ( !transferFunction ) {
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
-
-			//mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
-			mCgEffect.SetParameter( "gTransferFunction1D", *(aConfig.transferFunction) );
-			//mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
+			mCgEffect.SetParameter( "gTransferFunction1D", *transferFunction );
 			techniqueName = "TransferFunction1D_3DNoBlending";
 		}
 		break;

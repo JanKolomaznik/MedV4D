@@ -5,7 +5,7 @@
 //#include "MedV4D/GUI/widgets/AViewer.h"
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
 #include <QtGui>
-#include <QtOpenGL>
+//#include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 

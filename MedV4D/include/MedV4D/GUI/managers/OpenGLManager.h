@@ -4,7 +4,12 @@
 #include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/Common/Common.h"
-#include <QtOpenGL>
+
+//#include <QtOpenGL>
+#include <QGLWidget>
+#include <QGLContext>
+#include <QColor>
+
 #include <boost/thread.hpp> 
 #include <boost/thread/recursive_mutex.hpp>
 //#include <boost/thread/unique_lock.hpp>

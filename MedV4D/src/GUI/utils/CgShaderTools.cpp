@@ -89,11 +89,11 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage3D &aImage )
 void
 CgEffect::SetParameter( std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction )
 {
-	SetTextureParameter( TO_STRING( aName << ".data" ), aTransferFunction.GetTextureID() );
+	SetTextureParameter( TO_STRING( aName << ".data" ), aTransferFunction.getTextureID() );
 
-	SetParameter( TO_STRING( aName << ".interval" ), aTransferFunction.GetMappedInterval() );
+	SetParameter( TO_STRING( aName << ".interval" ), aTransferFunction.getMappedInterval() );
 
-	SetParameter( TO_STRING( aName << ".sampleCount" ), aTransferFunction.GetSampleCount() );
+	SetParameter( TO_STRING( aName << ".sampleCount" ), aTransferFunction.getSampleCount() );
 }
 
 

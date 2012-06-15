@@ -302,6 +302,7 @@ OrganSegmentationModule::computeSegmentation()
 {
 	mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
 	mGraphCutSegmentationWrapper.extendGraph();
+	mGraphCutSegmentationWrapper.executeGraphCut();
 }
 
 /*void

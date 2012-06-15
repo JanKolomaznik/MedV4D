@@ -69,9 +69,10 @@ public:
 			
 			mWatersheds = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( gradientImage->GetMinimum(), gradientImage->GetMaximum(), gradientImage->GetElementExtents() );
 			
-			LocalMinimaRegions3D( gradientImage->GetRegion(), mWatersheds->GetRegion(), threshold );
+			mRegionCount = localMinimaRegions3D( gradientImage->GetRegion(), mWatersheds->GetRegion(), threshold );
 
-			WatershedTransformation3D( mWatersheds->GetRegion(), gradientImage->GetRegion(), mWatersheds->GetRegion() );
+			watershedTransformation3D( mWatersheds->GetRegion(), gradientImage->GetRegion(), mWatersheds->GetRegion() );
+			
 			LOG( "Computed watershed transformation" );
 		);
 	}
@@ -134,6 +135,7 @@ public:
 	M4D::Imaging::AImage::Ptr mInputImage;
 	
 	M4D::Imaging::Image< uint32, 3 >::Ptr mWatersheds;
+	size_t mRegionCount;
 	M4D::Imaging::AImage::Ptr mGradientImage;
 	
 	WeightedEdgeListGraph::Ptr mGraph;

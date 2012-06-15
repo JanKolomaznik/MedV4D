@@ -107,8 +107,6 @@ struct VolumeRenderer::RenderingConfiguration
 		: //primaryImageData( NULL ), 
 		//secondaryImageData( NULL ), 
 		colorTransform( ctMaxIntensityProjection ), 
-		transferFunction( NULL ), 
-		integralTransferFunction( NULL ), 
 		jitterEnabled( true ), 
 		jitterStrength( 1.0f ), 
 		shadingEnabled( true ), 
@@ -124,8 +122,8 @@ struct VolumeRenderer::RenderingConfiguration
 	GLTextureImage3D::WPtr			secondaryImageData;
 	
 	int					colorTransform;
-	const GLTransferFunctionBuffer1D	*transferFunction;
-	const GLTransferFunctionBuffer1D	*integralTransferFunction;
+	GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
+	GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
 	Vector2f				lutWindow;
 	Camera					camera;
 	bool					jitterEnabled;

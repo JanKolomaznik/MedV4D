@@ -37,7 +37,7 @@ ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > &outBuffer, Buffer1
 
 template< typename RegionType >
 void
-LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename RegionType::ElementType aThreshold )
+localMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename RegionType::ElementType aThreshold )
 {
 	typedef typename RegionType::ElementType TElement;
 	
@@ -73,8 +73,8 @@ LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename Reg
 
 
 template< typename RegionType >
-void
-LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
+uint32
+localMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
 {
 	CheckCudaErrorState( "Entering LocalMinimaRegions3D()" );
 	typedef typename RegionType::ElementType TElement;
@@ -149,9 +149,16 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	//cudaFree( outBuffer.mData );
 	//cudaFree( lut.mData );
 	//cudaFree( inBuffer.mData );
-
+	return lutVector[lutVector.size()];
 }
 
+#define DECLARE_TEMPLATE_INSTANCE template void localMinima3D( M4D::Imaging::ImageRegion< TTYPE, 3 > input, M4D::Imaging::MaskRegion3D output, TTYPE aThreshold );
+#include "MedV4D/Common/DeclareTemplateNumericInstances.h"
+
+#define DECLARE_TEMPLATE_INSTANCE template uint32 localMinimaRegions3D( M4D::Imaging::ImageRegion< TTYPE, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, TTYPE aThreshold );
+#include "MedV4D/Common/DeclareTemplateNumericInstances.h"
+
+/*
 template void LocalMinima3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output, int8 aThreshold );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output, uint8 aThreshold );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::MaskRegion3D output, int16 aThreshold );
@@ -172,4 +179,4 @@ template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint32, 3 > input
 template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, int64 aThreshold );
 template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, uint64 aThreshold );
 template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, float aThreshold );
-template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, double aThreshold );
+template void LocalMinimaRegions3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::ImageRegion< uint32, 3 > output, double aThreshold );*/

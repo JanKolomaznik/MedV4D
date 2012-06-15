@@ -30,7 +30,11 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 */
-#include <QtOpenGL>
+//#include <QtOpenGL>
+
+#include <QGLContext>
+#include <QColor>
+
 
 #ifdef DEBUG_LEVEL
 #define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }

@@ -51,8 +51,7 @@ struct SliceRenderer::RenderingConfiguration
 		//secondaryImageData( NULL ), 
 		plane( XY_PLANE ), 
 		currentSlice( 0 ), 
-		colorTransform( ctLUTWindow ), 
-		transferFunction( NULL ), 
+		colorTransform( ctLUTWindow ),
 		enableInterpolation( true ),
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{}
@@ -79,8 +78,8 @@ struct SliceRenderer::RenderingConfiguration
 	}
 
 	int					colorTransform;
-	const GLTransferFunctionBuffer1D	*transferFunction;
-	Vector2f				lutWindow;
+	GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
+	Vector2f					lutWindow;
 	ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
 	

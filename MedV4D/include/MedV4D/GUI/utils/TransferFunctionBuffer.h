@@ -89,19 +89,22 @@ struct GLTransferFunctionBuffer1D
 {
 	typedef Vector2f MappedInterval;
 	typedef boost::shared_ptr< GLTransferFunctionBuffer1D > Ptr;
+	typedef boost::shared_ptr< const GLTransferFunctionBuffer1D > ConstPtr;
+	typedef boost::weak_ptr< GLTransferFunctionBuffer1D > WPtr;
+	typedef boost::weak_ptr< const GLTransferFunctionBuffer1D > ConstWPtr;
 
-	friend GLTransferFunctionBuffer1D::Ptr CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
+	friend GLTransferFunctionBuffer1D::Ptr createGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
 
 	MappedInterval
-	GetMappedInterval()const
+	getMappedInterval()const
 	{ return mMappedInterval; }
 
 	GLuint
-	GetTextureID()const
+	getTextureID()const
 	{ return mGLTextureID; }
 
 	int
-	GetSampleCount()const
+	getSampleCount()const
 	{
 		return mSampleCount;
 	}
@@ -116,7 +119,7 @@ private:
 };
 
 GLTransferFunctionBuffer1D::Ptr
-CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
+createGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
 
 struct TransferFunctionBufferInfo
 {

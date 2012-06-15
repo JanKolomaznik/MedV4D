@@ -20,7 +20,7 @@
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
 #include <QtGui>
-#include <QtOpenGL>
+//#include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 #include <map>

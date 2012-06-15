@@ -258,7 +258,7 @@ private:
 	__host__ void 
 	release() 
 	{
-		ASSERT( 0 < mReferenceCount->mReferenceCount && "Only call release for reference counts greater than 0." );
+		ASSERT( 0 < mReferenceCount->mReferenceCount );
 
 		--( mReferenceCount->mReferenceCount );
 		if ( 0 == mReferenceCount->mReferenceCount ) {
