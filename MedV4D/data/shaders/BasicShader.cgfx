@@ -1,5 +1,7 @@
 #include "DataStructures.inc"
 
+#include "Profiles.inc"
+
 ViewSetup gViewSetup;
 
 VertexOutput
@@ -31,8 +33,8 @@ fp_Basic(
 
 technique Basic  {
 	pass t0 {
-		VertexProgram = compile glslv vp_Basic(gViewSetup);
-		FragmentProgram = compile glslf fp_Basic();
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_Basic(gViewSetup);
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_Basic();
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -42,3 +44,5 @@ technique Basic  {
 		DepthFunc = LEqual;
 	}
 }
+
+

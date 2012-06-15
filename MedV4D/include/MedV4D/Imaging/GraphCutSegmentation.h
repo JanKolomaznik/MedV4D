@@ -44,7 +44,7 @@ public:
 		ASSERT( mInputImage );
 		
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( mInputImage->GetElementTypeID(),
-			TTYPE threshold = TypeTraits<TTYPE>::Max;
+			//TTYPE threshold = TypeTraits<TTYPE>::Max;
 			
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( mInputImage );
@@ -125,6 +125,9 @@ public:
 	{
 		ASSERT( mExtendedGraph );
 
+		std::vector< bool > componentSet;
+
+		minGraphCut( *mExtendedGraph, componentSet, mSourceID, mSinkID );
 
 	}
 	

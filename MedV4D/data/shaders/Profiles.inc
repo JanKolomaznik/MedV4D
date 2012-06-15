@@ -1,0 +1,9 @@
+#ifndef PROFILES_INC
+#define PROFILES_INC
+
+#define VERTEX_SHADER_PROFILE gp4vp
+#define FRAGMENT_SHADER_PROFILE gp4fp
+#define GEOMETRY_SHADER_PROFILE gp4gp
+
+
+#endif //PROFILES_INC

@@ -196,9 +196,10 @@ ViewerWindow::ViewerWindow()
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
 		
-		
-	M4D::GUI::Renderer::gSliceRendererShaderPath = "data/shaders/ImageRender.cgfx";
-	M4D::GUI::Renderer::gVolumeRendererShaderPath = "data/shaders/ImageRender.cgfx";
+
+	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
+	M4D::GUI::Renderer::gSliceRendererShaderPath = dataDirName / "shaders/ImageRender.cgfx";
+	M4D::GUI::Renderer::gVolumeRendererShaderPath = dataDirName / "shaders/ImageRender.cgfx";
 
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );

@@ -56,6 +56,7 @@ const int edgeOrder[96/*8*12*/];/* = {
 
 //INCLUDE SHADERS
 #include "Tools.inc"
+#include "Profiles.inc"
 #include "ImageShaderPrograms.cgfx"
 
 
@@ -70,8 +71,8 @@ const int edgeOrder[96/*8*12*/];/* = {
 //*********************** TRANSFER FUNCTIONS ****************
 technique TransferFunction1D_3DNoBlending {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1D_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -84,8 +85,8 @@ technique TransferFunction1D_3DNoBlending {
 
 technique TransferFunction1D_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1D_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -98,8 +99,8 @@ technique TransferFunction1D_3D {
 
 technique TransferFunction1DShading_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1DShading_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -133,8 +134,8 @@ technique TransferFunction1DShadingJitter_3D {
 
 technique TransferFunction1DJitter_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_TransferFunction1DJitter_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1DJitter_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -147,8 +148,8 @@ technique TransferFunction1DJitter_3D {
 //*********************** INTEGRAL TRANSFER FUNCTIONS ****************
 /*technique IntegralTransferFunction1D_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_IntegralTransferFunction1D_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_IntegralTransferFunction1D_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -161,8 +162,8 @@ technique TransferFunction1DJitter_3D {
 
 technique IntegralTransferFunction1DShading_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_IntegralTransferFunction1DShading_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_IntegralTransferFunction1DShading_3D( 
 									gPrimaryImageData3D, 
 									gIntegralTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -196,8 +197,8 @@ technique IntegralTransferFunction1DShadingJitter_3D {
 /*
 technique IntegralTransferFunction1DJitter_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_IntegralTransferFunction1DJitter_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_IntegralTransferFunction1DJitter_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
@@ -213,8 +214,8 @@ technique IntegralTransferFunction1DJitter_3D {
 
 technique WLWindow_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_WLWindow_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_WLWindow_3D( 
 							gPrimaryImageData3D, 
 							float3( 
 								gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
@@ -227,8 +228,8 @@ technique WLWindow_3D {
 
 technique WLWindowMIP_3D  {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_WLWindow_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_WLWindow_3D( 
 								gPrimaryImageData3D, 
 								float3( 
 									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
@@ -249,8 +250,8 @@ technique WLWindowMIP_3D  {
 
 technique WLWindowBasic_3D  {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_WLWindowBasic_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_WLWindowBasic_3D( 
 								gPrimaryImageData3D, 
 								float3( 
 									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
@@ -271,8 +272,8 @@ technique WLWindowBasic_3D  {
 
 technique SimpleRegionColorMap_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_SimpleRegionColorMap_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_SimpleRegionColorMap_3D( 
 							gPrimaryImageData3D, 
 							gMappedIntervalBands[1] - gMappedIntervalBands[0] 
 							);
@@ -281,8 +282,8 @@ technique SimpleRegionColorMap_3D {
 
 technique OverlayMask_3D {
 	pass t0 {
-		VertexProgram = compile glslv vp_VertexPassPosAsTexCoords();
-		FragmentProgram = compile glslf fp_OverlayMask_3D( 
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_OverlayMask_3D( 
 							gSecondaryImageData3D, 
 							float4( 0.0f, 0.0f, 1.0f, 0.5f ),
 							float4( 0.0f, 1.0f, 0.0f, 0.5f )

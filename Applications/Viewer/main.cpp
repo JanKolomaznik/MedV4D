@@ -55,7 +55,8 @@ main( int argc, char** argv )
 
 	ApplicationManager appManager;
 
-	boost::filesystem::path dirName = GET_SETTINGS( "gui.icons_directory", std::string, std::string( "./data/icons" ) );
+	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
+	boost::filesystem::path dirName = GET_SETTINGS( "gui.icons_directory", std::string, ( dataDirName / "icons" ).string() );
 	appManager.setIconsDirectory(dirName);
 	appManager.initialize( argc, argv );
 
