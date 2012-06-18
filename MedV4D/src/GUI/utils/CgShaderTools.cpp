@@ -1,4 +1,5 @@
 #include "MedV4D/GUI/utils/CgShaderTools.h"
+#include <boost/bind.hpp>
 
 namespace M4D {
 namespace GUI {
@@ -38,12 +39,16 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 			const boost::filesystem::path 		&effectFile
 			)
 {
-	mCgEffect = cgCreateEffectFromFile( gCgContext, effectFile.string().data(), NULL );
+	if ( !boost::filesystem::is_regular_file( effectFile ) ) {
+		_THROW_ CgException( boost::str( boost::format( "Effect could not be loaded! `%1%` is not regular file." ) %effectFile ) );
+	}
+	mCgEffect = ResourceGuard< CGeffect >( boost::bind<CGeffect>( &cgCreateEffectFromFile, gCgContext, effectFile.string().data(), static_cast<const char **>(NULL) ), boost::bind<void>( &cgDestroyEffect, _1 ) );
+
 	CheckForCgError( TO_STRING("creating cg effect from file \"" << effectFile << "\"." ) );
 
 	LOG( "Cg effect \"" << effectFile.filename() << "\" loaded" );
 
-	CGtechnique cgTechnique = cgGetFirstTechnique(mCgEffect);
+	CGtechnique cgTechnique = cgGetFirstTechnique(mCgEffect.get());
 	while (cgTechnique) {
 		if ( cgValidateTechnique(cgTechnique) == CG_FALSE ) {
 			LOG( "\tTechnique " << cgGetTechniqueName(cgTechnique) << " did not validate. Skipping." );
@@ -55,7 +60,7 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 		cgTechnique = cgGetNextTechnique( cgTechnique );
 	}
 	if ( mCgTechniques.size() == 0 ) {
-		throw CgException( "No technique validated!" );
+		_THROW_ CgException( "No technique validated!" );
 	}
 }
 
@@ -63,7 +68,7 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 void
 CgEffect::Finalize()
 {
-	cgDestroyEffect(mCgEffect);
+	//cgDestroyEffect(mCgEffect.get());
 }
 
 void
@@ -100,7 +105,7 @@ CgEffect::SetParameter( std::string aName, const GLTransferFunctionBuffer1D &aTr
 void
 CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgGLSetupSampler( cgParameter, aTexture );
@@ -110,7 +115,7 @@ CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )
 void
 CgEffect::SetParameter( std::string aName, float aValue )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValuefr( cgParameter, 1, &aValue );
@@ -119,7 +124,7 @@ CgEffect::SetParameter( std::string aName, float aValue )
 void
 CgEffect::SetParameter( std::string aName, double aValue )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValuedr( cgParameter, 1, &aValue );
@@ -128,7 +133,7 @@ CgEffect::SetParameter( std::string aName, double aValue )
 void
 CgEffect::SetParameter( std::string aName, int aValue )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValueir( cgParameter, 1, &aValue );
@@ -137,7 +142,7 @@ CgEffect::SetParameter( std::string aName, int aValue )
 void
 CgEffect::SetParameter( std::string aName, const glm::fmat4x4 &aMatrix )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 	/*LOG( "baseType = " << cgGetTypeString( cgGetParameterBaseType( cgParameter ) ) );
 	LOG( "namedType = " << cgGetTypeString( cgGetParameterNamedType( cgParameter ) ) );*/
 
@@ -152,7 +157,7 @@ CgEffect::SetParameter( std::string aName, const glm::fmat4x4 &aMatrix )
 void
 CgEffect::SetParameter( std::string aName, const glm::dmat4x4 &aMatrix )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 	/*LOG( "baseType = " << cgGetTypeString( cgGetParameterBaseType( cgParameter ) ) );
 	LOG( "namedType = " << cgGetTypeString( cgGetParameterNamedType( cgParameter ) ) );*/
 
@@ -167,7 +172,7 @@ CgEffect::SetParameter( std::string aName, const glm::dmat4x4 &aMatrix )
 void
 CgEffect::SetParameter( std::string aName, const BoundingBox3D &aValue )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, TO_STRING( aName << ".vertices" ).data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), TO_STRING( aName << ".vertices" ).data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValuefr( cgParameter, 3*8, aValue.vertices[0].GetData() );
@@ -176,7 +181,7 @@ CgEffect::SetParameter( std::string aName, const BoundingBox3D &aValue )
 void
 CgEffect::SetParameter( std::string aName, const float *aValue, size_t aCount )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValuefr( cgParameter, static_cast<int>(aCount), aValue );
@@ -185,7 +190,7 @@ CgEffect::SetParameter( std::string aName, const float *aValue, size_t aCount )
 void
 CgEffect::SetParameter( std::string aName, const double *aValue, size_t aCount )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValuedr( cgParameter, static_cast<int>(aCount), aValue );
@@ -194,7 +199,7 @@ CgEffect::SetParameter( std::string aName, const double *aValue, size_t aCount )
 void
 CgEffect::SetParameter( std::string aName, const int *aValue, size_t aCount )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect.get(), aName.data() );
 //	ASSERT( )	TODO check type;
 
 	cgSetParameterValueir( cgParameter, static_cast<int>(aCount), aValue );
@@ -221,7 +226,7 @@ CgEffect::SetParameter( std::string aName, const M4D::GLViewSetup &aViewSetup )
 void
 CgEffect::SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), aName.data() );
 
 	cgGLSetStateMatrixParameter(cgParameter, matrix, transform);
 }
@@ -461,8 +466,9 @@ CheckForCgError( const std::string &situation, CGcontext &context  )
 
 	if (error != CG_NO_ERROR) {
 		std::string message( TO_STRING( situation << string ) );
-		if (error == CG_COMPILER_ERROR) {
-			message = TO_STRING( message << "\n" << cgGetLastListing(context) );
+		const char * listing = cgGetLastListing(context);
+		if( listing ) {
+			message = TO_STRING( message << "\nLast listing:" << listing );
 		}
 		_THROW_ CgException( message );
 	}

@@ -492,7 +492,7 @@ struct CreateGLTFBuffer
 	void
 	operator()()
 	{
-		 tfGLBuffer = CreateGLTransferFunctionBuffer1D( *tfBuffer );
+		 tfGLBuffer = createGLTransferFunctionBuffer1D( *tfBuffer );
 	}
 };
 

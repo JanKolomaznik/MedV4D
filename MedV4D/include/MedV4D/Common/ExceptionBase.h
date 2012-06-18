@@ -173,7 +173,7 @@ class EObjectUnavailable: public ExceptionBase
 {
 public:
 	EObjectUnavailable( std::string name ) throw(): ExceptionBase( name ) {}
-	EObjectUnavailable() throw(): ExceptionBase( "Object is'n available." ) {}
+	EObjectUnavailable() throw(): ExceptionBase( "Object is not available." ) {}
 private:
 
 };
