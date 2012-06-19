@@ -32,7 +32,8 @@ FinalizeCg();
 class CgException: public M4D::ErrorHandling::ExceptionBase
 {
 public:
-	CgException( std::string name ) throw() : ExceptionBase( name ) {}
+	CgException( std::string aEffectName, std::string aReport ) throw() : ExceptionBase( TO_STRING( aEffectName << ": " << aReport ) ) {}
+	CgException( std::string aReport ) throw() : ExceptionBase( aReport ) {}
 	~CgException() throw(){}
 };
 
@@ -124,6 +125,7 @@ protected:
 
 	ResourceGuard< CGeffect >	mCgEffect;
 	std::map< std::string, CGtechnique >	mCgTechniques;
+	std::string	mEffectName;
 };
 
 template< typename TGeometryRenderFunctor >
@@ -136,7 +138,7 @@ CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunct
 	
 	std::map< std::string, CGtechnique >::iterator it = mCgTechniques.find( aTechniqueName );
 	if ( it == mCgTechniques.end() ) {
-		_THROW_ CgException( TO_STRING( "Unavailable technique : " << aTechniqueName ) );
+		_THROW_ CgException( mEffectName, TO_STRING( "Unavailable technique : " << aTechniqueName ) );
 	}
 	CGtechnique cgTechnique = it->second;
 

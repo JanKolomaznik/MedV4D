@@ -39,8 +39,10 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 			const boost::filesystem::path 		&effectFile
 			)
 {
+	mEffectName = effectFile.filename();
+
 	if ( !boost::filesystem::is_regular_file( effectFile ) ) {
-		_THROW_ CgException( boost::str( boost::format( "Effect could not be loaded! `%1%` is not regular file." ) %effectFile ) );
+		_THROW_ CgException( mEffectName, boost::str( boost::format( "Effect could not be loaded! `%1%` is not regular file." ) %effectFile ) );
 	}
 	mCgEffect = ResourceGuard< CGeffect >( boost::bind<CGeffect>( &cgCreateEffectFromFile, gCgContext, effectFile.string().data(), static_cast<const char **>(NULL) ), boost::bind<void>( &cgDestroyEffect, _1 ) );
 
@@ -60,7 +62,7 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 		cgTechnique = cgGetNextTechnique( cgTechnique );
 	}
 	if ( mCgTechniques.size() == 0 ) {
-		_THROW_ CgException( "No technique validated!" );
+		_THROW_ CgException( mEffectName, "No technique validated!" );
 	}
 }
 
