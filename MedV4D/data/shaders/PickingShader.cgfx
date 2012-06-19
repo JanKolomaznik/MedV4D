@@ -1,3 +1,4 @@
+#include "Profiles.inc"
 
 struct FragmentOutput
 {
@@ -19,7 +20,7 @@ fp_Picking(/* uniform int aCurrentObjectID */)
 
 technique PickingEffect {
 	pass t0 {
-		FragmentProgram = compile glslf fp_Picking();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_Picking();
 		DepthTestEnable = false;
 		DepthMask = true;
 		CullFaceEnable = false;
