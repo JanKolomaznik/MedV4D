@@ -17,6 +17,8 @@
 
 #include "MedV4D/Common/RAII.h"
 
+#include <boost/shared_ptr.hpp>
+
 namespace M4D {
 namespace GUI {
 
@@ -123,7 +125,7 @@ protected:
 	virtual void
 	prepareState();
 
-	ResourceGuard< CGeffect >	mCgEffect;
+	boost::shared_ptr< ResourceGuard< CGeffect > >	mCgEffect;
 	std::map< std::string, CGtechnique >	mCgTechniques;
 	std::string	mEffectName;
 };
@@ -161,7 +163,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
 	cgSetParameterValuefr( cgParameter, Dim, value.GetData() );	
@@ -171,7 +173,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
 	cgSetParameterValuedr( cgParameter, Dim, value.GetData() );	
@@ -181,7 +183,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &value )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
 	cgSetParameterValueir( cgParameter, Dim, reinterpret_cast< const int* >( value.GetData() ) );	
@@ -191,7 +193,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<int, Dim> &value )
 {
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect.get(), aName.data() );
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
 	cgSetParameterValueir( cgParameter, Dim, value.GetData() );	

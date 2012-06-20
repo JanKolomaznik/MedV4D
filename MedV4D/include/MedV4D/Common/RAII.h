@@ -3,13 +3,15 @@
 
 #include <boost/function.hpp>
 #include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
+
 
 
 namespace M4D
 {
 
 
-class RAII 
+class RAII : private boost::noncopyable
 {
 public:
 	template< typename TAcquisition, typename TRelease >
@@ -51,11 +53,10 @@ protected:
 };
 
 template< typename TResource >
-class ResourceGuard
+class ResourceGuard : private boost::noncopyable
 {
 public:
-	template< typename TAcquisition, typename TRelease >
-	ResourceGuard( TAcquisition aAcquisition, TRelease aRelease, bool aAcquire = true ): mAcquisition( aAcquisition ), mRelease( aRelease ), mAcquired( false ), mValid( true )
+	ResourceGuard( boost::function< TResource() > aAcquisition, boost::function< void(TResource &) > aRelease, bool aAcquire = true ): mAcquisition( aAcquisition ), mRelease( aRelease ), mAcquired( false ), mValid( true )
 	{ 
 		if ( aAcquire ) {
 			acquire();
@@ -78,6 +79,7 @@ public:
 			_THROW_ ErrorHandling::EObjectUnavailable( "acquire() failed. Resource guard not valid" );
 		}
 		if( ! mAcquired ) {
+			D_PRINT( "Acquiring resource" );
 			mResource = mAcquisition();
 			mAcquired = true;
 		}
@@ -91,6 +93,7 @@ public:
 			/*if( !mValid ) {
 				_THROW_ ErrorHandling::EObjectUnavailable( "Resource guard not valid" );
 			}*/
+			D_PRINT( "Releasing resource" );
 			mRelease( mResource );
 			mAcquired = false;
 		}
@@ -116,6 +119,13 @@ protected:
 	TResource mResource;
 
 };
+
+template< typename TResource >
+boost::shared_ptr< ResourceGuard< TResource > >
+makeResourceGuardPtr( boost::function< TResource() > aAcquisition, boost::function< void(TResource &) > aRelease, bool aAcquire = true )
+{
+	return boost::shared_ptr< ResourceGuard< TResource > >( new ResourceGuard< TResource >( aAcquisition, aRelease, aAcquire ) );
+}
 
 } //M4D
 
