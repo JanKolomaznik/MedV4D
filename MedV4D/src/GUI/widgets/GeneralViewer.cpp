@@ -276,7 +276,7 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 	} catch (...) {
 		return QString("NONE");
 	}
-	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0] );
+	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0].lock() );
 	QString result;
 
 	try {
@@ -965,8 +965,8 @@ GeneralViewer::PrepareData()
 	}
 
 	
-	if ( mInputDatasets[0] ) {
-		M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] );
+	if ( mInputDatasets[0].lock() ) {
+		M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0].lock() );
 		if ( ! primaryImage ) return false;
 	
 		getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
@@ -975,8 +975,8 @@ GeneralViewer::PrepareData()
 		return false;
 	}
 
-	if ( mInputDatasets[1] ) {
-		M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[1] );
+	if ( mInputDatasets[1].lock() ) {
+		M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[1].lock() );
 		if ( secondaryImage ) {;
 			getViewerState().mSecondaryImageExtents = secondaryImage->GetImageExtentsRecord();
 			getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *secondaryImage );

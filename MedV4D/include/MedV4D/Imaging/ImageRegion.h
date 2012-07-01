@@ -4,7 +4,7 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Vector.h"
 #include "MedV4D/Imaging/AImageRegion.h"
-#include "MedV4D/Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Imaging/detail/DatasetDefinitionTools.h"
 #include "MedV4D/Imaging/ImageIterator.h"
 #include <memory>
 

@@ -221,9 +221,9 @@ typename GLTextureImageTyped< Dim >::WPtr
 GLTextureGetDimensionedInterfaceWPtr( GLTextureImage::WPtr aTexture )
 {
 	GLTextureImage::Ptr tex = aTexture.lock();
-	if( tex ) {
-		return boost::dynamic_pointer_cast< GLTextureImageTyped< Dim > >( tex );
-	}
+	//if( tex ) {
+	return boost::dynamic_pointer_cast< GLTextureImageTyped< Dim > >( tex );
+	//}
 }
 
 

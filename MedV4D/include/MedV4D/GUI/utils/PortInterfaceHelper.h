@@ -70,7 +70,7 @@ protected:
 	//typedef typename boost::fusion::result_of::as_vector<DatasetTypeVector>::type InputDatasetList;
 
 	//InputDatasetList			mInputDatasets;
-	std::vector< M4D::Imaging::ADataset::ConstPtr >		mInputDatasets;//[boost::mpl::size< DatasetTypeVector >::value];
+	std::vector< M4D::Imaging::ADataset::ConstWPtr >	mInputDatasets;//[boost::mpl::size< DatasetTypeVector >::value];
 	std::vector< M4D::Common::TimeStamp >			mTimeStamps;//[boost::mpl::size< DatasetTypeVector >::value];
 private:
 	struct PortCreator

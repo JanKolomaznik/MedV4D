@@ -13,7 +13,7 @@
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Imaging/DatasetClassEnum.h"
 #include "MedV4D/Common/IOStreams.h"
-#include "MedV4D/Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Imaging/detail/DatasetDefinitionTools.h"
 
 /**
  *  @addtogroup imaging Imaging Library

@@ -75,12 +75,26 @@ namespace Imaging {
 		} \
 		return boost::static_pointer_cast< const ThisClass >( dataset ); \
 	}
+#define PREPARE_CAST_WEAK_POINTER_MACRO	\
+	static WPtr \
+	Cast( ADataset::WPtr dataset ) \
+	{\
+		return Cast( dataset.lock() ); \
+	}
+#define PREPARE_CAST_CONST_WEAK_POINTER_MACRO	\
+	static ConstWPtr \
+	Cast( ADataset::ConstWPtr dataset ) \
+	{ \
+		return Cast( dataset.lock() ); \
+	}
 
 #define PREPARE_CAST_METHODS_MACRO	\
 	PREPARE_CAST_REFERENCE_MACRO \
 	PREPARE_CAST_CONST_REFERENCE_MACRO \
 	PREPARE_CAST_SMART_POINTER_MACRO \
-	PREPARE_CAST_CONST_SMART_POINTER_MACRO
+	PREPARE_CAST_CONST_SMART_POINTER_MACRO \
+	PREPARE_CAST_WEAK_POINTER_MACRO \
+	PREPARE_CAST_CONST_WEAK_POINTER_MACRO
 
 #define IS_CONSTRUCTABLE_MACRO \
 	static const bool IsConstructable = true

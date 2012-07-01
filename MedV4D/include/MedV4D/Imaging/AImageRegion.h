@@ -3,7 +3,7 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Vector.h"
-#include "MedV4D/Imaging/DatasetDefinitionTools.h"
+#include "MedV4D/Imaging/detail/DatasetDefinitionTools.h"
 
 namespace M4D
 {

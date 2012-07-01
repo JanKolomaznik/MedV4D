@@ -46,7 +46,7 @@ SET( IMAGING_HEADERS
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/Convolution.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/Convolution.tcc"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/DatasetClassEnum.h"
-	"${MEDV4D_IMAGING_INCLUDE_DIR}/DatasetDefinitionTools.h"
+	"${MEDV4D_IMAGING_INCLUDE_DIR}/detail/DatasetDefinitionTools.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/DatasetFactory.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/DatasetSerializationTools.h"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/EnergicSnake.h"
