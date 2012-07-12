@@ -165,6 +165,13 @@ GeneralViewer::getTransferFunctionBufferInfo()const
 }
 
 void
+GeneralViewer::setMappingBuffer( IDMappingBuffer::Ptr aMappingBuffer )
+{
+	getViewerState().mMappingBufferInfo.buffer = aMappingBuffer;
+	getViewerState().mMappingBufferInfo.glBuffer = createGLMappingBuffer( *aMappingBuffer ); 
+}
+
+void
 GeneralViewer::setCurrentSlice( int32 slice )
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;

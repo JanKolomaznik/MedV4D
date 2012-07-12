@@ -6,6 +6,7 @@
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/GUI/utils/IUserEvents.h"
 #include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include "MedV4D/GUI/utils/IDMappingBuffer.h"
 #include "MedV4D/GUI/utils/CgShaderTools.h"
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
@@ -100,6 +101,8 @@ public:
 	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 	TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
+	IDMappingBufferInfo			mMappingBufferInfo;
+
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
 	Vector2u				m2DMultiSliceGrid;
@@ -177,6 +180,9 @@ public:
 
 	TransferFunctionBufferInfo
 	getTransferFunctionBufferInfo()const;
+
+	void
+	setMappingBuffer( IDMappingBuffer::Ptr aMappingBuffer );
 
 	void
 	setCurrentSlice( int32 slice );
