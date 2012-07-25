@@ -3,6 +3,7 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/OGLTools.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
 
 namespace M4D
 {
@@ -93,6 +94,11 @@ struct GLTransferFunctionBuffer1D
 	typedef boost::weak_ptr< GLTransferFunctionBuffer1D > WPtr;
 	typedef boost::weak_ptr< const GLTransferFunctionBuffer1D > ConstWPtr;
 
+	~GLTransferFunctionBuffer1D()
+	{
+		OpenGLManager::getInstance()->deleteTextures( mGLTextureID );
+	}
+	
 	friend GLTransferFunctionBuffer1D::Ptr createGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction );
 
 	MappedInterval

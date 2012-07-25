@@ -18,11 +18,6 @@
 
 struct OpenGLManagerPimpl;
 
-struct CurrentContext
-{
-
-};
-
 
 class OpenGLManager
 {
@@ -71,7 +66,13 @@ public:
 		//doneCurrent();
 		return ftor;
 	}
-
+	
+	void
+	deleteTextures( GLuint &aTexture, size_t aCount = 1 )
+	{
+		CurrentContext curr( *this );
+		GL_CHECKED_CALL( glDeleteTextures( aCount, &aTexture ) );
+	}
 protected:
 	virtual M4D::GLTextureImage::Ptr
 	getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage );
