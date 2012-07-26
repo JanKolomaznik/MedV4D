@@ -2,26 +2,26 @@
 #define PROXY_VIEWER_CONTROLLER_H
 
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
+
+
 class ModeViewerController: public M4D::GUI::Viewer::ViewerController
 {
 public:
 	typedef boost::shared_ptr< ModeViewerController > Ptr;
-
+	
 	virtual void
 	activated() = 0;
 
 	virtual void
 	deactivated() = 0;
-
 };
 
-class ProxyViewerController: public M4D::GUI::Viewer::ViewerController
+template< typename TPredecessor >
+class ProxyViewerControllerMixin: public TPredecessor
 {
 public:
-	typedef boost::shared_ptr< ProxyViewerController > Ptr;
+	typedef boost::shared_ptr< ProxyViewerControllerMixin< TPredecessor > > Ptr;
 
-	ProxyViewerController()
-	{}
 
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
@@ -29,7 +29,7 @@ public:
 		if( mCurrentController ) {
 			return mCurrentController->mouseMoveEvent ( aViewerState, aEventInfo );
 		} 
-		return M4D::GUI::Viewer::ViewerController::mouseMoveEvent ( aViewerState, aEventInfo ); 
+		return TPredecessor::mouseMoveEvent ( aViewerState, aEventInfo ); 
 	}
 
 	bool	
@@ -38,7 +38,7 @@ public:
 		if( mCurrentController ) {
 			return mCurrentController->mouseDoubleClickEvent ( aViewerState, aEventInfo );
 		} 
-		return M4D::GUI::Viewer::ViewerController::mouseDoubleClickEvent ( aViewerState, aEventInfo ); 
+		return TPredecessor::mouseDoubleClickEvent ( aViewerState, aEventInfo ); 
 	}
 
 	bool
@@ -47,7 +47,7 @@ public:
 		if( mCurrentController ) {
 			return mCurrentController->mousePressEvent ( aViewerState, aEventInfo );
 		} 
-		return M4D::GUI::Viewer::ViewerController::mousePressEvent ( aViewerState, aEventInfo ); 
+		return TPredecessor::mousePressEvent ( aViewerState, aEventInfo ); 
 	}
 
 	bool
@@ -56,7 +56,7 @@ public:
 		if( mCurrentController ) {
 			return mCurrentController->mouseReleaseEvent ( aViewerState, aEventInfo );
 		} 
-		return M4D::GUI::Viewer::ViewerController::mouseReleaseEvent ( aViewerState, aEventInfo ); 
+		return TPredecessor::mouseReleaseEvent ( aViewerState, aEventInfo ); 
 	}
 
 	bool
@@ -65,7 +65,7 @@ public:
 		if( mCurrentController ) {
 			return mCurrentController->wheelEvent ( aViewerState, event );
 		} 
-		return M4D::GUI::Viewer::ViewerController::wheelEvent ( aViewerState, event ); 
+		return TPredecessor::wheelEvent ( aViewerState, event ); 
 	}
 
 	void
@@ -79,8 +79,19 @@ public:
 	{
 		return mCurrentController;
 	}
+	
+	void
+	resetController()
+	{
+		mCurrentController.reset();
+	}
 protected:
 	M4D::GUI::Viewer::AViewerController::Ptr mCurrentController;
 };
+
+
+typedef ProxyViewerControllerMixin< M4D::GUI::Viewer::ViewerController > ProxyViewerController;
+typedef ProxyViewerControllerMixin< ModeViewerController > ModeProxyViewerController;
+
 
 #endif /*PROXY_VIEWER_CONTROLLER_H*/

@@ -115,7 +115,7 @@ protected:
 
 class OrganSegmentationModule;
 
-class OrganSegmentationController: public ModeViewerController, public M4D::GUI::Viewer::RenderingExtension
+class OrganSegmentationController: public ModeProxyViewerController, public M4D::GUI::Viewer::RenderingExtension
 {
 	Q_OBJECT;
 public:
@@ -153,7 +153,7 @@ public:
 		mModeId = aId;
 	}
 
-	bool
+	/*bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool	
@@ -166,7 +166,7 @@ public:
 	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event );*/
 
 	unsigned
 	getAvailableViewTypes()const;
