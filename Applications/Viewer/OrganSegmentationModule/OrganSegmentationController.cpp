@@ -58,6 +58,17 @@ OrganSegmentationController::toggleMaskDrawing( bool aToggle )
 }
 
 void
+OrganSegmentationController::toggleRegionMarking( bool aToggle )
+{
+	if( aToggle ) {
+		ASSERT(mModule.getGraphCutSegmentationWrapper().mWatersheds);
+		setController( RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule.getGraphCutSegmentationWrapper().mWatersheds, mModule.getGraphCutSegmentationWrapper().mForegroundMarkers ) ) );
+	} else {
+		resetController();//mMaskDrawingController.reset();
+	}
+}
+
+void
 OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 {
 	/*if( aToggle ) {

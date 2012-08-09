@@ -20,13 +20,44 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Mask Operations</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="mSaveMaskButton">
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Save Mask</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="FilePathComboBox" name="widget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -253,37 +284,6 @@
      </widget>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>60</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Mask Operations</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="mSaveMaskButton">
-        <property name="maximumSize">
-         <size>
-          <width>70</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Save Mask</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="FilePathComboBox" name="widget" native="true"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -335,8 +335,8 @@
    <slot>updateTimestamp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>196</x>
-     <y>47</y>
+     <x>374</x>
+     <y>54</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
@@ -415,8 +415,8 @@
    <slot>changedMarkerType()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>75</y>
+     <x>413</x>
+     <y>81</y>
     </hint>
     <hint type="destinationlabel">
      <x>308</x>
@@ -431,8 +431,8 @@
    <slot>changedMarkerType()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>95</y>
+     <x>396</x>
+     <y>106</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
@@ -488,6 +488,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>toggleRegionMarking(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>60</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
@@ -500,5 +516,6 @@
   <slot>toggleBiMaskDraw(bool)</slot>
   <slot>changedMarkerType()</slot>
   <slot>buttonPressed()</slot>
+  <slot>toggleRegionMarking(bool)</slot>
  </slots>
 </ui>

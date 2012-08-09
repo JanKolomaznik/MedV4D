@@ -29,6 +29,8 @@ TransferFunction1D gIntegralTransferFunction1D;
 //sampler1D gTransferFunction1Dtex;
 //float2 gTransferFunction1DInterval;
 
+IDMappingBuffer gIDMappingBuffer;
+
 
 float gRenderingSliceThickness;
 float2 gWLWindow;
@@ -287,6 +289,21 @@ technique OverlayMask_3D {
 							gSecondaryImageData3D, 
 							float4( 0.0f, 0.0f, 1.0f, 0.5f ),
 							float4( 0.0f, 1.0f, 0.0f, 0.5f )
+							);
+		DepthTestEnable = false;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+	}
+	
+}
+
+technique OverlayRegions_3D {
+	pass t0 {
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_OverlayRegions_3D( 
+							gSecondaryImageData3D, 
+							gIDMappingBuffer
 							);
 		DepthTestEnable = false;
 		CullFaceEnable = false;

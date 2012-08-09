@@ -34,6 +34,13 @@ struct TransferFunction1D
 	int sampleCount;
 };
 
+struct IDMappingBuffer
+{
+	sampler1D data: TEX1;
+	int sampleCount;
+};
+
+
 struct FragmentOutput
 {
 	float4 color : COLOR;

@@ -47,6 +47,24 @@ fp_OverlayMask_3D(
 }
 
 FragmentOutput 
+fp_OverlayRegions_3D( 
+		float3 aPosition : TEXCOORD0,
+		uniform ImageData3D aMaskData3D, 
+		uniform IDMappingBuffer aIDMappingBuffer
+		)
+{
+	FragmentOutput OUT;
+	float3 coordinates = texCoordsFromPosition( aPosition, aMaskData3D );
+	//float value = step( 0.5f, tex3D( aMaskData3D.data, coordinates ).x );
+	float origValue = tex3D( aMaskData3D.data, coordinates ).x;
+	//float value = origValue*255; 
+
+	OUT.color = value > 128 ? aFirstMaskColor : ( value > 10 ? aSecondMaskColor : 0 );
+	OUT.color.a *= step( 0.1, origValue );
+	return OUT;
+}
+
+FragmentOutput 
 fp_WLWindow_3D( 
 		float3 aPosition : TEXCOORD0, 
 		uniform ImageData3D aTextureData, 

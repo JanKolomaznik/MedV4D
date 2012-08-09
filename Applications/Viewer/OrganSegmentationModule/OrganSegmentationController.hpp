@@ -81,6 +81,12 @@ public:
 	{
 		mValues = aValues;
 	}
+	
+	void
+	setRegions( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions )
+	{
+		mRegions = aRegions;
+	}
 protected:	
 	void
 	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
@@ -191,6 +197,9 @@ signals:
 public slots:
 	void
 	toggleMaskDrawing( bool aToggle );
+	
+	void
+	toggleRegionMarking( bool aToggle );
 
 	void
 	toggleBiMaskDrawing( bool aToggle );
