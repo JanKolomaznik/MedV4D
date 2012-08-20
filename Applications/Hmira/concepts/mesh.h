@@ -1,6 +1,7 @@
 /*
  * mesh.h
  *
+ *  Created on: Jul 31, 2012
  *      Author: hmirap
  */
 
@@ -12,11 +13,23 @@
 #include <boost/concept/requires.hpp>
 
 
-template <class Mesh>
+/*!
+ * \defgroup concepts
+ * Group of concepts that are checked using
+ * boost::function_requires
+ * 
+ * \struct MeshConcept
+ * \brief Concept required for a mesh
+ * 
+ * class is required to contain vertex_descriptor
+ * satisfying EqualityComparableConcept and AssignableConcept
+ * 
+ * \ingroup concepts
+ */
+template <class TMesh, class TMesh_Traits = mesh_traits<TMesh>>
 struct MeshConcept
 {
-	typedef mesh_traits<Mesh> Mtraits;
-	typedef typename Mtraits::vertex_descriptor vertex_descriptor;
+	typedef typename TMesh_Traits::vertex_descriptor vertex_descriptor;
 
 	void constraints() {
 	      boost::function_requires< boost::EqualityComparableConcept<vertex_descriptor> >();

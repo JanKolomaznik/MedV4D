@@ -1,6 +1,7 @@
 /*
  * winged_edge.h
  *
+ *  Created on: Jul 8, 2012
  *      Author: hmirap
  */
 
@@ -14,6 +15,11 @@
 #include <algorithm>
 #include <boost/mpl/bool.hpp>
 #include "traits.h"
+
+/*!
+ * \defgroup winged_edge
+ * Implementation of Winged edge mesh \link specification http://en.wikipedia.org/wiki/Polygon_mesh#Winged-edge_meshes \endlink
+ */
 
 /*    template <typename M>
     struct mesh_traits {
@@ -36,13 +42,15 @@
 	  typedef boost::mpl::false_ is_triangle_t;
   };
 */
-  /*
-   * zatiaľ len pre triangle mesh!!
-   * TODO tento prípad podporuje multihrany - ako riešenie halfedges?
-   * TODO vyriešiť pre obecný, poradiť sa o koncepte pre faces/edges
-   * */
-
-
+  
+/*! \class winged_edge_mesh
+ *  \brief Implementation of mesh 
+ * 
+ * This implementation contains inner classes
+ * of vertex, edge, face with proprietary iterators
+ * 
+ *  \ingroup winged_edge
+ */
   template < typename FaceRestriction = triangleMesh>
   class winged_edge_mesh {
 
@@ -51,7 +59,6 @@
 	  class edge;
 	  class face;
 	  class vv_iterator;
-
 
 
 	  class edge
@@ -116,28 +123,15 @@
 
 	  };
 
-	  template <typename FaceRes>
-	  class winged_edge_mesh_traits
-	  {
-
-		  typedef typename FaceRes::is_triangle_t is_triangle;
-	  public:
-
-		typedef vertex* vertex_descriptor;
-		typedef edge* edge_descriptor;
-	    typedef face* face_descriptor;
-
-	    typedef typename face::fe_iterator fe_iterator;
-	  };
 
 
   public:
 
 	  typedef typename FaceRestriction::is_triangle_t is_triangle;
 
-	  typedef typename winged_edge_mesh_traits<FaceRestriction>::vertex_descriptor vertex_descriptor;
-	  typedef typename winged_edge_mesh_traits<FaceRestriction>::edge_descriptor edge_descriptor;
-	  typedef typename winged_edge_mesh_traits<FaceRestriction>::face_descriptor face_descriptor;
+	  typedef vertex* vertex_descriptor;
+	  typedef edge* edge_descriptor;
+	  typedef face* face_descriptor;
 
 	  typedef std::vector<vertex_descriptor> VertexList;
 	  typedef std::vector<edge_descriptor> EdgeList;
@@ -151,7 +145,7 @@
 	  typedef typename EdgeList::size_type edges_size_type;
 	  typedef typename FaceList::size_type faces_size_type;
 
-	  typedef typename winged_edge_mesh_traits<FaceRestriction>::fe_iterator fe_iterator;
+	  typedef typename face::fe_iterator fe_iterator;
 
 	  class vertex
 	  {
@@ -342,6 +336,39 @@
 
   private:
   };
+  
+  /*!
+   * \class winged_edge_mesh_traits
+   * \brief traits of winged_edge_mesh
+   * 
+   * \ingroup winged_edge
+   * 
+   */
+  template <typename FaceRestriction = triangleMesh>
+  class winged_edge_mesh_traits
+  {
+  public:
+
+	typedef typename winged_edge_mesh<FaceRestriction>::vertex_descriptor vertex_descriptor;
+	typedef typename winged_edge_mesh<FaceRestriction>::edge_descriptor edge_descriptor;
+	typedef typename winged_edge_mesh<FaceRestriction>::face_descriptor face_descriptor;
+	
+	typedef typename winged_edge_mesh<FaceRestriction>::VertexList VertexContainer;
+	typedef typename winged_edge_mesh<FaceRestriction>::EdgeList EdgeContainer;
+	typedef typename winged_edge_mesh<FaceRestriction>::FaceList FaceContainer;
+
+	typedef typename winged_edge_mesh<FaceRestriction>::vertex_iterator vertex_iterator;
+	typedef typename winged_edge_mesh<FaceRestriction>::edge_iterator edge_iterator;
+	typedef typename winged_edge_mesh<FaceRestriction>::face_iterator face_iterator;
+
+	typedef typename winged_edge_mesh<FaceRestriction>::vertices_size_type vertices_size_type;
+	typedef typename winged_edge_mesh<FaceRestriction>::edges_size_type edges_size_type;
+	typedef typename winged_edge_mesh<FaceRestriction>::faces_size_type faces_size_type;
+
+	typedef typename winged_edge_mesh<FaceRestriction>::vv_iterator vv_iterator;
+	typedef typename winged_edge_mesh<FaceRestriction>::fe_iterator fe_iterator;
+  };
+  
 
   //==========BASIC CONCEPT=========
 

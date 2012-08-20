@@ -1,6 +1,7 @@
 /*
  * vertex_adjacency.h
  *
+ *  Created on: Jul 23, 2012
  *      Author: hmirap
  */
 
@@ -13,29 +14,28 @@
 #include "mesh.h"
 #include "iterable_vertices.h"
 
-/*
- * concept pre dotaz na susedov
+/*! 
+ * \struct VertexAdjacencyConcept
  *
- * TODO je tu nutné mať iterator cez všetky vrcholy?
+ * operations that demanands surrounding 
+ * vertices of a vertex
+ * 
+ * \ingroup concepts
  */
-template <class Mesh>
+template <class TMesh, class TMesh_Traits = mesh_traits<TMesh>>
 struct VertexAdjacencyConcept
 {
-	typedef mesh_traits<Mesh> Mtraits;
-	typedef typename Mtraits::vertex_descriptor vertex_descriptor;
-	//typedef typename Mtraits::vertex_iterator vertex_iterator;
-	typedef typename Mesh::vv_iterator vv_iterator;
+	typedef typename TMesh_Traits::vertex_descriptor vertex_descriptor;
+	typedef typename TMesh_Traits::vv_iterator vv_iterator;
 
-	Mesh m;
-	//std::pair<vertex_iterator,vertex_iterator> vp;
+	TMesh m;
 	std::pair<vv_iterator,vv_iterator> vvp;
 	vertex_descriptor v;
 	bool isolated;
 
 	void constraints() {
-		//vp = get_all_vertices(m);
 
-		boost::function_requires<MeshConcept<Mesh> >();
+		boost::function_requires<MeshConcept<TMesh, TMesh_Traits> >();
 
 		vvp = get_adjacent_vertices(m, v);
 		isolated = is_isolated(m, v);

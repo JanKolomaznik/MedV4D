@@ -1,6 +1,7 @@
 /*
  * compute_components.h
  *
+ *  Created on: Jul 20, 2012
  *      Author: hmirap
  */
 
@@ -17,18 +18,26 @@
 #include "concepts/iterable_vertices.h"
 #include "traits.h"
 
-template <class Mesh>
+/*!
+ * \defgroup algorithms_concepts
+ * concept check using boost::function_requires
+ * 
+ * \struct ComputeComponentsConcept
+ * \brief concept required for algorithm compute_components
+ * 
+ * \ingroup algorithms_concepts
+ */
+template <class TMesh, class TMesh_Traits = mesh_traits<TMesh>>
 struct ComputeComponentsConcept
 {
-	typedef mesh_traits<Mesh> Mtraits;
-	typedef typename Mtraits::vertex_descriptor vertex_descriptor;
-	typedef typename Mtraits::vertex_iterator vertex_iterator;
-	typedef typename Mesh::vv_iterator vv_iterator;
+	typedef typename TMesh_Traits::vertex_descriptor vertex_descriptor;
+	typedef typename TMesh_Traits::vertex_iterator vertex_iterator;
+	typedef typename TMesh_Traits::vv_iterator vv_iterator;
 
 	void constraints()
 	{
-		boost::function_requires<VertexAdjacencyConcept<Mesh> >();
-		boost::function_requires<IterableVerticesConcept<Mesh> >();
+		boost::function_requires<VertexAdjacencyConcept<TMesh, TMesh_Traits> >();
+		boost::function_requires<IterableVerticesConcept<TMesh, TMesh_Traits> >();
 	}
 };
 
@@ -37,15 +46,33 @@ struct ComputeComponentsConcept
  * the Mesh. Isolated vertex is considered as a component
  * Algorithm works as modified BFS
  */
-template <class Mesh>
-int compute_components(Mesh& m)
-{
-	typedef mesh_traits<Mesh> Mtraits;
-	typedef typename Mtraits::vertex_descriptor vertex_descriptor;
-	typedef typename Mtraits::vertex_iterator vertex_iterator;
-	typedef typename Mesh::vv_iterator vv_iterator;
 
-	boost::function_requires<ComputeComponentsConcept<Mesh> >();
+/*!
+ * \defgroup algorithms
+ * mesh algorithms using basic mesh operations
+ * 
+ * \addtogroup algorithms
+ * @{
+ * 
+ * \fn template <class TMesh, class TMesh_Traits> int compute_components(TMesh& m)
+ * \brief simple algorithm that computes the count of components
+ * \param m a polygonial mesh
+ * \return count of components
+ * 
+ * Simple algorithm that computes the count of components of
+ * the Mesh. Isolated vertex is considered as a component
+ * Algorithm works as modified BFS
+ * 
+ */
+template <class TMesh, class TMesh_Traits = mesh_traits<TMesh>>
+int compute_components(TMesh& m)
+{
+	typedef mesh_traits<TMesh> Mtraits;
+	typedef typename TMesh_Traits::vertex_descriptor vertex_descriptor;
+	typedef typename TMesh_Traits::vertex_iterator vertex_iterator;
+	typedef typename TMesh_Traits::vv_iterator vv_iterator;
+
+	boost::function_requires<ComputeComponentsConcept<TMesh, TMesh_Traits> >();
 
 	int component_count = 0;
 
@@ -101,5 +128,8 @@ int compute_components(Mesh& m)
 	return component_count;
 }
 
+/*!
+ * @}
+ */
 
 #endif /* COMPUTE_COMPONENTS_H_ */

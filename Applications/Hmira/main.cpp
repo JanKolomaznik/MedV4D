@@ -1,6 +1,7 @@
 /*
  * main.cpp
  *
+ *  Created on: Jun 6, 2012
  *      Author: hmirap
  */
 
@@ -10,7 +11,6 @@
 typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 
 #include <iostream>
-//#include "traits.h"
 #include "winged_edge.h"
 #include "compute_components.h"
 #include <boost/graph/adjacency_matrix.hpp>
@@ -19,11 +19,12 @@ typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 #include "traits.h"
 
 typedef winged_edge_mesh<triangleMesh> my_mesh;
+typedef winged_edge_mesh_traits<triangleMesh> my_mesh_traits;
 
 enum {A,B,C,D,N};
 
 int main(int argc, char **argv)
-{/*
+{
 	OpenMeshX mesh;
 
 	typedef typename mesh_traits<OpenMeshX>::vertex_descriptor vd;
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 	mesh.add_face(face_vhandles);
 
 
-	//std::cout << "pocet je " << compute_components(mesh) << std::endl;
+	std::cout << "pocet je " << compute_components<OpenMeshX, OpenMeshXTraits>(mesh) << std::endl;
 
 
 	OpenMeshX::face_descriptor fh = *mesh.faces_begin();
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
 
 	boost::adjacency_matrix<boost::directedS> a(N);
 	add_edge(A, B, a);
-*/
+
 	my_mesh G;
 
 	my_mesh::vertex v1(1);
@@ -96,14 +97,14 @@ int main(int argc, char **argv)
 
 	std::cout << std::endl;
 
-	std::pair<my_mesh::vertex_iterator, my_mesh::vertex_iterator> my_pair = get_all_vertices(G);
-	for (my_mesh::vertex_iterator i = my_pair.first; i != my_pair.second; ++i) {
+	auto my_pair = get_all_vertices(G);
+	for (auto i = my_pair.first; i != my_pair.second; ++i) {
 		std::cout << (*i)->get_id() << ", ";
 	}
 	std::cout << std::endl;
 
-	std::pair<my_mesh::edge_iterator, my_mesh::edge_iterator> my_pair_edges = get_all_edges(G);
-	for (my_mesh::edge_iterator i = my_pair_edges.first; i != my_pair_edges.second; ++i) {
+	auto my_pair_edges = get_all_edges(G);
+	for (auto i = my_pair_edges.first; i != my_pair_edges.second; ++i) {
 		std::cout << ((*i)->getVertices().first ? (*i)->getVertices().first->get_id() : 0) << "-" ;
 		std::cout << ((*i)->getVertices().second ? (*i)->getVertices().second->get_id() : 0) << ",";
 	}
@@ -111,15 +112,17 @@ int main(int argc, char **argv)
 
 
 	std::cout << G.isTriangle() << std::endl;
-	std::cout << "joe";
+	std::cout << "joe more!!!!";
 
-	std::pair<my_mesh::vv_iterator, my_mesh::vv_iterator> my_pair_vv = v1.get_adjacent_vertices();// get_adjacent_vertices(G, &v1);
-	for (my_mesh::vv_iterator i = my_pair_vv.first; i != my_pair_vv.second; ++i) {
+	auto my_pair_vv = v1.get_adjacent_vertices();// get_adjacent_vertices(G, &v1);
+	for (auto i = my_pair_vv.first; i != my_pair_vv.second; ++i) {
 		std::cout << (*i)->get_id() << ",";
 	}
 	std::cout << std::endl;
 
-	std::cout << "pocet je: " << compute_components(G) << std::endl;
+	std::cout << "pocet je: " << compute_components<my_mesh, my_mesh_traits>(G) << std::endl;
+
+	std::cout << "norma: c++0x" << std::endl;
 
 	return 0;
 }
