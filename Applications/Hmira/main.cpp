@@ -11,11 +11,11 @@
 typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 
 #include <iostream>
-#include "winged_edge.h"
+#include "meshes/winged_edge.h"
 #include "compute_components.h"
 #include <boost/graph/adjacency_matrix.hpp>
 
-#include "OpenMeshX.h"
+#include "meshes/OpenMeshX.h"
 #include "traits.h"
 
 typedef winged_edge_mesh<triangleMesh> my_mesh;
