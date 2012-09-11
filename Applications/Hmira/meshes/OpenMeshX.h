@@ -25,7 +25,7 @@ typedef OpenMesh::PolyMesh_ArrayKernelT<> OpenMeshExtended;
  * 
  * \ingroup OpenMeshX
  */
-class OpenMeshX : public OpenMeshExtended
+/*class OpenMeshX : public OpenMeshExtended
 {
 public:
 
@@ -52,7 +52,7 @@ public:
     get_surrounding_vertices(face_descriptor fd);
 
 
-};
+};*/
 
 /*!
  * \struct OpenMeshXTraits
@@ -60,8 +60,11 @@ public:
  * 
  * \ingroup OpenMeshX
  */
-struct OpenMeshXTraits : OpenMesh::DefaultTraits
+template<>
+struct mesh_traits<OpenMeshExtended>
+
 {
+  typedef OpenMesh::DefaultTraits original_traits;
   typedef typename OpenMeshX::vertex_descriptor vertex_descriptor;
   typedef typename OpenMeshX::edge_descriptor edge_descriptor;
   typedef typename OpenMeshX::face_descriptor face_descriptor;
@@ -80,6 +83,16 @@ struct OpenMeshXTraits : OpenMesh::DefaultTraits
   
 };
 
+template<>
+struct advanced_mesh_traits<OpenMeshExtended> : public mesh_traits<OpenMeshExtended>
+{
+
+};
+
+
+
+typedef mesh_traits<OpenMeshExtended> OpenMeshXTraits;
+
 inline OpenMeshX::vertex_descriptor operator*(OpenMeshX::fv_iterator fvi) { return fvi.handle(); }
 inline OpenMeshX::vertex_descriptor operator*(OpenMeshX::vv_iterator vvi) { return vvi.handle(); }
 
@@ -87,7 +100,7 @@ inline OpenMeshX::vertex_descriptor operator*(OpenMeshX::vv_iterator vvi) { retu
 
 bool remove_vertex(
 		  	  	  typename OpenMeshXTraits::vertex_descriptor v,
-		  	  	  class OpenMeshX *m);
+		  	  	  OpenMeshX &m);
 
 bool create_face(
 				  typename OpenMeshXTraits::vertex_descriptor a,

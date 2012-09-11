@@ -15,13 +15,16 @@
 #include <boost/mpl/bool.hpp>
 
     template <typename M>
-    struct mesh_traits {
+    struct mesh_traits;/* {
         typedef typename M::vertex_descriptor      vertex_descriptor;
         typedef typename M::vertices_size_type     vertices_size_type;
         typedef typename M::vertex_iterator        vertex_iterator;
 
         static inline vertex_descriptor null_vertex();
-    };
+    };*/
+
+	template<typename M>
+	struct advanced_mesh_traits;
 
   struct triangleMesh
   {
