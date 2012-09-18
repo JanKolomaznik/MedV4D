@@ -114,6 +114,7 @@ SET( CUDA_IMAGING_INCLUDES
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/ConnectedComponentLabeling.cuh"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/CUDAFiltersUtils.cuh"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/EdgeDetection.cuh"
+	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/MedianFilter.cuh"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/LocalMinimaDetection.cuh"
 	"${MEDV4D_IMAGING_INCLUDE_DIR}/cuda/detail/WatershedTransformation.cuh"
 	)
@@ -126,6 +127,7 @@ SET( CUDA_IMAGING_SOURCES
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/LocalMinimaDetection.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/RegionAdjacencyGraph.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/SimpleFilters.cu"
+	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/MedianFilter.cu"
 	"${MEDV4D_IMAGING_SOURCE_DIR}/cuda/WatershedTransformation.cu"
 	)
 

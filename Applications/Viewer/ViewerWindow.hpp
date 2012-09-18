@@ -106,6 +106,11 @@ public slots:
 #endif
 	void
 	updateInfoInStatusBar( const QString &aInfo );
+
+
+	//TMP
+	void 
+	denoiseImage();
 signals:
 	void
 	callInitAfterLoopStart();

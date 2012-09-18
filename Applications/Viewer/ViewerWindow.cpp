@@ -19,6 +19,7 @@
 #include <iterator>
 #include <algorithm>
 
+#include "MedV4D/Imaging/cuda/MedianFilter.h"
 
 #include <QtGui>
 namespace M4D
@@ -250,6 +251,14 @@ ViewerWindow::ViewerWindow()
 	QToolBar *toolbar = createToolBarFromViewerActionSet( actions, "Viewer settings" );
 	addToolBar( toolbar );
 
+	QAction *action = new QAction( "Denoise", this );
+	QObject::connect( action, SIGNAL( triggered(bool) ), this, SLOT( denoiseImage() ) );
+	toolbar = new QToolBar( "Image processing", this );
+	toolbar->addAction( action );
+	addToolBar( toolbar );
+
+
+
 	addViewerActionSetToWidget( *menuViewer, actions );
 	LOG( "Viewer control actions created and added to GUI" );
 
@@ -299,6 +308,25 @@ ViewerWindow::ViewerWindow()
 	mOpenDialog = new QFileDialog( this, tr("Open Image") );
 	mOpenDialog->setFileMode(QFileDialog::ExistingFile);
 	//mOpenDialog->setOption(QFileDialog::DontUseNativeDialog, false);
+}
+
+void 
+ViewerWindow::denoiseImage()
+{
+	LOG( "denoiseImage()" );
+	M4D::Imaging::AImage::Ptr image = DatasetManager::getInstance()->getCurrentImageInfo()->image;
+	if( !image ) { 
+		return;
+	}
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
+			IMAGE_TYPE::Ptr outputImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+
+			median3D( typedImage->GetRegion(), outputImage->GetRegion(), 2 );
+			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );		
+		);
+
 }
 
 void

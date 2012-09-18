@@ -22,6 +22,15 @@ atomicFloatCAS(float *address, float old, float val)
 	return __int_as_float( atomicCAS((int *)address, tmp0, i_val) );
 }
 
+template< typename TType >
+__device__ inline void
+cudaSwap( TType &a, TType &b )
+{
+	TType tmp = a;
+	a = b;
+	b = tmp;
+}
+
 inline std::string
 cudaMemoryInfoText()
 {
