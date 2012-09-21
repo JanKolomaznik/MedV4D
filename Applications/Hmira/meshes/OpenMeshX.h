@@ -12,8 +12,15 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <vector>
 
+struct MyTraits : public OpenMesh::DefaultTraits
+{
+  VertexAttributes(OpenMesh::Attributes::Status);
+  FaceAttributes(OpenMesh::Attributes::Status);
+  EdgeAttributes(OpenMesh::Attributes::Status);
+};
 
-typedef OpenMesh::PolyMesh_ArrayKernelT<> OpenMeshExtended;
+
+typedef OpenMesh::PolyMesh_ArrayKernelT<MyTraits> OpenMeshExtended;
 
 /*!
  * \defgroup OpenMeshX
@@ -61,86 +68,189 @@ public:
  * \ingroup OpenMeshX
  */
 template<>
-struct mesh_traits<OpenMeshExtended>
+class mesh_traits<OpenMeshExtended>
 
 {
-  typedef OpenMesh::DefaultTraits original_traits;
-  typedef typename OpenMeshX::vertex_descriptor vertex_descriptor;
-  typedef typename OpenMeshX::edge_descriptor edge_descriptor;
-  typedef typename OpenMeshX::face_descriptor face_descriptor;
-  
-  typedef typename OpenMeshX::vertex_iterator vertex_iterator;
-  typedef typename OpenMeshX::edge_iterator edge_iterator;
-  typedef typename OpenMeshX::face_iterator face_iterator;
-  
-  typedef typename OpenMeshX::vv_iterator vv_iterator;
-  typedef typename OpenMeshX::ve_iterator ve_iterator;
-  typedef typename OpenMeshX::fv_iterator fv_iterator;
-  
-  typedef typename OpenMeshX::vertices_size_type vertices_size_type;
-  typedef typename OpenMeshX::edges_size_type edges_size_type;
-  typedef typename OpenMeshX::faces_size_type faces_size_type;
-  
+public:
+	typedef OpenMesh::DefaultTraits original_traits;
+
+	typedef typename OpenMeshExtended::Point Point;
+
+	typedef typename OpenMeshExtended::Normal normal;
+
+	typedef typename OpenMeshExtended::VertexHandle vertex_descriptor;
+	typedef typename OpenMeshExtended::VertexIter vertex_iterator;
+	typedef typename std::vector<OpenMeshExtended::Vertex>::size_type vertices_size_type;
+
+	typedef typename OpenMeshExtended::EdgeHandle edge_descriptor;
+	typedef typename OpenMeshExtended::EdgeIter edge_iterator;
+	typedef typename std::vector<OpenMeshExtended::Edge>::size_type edges_size_type;
+
+	typedef typename OpenMeshExtended::FaceHandle face_descriptor;
+	typedef typename OpenMeshExtended::FaceIter face_iterator;
+	typedef typename std::vector<OpenMeshExtended::Face>::size_type faces_size_type;
+
+	typedef typename OpenMeshExtended::VEIter ve_iterator;	
+
+
+	
+	class my_fv_iterator : public OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >
+	{
+	public:	
+		typedef OpenMesh::PolyConnectivity& mesh_ref;
+
+/* 	TODO prekonzultovať 
+*	constructor inheritance v norme c++0x 
+*/
+
+		my_fv_iterator() : 
+			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >() {};
+		
+		my_fv_iterator (mesh_ref _mesh, OpenMesh::PolyConnectivity::FaceHandle _start, bool _end) :
+			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _start, _end) {};
+
+		my_fv_iterator(mesh_ref _mesh, OpenMesh::PolyConnectivity::HalfedgeHandle _heh, bool _end) : 
+			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _heh, _end) {};
+
+		my_fv_iterator(const OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >& _rhs) :
+			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_rhs) {};
+
+		bool operator==(const my_fv_iterator& _rhs) const 
+		{
+			return 
+			((mesh_   == _rhs.mesh_) &&
+			(start_  == _rhs.start_) &&
+			(heh_    == _rhs.heh_));
+		}
+ 
+ 
+		bool operator!=(const my_fv_iterator& _rhs) const
+		{
+			return !operator==(_rhs);
+		}
+
+
+	};
+
+	class my_vv_iterator : public OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >
+	{
+	public:	
+		typedef OpenMesh::PolyConnectivity& mesh_ref;
+
+		my_vv_iterator() : 
+			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >() {};
+		
+		my_vv_iterator (mesh_ref _mesh, OpenMesh::PolyConnectivity::VertexHandle _start, bool _end) :
+			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _start, _end) {};
+
+		my_vv_iterator(mesh_ref _mesh, OpenMesh::PolyConnectivity::HalfedgeHandle _heh, bool _end) : 
+			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _heh, _end) {};
+
+		my_vv_iterator(const OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >& _rhs) :
+			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_rhs) {};
+
+		bool operator==(const my_vv_iterator& _rhs) const 
+		{
+			return 
+			((mesh_   == _rhs.mesh_) &&
+			(start_  == _rhs.start_) &&
+			(heh_    == _rhs.heh_));
+		}
+ 
+ 
+		bool operator!=(const my_vv_iterator& _rhs) const
+		{
+			return !operator==(_rhs);
+		}
+
+
+	};
+
+
+
+
+	class my_ve_iterator : public OpenMeshExtended::VEIter
+	{
+		
+	};
+
+	typedef my_fv_iterator fv_iterator;
+	typedef my_vv_iterator vv_iterator;
+
+    static std::pair<fv_iterator, fv_iterator>
+    get_surrounding_vertices(const OpenMeshExtended& m_, face_descriptor fd);
+
+
+//=================CONCEPTS======================
+
+static bool remove_vertex(
+					  vertex_descriptor v,
+		  	  	  OpenMeshExtended &m);
+
+static bool create_face(
+				  vertex_descriptor a,
+				  vertex_descriptor b,
+				  vertex_descriptor c,
+		  	  	  OpenMeshExtended *m);
+
+static bool remove_face(
+				  typename mesh_traits<OpenMeshExtended>::face_descriptor f,
+		  	  	  OpenMeshExtended* m);
+
+static std::pair<vertex_iterator,
+	  	  	vertex_iterator>
+get_all_vertices(const OpenMeshExtended& m_);
+
+static std::pair<edge_iterator,
+	  	  	edge_iterator>
+get_all_edges(const OpenMeshExtended& m_);
+
+
+static std::pair<face_iterator,
+	  	  	face_iterator>
+get_all_faces(const OpenMeshExtended& m_);
+
+//=========== VERTEX ADJACENCY CONCEPT ===========
+
+static bool is_isolated(const OpenMeshExtended& m_,
+		vertex_descriptor v);
+
+static std::pair<vv_iterator,
+	  	  vv_iterator>
+get_adjacent_vertices(
+		const OpenMeshExtended& m_,
+		  vertex_descriptor v);
+
+static std::pair<ve_iterator, ve_iterator>
+get_adjacent_edges(
+		const OpenMeshExtended& m_,
+		vertex_descriptor v);
+
+
+ 
 };
 
 template<>
-struct advanced_mesh_traits<OpenMeshExtended> : public mesh_traits<OpenMeshExtended>
+class advanced_mesh_traits<OpenMeshExtended> : public mesh_traits<OpenMeshExtended>
 {
+public:
+	static mesh_traits<OpenMeshExtended>::normal 
+	get_face_normal(
+		const OpenMeshExtended& m_,
+		face_descriptor f);
 
+	static bool
+	flip_face_normal(
+		const OpenMeshExtended& m_,
+		face_descriptor& f);
 };
 
 
 
 typedef mesh_traits<OpenMeshExtended> OpenMeshXTraits;
 
-inline OpenMeshX::vertex_descriptor operator*(OpenMeshX::fv_iterator fvi) { return fvi.handle(); }
-inline OpenMeshX::vertex_descriptor operator*(OpenMeshX::vv_iterator vvi) { return vvi.handle(); }
-
-//=================CONCEPTS======================
-
-bool remove_vertex(
-		  	  	  typename OpenMeshXTraits::vertex_descriptor v,
-		  	  	  OpenMeshX &m);
-
-bool create_face(
-				  typename OpenMeshXTraits::vertex_descriptor a,
-				  typename OpenMeshXTraits::vertex_descriptor b,
-				  typename OpenMeshXTraits::vertex_descriptor c,
-		  	  	  class OpenMeshX *m);
-
-bool remove_face(
-				  typename OpenMeshXTraits::face_descriptor f,
-		  	  	  class OpenMeshX *m);
-
-std::pair<typename OpenMeshXTraits::vertex_iterator,
-	  	  	typename OpenMeshXTraits::vertex_iterator>
-get_all_vertices(const class OpenMeshX& m_);
-
-std::pair<typename OpenMeshXTraits::edge_iterator,
-	  	  	typename OpenMeshXTraits::edge_iterator>
-get_all_edges(const class OpenMeshX& m_);
-
-
-std::pair<typename OpenMeshXTraits::face_iterator,
-	  	  	typename OpenMeshXTraits::face_iterator>
-get_all_faces(const class OpenMeshX& m_);
-
-//=========== VERTEX ADJACENCY CONCEPT ===========
-
-bool is_isolated(const class OpenMeshX& m_,
-		OpenMeshX::vertex_descriptor v);
-
-std::pair<typename OpenMeshXTraits::vv_iterator,
-	  	  	typename OpenMeshXTraits::vv_iterator>
-get_adjacent_vertices(
-		const class OpenMeshX& m_,
-		  OpenMeshXTraits::vertex_descriptor v);
-
-std::pair<typename OpenMeshXTraits::ve_iterator,typename OpenMeshXTraits::ve_iterator>
-get_adjacent_edges(
-		const class OpenMeshX& m_,
-		OpenMeshXTraits::vertex_descriptor v);
-
+inline mesh_traits<OpenMeshExtended>::vertex_descriptor operator*(mesh_traits<OpenMeshExtended>::fv_iterator fvi) { return fvi.handle(); }
+inline mesh_traits<OpenMeshExtended>::vertex_descriptor operator*(mesh_traits<OpenMeshExtended>::vv_iterator vvi) { return vvi.handle(); }
 #include "OpenMeshX.tcc"
 		  
 #endif /* OPENMESHX_H_ */

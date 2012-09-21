@@ -23,14 +23,24 @@
 
 		std::pair<winged_edge_mesh<FaceRestriction>::vv_iterator, winged_edge_mesh<FaceRestriction>::vv_iterator> get_adjacent_vertices()
 		{
-			  vertex* fst_vertex;
-			  if ((*adjacent_edges.begin())->getVertices().first == this)
+
+			if (is_isolated())
+			{
+				winged_edge_mesh<FaceRestriction>::vv_iterator a(adjacent_edges.begin());
+				return std::make_pair(a,a);
+			}
+ 
+			vertex* fst_vertex;
+
+			if ((*adjacent_edges.begin())->getVertices().first == this)
 				  fst_vertex = (*adjacent_edges.begin())->getVertices().second;
-			  else
+			else
 				  fst_vertex = (*adjacent_edges.begin())->getVertices().first;
-			  winged_edge_mesh<FaceRestriction>::vv_iterator a1(adjacent_edges.begin(), adjacent_edges.end(), this, fst_vertex);
-			  winged_edge_mesh<FaceRestriction>::vv_iterator a2(adjacent_edges.end(), adjacent_edges.end(), this, NULL);
-			  return std::make_pair(a1, a2);
+
+			winged_edge_mesh<FaceRestriction>::vv_iterator a1(adjacent_edges.begin(), adjacent_edges.end(), this, fst_vertex);
+			winged_edge_mesh<FaceRestriction>::vv_iterator a2(adjacent_edges.end(), adjacent_edges.end(), this, NULL);
+			
+			return std::make_pair(a1, a2);
 		}
 
 		  std::pair<winged_edge_mesh<FaceRestriction>::edge_iterator, winged_edge_mesh<FaceRestriction>::edge_iterator> get_adjacent_edges()
@@ -87,8 +97,10 @@
     template < typename FaceRestriction>
     class winged_edge_mesh<FaceRestriction>::face
     {
-    public:
-	    typedef typename std::vector<winged_edge_mesh<FaceRestriction>::edge*>::iterator fe_iterator;
+	public:
+		typedef typename std::vector<winged_edge_mesh<FaceRestriction>::edge*>::iterator fe_iterator;
+		winged_edge_mesh<FaceRestriction>::normal face_normal;
+
 
     private:
 	    std::vector<winged_edge_mesh<FaceRestriction>::edge*> cons_edges;
@@ -106,11 +118,52 @@
 	    };
 	    ~face() {};
 
-	    std::pair<fe_iterator, fe_iterator>
-		    get_edges() { return std::make_pair(this->cons_edges.begin(), this->cons_edges.end());}
+	
+	std::pair<fe_iterator, fe_iterator>
+		get_edges() { return std::make_pair(this->cons_edges.begin(), this->cons_edges.end());}
 
+	bool
+		flip_normal()
+	{
+		return this->face_normal.flip();
+	}
     };
     
+template < typename FaceRestriction>
+class winged_edge_mesh<FaceRestriction>::normal
+{
+	public:
+		float x;
+		float y;
+		float z;
+
+	public:
+		normal()
+		{
+			this->x = 0.0f;
+			this->y = 0.0f;
+			this->z = 0.0f;
+		}
+		normal(float x, float y, float z)
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+		}
+
+		~normal()
+		{
+		}
+
+		bool flip()
+		{
+			this->x = -1.0f * this->x;
+			this->y = -1.0f * this->y;
+			this->z = -1.0f * this->z;
+		}
+};
+
+   
     template < typename FaceRestriction>
     class winged_edge_mesh<FaceRestriction>::vv_iterator : public std::iterator<std::input_iterator_tag, vertex_descriptor>
     {
@@ -121,24 +174,34 @@
 	    winged_edge_mesh<FaceRestriction>::edge_iterator edges_end;
 
     public:
-	  vv_iterator(const winged_edge_mesh<FaceRestriction>::vv_iterator& mit) : p(mit.p)
-	  {
-		  this->sender = mit.sender;
-		  this->p = mit.p;
-		  this->e_i = mit.e_i;
-		  this->edges_end = mit.edges_end;
-	  }
-	  vv_iterator(
-	  winged_edge_mesh<FaceRestriction>::edge_iterator ei, 
-	  winged_edge_mesh<FaceRestriction>::edge_iterator edges_end, 
-	  winged_edge_mesh<FaceRestriction>::vertex* sender, 
-	  winged_edge_mesh<FaceRestriction>::vertex* p)
-	  {
-		  this->edges_end = edges_end;
-		  this->e_i = ei;
-		  this->sender = sender;
-		  this->p = p;
-	  }
+	vv_iterator(const winged_edge_mesh<FaceRestriction>::edge_iterator edges_end)
+	{
+		this->e_i = edges_end;
+		this->edges_end = edges_end;
+		this->p = NULL;
+		this->sender = NULL;
+	}
+
+	vv_iterator(const winged_edge_mesh<FaceRestriction>::vv_iterator& mit) : p(mit.p)
+	{
+		this->sender = mit.sender;
+		this->p = mit.p;
+		this->e_i = mit.e_i;
+		this->edges_end = mit.edges_end;
+	}
+
+	vv_iterator(
+	winged_edge_mesh<FaceRestriction>::edge_iterator ei, 
+	winged_edge_mesh<FaceRestriction>::edge_iterator edges_end, 
+	winged_edge_mesh<FaceRestriction>::vertex* sender, 
+	winged_edge_mesh<FaceRestriction>::vertex* p)
+	{
+		this->edges_end = edges_end;
+		this->e_i = ei;
+		this->sender = sender;
+		this->p = p;
+	}
+
       vv_iterator& operator++()
       {
 	  ++e_i;
@@ -281,7 +344,7 @@
   //==========BASIC CONCEPT=========
 
   template <typename Restriction>
-  bool add_vertex(
+  bool winged_edge_mesh_traits<Restriction>::add_vertex(
 		  	  	  typename winged_edge_mesh<Restriction>::vertex_descriptor v,
 		  	  	  class winged_edge_mesh<Restriction> *m)
   {
@@ -289,7 +352,7 @@
   }
 
   template <typename Restriction>
-  bool create_face(
+  bool winged_edge_mesh_traits<Restriction>::create_face(
 				  typename winged_edge_mesh<Restriction>::vertex_descriptor a,
 				  typename winged_edge_mesh<Restriction>::vertex_descriptor b,
 				  typename winged_edge_mesh<Restriction>::vertex_descriptor c,
@@ -299,7 +362,7 @@
   }
 
   template <typename Restriction>
-  bool remove_face(
+  bool winged_edge_mesh_traits<Restriction>::remove_face(
 				  typename winged_edge_mesh<Restriction>::face_descriptor f,
 		  	  	  class winged_edge_mesh<Restriction> *m)
   {
@@ -309,7 +372,7 @@
   template <typename Restriction>
   std::pair<typename winged_edge_mesh<Restriction>::vertex_iterator,
   	  	  	typename winged_edge_mesh<Restriction>::vertex_iterator>
-  get_all_vertices(const class winged_edge_mesh<Restriction>& m_)
+  winged_edge_mesh_traits<Restriction>::get_all_vertices(const class winged_edge_mesh<Restriction>& m_)
   {
 	  typedef winged_edge_mesh<Restriction> Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
@@ -319,7 +382,7 @@
   template <typename Restriction>
   std::pair<typename winged_edge_mesh<Restriction>::edge_iterator,
   	  	  	typename winged_edge_mesh<Restriction>::edge_iterator>
-  get_all_edges(const class winged_edge_mesh<Restriction>& m_)
+  winged_edge_mesh_traits<Restriction>::get_all_edges(const class winged_edge_mesh<Restriction>& m_)
   {
 	  typedef winged_edge_mesh<Restriction> Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
@@ -328,7 +391,7 @@
 
   template <typename Restriction>
   bool
-  is_isolated(
+  winged_edge_mesh_traits<Restriction>::is_isolated(
 		  class winged_edge_mesh<Restriction>& m_,
 		  class winged_edge_mesh<Restriction>::vertex* v)
   {
@@ -339,7 +402,7 @@
   template <typename Restriction>
   std::pair<typename winged_edge_mesh<Restriction>::face_iterator,
   	  	  	typename winged_edge_mesh<Restriction>::face_iterator>
-  get_all_faces(class winged_edge_mesh<Restriction>& m_)
+  winged_edge_mesh_traits<Restriction>::get_all_faces(class winged_edge_mesh<Restriction>& m_)
   {
 	  typedef winged_edge_mesh<Restriction> Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
@@ -349,7 +412,7 @@
   template <typename Restriction>
   std::pair<typename winged_edge_mesh<Restriction>::vv_iterator,
   	  	  	typename winged_edge_mesh<Restriction>::vv_iterator>
-  get_adjacent_vertices(
+	  winged_edge_mesh_traits<Restriction>::get_adjacent_vertices(
 		  class winged_edge_mesh<Restriction>& m_,
 		  class winged_edge_mesh<Restriction>::vertex* v)
   {

@@ -8,12 +8,15 @@
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
+
+
 typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 
 #include <iostream>
+#include <deque>
+#include <boost/graph/adjacency_matrix.hpp>
 #include "meshes/winged_edge.h"
 #include "compute_components.h"
-#include <boost/graph/adjacency_matrix.hpp>
 
 #include "meshes/OpenMeshX.h"
 #include "traits.h"
@@ -25,45 +28,73 @@ enum {A,B,C,D,N};
 
 int main(int argc, char **argv)
 {
-	OpenMeshX mesh;
+	OpenMeshExtended mesh;
 
-	typedef typename mesh_traits<OpenMeshX>::vertex_descriptor vd;
+	typedef typename mesh_traits<OpenMeshExtended>::vertex_descriptor vd;
 
 	//MyMesh mesh;
 
-	OpenMeshX::vertex_descriptor vhandle[8];
+	OpenMeshXTraits::vertex_descriptor vhandle[8];
 
-	vhandle[0] = mesh.add_vertex(OpenMeshX::Point(-1, -1,  1));
-	vhandle[1] = mesh.add_vertex(OpenMeshX::Point( 1, -1,  1));
-	vhandle[2] = mesh.add_vertex(OpenMeshX::Point( 1,  1,  1));
-	vhandle[3] = mesh.add_vertex(OpenMeshX::Point(-1,  1,  1));
-	vhandle[4] = mesh.add_vertex(OpenMeshX::Point(-1, -1, -1));
-	vhandle[5] = mesh.add_vertex(OpenMeshX::Point( 1, -1, -1));
-	vhandle[6] = mesh.add_vertex(OpenMeshX::Point( 1,  1, -1));
-	vhandle[7] = mesh.add_vertex(OpenMeshX::Point(-1,  1, -1));
+	vhandle[0] = mesh.add_vertex(OpenMeshExtended::Point(-1, -1,  1));
+	vhandle[1] = mesh.add_vertex(OpenMeshExtended::Point( 1, -1,  1));
+	vhandle[2] = mesh.add_vertex(OpenMeshExtended::Point( 1,  1,  1));
+	vhandle[3] = mesh.add_vertex(OpenMeshExtended::Point(-1,  1,  1));
+	vhandle[4] = mesh.add_vertex(OpenMeshExtended::Point(-1, -1, -1));
+	vhandle[5] = mesh.add_vertex(OpenMeshExtended::Point( 1, -1, -1));
+	vhandle[6] = mesh.add_vertex(OpenMeshExtended::Point( 1,  1, -1));
+	vhandle[7] = mesh.add_vertex(OpenMeshExtended::Point(-1,  1, -1));
 
 
-	std::vector<OpenMeshX::vertex_descriptor>  face_vhandles;
+/*  testujem iteratory */
+
+auto test_vv_iter_pair = OpenMeshXTraits::get_adjacent_vertices(mesh, vhandle[0]);
+std::cout << "pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_pair.first == test_vv_iter_pair.second) << " great!" << std::endl;
+
+/*# testujem iteratory*/
+
+
+
+	std::vector<OpenMeshXTraits::vertex_descriptor>  face_vhandles;
 
 	face_vhandles.clear();
 	face_vhandles.push_back(vhandle[0]);
 	face_vhandles.push_back(vhandle[1]);
 	face_vhandles.push_back(vhandle[2]);
+//	face_vhandles.push_back(vhandle[3]);
+	
+	
+	
+	/*0 0 1*/
+/*	
+	face_vhandles.clear();
 	face_vhandles.push_back(vhandle[3]);
-	mesh.add_face(face_vhandles);
+	face_vhandles.push_back(vhandle[2]);
+	face_vhandles.push_back(vhandle[1]);
+	face_vhandles.push_back(vhandle[0]);
+*/
+	/*0 0 -1*/
+	OpenMesh::PolyMesh_ArrayKernelT<>::FaceHandle omx_face = mesh.add_face(face_vhandles);
+	
+	OpenMeshExtended::Normal normal = mesh.calc_face_normal(omx_face);
+	std::cout << "normala:" << normal << std::endl;
+
+	advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(mesh, omx_face);
+
+	normal = mesh.calc_face_normal(omx_face);
+	std::cout << "normala:" << normal << std::endl;
+
+	std::cout << "pocet je " << compute_components<OpenMeshExtended, OpenMeshXTraits>(mesh) << std::endl;
 
 
-	std::cout << "pocet je " << compute_components<OpenMeshX, OpenMeshXTraits>(mesh) << std::endl;
+	OpenMeshXTraits::face_descriptor fh = *mesh.faces_begin();
 
 
-	OpenMeshX::face_descriptor fh = *mesh.faces_begin();
-
-
-	for ( OpenMeshX::fv_iterator fvi = mesh.fv_begin(fh); fvi < mesh.fv_end(fh); ++fvi) {
+	for ( auto fvi = mesh.fv_begin(fh); fvi < mesh.fv_end(fh); ++fvi) {
 		std::cout << "h" << std::endl;
 	}
 
-	for (OpenMeshX::edge_iterator e_it = mesh.edges_begin(); e_it != mesh.edges_end(); ++e_it)
+	for (auto e_it = mesh.edges_begin(); e_it != mesh.edges_end(); ++e_it)
 	{
 		std::cout << "joe" << e_it->idx() << std::endl;
 	}
@@ -82,28 +113,38 @@ int main(int argc, char **argv)
 	my_mesh::vertex v7(7);
 	my_mesh::vertex v8(8);
 
-	add_vertex(&v1, &G);
-	add_vertex(&v2, &G);
-	add_vertex(&v3, &G);
-	add_vertex(&v4, &G);
-	add_vertex(&v5, &G);
-	add_vertex(&v6, &G);
-	add_vertex(&v7, &G);
-	add_vertex(&v8, &G);
+/* 2 testujem iteratory */
 
-	create_face(&v1, &v2, &v3, &G);
-	create_face(&v2, &v3, &v4, &G);
-	create_face(&v6, &v7, &v8, &G);
+auto test_vv_iter_pair2 = my_mesh_traits::get_adjacent_vertices(G, &v1);
+std::cout << "2: pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_pair2.first == test_vv_iter_pair2.second) << " great!" << std::endl;
+
+/*# 2 testujem iteratory*/
+
+
+
+
+	my_mesh_traits::add_vertex(&v1, &G);
+	my_mesh_traits::add_vertex(&v2, &G);
+	my_mesh_traits::add_vertex(&v3, &G);
+	my_mesh_traits::add_vertex(&v4, &G);
+	my_mesh_traits::add_vertex(&v5, &G);
+	my_mesh_traits::add_vertex(&v6, &G);
+	my_mesh_traits::add_vertex(&v7, &G);
+	my_mesh_traits::add_vertex(&v8, &G);
+
+	my_mesh_traits::create_face(&v1, &v2, &v3, &G);
+	my_mesh_traits::create_face(&v2, &v3, &v4, &G);
+	my_mesh_traits::create_face(&v6, &v7, &v8, &G);
 
 	std::cout << std::endl;
 
-	auto my_pair = get_all_vertices(G);
+	auto my_pair = my_mesh_traits::get_all_vertices(G);
 	for (auto i = my_pair.first; i != my_pair.second; ++i) {
 		std::cout << (*i)->get_id() << ", ";
 	}
 	std::cout << std::endl;
 
-	auto my_pair_edges = get_all_edges(G);
+	auto my_pair_edges = my_mesh_traits::get_all_edges(G);
 	for (auto i = my_pair_edges.first; i != my_pair_edges.second; ++i) {
 		std::cout << ((*i)->getVertices().first ? (*i)->getVertices().first->get_id() : 0) << "-" ;
 		std::cout << ((*i)->getVertices().second ? (*i)->getVertices().second->get_id() : 0) << ",";

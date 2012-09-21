@@ -17,6 +17,7 @@
 #include "concepts/vertex_adjacency.h"
 #include "concepts/iterable_vertices.h"
 #include "traits.h"
+#include "meshes/OpenMeshX.h"
 
 /*!
  * \defgroup algorithms_concepts
@@ -67,7 +68,7 @@ struct ComputeComponentsConcept
 template <class TMesh, class TMesh_Traits = mesh_traits<TMesh>>
 int compute_components(TMesh& m)
 {
-	typedef mesh_traits<TMesh> Mtraits;
+	typedef TMesh_Traits Mtraits;
 	typedef typename TMesh_Traits::vertex_descriptor vertex_descriptor;
 	typedef typename TMesh_Traits::vertex_iterator vertex_iterator;
 	typedef typename TMesh_Traits::vv_iterator vv_iterator;
@@ -76,7 +77,7 @@ int compute_components(TMesh& m)
 
 	int component_count = 0;
 
-	std::pair<vertex_iterator,vertex_iterator> vertex_pair = get_all_vertices(m);
+	std::pair<vertex_iterator,vertex_iterator> vertex_pair = Mtraits::get_all_vertices(m);
 	std::vector<vertex_descriptor> vertices;
 
 	for (vertex_iterator i = vertex_pair.first;  i != vertex_pair.second; ++i) {
@@ -97,9 +98,11 @@ int compute_components(TMesh& m)
 			vertex_descriptor vd = *(vertex_queue.begin());
 			vertex_queue.pop_front();
 
-			if (is_isolated(m, vd)) continue;
+			//if (Mtraits::is_isolated(m, vd)) continue;
+			//uz to vlastne nie je treba
+			//nebolo by to rychlejsie s tym?
 
-			std::pair<vv_iterator, vv_iterator> adjacent_vertices = get_adjacent_vertices(m, vd);
+			std::pair<vv_iterator, vv_iterator> adjacent_vertices = Mtraits::get_adjacent_vertices(m, vd);
 
 			for (vv_iterator i = adjacent_vertices.first ; i!= adjacent_vertices.second; ++i)
 			{

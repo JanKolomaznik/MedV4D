@@ -30,7 +30,7 @@ struct IterableVerticesConcept
 	void constraints() {
 		boost::function_requires<MeshConcept<TMesh, TMesh_Traits> >();
 
-		vp = get_all_vertices(m);
+		vp = TMesh_Traits::get_all_vertices(m);
 	}
 };
 

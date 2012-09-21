@@ -37,8 +37,8 @@ struct VertexAdjacencyConcept
 
 		boost::function_requires<MeshConcept<TMesh, TMesh_Traits> >();
 
-		vvp = get_adjacent_vertices(m, v);
-		isolated = is_isolated(m, v);
+		vvp = TMesh_Traits::get_adjacent_vertices(m, v);
+		isolated = TMesh_Traits::is_isolated(m, v);
 	}
 };
 

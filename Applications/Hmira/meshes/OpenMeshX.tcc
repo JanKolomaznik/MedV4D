@@ -1,27 +1,30 @@
 #ifdef OPENMESHX_H_
 #define OPENMESHX_H_
 
+
 std::pair<OpenMeshXTraits::fv_iterator, OpenMeshXTraits::fv_iterator>
-OpenMeshX::get_surrounding_vertices(OpenMeshXTraits::face_descriptor fd)
+OpenMeshXTraits::get_surrounding_vertices(const OpenMeshExtended& m_, OpenMeshXTraits::face_descriptor fd)
 {
-    return std::make_pair(this->fv_begin(fd), this->fv_end(fd));
+	typedef OpenMeshExtended Mesh;
+	Mesh& m = const_cast<Mesh&>(m_);
+	return std::make_pair(m.fv_begin(fd), m.fv_end(fd));
 }
 
 //=================CONCEPTS======================
 
-bool remove_vertex(
-		  	  	  typename OpenMeshXTraits::vertex_descriptor v,
-		  	  	  class OpenMeshX *m)
+bool OpenMeshXTraits::remove_vertex(
+					  OpenMeshXTraits::vertex_descriptor v,
+		  	  	  OpenMeshExtended &m)
 {
-	 m->delete_vertex(v);
+	 m.delete_vertex(v);
 	 return true;
 }
 
-bool create_face(
+bool OpenMeshXTraits::create_face(
 				  typename OpenMeshXTraits::vertex_descriptor a,
 				  typename OpenMeshXTraits::vertex_descriptor b,
 				  typename OpenMeshXTraits::vertex_descriptor c,
-		  	  	  class OpenMeshX *m)
+		  	  	  OpenMeshExtended *m)
 {
 	std::vector<OpenMeshXTraits::vertex_descriptor>  face_vhandles;
 
@@ -33,9 +36,9 @@ bool create_face(
 	return true;
 }
 
-bool remove_face(
+bool OpenMeshXTraits::remove_face(
 				  typename OpenMeshXTraits::face_descriptor f,
-		  	  	  class OpenMeshX *m)
+		  	  	  OpenMeshExtended *m)
 {
 	  m->delete_face(f);
 	  return true;
@@ -43,18 +46,18 @@ bool remove_face(
 
 std::pair<typename OpenMeshXTraits::vertex_iterator,
 	  	  	typename OpenMeshXTraits::vertex_iterator>
-get_all_vertices(const class OpenMeshX& m_)
+OpenMeshXTraits::get_all_vertices(const OpenMeshExtended& m_)
 {
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return std::make_pair(m.vertices_begin(), m.vertices_end());
 }
 
 std::pair<typename OpenMeshXTraits::edge_iterator,
 	  	  	typename OpenMeshXTraits::edge_iterator>
-get_all_edges(const class OpenMeshX& m_)
+OpenMeshXTraits::get_all_edges(const OpenMeshExtended& m_)
 {
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return std::make_pair(m.edges_begin(), m.edges_end());
 }
@@ -62,43 +65,84 @@ get_all_edges(const class OpenMeshX& m_)
 
 std::pair<typename OpenMeshXTraits::face_iterator,
 	  	  	typename OpenMeshXTraits::face_iterator>
-get_all_faces(const class OpenMeshX& m_)
+OpenMeshXTraits::get_all_faces(const OpenMeshExtended& m_)
 {
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return std::make_pair(m.faces_begin(), m.faces_end());
 }
 
 //=========== VERTEX ADJACENCY CONCEPT ===========
 
-bool is_isolated(const class OpenMeshX& m_,
-		OpenMeshX::vertex_descriptor v)
+bool OpenMeshXTraits::is_isolated(const OpenMeshExtended& m_,
+		OpenMeshXTraits::vertex_descriptor v)
 {
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return m.is_isolated(v);
 }
 
 std::pair<typename OpenMeshXTraits::vv_iterator,
 	  	  	typename OpenMeshXTraits::vv_iterator>
-get_adjacent_vertices(
-		const class OpenMeshX& m_,
+OpenMeshXTraits::get_adjacent_vertices(
+		const OpenMeshExtended& m_,
 		  OpenMeshXTraits::vertex_descriptor v)
 		  {
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return std::make_pair(m.vv_begin(v), m.vv_end(v));
 		  }
 
 std::pair<typename OpenMeshXTraits::ve_iterator,typename OpenMeshXTraits::ve_iterator>
-get_adjacent_edges(
-		const class OpenMeshX& m_,
+OpenMeshXTraits::get_adjacent_edges(
+		const OpenMeshExtended& m_,
 		OpenMeshXTraits::vertex_descriptor v)
 		  {
 
-	  typedef OpenMeshX Mesh;
+	  typedef OpenMeshExtended Mesh;
 	  Mesh& m = const_cast<Mesh&>(m_);
 	  return std::make_pair(m.ve_begin(v),m.ve_end(v));
 		  }
+
+advanced_mesh_traits<OpenMeshExtended>::normal
+advanced_mesh_traits<OpenMeshExtended>::get_face_normal(
+	const OpenMeshExtended& m_,
+	OpenMeshXTraits::face_descriptor f)
+	{
+		typedef OpenMeshExtended Mesh;
+		Mesh& m = const_cast<Mesh&>(m_);
+		return m.calc_face_normal(f);
+	}
+
+bool
+advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(
+	const OpenMeshExtended& m_,
+	face_descriptor& f)
+	{
+		std::vector<OpenMeshExtended::VertexHandle> face_vhandles;
+		std::deque<OpenMeshExtended::VertexHandle> vdx_vector;
+		
+		typedef OpenMeshExtended Mesh;
+		Mesh& m = const_cast<Mesh&>(m_);
+
+		auto fv1 = m.fv_begin(f);
+		auto fv2 = m.fv_end(f);
+
+        	for (auto vdx = fv1; vdx != fv2; ++vdx)
+        	{
+                	vdx_vector.push_front(vdx.handle());
+        	}
+
+		face_vhandles.clear();        
+
+		for (auto i : vdx_vector)
+        	{
+                	face_vhandles.push_back(i);
+        	}
+
+        	m.delete_face(f, false);
+		f = m.add_face(face_vhandles);
+		return true;
+	}
 
 #endif
