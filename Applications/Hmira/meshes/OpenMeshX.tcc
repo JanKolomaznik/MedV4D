@@ -116,7 +116,7 @@ advanced_mesh_traits<OpenMeshExtended>::get_face_normal(
 
 bool
 advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(
-	const OpenMeshExtended& m_,
+	OpenMeshExtended& m_,
 	face_descriptor& f)
 	{
 		std::vector<OpenMeshExtended::VertexHandle> face_vhandles;
@@ -141,6 +141,8 @@ advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(
         	}
 
         	m.delete_face(f, false);
+		m.garbage_collection();
+
 		f = m.add_face(face_vhandles);
 		return true;
 	}

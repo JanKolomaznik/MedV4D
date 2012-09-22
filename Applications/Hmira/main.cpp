@@ -16,7 +16,9 @@ typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 #include <deque>
 #include <boost/graph/adjacency_matrix.hpp>
 #include "meshes/winged_edge.h"
+
 #include "compute_components.h"
+#include "flip_normals.h"
 
 #include "meshes/OpenMeshX.h"
 #include "traits.h"
@@ -61,8 +63,9 @@ std::cout << "pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_pair
 	face_vhandles.push_back(vhandle[0]);
 	face_vhandles.push_back(vhandle[1]);
 	face_vhandles.push_back(vhandle[2]);
-//	face_vhandles.push_back(vhandle[3]);
-	
+	face_vhandles.push_back(vhandle[3]);
+
+
 	
 	
 	/*0 0 1*/
@@ -79,10 +82,16 @@ std::cout << "pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_pair
 	OpenMeshExtended::Normal normal = mesh.calc_face_normal(omx_face);
 	std::cout << "normala:" << normal << std::endl;
 
-	advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(mesh, omx_face);
+	flip_normals<OpenMeshExtended, advanced_mesh_traits<OpenMeshExtended>>(mesh);	
 
-	normal = mesh.calc_face_normal(omx_face);
-	std::cout << "normala:" << normal << std::endl;
+
+	auto old_face_pair = mesh_traits<OpenMeshExtended>::get_all_faces(mesh);
+	for (auto i = old_face_pair.first; i != old_face_pair.second; ++i)
+	{
+		auto old_face = *i;
+		OpenMeshExtended::Normal n = mesh.calc_face_normal(old_face);
+		std::cout << "norm:" << n << std::endl;
+	} 
 
 	std::cout << "pocet je " << compute_components<OpenMeshExtended, OpenMeshXTraits>(mesh) << std::endl;
 

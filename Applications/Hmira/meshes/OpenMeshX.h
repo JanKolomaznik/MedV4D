@@ -241,7 +241,7 @@ public:
 
 	static bool
 	flip_face_normal(
-		const OpenMeshExtended& m_,
+		OpenMeshExtended& m_,
 		face_descriptor& f);
 };
 
