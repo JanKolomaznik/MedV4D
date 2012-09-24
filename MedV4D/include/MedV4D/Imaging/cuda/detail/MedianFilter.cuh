@@ -14,7 +14,7 @@ struct MedianFilter3DFtor
 	__device__ TElement
 	operator()( TElement data[], uint idx, uint syStride, uint szStride, uint gIdx )
 	{
-		TElement tmp[9];
+		TElement tmp[27];
 		int ii = 0;
 		for ( int i = idx-1; i <= idx+1; ++i ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
@@ -23,10 +23,10 @@ struct MedianFilter3DFtor
 				}
 			}
 		}
-		for ( int i = 0; i < 8; ++i ) {
+		for ( int i = 0; i < 26; ++i ) {
 			int valIdx = i;
 			TElement value = tmp[valIdx];
-			for ( int j = i+1; j < 9; ++j ) {
+			for ( int j = i+1; j < 27; ++j ) {
 				if( value > tmp[j] ) {
 					valIdx = j;
 					value = tmp[valIdx];
@@ -34,7 +34,7 @@ struct MedianFilter3DFtor
 			}
 			cudaSwap( tmp[i], tmp[valIdx] );
 		}
-		return tmp[4];	
+		return tmp[14];	
 	}
 
 	//TElement threshold;

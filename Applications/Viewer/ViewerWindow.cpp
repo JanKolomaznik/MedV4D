@@ -314,7 +314,8 @@ void
 ViewerWindow::denoiseImage()
 {
 	LOG( "denoiseImage()" );
-	M4D::Imaging::AImage::Ptr image = DatasetManager::getInstance()->getCurrentImageInfo()->image;
+	ImageRecord::Ptr rec = DatasetManager::getInstance()->getCurrentImageInfo();
+	M4D::Imaging::AImage::Ptr image = rec->image;
 	if( !image ) { 
 		return;
 	}
@@ -324,7 +325,8 @@ ViewerWindow::denoiseImage()
 			IMAGE_TYPE::Ptr outputImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 
 			median3D( typedImage->GetRegion(), outputImage->GetRegion(), 2 );
-			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );		
+			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );	
+			rec->image = outputImage;
 		);
 
 }
@@ -806,18 +808,28 @@ ViewerWindow::dataLoaded()
 
 	//applyTransferFunction();
 	
+	//boost::thread th = boost::thread( boost::bind( &ViewerWindow::computeHistogram, this, image ) );
+	//th.detach();
 	
-	
-	
+	computeHistogram( image );
+
+}
+
+void
+ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
+{
+	if( !aImage ) {
+		return;
+	}
 	typedef M4D::Imaging::Histogram64 Histogram;
 	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
-	/*statusbar->showMessage("Computing histogram...");
+	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
 	Histogram::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage, 
+		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
 	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
@@ -842,5 +854,5 @@ ViewerWindow::dataLoaded()
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();
 
-	statusbar->clearMessage();*/
+	statusbar->clearMessage();
 }

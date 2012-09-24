@@ -107,6 +107,8 @@ public slots:
 	void
 	updateInfoInStatusBar( const QString &aInfo );
 
+	void
+	computeHistogram( M4D::Imaging::AImage::Ptr aImage );
 
 	//TMP
 	void 

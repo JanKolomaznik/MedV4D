@@ -280,7 +280,6 @@ private:
 					% boost::io::group(std::hex, std::showbase, size_t(mData+mLength) ) ) 
 				);
 
-
 			cudaFree( mData );
 			mData = NULL;
 			mLength = 0;
