@@ -90,92 +90,13 @@ public:
 	typedef typename OpenMeshExtended::FaceIter face_iterator;
 	typedef typename std::vector<OpenMeshExtended::Face>::size_type faces_size_type;
 
-	typedef typename OpenMeshExtended::VEIter ve_iterator;	
-
-
-	
-	class my_fv_iterator : public OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >
-	{
-	public:	
-		typedef OpenMesh::PolyConnectivity& mesh_ref;
-
-/* 	TODO prekonzultovať 
-*	constructor inheritance v norme c++0x 
-*/
-
-		my_fv_iterator() : 
-			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >() {};
-		
-		my_fv_iterator (mesh_ref _mesh, OpenMesh::PolyConnectivity::FaceHandle _start, bool _end) :
-			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _start, _end) {};
-
-		my_fv_iterator(mesh_ref _mesh, OpenMesh::PolyConnectivity::HalfedgeHandle _heh, bool _end) : 
-			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _heh, _end) {};
-
-		my_fv_iterator(const OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >& _rhs) :
-			OpenMesh::Iterators::FaceVertexIterT< OpenMesh::PolyConnectivity >(_rhs) {};
-
-		bool operator==(const my_fv_iterator& _rhs) const 
-		{
-			return 
-			((mesh_   == _rhs.mesh_) &&
-			(start_  == _rhs.start_) &&
-			(heh_    == _rhs.heh_));
-		}
- 
- 
-		bool operator!=(const my_fv_iterator& _rhs) const
-		{
-			return !operator==(_rhs);
-		}
-
-
-	};
-
-	class my_vv_iterator : public OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >
-	{
-	public:	
-		typedef OpenMesh::PolyConnectivity& mesh_ref;
-
-		my_vv_iterator() : 
-			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >() {};
-		
-		my_vv_iterator (mesh_ref _mesh, OpenMesh::PolyConnectivity::VertexHandle _start, bool _end) :
-			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _start, _end) {};
-
-		my_vv_iterator(mesh_ref _mesh, OpenMesh::PolyConnectivity::HalfedgeHandle _heh, bool _end) : 
-			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_mesh, _heh, _end) {};
-
-		my_vv_iterator(const OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >& _rhs) :
-			OpenMesh::Iterators::VertexVertexIterT< OpenMesh::PolyConnectivity >(_rhs) {};
-
-		bool operator==(const my_vv_iterator& _rhs) const 
-		{
-			return 
-			((mesh_   == _rhs.mesh_) &&
-			(start_  == _rhs.start_) &&
-			(heh_    == _rhs.heh_));
-		}
- 
- 
-		bool operator!=(const my_vv_iterator& _rhs) const
-		{
-			return !operator==(_rhs);
-		}
-
-
-	};
-
-
-
-
-	class my_ve_iterator : public OpenMeshExtended::VEIter
-	{
-		
-	};
+	class my_fv_iterator;
+	class my_vv_iterator;
+	class my_ve_iterator; 
 
 	typedef my_fv_iterator fv_iterator;
 	typedef my_vv_iterator vv_iterator;
+	typedef my_ve_iterator ve_iterator;
 
     static std::pair<fv_iterator, fv_iterator>
     get_surrounding_vertices(const OpenMeshExtended& m_, face_descriptor fd);
@@ -191,11 +112,11 @@ static bool create_face(
 				  vertex_descriptor a,
 				  vertex_descriptor b,
 				  vertex_descriptor c,
-		  	  	  OpenMeshExtended *m);
+		  	  	  OpenMeshExtended& m);
 
 static bool remove_face(
 				  typename mesh_traits<OpenMeshExtended>::face_descriptor f,
-		  	  	  OpenMeshExtended* m);
+		  	  	  OpenMeshExtended& m);
 
 static std::pair<vertex_iterator,
 	  	  	vertex_iterator>
@@ -249,8 +170,6 @@ public:
 
 typedef mesh_traits<OpenMeshExtended> OpenMeshXTraits;
 
-inline mesh_traits<OpenMeshExtended>::vertex_descriptor operator*(mesh_traits<OpenMeshExtended>::fv_iterator fvi) { return fvi.handle(); }
-inline mesh_traits<OpenMeshExtended>::vertex_descriptor operator*(mesh_traits<OpenMeshExtended>::vv_iterator vvi) { return vvi.handle(); }
 #include "OpenMeshX.tcc"
 		  
 #endif /* OPENMESHX_H_ */
