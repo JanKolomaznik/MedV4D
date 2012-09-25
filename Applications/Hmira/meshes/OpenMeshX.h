@@ -67,11 +67,13 @@ public:
  * 
  * \ingroup OpenMeshX
  */
-template<>
-class mesh_traits<OpenMeshExtended>
+template<typename TTraits>
+class mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> /*OpenMeshExtended*/>
 
 {
 public:
+	typedef OpenMesh::PolyMesh_ArrayKernelT<TTraits> OpenMeshExtended;
+
 	typedef OpenMesh::DefaultTraits original_traits;
 
 	typedef typename OpenMeshExtended::Point Point;
