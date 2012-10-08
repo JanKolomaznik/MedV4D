@@ -294,6 +294,8 @@ OrganSegmentationModule::computeWatershedTransformation()
 		
 		mGraphCutSegmentationWrapper.computeGradientImage();
 		mGraphCutSegmentationWrapper.computeWatershedTransformation();
+
+		mIDMappingBuffer = boost::make_shared< M4D::GUI::IDMappingBuffer >( mGraphCutSegmentationWrapper.mRegionCount + 1 );
 	}
 }
 

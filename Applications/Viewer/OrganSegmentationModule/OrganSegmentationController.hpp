@@ -8,10 +8,12 @@
 #include "MedV4D/GUI/utils/QtModelViewTools.h"
 #include "MedV4D/GUI/utils/DrawingMouseController.h"
 #include "MedV4D/GUI/utils/PrimitiveCreationEventController.h"
+#include "MedV4D/GUI/utils/IDMappingBuffer.h"
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 
 #include "MedV4D/Imaging/painting/Paint.h"
 #include "MedV4D/Imaging/CanonicalProbModel.h"
+#include <boost/function.hpp>
 
 class MaskDrawingMouseController: public ADrawingMouseController
 {
@@ -73,7 +75,12 @@ public:
 	typedef boost::shared_ptr<RegionMarkingMouseController> Ptr;
 	typedef std::set< uint32 > ValuesSet;
 	
-	RegionMarkingMouseController( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions, boost::shared_ptr< ValuesSet > aValues = boost::shared_ptr< ValuesSet >() ): mRegions( aRegions ), mValues( aValues )
+	RegionMarkingMouseController( 
+			M4D::Imaging::Image3DUnsigned32b::Ptr aRegions, 
+			M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer,
+			boost::shared_ptr< ValuesSet > aValues,
+		       	boost::function<void ()> aUpdateCallback
+			): mRegions( aRegions ), mIDMappingBuffer( aIDMappingBuffer ), mValues( aValues ), mUpdateCallback( aUpdateCallback )
 	{ ASSERT( mRegions ); }
 	
 	void
@@ -109,13 +116,17 @@ protected:
 		try {
 			M4D::Imaging::painting::getValuesFromRectangleAlongLine( *mRegions, *mValues, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
 			//M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
-		} catch (...){
-			D_PRINT( "drawStep exception" );
+		} catch (std::exception &e){
+			D_PRINT( "drawStep exception: " << e.what() );
 		}
+
+		mUpdateCallback();
 	}
 	
 	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
+	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
 	boost::shared_ptr< ValuesSet > mValues;
+	boost::function<void ()> mUpdateCallback;
 };
 
 
@@ -190,6 +201,10 @@ public:
 	render3D();
 
 	M4D::Imaging::Mask3D::Ptr	mMask;
+
+	void
+	setIDMappingBuffer( M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer )
+	{ mIDMappingBuffer = aIDMappingBuffer; }
 signals:
 	void
 	updateRequest();
@@ -209,6 +224,8 @@ public slots:
 protected:
 
 public:
+	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
+
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	bool mOverlay;

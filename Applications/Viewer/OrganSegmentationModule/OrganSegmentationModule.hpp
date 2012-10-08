@@ -36,7 +36,12 @@ public:
 	{
 		return mGraphCutSegmentationWrapper;
 	}
-		
+	
+	void
+	update()
+	{
+
+	}
 protected:
 	void
 	loadModule();
@@ -80,6 +85,8 @@ protected:
 	GraphCutSegmentationWrapper	mGraphCutSegmentationWrapper;
 	
 	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
+
+	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
 };
 
 

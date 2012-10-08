@@ -62,7 +62,14 @@ OrganSegmentationController::toggleRegionMarking( bool aToggle )
 {
 	if( aToggle ) {
 		ASSERT(mModule.getGraphCutSegmentationWrapper().mWatersheds);
-		setController( RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule.getGraphCutSegmentationWrapper().mWatersheds, mModule.getGraphCutSegmentationWrapper().mForegroundMarkers ) ) );
+		setController( boost::make_shared<RegionMarkingMouseController>( 
+					mModule.getGraphCutSegmentationWrapper().mWatersheds, 
+					mIDMappingBuffer, 
+					mModule.getGraphCutSegmentationWrapper().mForegroundMarkers, 
+					boost::bind( &OrganSegmentationModule::update, mModule ) 
+					)
+			     );
+		D_PRINT( "Switched to region marking controller" );
 	} else {
 		resetController();//mMaskDrawingController.reset();
 	}
