@@ -160,6 +160,7 @@ class winged_edge_mesh<FaceRestriction>::normal
 			this->x = -1.0f * this->x;
 			this->y = -1.0f * this->y;
 			this->z = -1.0f * this->z;
+			return true;
 		}
 };
 

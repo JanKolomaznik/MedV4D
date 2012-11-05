@@ -8,6 +8,7 @@
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
+//#include "MedV4D/Imaging/ImageTools.h"
 
 
 typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
@@ -17,8 +18,9 @@ typedef OpenMesh::PolyMesh_ArrayKernelT<> MyMesh;
 #include <boost/graph/adjacency_matrix.hpp>
 #include "meshes/winged_edge.h"
 
-#include "compute_components.h"
-#include "flip_normals.h"
+#include "algorithms/compute_components.h"
+#include "algorithms/flip_normals.h"
+#include "algorithms/triangulate.h"
 
 #include "meshes/OpenMeshX.h"
 #include "traits.h"
@@ -93,6 +95,8 @@ std::cout << "pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_pair
 		std::cout << "norm:" << n << std::endl;
 	} 
 
+	triangulate<OpenMeshExtended, advanced_mesh_traits<OpenMeshExtended>>(mesh);
+	
 	std::cout << "pocet je " << compute_components<OpenMeshExtended, OpenMeshXTraits>(mesh) << std::endl;
 
 
@@ -173,6 +177,9 @@ std::cout << "2: pre izolovany vrchol vyhodi rovny iterator:" << (test_vv_iter_p
 	std::cout << "pocet je: " << compute_components<my_mesh, my_mesh_traits>(G) << std::endl;
 
 	std::cout << "norma: c++0x" << std::endl;
+
+
+	//M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 
 	return 0;
 }

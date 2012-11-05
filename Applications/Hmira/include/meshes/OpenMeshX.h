@@ -1,4 +1,4 @@
-/*
+/*:
  * OpenMeshX.h
  *
  *  Created on: Jul 16, 2012
@@ -23,56 +23,20 @@ struct MyTraits : public OpenMesh::DefaultTraits
 typedef OpenMesh::PolyMesh_ArrayKernelT<MyTraits> OpenMeshExtended;
 
 /*!
- * \defgroup OpenMeshX
- * implementation of polynomial mesh with all features of OpenMesh
- * more: \link OpenMesh http://openmesh.org/ \endlink 
- * 
- * \class OpenMeshX
- * \brief class inherited from OpenMesh::PolyMesh_ArrayKernelT
- * 
- * \ingroup OpenMeshX
- */
-/*class OpenMeshX : public OpenMeshExtended
-{
-public:
-
-	typedef typename OpenMeshExtended::Point Point;
-
-
-    typedef typename OpenMeshExtended::VertexHandle vertex_descriptor;
-    typedef typename OpenMeshExtended::VertexIter vertex_iterator;
-    typedef typename std::vector<OpenMeshExtended::Vertex>::size_type vertices_size_type;
-
-    typedef typename OpenMeshExtended::EdgeHandle edge_descriptor;
-    typedef typename OpenMeshExtended::EdgeIter edge_iterator;
-    typedef typename std::vector<OpenMeshExtended::Edge>::size_type edges_size_type;
-
-    typedef typename OpenMeshExtended::FaceHandle face_descriptor;
-    typedef typename OpenMeshExtended::FaceIter face_iterator;
-    typedef typename std::vector<OpenMeshExtended::Face>::size_type faces_size_type;
-
-    typedef typename OpenMeshExtended::FVIter fv_iterator;
-    typedef typename OpenMeshExtended::VVIter vv_iterator;
-    typedef typename OpenMeshExtended::VEIter ve_iterator;
-
-    std::pair<fv_iterator, fv_iterator>
-    get_surrounding_vertices(face_descriptor fd);
-
-
-};*/
-
-/*!
  * \struct OpenMeshXTraits
  * \brief traits of OpenMeshX
  * 
  * \ingroup OpenMeshX
  */
-template<typename TTraits>
-class mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> /*OpenMeshExtended*/>
+//template<typename TTraits>
+//class mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> /*OpenMeshExtended*/>
+
+template<>
+class mesh_traits<OpenMeshExtended>
 
 {
 public:
-	typedef OpenMesh::PolyMesh_ArrayKernelT<TTraits> OpenMeshExtended;
+	//typedef OpenMesh::PolyMesh_ArrayKernelT<TTraits> OpenMeshExtended;
 
 	typedef OpenMesh::DefaultTraits original_traits;
 
@@ -106,8 +70,9 @@ public:
 
 //=================CONCEPTS======================
 
+
 static bool remove_vertex(
-					  vertex_descriptor v,
+				  vertex_descriptor v,
 		  	  	  OpenMeshExtended &m);
 
 static bool create_face(
@@ -154,7 +119,7 @@ get_adjacent_edges(
 };
 
 template<>
-class advanced_mesh_traits<OpenMeshExtended> : public mesh_traits<OpenMeshExtended>
+class advanced_mesh_traits<OpenMesh::PolyMesh_ArrayKernelT<MyTraits>> : public mesh_traits<OpenMeshExtended>
 {
 public:
 	static mesh_traits<OpenMeshExtended>::normal 
@@ -162,10 +127,15 @@ public:
 		const OpenMeshExtended& m_,
 		face_descriptor f);
 
+#if 1
+
+//BOOST_CHECK(MyTraits::);
 	static bool
 	flip_face_normal(
 		OpenMeshExtended& m_,
 		face_descriptor& f);
+#endif
+
 };
 
 

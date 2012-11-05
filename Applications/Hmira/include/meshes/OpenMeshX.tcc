@@ -1,6 +1,7 @@
 #ifdef OPENMESHX_H_
 #define OPENMESHX_H_
 
+
 class mesh_traits<OpenMeshExtended>::my_ve_iterator : public OpenMeshExtended::VEIter
 {
 	public: 
@@ -126,6 +127,7 @@ OpenMeshXTraits::get_surrounding_vertices(const OpenMeshExtended& m_, OpenMeshXT
 
 //=================CONCEPTS======================
 
+#ifdef Michal
 bool OpenMeshXTraits::remove_vertex(
 					  OpenMeshXTraits::vertex_descriptor v,
 		  	  	  OpenMeshExtended &m)
@@ -133,6 +135,7 @@ bool OpenMeshXTraits::remove_vertex(
 	 m.delete_vertex(v);
 	 return true;
 }
+#endif
 
 bool OpenMeshXTraits::create_face(
 				  typename OpenMeshXTraits::vertex_descriptor a,
@@ -228,6 +231,8 @@ advanced_mesh_traits<OpenMeshExtended>::get_face_normal(
 		return m.calc_face_normal(f);
 	}
 
+#if 1
+
 bool
 advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(
 	OpenMeshExtended& m_,
@@ -261,4 +266,7 @@ advanced_mesh_traits<OpenMeshExtended>::flip_face_normal(
 		return true;
 	}
 
-#endif
+#endif // CIKULOVINA
+
+
+#endif // OPENMESHX_H_
