@@ -20,7 +20,7 @@ struct MyTraits : public OpenMesh::DefaultTraits
 };
 
 
-typedef OpenMesh::PolyMesh_ArrayKernelT<MyTraits> OpenMeshExtended;
+//typedef OpenMesh::PolyMesh_ArrayKernelT<MyTraits> OpenMeshExtended;
 
 /*!
  * \struct OpenMeshXTraits
@@ -28,15 +28,15 @@ typedef OpenMesh::PolyMesh_ArrayKernelT<MyTraits> OpenMeshExtended;
  * 
  * \ingroup OpenMeshX
  */
-//template<typename TTraits>
-//class mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> /*OpenMeshExtended*/>
+template<typename TTraits>
+class mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> /*OpenMeshExtended*/>
 
-template<>
-class mesh_traits<OpenMeshExtended>
+//template<>
+//class mesh_traits<OpenMeshExtended>
 
 {
 public:
-	//typedef OpenMesh::PolyMesh_ArrayKernelT<TTraits> OpenMeshExtended;
+	typedef OpenMesh::PolyMesh_ArrayKernelT<TTraits> OpenMeshExtended;
 
 	typedef OpenMesh::DefaultTraits original_traits;
 
@@ -140,7 +140,7 @@ public:
 
 
 
-typedef mesh_traits<OpenMeshExtended> OpenMeshXTraits;
+//typedef mesh_traits<OpenMeshExtended> OpenMeshXTraits;
 
 #include "OpenMeshX.tcc"
 		  

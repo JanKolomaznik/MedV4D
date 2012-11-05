@@ -126,12 +126,38 @@ OpenMeshXTraits::get_surrounding_vertices(const OpenMeshExtended& m_, OpenMeshXT
 }
 
 //=================CONCEPTS======================
+/*
+template<unsigned tEnumDefined>
+bool removeVertexImpl(
+					  OpenMeshXTraits::vertex_descriptor v,
+		  	  	  OpenMeshExtended &m);
 
-#ifdef Michal
-bool OpenMeshXTraits::remove_vertex(
+template<>
+bool removeVertexImpl<EnumDefined>(
 					  OpenMeshXTraits::vertex_descriptor v,
 		  	  	  OpenMeshExtended &m)
 {
+	 m.delete_vertex(v);
+}
+
+template<>
+bool removeVertexImpl<EnumNotDefined>(
+					  OpenMeshXTraits::vertex_descriptor v,
+		  	  	  OpenMeshExtended &m)
+{
+	throw Error;
+}
+*/
+
+#ifdef Michal
+template<typename TTraits>
+bool 
+mesh_traits< OpenMesh::PolyMesh_ArrayKernelT<TTraits> >
+::remove_vertex(
+					  OpenMeshXTraits::vertex_descriptor v,
+		  	  	  OpenMeshExtended &m)
+{
+	static_assert(TTraits::VertexAttributes != 0);
 	 m.delete_vertex(v);
 	 return true;
 }
