@@ -17,6 +17,8 @@
 #include "DcmObject.h"
 #include "MedV4D/Common/ProgressNotifier.h"
 
+#include <dcmtk/dcmdata/dcdicdir.h>
+
 
 /**
  *  @mainpage
@@ -59,6 +61,8 @@ namespace M4D
 namespace Dicom 
 {
 
+typedef boost::shared_ptr<DcmDicomDir> DcmDicomDirPtr;
+	
 /// This class is gate to DICOM world.
 /**
  *  This class provides following DICOM operations to upper layers: C-FIND,
@@ -245,7 +249,15 @@ public:
 	{
 		LoadSerieThatFileBelongsTo( fileName.string(), folder.string(), result,	aProgressNotifier );
 	}
-
+	
+	static void
+	loadDICOMDir( boost::filesystem::path fileName )
+	{
+		/*if ( !boost::filesystem::exists( fileName ) ) {
+			_THROW_ ErrorHandling::ENotFound("File not found");
+		}
+		DcmDicomDir( fileName.string().data() );*/
+	}
 private:
 	static bool	_useRemotePart;
 };
