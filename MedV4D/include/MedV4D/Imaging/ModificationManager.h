@@ -8,6 +8,7 @@
 #ifndef _MODIFICATION_MANAGER_H
 #define _MODIFICATION_MANAGER_H
 
+#include "MedV4D/Common/MathTools.h"
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Common/TimeStamp.h"
@@ -148,8 +149,8 @@ public:
 		_THROW_ ErrorHandling::EBadParameter( "Bounding boxes don't have same dimension" );
 		}
 		for ( unsigned i = 0; i < _dimension; ++i ) {
-			_first[i] = M4D::min( _first[i], aSecond._first[i] );
-			_second[i] = M4D::max( _second[i], aSecond._second[i] );
+			_first[i] = M4D::min<int>( _first[i], aSecond._first[i] );
+			_second[i] = M4D::max<int>( _second[i], aSecond._second[i] );
 		}
 	}
 	int32 *

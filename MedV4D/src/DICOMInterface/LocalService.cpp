@@ -467,7 +467,7 @@ LocalService::SolveDirGET(
     }
     else
     {
-      SolveFileGET( dir_itr->string(), 
+		SolveFileGET( dir_itr->path().string(), 
         patientID, studyID, serieID, result, dirName.string() );
     }
   }
@@ -571,7 +571,7 @@ LocalService::GetSeriesFromFolder(
 			// if it is subdir, call itself on subdir
 			if ( ! fs::is_directory( dir_itr->status() ) ) {
 				SolveFileGET( 
-						dir_itr->string(), 
+						dir_itr->path().string(), 
 						aPatientID, 
 						aStudyID, 
 						aSerieID, 

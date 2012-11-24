@@ -8,6 +8,14 @@
 #include <boost/type_traits.hpp>
 #include <cmath>
 
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 namespace M4D
 {
 

@@ -62,7 +62,7 @@ main( int argc, char **argv )
 	if ( outFilenameArg.isSet() ) {
 		outFilename = outFilenameArg.getValue();
 	} else {
-		outFilename = inFilename.stem() + "_" + operatorName + inFilename.extension();
+		outFilename = inFilename.stem().string() + "_" + operatorName + inFilename.extension().string();
 	}
 	
 	boost::filesystem::path markersPath( markerMaskPath.getValue() );

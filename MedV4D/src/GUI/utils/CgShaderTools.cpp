@@ -39,7 +39,7 @@ CgEffect::Initialize(/*CGcontext   				&cgContext,*/
 			const boost::filesystem::path 		&effectFile
 			)
 {
-	mEffectName = effectFile.filename();
+	mEffectName = effectFile.filename().string();
 
 	if ( !boost::filesystem::is_regular_file( effectFile ) ) {
 		_THROW_ CgException( mEffectName, boost::str( boost::format( "Effect could not be loaded! `%1%` is not regular file." ) %effectFile ) );

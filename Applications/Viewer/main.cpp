@@ -12,7 +12,7 @@
 
 #include <tclap/CmdLine.h>
 
-#include <X11/Xlib.h>
+//#include <X11/Xlib.h>
 
 std::string inFilename;
 
@@ -55,7 +55,7 @@ main( int argc, char** argv )
         //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         //SET_DOUT( debugFile );
 
-	XInitThreads();
+	//XInitThreads();
 	ApplicationManager appManager;
 
 	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );

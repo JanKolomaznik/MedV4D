@@ -19,14 +19,15 @@ yield()
 	boost::thread::yield();
 }
 
-void
+/*void
 sleep( int duration )
 {
 	boost::xtime sleepTime;
 	boost::xtime_get(&sleepTime, boost::TIME_UTC);
 	sleepTime.nsec += duration;
+	//boost::this_thread::sleep(boost::posix_time::milliseconds(_msecs));
 	boost::thread::sleep(sleepTime);
-}
+}*/
 
 }/*namespace Multithreading*/
 }/*namespace M4D*/

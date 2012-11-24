@@ -91,8 +91,8 @@ ApplicationManager::loadIcons()
 		D_PRINT( "Found file :" << *dirIt );
 		boost::filesystem::path p = dirIt->path();
 		if ( p.extension() == ".png" || p.extension() == ".svg" ) {
-			QString filename = p.string().data();
-			QString name = p.stem().data();
+			QString filename = p.string().c_str();
+			QString name = p.stem().string().c_str();
 			if ( !filename.isEmpty() && !name.isEmpty() ) {
 				mIconMap[ name.toLower() ] = QIcon( filename );
 			}
