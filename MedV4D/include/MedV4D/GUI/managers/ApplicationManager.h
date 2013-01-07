@@ -1,22 +1,27 @@
 #ifndef APPLICATION_MANAGER_H
 #define APPLICATION_MANAGER_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
 #include "MedV4D/GUI/managers/DatasetManager.h"
+
 #include "MedV4D/GUI/utils/Module.h"
 #include "MedV4D/GUI/utils/Settings.h"
+
 #include "MedV4D/GUI/widgets/MainWindow.h"
-#include "MedV4D/Common/IDGenerator.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
+#include "MedV4D/Common/IDGenerator.h"
+#include <boost/thread/future.hpp>
+#endif
+
 #include <QtCore>
 
 #ifdef USE_TBB
 #include <tbb/tbb.h>
 #endif
-
-#include <boost/thread/future.hpp>
 
 
 

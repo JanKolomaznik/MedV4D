@@ -1,6 +1,7 @@
 #ifndef GENERAL_VIEWER_H
 #define GENERAL_VIEWER_H
-
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/Imaging/Imaging.h"
 
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
@@ -28,7 +29,7 @@
 
 #include "MedV4D/Common/Types.h"
 
-
+#endif
 
 namespace M4D
 {

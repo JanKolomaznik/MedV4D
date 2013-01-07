@@ -24,7 +24,7 @@ struct CurentObjectID< true >
 	void
 	set( SelectID aId )
 	{
-		GL_CHECKED_CALL( glColor4us(aId, 0, 0, MAX_UINT16) );
+		GL_CHECKED_CALL( glColor4us(static_cast<GLushort>(aId), 0, 0, MAX_UINT16) );
 	}
 };
 

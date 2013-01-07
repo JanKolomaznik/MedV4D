@@ -19,7 +19,9 @@
 #include <iterator>
 #include <algorithm>
 
+#ifdef USE_CUDA
 #include "MedV4D/Imaging/cuda/MedianFilter.h"
+#endif
 
 #include <QtGui>
 namespace M4D
@@ -319,6 +321,7 @@ ViewerWindow::denoiseImage()
 	if( !image ) { 
 		return;
 	}
+	#ifdef USE_CUDA
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
@@ -328,7 +331,8 @@ ViewerWindow::denoiseImage()
 			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );	
 			rec->image = outputImage;
 		);
-
+	#endif
+		//TODO - CPU version
 }
 
 void

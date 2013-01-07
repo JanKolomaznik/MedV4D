@@ -1,18 +1,22 @@
 #ifndef OPENGL_MANAGER_H
 #define OPENGL_MANAGER_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/GUI/utils/OGLTools.h"
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/Common/Common.h"
+#include <boost/thread.hpp> 
+#include <boost/thread/recursive_mutex.hpp>
+//#include <boost/thread/unique_lock.hpp>
+#endif
 
 //#include <QtOpenGL>
 #include <QGLWidget>
 #include <QGLContext>
 #include <QColor>
 
-#include <boost/thread.hpp> 
-#include <boost/thread/recursive_mutex.hpp>
-//#include <boost/thread/unique_lock.hpp>
+
 
 #include <map>
 
@@ -71,7 +75,7 @@ public:
 	deleteTextures( GLuint &aTexture, size_t aCount = 1 )
 	{
 		CurrentContext curr( *this );
-		GL_CHECKED_CALL( glDeleteTextures( aCount, &aTexture ) );
+		GL_CHECKED_CALL( glDeleteTextures( static_cast<GLsizei>(aCount), &aTexture ) );
 	}
 protected:
 	virtual M4D::GLTextureImage::Ptr

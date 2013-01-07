@@ -1,11 +1,13 @@
 #ifndef FILE_PATH_COMBO_BOX_H
 #define FILE_PATH_COMBO_BOX_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/generated/ui_FilePathComboBox.h"
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/Settings.h"
 #include "QtGui/QFileDialog"
-
+#endif
 
 class FilePathComboBox: public QWidget, public Ui::FilePathComboBox
 {

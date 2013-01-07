@@ -1,10 +1,13 @@
 #ifndef DRAWING_MOUSE_CONTROLLER_H
 #define DRAWING_MOUSE_CONTROLLER_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
+
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 #include "MedV4D/GUI/utils/MouseTracking.h"
 #include "MedV4D/GUI/utils/ViewerController.h"
-
+#endif
 class ADrawingMouseController: public M4D::GUI::Viewer::AViewerController
 {
 	Q_OBJECT;

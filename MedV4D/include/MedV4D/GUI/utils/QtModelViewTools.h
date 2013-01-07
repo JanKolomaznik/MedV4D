@@ -1,12 +1,14 @@
 #ifndef QT_MODEL_VIEW_TOOLS_H
 #define QT_MODEL_VIEW_TOOLS_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include <QtGui>
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include "MedV4D/Common/Sphere.h"
-
+#endif
 
 class AVectorItemModel: public QAbstractListModel
 {

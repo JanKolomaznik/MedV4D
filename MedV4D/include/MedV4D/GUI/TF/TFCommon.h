@@ -20,7 +20,7 @@ namespace M4D {
 namespace GUI {
 namespace TF{
 
-typedef unsigned long Size;
+typedef size_t Size;
 typedef std::vector<int> Coordinates;
 
 template<typename From, typename To>

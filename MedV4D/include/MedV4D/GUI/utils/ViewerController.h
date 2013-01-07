@@ -1,8 +1,11 @@
 #ifndef VIEWER_CONTROLLER_H
 #define VIEWER_CONTROLLER_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 #include "MedV4D/GUI/utils/MouseTracking.h"
+#endif
 
 namespace M4D
 {

@@ -4,9 +4,11 @@
 #include <QMoveEvent>
 #include <QtGui>
 #include <QtCore>
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
-
+#endif
 class MultiDockWidget: public QDockWidget
 {
 	Q_OBJECT;

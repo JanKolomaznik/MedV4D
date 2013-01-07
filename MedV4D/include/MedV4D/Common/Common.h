@@ -20,11 +20,13 @@
  * our defines saying what OS we are building for
  * they are connected to well known symbols
  */
-#define OS_WIN
+//#define OS_WIN
 //#define OS_LINUX
 //#define OS_BSD
 //#define OS_MAC
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/Common/Types.h"
 #include "MedV4D/Common/TypeComparator.h"
 #include "MedV4D/Common/Debug.h"
@@ -45,7 +47,7 @@
 #include <iomanip>
 #include <sstream>
 #include <boost/filesystem.hpp>
-
+#endif
 //*****************************************************************************
 
 //*****************************************************************************

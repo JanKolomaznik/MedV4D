@@ -1,6 +1,7 @@
 #ifndef A_GL_VIEWER_H
 #define A_GL_VIEWER_H
-
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/GUI/widgets/GLWidget.h"
 //#include "MedV4D/GUI/widgets/AViewer.h"
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
@@ -10,7 +11,7 @@
 #include <boost/cast.hpp>
 
 #include "MedV4D/GUI/utils/OGLSelection.h"
-
+#endif
 namespace M4D
 {
 namespace GUI

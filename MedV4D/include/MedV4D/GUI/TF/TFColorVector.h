@@ -274,7 +274,7 @@ public:
 		tfAssert(dimensionSizes.size() == 1);
 
 		int inputSize = static_cast<int>(this->vector_.size());
-		int outputSize = dimensionSizes[0];
+		int outputSize = static_cast<int>(dimensionSizes[0]);
 
 		float oiRatio = outputSize/(float)inputSize;
 

@@ -1,11 +1,14 @@
 #ifndef OGL_TOOLS_H
 #define OGL_TOOLS_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include <boost/shared_array.hpp>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#endif
 
 #ifdef _MSC_VER
 # define WIN32_LEAN_AND_MEAN 1

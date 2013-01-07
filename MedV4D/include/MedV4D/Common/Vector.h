@@ -13,28 +13,28 @@
 	#define CHECK_INDICES_ENABLED
 #endif /*DEBUG_LEVEL*/
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 class Vector;
 
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator+ ( const Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator-( const Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator+=( Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator-=( Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator-( const Vector< CoordType, Dimension > &v );
-template < typename CoordType, unsigned Dimension >
+template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator*( CoordType k, const Vector< CoordType, Dimension > &v );
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 class Vector
 {
 public:
-	static const unsigned Dimension = Dim;
+	static const size_t Dimension = Dim;
 
 	friend Vector< CoordType, Dimension > operator+< CoordType, Dimension >( const Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
 	friend Vector< CoordType, Dimension > operator-< CoordType, Dimension >( const Vector< CoordType, Dimension > &v1, const Vector< CoordType, Dimension > &v2 );
@@ -44,7 +44,7 @@ public:
 
 	typedef CoordType 	CoordinateType;
 
-	template< unsigned tCoord >
+	template< size_t tCoord >
 	struct ValueAccessor
 	{
 		CoordType &
@@ -60,11 +60,11 @@ public:
 	};
 
 	Vector()
-		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
+		{ for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
 	explicit Vector( CoordType x )
 		{
-			for( unsigned i=0; i<Dimension; ++i ) 
+			for( size_t i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = x; } 
 		}
 	template< typename CType >
@@ -131,38 +131,38 @@ public:
 	template< typename CType >
 	Vector( const Vector< CType, Dimension > &coord ) 
 		{ 
-			for( unsigned i=0; i<Dimension; ++i ) 
+			for( size_t i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 		}
 
 	template< typename CType >
 	Vector( const Vector< CType, Dimension-1 > &coord, CType value ) 
 		{ 
-			for( unsigned i=0; i<Dimension-1; ++i ) 
+			for( size_t i=0; i<Dimension-1; ++i ) 
 			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 			_coordinates[Dimension-1] = value;
 		}
 
 	Vector( const CoordType coords[] ) 
 		{ 
-			for( unsigned i=0; i<Dimension; ++i ) 
+			for( size_t i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coords[i]; } 
 		}
 
 	CoordinateType &
-	operator[]( unsigned idx )
+	operator[]( size_t idx )
 		{ 
 			return Get( idx );
 		}
 
 	CoordinateType
-	operator[]( unsigned idx )const
+	operator[]( size_t idx )const
 		{ 
 			return Get( idx );
 		}
 
 
-	template< uint32 tIdx >
+	template< size_t tIdx >
 	CoordinateType &
 	StaticGet()
 		{ 
@@ -171,7 +171,7 @@ public:
 		}
 
 
-	template< uint32 tIdx >
+	template< size_t tIdx >
 	CoordinateType
 	StaticGet()const
 		{ 
@@ -179,21 +179,21 @@ public:
 			return _coordinates[ tIdx ];
 		}
 
-	template< uint32 tBegin, uint32 tEnd >
+	template< size_t tBegin, size_t tEnd >
 	Vector< CoordinateType, tEnd - tBegin >
 	GetSubVector() const
 	{
 		BOOST_STATIC_ASSERT( tBegin < tEnd );
 		BOOST_STATIC_ASSERT( Dimension >= tEnd );
 		Vector< CoordinateType, tEnd - tBegin > tmp;
-		for( unsigned i = tBegin; i < tEnd; ++i ) {
+		for( size_t i = tBegin; i < tEnd; ++i ) {
 			tmp[i-tBegin] = _coordinates[i];
 		}
 		return tmp;
 	}
 
 	CoordinateType &
-	Get( unsigned idx )
+	Get( size_t idx )
 		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
@@ -205,7 +205,7 @@ public:
 		}
 
 	CoordinateType
-	Get( unsigned idx )const
+	Get( size_t idx )const
 		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
@@ -220,14 +220,14 @@ public:
 	Vector< CoordType, Dimension > &
 	operator=( const Vector< CType, Dimension > &coord )
 		{ 
-			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 			return *this;
 		}
 
 	Vector< CoordType, Dimension > &
 	operator=( const CoordType coord[] )
 		{ 
-			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; } 
+			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; } 
 			return *this;
 		}
 
@@ -241,7 +241,7 @@ public:
 	ToBinStream( std::ostream &stream )
 	{
 		CoordinateType tmp;
-		for( unsigned i=0; i<Dimension; ++i ) { 
+		for( size_t i=0; i<Dimension; ++i ) { 
 			tmp = _coordinates[i];
 			//BINSTREAM_WRITE_MACRO( stream, tmp );
 			stream.write( (char*)&tmp, sizeof(tmp) );
@@ -251,7 +251,7 @@ public:
 	FromBinStream( std::istream &stream )
 	{
 		CoordinateType tmp;
-		for( unsigned i=0; i<Dimension; ++i ) { 
+		for( size_t i=0; i<Dimension; ++i ) { 
 			//BINSTREAM_READ_MACRO( stream, tmp );
 			stream.read( (char*)&tmp, sizeof(tmp) );
 			_coordinates[i] = tmp;
@@ -261,7 +261,7 @@ private:
 	CoordinateType	_coordinates[ Dimension ];
 };
 
-template< typename NumType, unsigned Dim >
+template< typename NumType, size_t Dim >
 struct TypeTraits< Vector<NumType, Dim> >
 {
 	typedef	Vector<NumType, Dim>	Type;
@@ -288,13 +288,13 @@ struct TypeTraits< Vector<NumType, Dim> >
 };
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator==( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	bool result = true;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result = result && (v1[ i ] == v2[ i ]);
 	}
 
@@ -302,13 +302,13 @@ operator==( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &
 }
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator!=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	bool result = false;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result = result || (v1[ i ] != v2[ i ]);
 	}
 
@@ -316,24 +316,24 @@ operator!=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &
 }
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator<=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	bool result = true;
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result = result && (v1[ i ] <= v2[ i ]);
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator<( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	bool result = true;
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result = result && (v1[ i ] < v2[ i ]);
 	}
 
@@ -342,133 +342,133 @@ operator<( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v
 
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator>=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	return v2 <= v1;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 operator>( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	return v2 < v1;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator+( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result._coordinates[ i ] = v1._coordinates[ i ] + v2._coordinates[ i ];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator-( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result._coordinates[ i ] = v1._coordinates[ i ] - v2._coordinates[ i ];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator+=( Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		v1._coordinates[ i ] += v2._coordinates[ i ];
 	}
 	return v1;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator-=( Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
 {
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		v1._coordinates[ i ] -= v2._coordinates[ i ];
 	}
 	return v1;
 }
 
-template< /*typename ScalarType, */typename CoordType, unsigned Dim >
+template< /*typename ScalarType, */typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*( /*ScalarType*/CoordType k, const Vector< CoordType, Dim > &v )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[ i ] = k * v[ i ];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*( const Vector< CoordType, Dim > &v, CoordType k )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[ i ] = k * v[ i ];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*=( Vector< CoordType, Dim > &v, CoordType k )
 {
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		v[ i ] *= k;
 	}
 
 	return v;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 CoordType
 operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
 {
 	CoordType result = TypeTraits< CoordType >::Zero; 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result += a[i] * b[i];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator-( const Vector< CoordType, Dim > &v )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result._coordinates[ i ] = -v[ i ];
 	}
 
 	return result;
 }
 
-template<typename CoordType, unsigned Dim >
+template<typename CoordType, size_t Dim >
 std::ostream &
 operator<<( std::ostream &stream, const Vector< CoordType, Dim > &coords )
 {
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		stream << coords[i];
 		if( i != Dim-1 ) {
 			stream << " ";
@@ -515,13 +515,13 @@ CreateVector( CoordType x, CoordType y, CoordType z, CoordType w )
  * Will shift coordinate in every dimension to dimesion on right, 
  * last coordinate will become first.
  **/
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 VectorDimensionsShiftRight( const Vector< CoordType, Dim > &v )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[ (i + 1) % Dim ] = v[ i ];
 	}
 
@@ -532,29 +532,29 @@ VectorDimensionsShiftRight( const Vector< CoordType, Dim > &v )
  * Will shift coordinate in every dimension to dimesion on left, 
  * first coordinate will become last.
  **/
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 VectorDimensionsShiftLeft( const Vector< CoordType, Dim > &v )
 {
 	Vector< CoordType, Dim > result;
 
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[ i ] = v[ (i + 1) % Dim ];
 	}
 
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 void
 VectorAbs( Vector< CoordType, Dim > &v )
 {
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		v[ i ] = abs( v[ i ] );
 	}
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 void
 VectorNormalization( Vector< CoordType, Dim > &v )
 {
@@ -570,26 +570,26 @@ VectorProduct( const Vector< CoordType, 3 > &a, const Vector< CoordType, 3 > &b 
 	return Vector< CoordType, 3 >( a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0] );
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 CoordType
 VectorSize( const Vector< CoordType, Dim > &v )
 {
 	CoordType size = v[0] * v[0];
-	for( unsigned i=1; i < Dim; ++i ) {
+	for( size_t i=1; i < Dim; ++i ) {
 		size += v[ i ] * v[ i ];
 	}
 	size = sqrt( size );
 	return size;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 CoordType
 VectorDistance( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
 {
 	return VectorSize( a - b );
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 void
 Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
 {
@@ -601,56 +601,56 @@ Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
 /**
  * \param u Normalized vector, into which the second will be projected.
  **/
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 VectorProjection( const Vector< CoordType, Dim > &u, const Vector< CoordType, Dim > &v )
 {
 	return Vector< CoordType, Dim >( (v*u) * u );
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 CoordType
 VectorCoordinateProduct( const Vector< CoordType, Dim > &v )
 {
 	CoordType result = v[0];
-	for( unsigned i=1; i < Dim; ++i ) {
+	for( size_t i=1; i < Dim; ++i ) {
 		result *= v[ i ];
 	}
 	return result;
 }
 
-template< typename CoordType1, typename CoordType2, unsigned Dim >
+template< typename CoordType1, typename CoordType2, size_t Dim >
 Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim >
 VectorMemberProduct( const Vector< CoordType1, Dim > &a, const Vector< CoordType2, Dim > &b )
 {
 	Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim > result = a;
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[i] *= b[ i ];
 	}
 	return result;
 }
 
-template< typename CoordType1, typename CoordType2, unsigned Dim >
+template< typename CoordType1, typename CoordType2, size_t Dim >
 Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim >
 VectorMemberDivision( const Vector< CoordType1, Dim > &a, const Vector< CoordType2, Dim > &b )
 {
 	Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim > result = a;
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		result[i] /= b[ i ];
 	}
 	return result;
 }
 
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim-1 >
-VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimension = Dim-1 )
+VectorPurgeDimension( const Vector< CoordType, Dim > &u, size_t purgedDimension = Dim-1 )
 {
 	ASSERT_INFO( purgedDimension < Dim, "Must be valid dimension." );
 
 	CoordType data[Dim-1];
-	unsigned j = 0;
-	for( unsigned i=0; i < Dim; ++i ) {
+	size_t j = 0;
+	for( size_t i=0; i < Dim; ++i ) {
 		if( i != purgedDimension ) {
 			data[j++] = u[i];
 		}
@@ -658,15 +658,15 @@ VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimensio
 	return Vector< CoordType, Dim-1 >( data );
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim+1 >
-VectorInsertDimension( const Vector< CoordType, Dim > &u, CoordType value, unsigned insertedDimension = Dim )
+VectorInsertDimension( const Vector< CoordType, Dim > &u, CoordType value, size_t insertedDimension = Dim )
 {
 	ASSERT_INFO( insertedDimension <= Dim, "Must be valid dimension." );
 
 	CoordType data[Dim+1];
-	unsigned j = 0;
-	for( unsigned i=0; i <= Dim; ++i ) {
+	size_t j = 0;
+	for( size_t i=0; i <= Dim; ++i ) {
 		if( i != insertedDimension ) {
 			data[i] = u[j++];
 		} else {
@@ -679,12 +679,12 @@ VectorInsertDimension( const Vector< CoordType, Dim > &u, CoordType value, unsig
  * \param min Represent closed N-dimensional interval together with max.
  * \param max Represent closed N-dimensional interval together with min.
  **/
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 bool
 VectorProjectionToInterval( Vector< CoordType, Dim > &v, const Vector< CoordType, Dim > &min, const Vector< CoordType, Dim > &max )
 {
 	bool result = false;
-	for( unsigned i=0; i < Dim; ++i ) {
+	for( size_t i=0; i < Dim; ++i ) {
 		if ( v[i] < min[i] ) {
 			result |= true;
 			v[i] = min[i];

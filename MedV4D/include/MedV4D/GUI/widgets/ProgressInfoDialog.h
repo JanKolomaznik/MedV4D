@@ -2,9 +2,11 @@
 #define PROGRESS_INFO_DIALOG_H
 
 #include "MedV4D/generated/ui_ProgressInfoDialog.h"
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/Common/ProgressNotifier.h"
 #include "MedV4D/Common/Common.h"
-
+#endif
 
 class ProgressInfoDialog: public QDialog, public Ui::ProgressInfoDialog, public ProgressNotifier
 {

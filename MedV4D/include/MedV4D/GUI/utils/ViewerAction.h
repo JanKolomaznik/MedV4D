@@ -1,6 +1,8 @@
 #ifndef VIEWER_ACTION_H
 #define VIEWER_ACTION_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include <QtGui>
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
@@ -8,6 +10,7 @@
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 //#include <boost/cast.hpp>
 #include "MedV4D/Common/Functors.h"
+#endif
 
 class HelperViewerActionInterface
 {
