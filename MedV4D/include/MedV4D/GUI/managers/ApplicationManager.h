@@ -27,6 +27,8 @@
 
 #define GET_SETTINGS( NAME, TYPE, DEFAULT ) \
 	ApplicationManager::getInstance()->settings().get<TYPE>( NAME, DEFAULT )
+#define SET_SETTINGS( NAME, TYPE, VALUE ) \
+	ApplicationManager::getInstance()->settings().set<TYPE>( NAME, VALUE )
 
 
 class QApplication;

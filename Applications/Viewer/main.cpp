@@ -58,7 +58,34 @@ main( int argc, char** argv )
 	//XInitThreads();
 	ApplicationManager appManager;
 
-	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
+	boost::filesystem::path executablePath(argv[0]);
+	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::path(argv[0]).parent_path() / "data").string() );
+	//If we cannot locate data directory - try other posiible locations
+	if (!boost::filesystem::exists(dataDirName) || !boost::filesystem::is_directory(dataDirName)) {
+		std::vector<boost::filesystem::path> possibleDataDirs;
+		possibleDataDirs.push_back(boost::filesystem::current_path() / "data");
+		possibleDataDirs.push_back(executablePath.parent_path() / "data");
+		possibleDataDirs.push_back(executablePath.parent_path().parent_path() / "data");
+
+		std::vector<boost::filesystem::path>::const_iterator it = possibleDataDirs.begin();
+		bool found = false;
+		LOG( "Trying to locate 'data' directory:" );
+		while (!found && it != possibleDataDirs.end()) {
+			LOG_CONT( "\tChecking: " << it->string() << " ... ");
+			if (boost::filesystem::exists(*it) && boost::filesystem::is_directory(*it)) {
+				dataDirName = *it;
+				SET_SETTINGS( "application.data_directory", std::string, dataDirName );
+				found = true;
+				LOG( "SUCCESS" );
+			} else {
+				LOG( "FAILED" );
+			}
+			++it;
+		}
+		if (!found) {
+			BOOST_THROW_EXCEPTION( M4D::ErrorHandling::EDirNotFound() );
+		}
+	}
 	boost::filesystem::path dirName = GET_SETTINGS( "gui.icons_directory", std::string, ( dataDirName / "icons" ).string() );
 	appManager.setIconsDirectory(dirName);
 	appManager.initialize( argc, argv );

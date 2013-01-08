@@ -5,7 +5,7 @@ namespace M4D
 
 const GLint SELECTION_BUFFER_COLOR_DEPTH = GL_RGBA16;
 	
-boost::filesystem::path gPickingShaderPath = "./data/shaders/PickingShader.cgfx";
+boost::filesystem::path gPickingShaderPath;
 	
 void
 PickManager::initialize( unsigned aPickingRadius )

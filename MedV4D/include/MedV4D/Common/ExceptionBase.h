@@ -6,7 +6,8 @@
 #include <string>
 #include "MedV4D/Common/StringTools.h"
 #include "MedV4D/Common/Types.h"
-
+#include <boost/exception/all.hpp>
+#include <boost/filesystem/path.hpp>
 /**
  *  @ingroup common
  *  @file ExceptionBase.h
@@ -229,6 +230,14 @@ private:
 };
 
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
+
+
+struct exception_base: virtual std::exception, virtual boost::exception { };
+struct io_error: virtual exception_base { };
+struct EDirNotFound: virtual io_error { };
+//struct EFileNotFound: virtual io_error { };
+
+typedef boost::error_info<struct tag_Path, boost::filesystem::path> EIPath;
 
 } /*namespace ErrorHandling*/
 } /*namespace M4D*/
