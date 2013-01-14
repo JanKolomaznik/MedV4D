@@ -50,7 +50,7 @@ public:
                 int32 min,
                 int32 max
         ) {
-                return _modificationManager.AddMod ( Vector< int32, 1 > ( min ), Vector< int32, 1 > ( max ) );
+                return _modificationManager.AddMod<1> ( Vector< int32, 1 > ( min ), Vector< int32, 1 > ( max ) );
         }
 
         WriterBBoxInterface &
@@ -64,7 +64,7 @@ public:
                 int32 min,
                 int32 max
         ) const {
-                return _modificationManager.GetMod ( Vector< int32, 1 > ( min ), Vector< int32, 1 > ( max ) );
+                return _modificationManager.GetMod<1> ( Vector< int32, 1 > ( min ), Vector< int32, 1 > ( max ) );
         }
 
         ReaderBBoxInterface::Ptr

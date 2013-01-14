@@ -42,7 +42,7 @@ public:
         typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
-template< unsigned Dim >
+template< size_t Dim >
 class ImageTraits< AImageDim< Dim > >
 {
 public:
@@ -58,7 +58,7 @@ public:
         typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
-template< typename EType, unsigned Dim >
+template< typename EType, size_t Dim >
 class ImageTraits< Image< EType, Dim > >
 {
 public:

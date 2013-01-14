@@ -37,7 +37,7 @@ public:
         typedef typename PointList::const_iterator		ConstPointIterator;
         //friend void SerializeGeometryObject< PointType, VectorType >( M4D::IO::OutStream &stream, const PointSet< PointType, VectorType > &obj );
         //friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, Self * &obj );
-        static const unsigned Dimension	= VectorType::Dimension;
+        static const size_t Dimension	= VectorType::Dimension;
 
         PointSet() : _points(), _pointCount ( 0 ) {}
 

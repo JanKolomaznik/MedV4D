@@ -61,19 +61,19 @@ public:
 	void
 	ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry );
 
-	template< unsigned Dim >
+	template< size_t Dim >
 	void
 	SetParameter( std::string aName, const Vector<float, Dim> &value );
 
-	template< unsigned Dim >
+	template< size_t Dim >
 	void
 	SetParameter( std::string aName, const Vector<double, Dim> &value );
 
-	template< unsigned Dim >
+	template< size_t Dim >
 	void
 	SetParameter( std::string aName, const Vector<unsigned int, Dim> &value );
 
-	template< unsigned Dim >
+	template< size_t Dim >
 	void
 	SetParameter( std::string aName, const Vector<int, Dim> &value );
 
@@ -171,7 +171,7 @@ CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunct
 	//GL_CHECKED_CALL( glPopAttrib() );
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
 {
@@ -182,7 +182,7 @@ CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
 	cgSetParameterValuefr( cgParameter, Dim, value.GetData() );	
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
 {
@@ -193,7 +193,7 @@ CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
 	cgSetParameterValuedr( cgParameter, Dim, value.GetData() );	
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &value )
 {
@@ -204,7 +204,7 @@ CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &valu
 	cgSetParameterValueir( cgParameter, Dim, reinterpret_cast< const int* >( value.GetData() ) );	
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<int, Dim> &value )
 {

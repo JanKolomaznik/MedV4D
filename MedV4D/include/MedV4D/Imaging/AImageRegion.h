@@ -52,7 +52,7 @@ public:
         GetElementTypeID() const = 0;
 };
 
-template< unsigned Dim >
+template< size_t Dim >
 class AImageRegionDim: public AImageRegion
 {
 public:
@@ -60,7 +60,7 @@ public:
 
         CONFIGURABLE_PREPARE_CAST_METHODS_MACRO ( Cast, typename ThisClass, M4D::Imaging::AImageRegion );
 
-        static const unsigned Dimension = Dim;
+        static const size_t Dimension = Dim;
         typedef Vector< int, Dim >			PointType;
         typedef Vector< float, Dim >		ExtentType; // typedefs for gcc4.2 error that cannot parse these templates as default parameters
         typedef Vector< unsigned, Dim >		SizeType;

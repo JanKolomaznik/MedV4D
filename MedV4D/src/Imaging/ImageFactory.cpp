@@ -40,7 +40,7 @@ ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, AImage &existingImag
         IMAGE_TYPE_TEMPLATE_SWITCH_MACRO ( existingImage, ImageFactory::DeserializeImage< TTYPE, DIM > ( stream, static_cast< Image<TTYPE,DIM> &> ( existingImage ) ) );
 }
 
-template< typename ElementType, unsigned Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage )
 {
@@ -68,7 +68,7 @@ ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, 
         Vector< int32, Dimension > maximum;
         Vector< float32, Dimension > elementExtents;
 
-        for ( unsigned i = 0; i < dimension; ++i ) {
+        for ( size_t i = 0; i < dimension; ++i ) {
                 stream.Get<int32> ( minimum[i] );
                 stream.Get<int32> ( maximum[i] );
                 stream.Get<float32> ( elementExtents[i] );
@@ -92,7 +92,7 @@ ImageFactory::DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, 
         }
 }
 
-template< typename ElementType, uint32 Dimension >
+template< typename ElementType, size_t Dimension >
 void
 LoadSerializedImageData ( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
 {

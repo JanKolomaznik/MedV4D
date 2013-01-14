@@ -14,7 +14,7 @@ namespace M4D
 {
 
 
-template < uint32 Dim >
+template < size_t Dim >
 struct GLTextureImageTyped;
 
 struct GLTextureImage
@@ -85,7 +85,7 @@ struct GLTextureImage
 	virtual uint32
 	GetDimension()const = 0;
 
-	template< uint32 Dim >
+	template< size_t Dim >
 	void
 	CheckDimension()
 	{
@@ -94,7 +94,7 @@ struct GLTextureImage
 		}
 	}
 
-	template< uint32 Dim >
+	template< size_t Dim >
 	GLTextureImageTyped< Dim > &
 	GetDimensionedInterface();
 	
@@ -108,7 +108,7 @@ protected:
 	GLuint				_gltextureID;
 };
 
-template < uint32 Dim >
+template < size_t Dim >
 struct GLTextureImageTyped: public GLTextureImage
 {
 	typedef boost::shared_ptr< GLTextureImageTyped > Ptr;
@@ -209,14 +209,14 @@ protected:
 };
 
 
-template< uint32 Dim >
+template< size_t Dim >
 GLTextureImageTyped< Dim > &
 GLTextureImage::GetDimensionedInterface()
 {
 	return *boost::polymorphic_downcast< GLTextureImageTyped< Dim > *>( this ); //TODO
 }
 
-template< uint32 Dim >
+template< size_t Dim >
 typename GLTextureImageTyped< Dim >::WPtr
 GLTextureGetDimensionedInterfaceWPtr( GLTextureImage::WPtr aTexture )
 {
@@ -228,7 +228,7 @@ GLTextureGetDimensionedInterfaceWPtr( GLTextureImage::WPtr aTexture )
 
 
 
-template < uint32 Dim >
+template < size_t Dim >
 void
 updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum )
 {
@@ -236,7 +236,7 @@ updateTextureSubImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Im
 	M4D::GLUpdateTextureFromSubImageData( aTexImage.GetTextureGLID(), aImage, aMinimum, aMaximum );
 }
 
-template < uint32 Dim >
+template < size_t Dim >
 void
 updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &aSubImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum )
 {
@@ -251,7 +251,7 @@ updateTextureSubImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegi
 GLTextureImage::Ptr
 createTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );
 
-template < uint32 Dim >
+template < size_t Dim >
 GLTextureImage::Ptr
 createTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bool aLinearInterpolation = true )
 {
@@ -265,7 +265,7 @@ createTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bo
 void
 recreateTextureFromImage( GLTextureImage &aTexImage, const M4D::Imaging::AImageRegion &image );
 
-template < uint32 Dim >
+template < size_t Dim >
 void
 recreateTextureFromImageTyped( GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &image )
 {

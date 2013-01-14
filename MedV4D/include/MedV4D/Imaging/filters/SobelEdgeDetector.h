@@ -30,7 +30,7 @@ class SobelEdgeDetector
 	: public AImage2DFilter< ImageType, ImageType >
 {
 public:	
-	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
+	static const size_t Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
 	typedef AImage2DFilter< ImageType, ImageType > 		PredecessorType;
 	typedef ConvolutionMask<2,float32>				Mask;
@@ -72,7 +72,7 @@ class SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits
 	: public AImage2DFilter< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 {
 public:	
-	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
+	static const size_t Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
 	typedef Vector< OutType, 2 >				OutElementType;
 	typedef OutType							OutScalarType;

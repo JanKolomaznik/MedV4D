@@ -102,7 +102,7 @@ class ModificationBBox
 {
 public:
 
-        template< unsigned Dim >
+        template< size_t Dim >
         explicit ModificationBBox ( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max );
 
 	friend ModificationBBox mergeModificationBBoxes( const ModificationBBox &aFirst, const ModificationBBox &aSecond );
@@ -195,14 +195,14 @@ public:
         ~ModificationManager();
 
 
-        template< unsigned Dim >
+        template< size_t Dim >
         WriterBBoxInterface &
         AddMod (
                 const Vector< int32, Dim > &min,
                 const Vector< int32, Dim > &max
         );
 
-        template< unsigned Dim >
+        template< size_t Dim >
         ReaderBBoxInterface::Ptr
         GetMod (
                 const Vector< int32, Dim > &min,
@@ -277,7 +277,7 @@ protected:
 };
 
 
-template< unsigned Dim >
+template< size_t Dim >
 ModificationBBox::ModificationBBox ( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max )
 {
         _dimension = Dim;
@@ -290,7 +290,7 @@ ModificationBBox::ModificationBBox ( const Vector< int32, Dim > &min, const Vect
         }
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 WriterBBoxInterface &
 ModificationManager::AddMod (
         const Vector< int32, Dim > &min,
@@ -309,7 +309,7 @@ ModificationManager::AddMod (
         return *change;
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 ReaderBBoxInterface::Ptr
 ModificationManager::GetMod (
         const Vector< int32, Dim > &min,

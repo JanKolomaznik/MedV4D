@@ -338,7 +338,7 @@ operator-=( const RGBA< TChannelType > &c1, const RGBA< TChannelType > &c2 )
 		-= static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1) );
 }
 
-/*template< typename CoordType, unsigned Dim >
+/*template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*( CoordType k, const Vector< CoordType, Dim > &v )
 {
@@ -346,7 +346,7 @@ operator*( CoordType k, const Vector< CoordType, Dim > &v )
 		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*( const Vector< CoordType, Dim > &v, CoordType k )
 {
@@ -354,7 +354,7 @@ operator*( const Vector< CoordType, Dim > &v, CoordType k )
 		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator*=( Vector< CoordType, Dim > &v, CoordType k )
 {
@@ -362,7 +362,7 @@ operator*=( Vector< CoordType, Dim > &v, CoordType k )
 		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 CoordType
 operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
 {
@@ -370,7 +370,7 @@ operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b 
 		+ static_cast< const typename RGBA< TChannelType >::Predecessor & > (c1);
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
 operator-( const Vector< CoordType, Dim > &v )
 {

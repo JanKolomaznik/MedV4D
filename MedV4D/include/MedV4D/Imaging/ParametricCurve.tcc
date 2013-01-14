@@ -17,21 +17,21 @@ namespace Geometry
 {
 
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 BSpline< CoordType, Dim >
 ::BSpline()
 {
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 BSpline< CoordType, Dim >
 ::BSpline( const PointSet< CoordType, Dim > & points )
 {
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::PointByParameter( double t )const
@@ -46,7 +46,7 @@ BSpline< CoordType, Dim >
 	return EvaluateCurve( segment_nmbr, values );
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 bool
 BSpline< CoordType, Dim >
 ::DerivationAtPoint( double t, PointType &derivation )const
@@ -64,7 +64,7 @@ BSpline< CoordType, Dim >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 bool
 BSpline< CoordType, Dim >
 ::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
@@ -85,7 +85,7 @@ BSpline< CoordType, Dim >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 void
 BSpline< CoordType, Dim >
 ::Sample( unsigned frequency )
@@ -130,7 +130,7 @@ BSpline< CoordType, Dim >
 	}
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 void
 BSpline< CoordType, Dim >
 ::SampleWithDerivations( unsigned frequency )
@@ -138,7 +138,7 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 void
 BSpline< CoordType, Dim >
 ::ResetSamples()
@@ -146,7 +146,7 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 void
 BSpline< CoordType, Dim >
 ::ResetSamplesDerivations()
@@ -154,7 +154,7 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 void
 BSpline< CoordType, Dim >
 ::SplitSegment( int segment )
@@ -162,7 +162,7 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::EvaluateCurve( int segment, const BSpline< CoordType, Dim >::BFunctionValues &values )
@@ -174,7 +174,7 @@ BSpline< CoordType, Dim >
 	}
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::EvaluateCyclicCurve( int segment, const BSpline< CoordType, Dim >::BFunctionValues &values )
@@ -190,7 +190,7 @@ BSpline< CoordType, Dim >
 	return result;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::EvaluateACyclicCurve( int segment, const BFunctionValues &values )
@@ -218,21 +218,21 @@ BSpline< CoordType, Dim >
 }
 
 /*
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::ParametricCurve()
 {
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::ParametricCurve( const PointSet< CoordType, Dim > & points )
 {
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::PointByParameter( double t )const
@@ -247,7 +247,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	return EvaluateCurve( segment_nmbr, values );
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 bool
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::DerivationAtPoint( double t, PointType &derivation )const
@@ -265,7 +265,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 bool
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
@@ -286,7 +286,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 void
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::Sample( unsigned frequency )
@@ -330,7 +330,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 void
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::SampleWithDerivations( unsigned frequency )
@@ -338,7 +338,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 void
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::ResetSamples()
@@ -346,7 +346,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 void
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::ResetSamplesDerivations()
@@ -354,7 +354,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 void
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::SplitSegment( int segment )
@@ -362,7 +362,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::EvaluateCurve( int segment, const BFunctionValues &values )
@@ -374,7 +374,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	}
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::EvaluateCyclicCurve( int segment, const BFunctionValues &values )
@@ -390,7 +390,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	return result;
 }
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
 ParametricCurve< CoordType, Dim, CurveBasis >
 ::EvaluateACyclicCurve( int segment, const BFunctionValues &values )

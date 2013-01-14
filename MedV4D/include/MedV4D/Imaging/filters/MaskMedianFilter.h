@@ -17,7 +17,7 @@ namespace M4D
 namespace Imaging
 {
 
-template< unsigned Dim >
+template< size_t Dim >
 class MaskMedianFilter2D
 	: public AImage2DFilter< Image< uint8, Dim >, Image< uint8, Dim > >
 {

@@ -28,7 +28,7 @@ class CannyEdgeDetector
 	: public AImage2DFilter< ImageType, ImageType >
 {
 public:	
-	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
+	static const size_t Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
 	typedef AImage2DFilter< ImageType, ImageType > 		PredecessorType;
 	typedef ImageRegion< ElementType, 2 >				Region;

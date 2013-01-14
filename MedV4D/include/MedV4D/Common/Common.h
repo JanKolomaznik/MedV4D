@@ -122,10 +122,10 @@ AlignedNew( uint32 size )
 
 
 //*****************************************************************************
-template< unsigned Dim1, unsigned Dim2 >
+template< size_t Dim1, size_t Dim2 >
 struct IsSameDimension;
 
-template< unsigned Dim >
+template< size_t Dim >
 struct IsSameDimension< Dim, Dim >
 {
 	//Only possible when both parameters are the same value.
@@ -136,7 +136,7 @@ extern Vector<int32,2>	directionOffset[];
 
 //***********************************************************
 
-template< unsigned Dim >
+template< size_t Dim >
 Vector< int32, Dim >
 StridesFromSize( const Vector< uint32, Dim > &size )
 {

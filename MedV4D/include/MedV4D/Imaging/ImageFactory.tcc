@@ -37,7 +37,7 @@ ImageFactory::AllocateDataAccordingProperties(Image<ElementType, Dim> &image)
 	ChangeImageSize(image, minimum, maximum, elementExtents);
 }*/
 
-template< typename ElementType, unsigned Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::SerializeImage ( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image )
 {
@@ -52,7 +52,7 @@ ImageFactory::SerializeImage ( M4D::IO::OutStream &stream, const Image< ElementT
         uint32 numTypeID = GetNumericTypeID< ElementType >();
         stream.Put<uint32> ( numTypeID );
 
-        for ( unsigned i = 0; i < Dimension; ++i ) {
+        for ( size_t i = 0; i < Dimension; ++i ) {
                 const DimensionExtents & dimExtents = image.GetDimensionExtents ( i );
                 stream.Put<int32> ( dimExtents.minimum );
                 stream.Put<int32> ( dimExtents.maximum );
@@ -140,7 +140,7 @@ PrepareElementArraySimple ( uint32 size )
 template< typename ElementType >
 AImage::Ptr
 ImageFactory::CreateEmptyImageFromExtents (
-        uint32			dim,
+        size_t			dim,
         const int32		minimums[],
         const int32		maximums[],
         const float32		elementExtents[]
@@ -156,7 +156,7 @@ ImageFactory::CreateEmptyImageFromExtents (
         return image;
 }
 
-template< typename ElementType, unsigned Dim >
+template< typename ElementType, size_t Dim >
 typename Image< ElementType, Dim >::Ptr
 ImageFactory::CreateEmptyImageFromExtents (
         Vector< int32, Dim >	minimum,
@@ -179,7 +179,7 @@ ImageFactory::CreateEmptyImageFromExtents (
         return typename Image< ElementType, Dim >::Ptr ( img );
 }
 
-template< typename ElementType, unsigned tDim >
+template< typename ElementType, size_t tDim >
 typename Image< ElementType, tDim >::Ptr
 ImageFactory::CreateEmptyImageFromExtents (
                 ImageExtentsRecord< tDim > aImageExtents
@@ -444,7 +444,7 @@ ImageFactory::CreateEmptyImageData3DTyped (
         return typename ImageDataTemplate< ElementType >::Ptr ( newImage );
 }
 
-template< typename ElementType, unsigned Dim >
+template< typename ElementType, size_t Dim >
 typename ImageDataTemplate< ElementType >::Ptr
 ImageFactory::CreateEmptyImageDataTyped (
         Vector< int32, Dim > 	size,
@@ -474,7 +474,7 @@ ImageFactory::CreateEmptyImageDataTyped (
         return typename ImageDataTemplate< ElementType >::Ptr ( newImage );
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 ImageFactory::ChangeImageSize (
         AImage			&image,
@@ -496,7 +496,7 @@ ImageFactory::ChangeImageSize (
                                    );
 }
 
-template< typename ElementType, unsigned Dim >
+template< typename ElementType, size_t Dim >
 void
 ImageFactory::ChangeImageSize (
         Image< ElementType, Dim >	&image,
@@ -548,7 +548,7 @@ ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimensi
 	DumpImage( output, image );
 }*/
 
-template< typename ElementType, uint32 Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::DumpImage ( std::string filename, const Image< ElementType, Dimension > & image )
 {
@@ -558,7 +558,7 @@ ImageFactory::DumpImage ( std::string filename, const Image< ElementType, Dimens
         SerializeImage ( output, image );
 }
 
-template< typename ElementType, uint32 Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::RawDumpImage ( std::string filename, const Image< ElementType, Dimension > & image, std::ostream &aHeaderOutput )
 {
@@ -588,7 +588,7 @@ ImageFactory::RawDumpImage ( std::string filename, const Image< ElementType, Dim
         f.close();
 }
 
-template< typename ElementType, uint32 Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::LoadRawDump ( std::string filename, Image< ElementType, Dimension > & image )
 {
@@ -597,7 +597,7 @@ ImageFactory::LoadRawDump ( std::string filename, Image< ElementType, Dimension 
         ImageFactory::LoadRawDump< ElementType, Dimension > ( f, image );
 }
 
-template< typename ElementType, uint32 Dimension >
+template< typename ElementType, size_t Dimension >
 void
 ImageFactory::LoadRawDump ( std::istream &aInStream, Image< ElementType, Dimension > & image )
 {
@@ -618,7 +618,7 @@ ImageFactory::LoadRawDump ( std::istream &aInStream, Image< ElementType, Dimensi
         }
 }
 
-template< typename ElementType, unsigned Dim  >
+template< typename ElementType, size_t Dim  >
 void
 ImageFactory::AssignNewDataToImage (
         ElementType *pointer,

@@ -44,12 +44,12 @@ GetGeometryObjectTypeID< AGeometricalObject >()
 	return GTID_AGEOMETRICAL_OBJECT;
 }*/
 
-template< unsigned Dim >
+template< size_t Dim >
 class AGeometricalObjectDim: public AGeometricalObject
 {
 public:
         typedef	boost::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
-        static const unsigned Dimension = Dim;
+        static const size_t Dimension = Dim;
 };
 
 template< typename VectorType >

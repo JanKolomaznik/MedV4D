@@ -21,7 +21,7 @@ namespace Imaging {
 
 
 
-template< typename EType, unsigned Dim >
+template< typename EType, size_t Dim >
 class ImageRegion: public AImageRegionDim< Dim >
 {
 public:

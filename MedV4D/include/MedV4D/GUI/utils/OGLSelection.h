@@ -76,7 +76,7 @@ template< typename TFunctor >
 void
 PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor )
 {
-	ASSERT(IsGLContextActive());
+	ASSERT(isGLContextActive());
 	try {
 	M4D::GLPushAtribs pushAttribs;
 	mFrameBuffer.Bind();

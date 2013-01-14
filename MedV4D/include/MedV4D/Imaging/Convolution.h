@@ -22,7 +22,7 @@ namespace M4D
 {
 namespace Imaging {
 
-template< unsigned Dim, typename MatrixElement = float32 >
+template< size_t Dim, typename MatrixElement = float32 >
 struct ConvolutionMask {
         typedef boost::shared_ptr<ConvolutionMask<Dim,MatrixElement> > Ptr;
 
@@ -151,7 +151,7 @@ Compute2DConvolutionPostProcess(
 		PostProcessor					postprocessor
 	);
 
-template< typename ElementType, unsigned Dim >
+template< typename ElementType, size_t Dim >
 ElementType *
 MirrorBorderAccess(
 		const uint32 					coord[ Dim ],

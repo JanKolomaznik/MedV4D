@@ -18,7 +18,7 @@ namespace Imaging {
  *  @{
  */
 
-template< typename ElementType, typename  MatrixElement, unsigned Dim >
+template< typename ElementType, typename  MatrixElement, size_t Dim >
 inline typename TypeTraits< ElementType >::SuperiorFloatType
 ApplyConvolutionMask (
         ElementType 					*center,
@@ -51,7 +51,7 @@ ApplyConvolutionMask (
         return multiplication * result;
 }
 
-template< typename ElementType, typename  MatrixElement, unsigned Dim >
+template< typename ElementType, typename  MatrixElement, size_t Dim >
 inline typename TypeTraits< ElementType >::SuperiorFloatType
 ApplyConvolutionMaskMirrorBorder (
         ElementType 					*center,

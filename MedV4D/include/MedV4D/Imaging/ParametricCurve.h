@@ -97,7 +97,7 @@ protected:
 
 };
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, size_t Dim >
 class BSpline: public PointSet< CoordType, Dim >
 {
 public:
@@ -171,7 +171,7 @@ protected:
 };
 
 /*
-template < typename CoordType, unsigned Dim, typename CurveBasis >
+template < typename CoordType, size_t Dim, typename CurveBasis >
 class ParametricCurve: public PointSet< CoordType, Dim >
 {
 public:

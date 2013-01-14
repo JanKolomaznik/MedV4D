@@ -127,7 +127,7 @@ class AImage::EBadDimension
         //TODO
 };
 
-template< unsigned Dim >
+template< size_t Dim >
 class AImageDim : public AImage
 {
 public:

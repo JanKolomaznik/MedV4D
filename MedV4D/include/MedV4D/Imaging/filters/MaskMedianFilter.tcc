@@ -16,14 +16,14 @@ namespace Imaging
 {
 
 
-template< unsigned Dim >
+template< size_t Dim >
 MaskMedianFilter2D< Dim >
 ::MaskMedianFilter2D() : PredecessorType( new Properties() )
 {
 	this->_name = "MaskMedianFilter2D";
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 MaskMedianFilter2D< Dim >
 ::MaskMedianFilter2D( typename MaskMedianFilter2D< Dim >::Properties *prop ) 
 : PredecessorType( prop ) 
@@ -31,7 +31,7 @@ MaskMedianFilter2D< Dim >
 	this->_name = "MaskMedianFilter2D";
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 void
 MaskMedianFilter2D< Dim >
 ::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
@@ -45,7 +45,7 @@ MaskMedianFilter2D< Dim >
 	}
 }
 
-template< unsigned Dim >
+template< size_t Dim >
 bool
 MaskMedianFilter2D< Dim >
 ::Process2D(
@@ -105,7 +105,7 @@ MaskMedianFilter2D< Dim >
 }
 
 /*
-template< unsigned Dim >
+template< size_t Dim >
 bool
 MaskMedianFilter2D< Dim >
 ::Process2D(
@@ -160,7 +160,7 @@ MaskMedianFilter2D< Dim >
 	return true;
 }*/
 
-template< unsigned Dim >
+template< size_t Dim >
 inline typename MaskMedianFilter2D< Dim >::ElementType
 MaskMedianFilter2D< Dim >
 ::GetElementInOrder(

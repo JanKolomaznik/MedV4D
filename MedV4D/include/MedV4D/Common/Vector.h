@@ -29,6 +29,7 @@ Vector< CoordType, Dimension > operator-( const Vector< CoordType, Dimension > &
 template < typename CoordType, size_t Dimension >
 Vector< CoordType, Dimension > operator*( CoordType k, const Vector< CoordType, Dimension > &v );
 
+typedef size_t VectorDim_t;
 
 template< typename CoordType, size_t Dim >
 class Vector

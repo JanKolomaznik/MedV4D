@@ -50,7 +50,7 @@ public:
         static void
         DeserializeImage ( M4D::IO::InStream &stream, AImage &existingImage );
 
-        template< typename ElementType, unsigned Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         DeserializeImage ( M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage );
 
@@ -60,15 +60,15 @@ public:
         static void
         SerializeImage ( M4D::IO::OutStream &stream, const AImage &image );
 
-        template< typename ElementType, unsigned Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         SerializeImage ( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image );
 
-        /*template< typename ElementType, uint32 Dimension >
+        /*template< typename ElementType, size_t Dimension >
         static void
         DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );*/
 
-        template< typename ElementType, uint32 Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         DumpImage ( std::string filename, const Image< ElementType, Dimension > & image );
 
@@ -81,18 +81,18 @@ public:
         static AImage::Ptr
         LoadDumpedImage ( std::string filename );
 
-        template< typename ElementType, uint32 Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         RawDumpImage ( std::string filename, const Image< ElementType, Dimension > & image, std::ostream &aHeaderOutput );
 
         static void
         RawDumpImage ( std::string filename, const AImage & image, std::ostream &aHeaderOutput );
 
-        template< typename ElementType, uint32 Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         LoadRawDump ( std::istream &aInStream, Image< ElementType, Dimension > & image );
 
-        template< typename ElementType, uint32 Dimension >
+        template< typename ElementType, size_t Dimension >
         static void
         LoadRawDump ( std::string filename, Image< ElementType, Dimension > & image );
 
@@ -108,13 +108,13 @@ public:
         template< typename ElementType >
         static AImage::Ptr
         CreateEmptyImageFromExtents (
-                uint32		dim,
+                size_t		dim,
                 const int32		minimums[],
                 const int32		maximums[],
                 const float32		elementExtents[]
         );
 
-        template< typename ElementType, unsigned Dim >
+        template< typename ElementType, size_t Dim >
         static typename Image< ElementType, Dim >::Ptr
         CreateEmptyImageFromExtents (
                 Vector< int32, Dim >	minimum,
@@ -122,7 +122,7 @@ public:
                 Vector< float32, Dim >	elementExtents
         );
 
-	template< typename ElementType, unsigned tDim >
+	template< typename ElementType, size_t tDim >
         static typename Image< ElementType, tDim >::Ptr
         CreateEmptyImageFromExtents (
                 ImageExtentsRecord< tDim > aImageExtents
@@ -322,21 +322,21 @@ public:
                 float32		elementDepth = 1.0
         );
 
-        template< typename ElementType, unsigned Dim >
+        template< typename ElementType, size_t Dim >
         static typename ImageDataTemplate< ElementType >::Ptr
         CreateEmptyImageDataTyped (
                 Vector< int32, Dim > 	size,
                 Vector< float32, Dim >	elementExtents
         );
 
-        template< typename ElementType, unsigned Dim  >
+        template< typename ElementType, size_t Dim  >
         static void	AssignNewDataToImage (
                 ElementType *pointer, Image<ElementType, Dim> &image,
                 Vector< int32, Dim > 	&size,
                 Vector< float32, Dim >	&elementSize );
 
 
-        template< unsigned Dim >
+        template< size_t Dim >
         static void
         ChangeImageSize (
                 AImage			&image,
@@ -345,7 +345,7 @@ public:
                 Vector< float32, Dim >	elementExtents
         );
 
-        template< typename ElementType, unsigned Dim >
+        template< typename ElementType, size_t Dim >
         static void
         ChangeImageSize (
                 Image< ElementType, Dim >	&image,
@@ -357,7 +357,7 @@ public:
 
 
 
-        /*template< typename ElementType, unsigned Dim >
+        /*template< typename ElementType, size_t Dim >
         static void AllocateDataAccordingProperties(Image<ElementType, Dim> &image);*/
 
         /**

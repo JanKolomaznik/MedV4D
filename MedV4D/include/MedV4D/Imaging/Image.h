@@ -87,7 +87,7 @@ class Image;*/
 /**
  * Partial specialization of image template for two dimensional case.
  **/
-template< typename ElementType, unsigned Dim >
+template< typename ElementType, size_t Dim >
 class Image: public AImageDim< Dim >
 {
 public:
