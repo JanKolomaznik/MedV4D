@@ -107,7 +107,7 @@ CheckForGLError( const std::string &situation );
 
 
 inline bool
-IsGLContextActive()
+isGLContextActive()
 {
 	return QGLContext::currentContext() != NULL;
 }

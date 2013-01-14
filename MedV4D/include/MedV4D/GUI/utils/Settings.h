@@ -26,6 +26,10 @@ public:
 	get( std::string aName, TType aDefaultValue );
 
 	template< typename TType >
+	TType
+	get( std::string aName );
+
+	template< typename TType >
 	void
 	set( std::string aName, TType aValue );
 
@@ -208,6 +212,19 @@ Settings::get( std::string aName, TType aDefaultValue )
 	rec.name = aName;
 	mValues[ aName ] = rec;
 	return aDefaultValue;
+}
+
+template< typename TType >
+TType
+Settings::get( std::string aName )
+{
+	ASSERT( ! aName.empty() );
+
+	ValueMap::iterator it = mValues.find(aName);
+	if ( it == mValues.end() ) {
+		_THROW_ EItemNotFound();
+	}
+	return boost::get< TType >( it->second.value );
 }
 
 template< typename TType >

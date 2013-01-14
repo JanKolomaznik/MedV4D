@@ -36,6 +36,7 @@ AGLViewer::~AGLViewer()
 {
 	makeCurrent();
 	mFrameBufferObject.Finalize();
+	mPickManager.finalize();
 	doneCurrent();
 
 	deselect();

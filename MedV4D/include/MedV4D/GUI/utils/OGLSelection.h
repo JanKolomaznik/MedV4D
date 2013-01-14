@@ -57,6 +57,9 @@ public:
 	
 	void
 	getIDs( SelectedIDsSet &aIDs );
+
+	~PickManager()
+	{ finalize(); }
 protected:
 	typedef boost::shared_array< uint16 > BufferArray;
 	void

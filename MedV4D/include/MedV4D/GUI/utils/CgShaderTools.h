@@ -45,7 +45,10 @@ CheckForCgError( const std::string &situation, CGcontext &context = gCgContext )
 
 class CgEffect
 {
-public:	
+public:
+	CgEffect(): mEffectInitialized(false)
+	{}
+
 	void
 	Initialize(	/*CGcontext   				&cgContext,*/
 			const boost::filesystem::path 		&effectFile
@@ -121,6 +124,10 @@ public:
 
 	void
 	SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform );
+
+	bool
+	isInitialized() const 
+	{ return mEffectInitialized; }
 protected:
 	virtual void
 	prepareState();
@@ -128,12 +135,17 @@ protected:
 	boost::shared_ptr< ResourceGuard< CGeffect > >	mCgEffect;
 	std::map< std::string, CGtechnique >	mCgTechniques;
 	std::string	mEffectName;
+
+	bool mEffectInitialized;
 };
 
 template< typename TGeometryRenderFunctor >
 void
 CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry )
 {
+	if (!isInitialized()) {
+		_THROW_ EObjectNotInitialized();
+	}
 	M4D::GLPushAtribs pushAttribs; // GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
 
 	prepareState();
@@ -163,6 +175,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
 {
+	ASSERT(isInitialized());
 	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
@@ -173,6 +186,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
 {
+	ASSERT(isInitialized());
 	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
@@ -183,6 +197,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &value )
 {
+	ASSERT(isInitialized());
 	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;
@@ -193,6 +208,7 @@ template< unsigned Dim >
 void
 CgEffect::SetParameter( std::string aName, const Vector<int, Dim> &value )
 {
+	ASSERT(isInitialized());
 	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
 //	ASSERT( )	TODO check type;

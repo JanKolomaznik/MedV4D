@@ -691,8 +691,9 @@ GeneralViewer::initializeRenderingEnvironment()
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.Initialize();
 	
-	getViewerState().mSceneSlicingCgEffect.Initialize( "data/shaders/SceneSlicing.cgfx" );
-	getViewerState().mBasicCgEffect.Initialize( "data/shaders/BasicShader.cgfx" );
+	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
+	getViewerState().mSceneSlicingCgEffect.Initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
+	getViewerState().mBasicCgEffect.Initialize( dataDirName / "shaders" / "BasicShader.cgfx" );
 }
 
 bool

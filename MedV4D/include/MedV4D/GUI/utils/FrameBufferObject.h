@@ -15,11 +15,7 @@ public:
 
 	~FrameBufferObject()
 	{
-		if ( mInitialized ) {
-			GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
-			GL_CHECKED_CALL( glDeleteTextures( 1, &mColorTexture ) );
-			GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
-		}
+		Finalize();
 	}
 
 	GLuint
@@ -38,6 +34,7 @@ public:
 	void
 	Initialize( unsigned aWidth, unsigned aHeight, GLint aInternalFormat )
 	{
+		ASSERT(isGLContextActive());
 		GL_CHECKED_CALL( glGenFramebuffersEXT( 1, &mFrameBufferObject ) );
 		GL_CHECKED_CALL( glGenRenderbuffersEXT( 1, &mDepthBuffer ) );
 		GL_CHECKED_CALL( glGenTextures( 1, &mColorTexture ) );
@@ -50,6 +47,7 @@ public:
 	Finalize()
 	{
 		if ( mInitialized ) {
+			ASSERT(isGLContextActive());
 			GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
 			GL_CHECKED_CALL( glDeleteTextures( 1, &mColorTexture ) );
 			GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
@@ -60,6 +58,7 @@ public:
 	void
 	Render()
 	{
+		ASSERT(isGLContextActive());
 		M4D::GLPushAtribs pushAttribs;
 		GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
 		GL_CHECKED_CALL( glLoadIdentity() );
@@ -98,6 +97,7 @@ public:
 	void
 	Resize( unsigned aWidth, unsigned aHeight, GLint aInternalFormat = GL_RGBA32F )
 	{
+		ASSERT(isGLContextActive());
 		ASSERT ( mInitialized );
 		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
 
@@ -150,6 +150,9 @@ public:
 	GetSize()const
 	{ return mSize; }
 
+	bool
+	isInitialized() const 
+	{ return mInitialized; }
 protected:
 	GLuint	mFrameBufferObject, 
 		mDepthBuffer, 

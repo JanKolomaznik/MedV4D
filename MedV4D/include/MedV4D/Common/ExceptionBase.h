@@ -237,7 +237,17 @@ struct io_error: virtual exception_base { };
 struct EDirNotFound: virtual io_error { };
 //struct EFileNotFound: virtual io_error { };
 
-typedef boost::error_info<struct tag_Path, boost::filesystem::path> EIPath;
+struct EItemNotFound: virtual exception_base { };
+struct EObjectNotInitialized: virtual exception_base { };
+
+//error infos
+typedef boost::error_info<struct tag_Path, boost::filesystem::path> EInfoPath;
+typedef boost::error_info<struct tag_wMessage, std::wstring> EInfoWMessage;
+typedef boost::error_info<struct tag_Message, std::string> EInfoMessage;
+typedef boost::error_info<struct tag_ArgumentName, std::string> EInfoArgumentName;
+typedef boost::error_info<struct tag_ItemName, std::string> EInfoItemName;
+typedef boost::error_info<struct tag_ItemIndex, size_t> EInfoItemIndex;
+typedef boost::error_info<struct tag_ObjectName, std::string> EInfoObjectName;
 
 } /*namespace ErrorHandling*/
 } /*namespace M4D*/

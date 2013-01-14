@@ -54,7 +54,7 @@ struct GLTextureImage
 	{
 		if( _gltextureID != 0 ) {
 			D_PRINT( "Deleting texture id = " << _gltextureID );
-			ASSERT( IsGLContextActive() );
+			ASSERT( isGLContextActive() );
 			GL_CHECKED_CALL( glDeleteTextures( 1, &_gltextureID ) );
 			_gltextureID = 0;
 		}

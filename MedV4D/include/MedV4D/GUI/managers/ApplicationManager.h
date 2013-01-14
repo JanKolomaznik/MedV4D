@@ -27,6 +27,10 @@
 
 #define GET_SETTINGS( NAME, TYPE, DEFAULT ) \
 	ApplicationManager::getInstance()->settings().get<TYPE>( NAME, DEFAULT )
+
+#define GET_SETTINGS_NODEFAULT( NAME, TYPE ) \
+	ApplicationManager::getInstance()->settings().get<TYPE>( NAME )
+
 #define SET_SETTINGS( NAME, TYPE, VALUE ) \
 	ApplicationManager::getInstance()->settings().set<TYPE>( NAME, VALUE )
 

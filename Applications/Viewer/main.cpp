@@ -74,7 +74,7 @@ main( int argc, char** argv )
 			LOG_CONT( "\tChecking: " << it->string() << " ... ");
 			if (boost::filesystem::exists(*it) && boost::filesystem::is_directory(*it)) {
 				dataDirName = *it;
-				SET_SETTINGS( "application.data_directory", std::string, dataDirName );
+				SET_SETTINGS( "application.data_directory", std::string, dataDirName.string() );
 				found = true;
 				LOG( "SUCCESS" );
 			} else {
