@@ -26,14 +26,16 @@ ENDIF(WIN32)
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #**************************************************************
+SET(DCMTK_OFLOG_LIB "oflog") #TODO - better handling
 IF(WIN32)
 	FIND_PATH(DCMTK_DIR "include/dcmtk/dcmdata/dcdirrec.h")
+	SET(DCMTK_OFLOG_LIB "${DCMTK_DIR}/lib/oflog.lib")
 ENDIF(WIN32)
 FIND_PACKAGE(DCMTK REQUIRED)
 SET(DCMTK_INCLUDE_DIR ${DCMTK_INCLUDE_DIR} "${DCMTK_DIR}/include")
 
 SET(DCMTK_LIBRARY_DIRS ${DCMTK_LIBRARY_DIRS} "${DCMTK_DIR}/lib")
-SET(DCMTK_LIBRARIES ${DCMTK_LIBRARIES} ${DCMTK_DIR}/lib/oflog.lib ${DCMTK_LIBRARIES} )
+SET(DCMTK_LIBRARIES ${DCMTK_LIBRARIES} ${DCMTK_OFLOG_LIB} ${DCMTK_LIBRARIES} )
 
 #**************************************************************
 FIND_PACKAGE( Cg REQUIRED )
