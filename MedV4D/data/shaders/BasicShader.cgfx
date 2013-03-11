@@ -44,5 +44,3 @@ technique Basic  {
 		DepthFunc = LEqual;
 	}
 }
-
-
