@@ -26,10 +26,10 @@ extern bool gIsCgInitialized;
 extern CGcontext gCgContext;
 
 void
-InitializeCg();
+initializeCg();
 
 void
-FinalizeCg();
+finalizeCg();
 
 class CgException: public M4D::ErrorHandling::ExceptionBase
 {
@@ -40,97 +40,57 @@ public:
 };
 
 void 
-CheckForCgError( const std::string &situation, CGcontext &context = gCgContext );
+checkForCgError( const std::string &situation, CGcontext &context = gCgContext );
 
 
-class CgEffect
+class CgFXShader 
 {
 public:
-	CgEffect(): mEffectInitialized(false)
-	{}
 
 	void
-	Initialize(	/*CGcontext   				&cgContext,*/
-			const boost::filesystem::path 		&effectFile
-			);
+	initialize(const boost::filesystem::path &effectFile);
 
 	void
-	Finalize();
+	finalize();
 
+	template<typename TParameterType>
+	void
+	setParameter(std::string aName, const TParameterType &aValue);
+
+	template<typename TParameterType>
+	void
+	setParameter(std::string aName, const TParameterType *aValue, size_t aCount);
+	
+	//TODO - modify
+	void
+	setParameter(std::string aName, const M4D::GLViewSetup &aViewSetup);
+	
+	void
+	setParameter(std::string aName, const BoundingBox3D &aValue);
+	
+	void
+	setTextureParameter(std::string aName, GLuint aTexture);
+
+	void
+	setParameter(std::string aName, const M4D::Planef &aPlane);
+	
+	void
+	setParameter(std::string aName, const GLTextureImage &aTexture);
+
+	void
+	setParameter(std::string aName, const GLTextureImage3D &aImage);
+
+	void
+	setParameter(std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction);
+	
 	template< typename TGeometryRenderFunctor >
 	void
-	ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry );
-
-	template< size_t Dim >
-	void
-	SetParameter( std::string aName, const Vector<float, Dim> &value );
-
-	template< size_t Dim >
-	void
-	SetParameter( std::string aName, const Vector<double, Dim> &value );
-
-	template< size_t Dim >
-	void
-	SetParameter( std::string aName, const Vector<unsigned int, Dim> &value );
-
-	template< size_t Dim >
-	void
-	SetParameter( std::string aName, const Vector<int, Dim> &value );
-
-	void
-	SetParameter( std::string aName, const GLTextureImage &aTexture );
-
-	void
-	SetParameter( std::string aName, const GLTextureImage3D &aImage );
-
-	void
-	SetParameter( std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction );
-
-	void
-	SetParameter( std::string aName, float aValue );
-
-	void
-	SetParameter( std::string aName, double aValue );
-
-	void
-	SetParameter( std::string aName, int aValue );
-
-	void
-	SetParameter( std::string aName, const float *aValue, size_t aCount );
-
-	void
-	SetParameter( std::string aName, const double *aValue, size_t aCount );
-
-	void
-	SetParameter( std::string aName, const int *aValue, size_t aCount );
+	executeTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry );
 	
-	void
-	SetParameter( std::string aName, const glm::fmat4x4 &aMatrix );
-	
-	void
-	SetParameter( std::string aName, const glm::dmat4x4 &aMatrix );
-
-	void
-	SetParameter( std::string aName, const BoundingBox3D &aValue );
-	
-	void
-	SetTextureParameter( std::string aName, GLuint aTexture );
-
-	void
-	SetParameter( std::string aName, const M4D::Planef &aPlane );
-	
-	void
-	SetParameter( std::string aName, const M4D::GLViewSetup &aViewSetup );
-
-	void
-	SetGLStateMatrixParameter( std::string aName, CGGLenum matrix, CGGLenum transform );
-
 	bool
 	isInitialized() const 
 	{ return mEffectInitialized; }
 protected:
-	virtual void
-	prepareState();
 
 	boost::shared_ptr< ResourceGuard< CGeffect > >	mCgEffect;
 	std::map< std::string, CGtechnique >	mCgTechniques;
@@ -139,16 +99,195 @@ protected:
 	bool mEffectInitialized;
 };
 
+namespace detail {
+
+
+	inline void
+	parameterSetter(CGparameter aParameter, float aValue)
+	{
+		cgSetParameterValuefr(aParameter, 1, &aValue);
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, double aValue)
+	{
+		cgSetParameterValuedr(aParameter, 1, &aValue);
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, int aValue)
+	{
+		cgSetParameterValueir(aParameter, 1, &aValue);
+	}
+
+
+	inline void
+	parameterSetter(CGparameter aParameter, const glm::fmat4x4 &aMatrix)
+	{
+		cgSetParameterValuefr(aParameter, 16, glm::value_ptr( aMatrix ));
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, const glm::dmat4x4 &aMatrix)
+	{
+		cgSetParameterValuedr(aParameter, 16, glm::value_ptr( aMatrix ));
+	}
+
+	//-------------------------------------------------------------------------
+
+	inline void
+	parameterSetter(CGparameter aParameter, const float *aValue, size_t aSize)
+	{
+		cgSetParameterValuefr(aParameter, aSize, aValue);
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, const double *aValue, size_t aSize)
+	{
+		cgSetParameterValuedr(aParameter, aSize, aValue);
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, const int *aValue, size_t aSize)
+	{
+		cgSetParameterValueir(aParameter, aSize, aValue);
+	}
+	
+	//-------------------------------------------------------------------------
+
+	inline void
+	parameterSetter(CGparameter aParameter, const glm::fvec3 &aVec3)
+	{
+		cgSetParameterValuefr(aParameter, 3, glm::value_ptr( aVec3 ));
+	}
+
+	inline void
+	parameterSetter(CGparameter aParameter, const glm::dvec3 &aVec3)
+	{
+		cgSetParameterValuedr(aParameter, 3, glm::value_ptr( aVec3 ));
+	}
+
+	//-------------------------------------------------------------------------
+	template<size_t tDim>
+	inline void
+	parameterSetter(CGparameter aParameter, const Vector<float, tDim> &aValue)
+	{
+		cgSetParameterValuefr(aParameter, tDim, aValue.GetData());
+	}
+	
+	template<size_t tDim>
+	inline void
+	parameterSetter(CGparameter aParameter, const Vector<int, tDim> &aValue)
+	{
+		cgSetParameterValueir(aParameter, tDim, aValue.GetData());
+	}
+
+
+} //namespace detail
+
+
+template<typename TParameterType>
+void
+CgFXShader::setParameter(std::string aName, const TParameterType &aValue)
+{
+	//SOGLU_ASSERT(isInitialized());
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
+
+	detail::parameterSetter(cgParameter, aValue);
+}
+
+template<typename TParameterType>
+void
+CgFXShader::setParameter(std::string aName, const TParameterType *aValue, size_t aCount)
+{
+	//SOGLU_ASSERT(isInitialized());
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
+
+	detail::parameterSetter(cgParameter, aValue, aCount);
+}
+
+inline void
+CgFXShader::setParameter( std::string aName, const M4D::GLViewSetup &aViewSetup )
+{
+	ASSERT(isInitialized());
+	setParameter(aName + ".modelViewProj", glm::fmat4x4(aViewSetup.modelViewProj) );
+	setParameter(aName + ".modelMatrix", glm::fmat4x4(aViewSetup.model) );
+	setParameter(aName + ".projMatrix", glm::fmat4x4(aViewSetup.projection) );
+	setParameter(aName + ".viewMatrix", glm::fmat4x4(aViewSetup.view) );
+}
+
+inline void
+CgFXShader::setParameter( std::string aName, const M4D::Planef &aPlane )
+{
+	ASSERT(isInitialized());
+	setParameter(aName + ".point", static_cast< const Vector3f &>( aPlane.point() ) );
+
+	setParameter(aName + ".normal", aPlane.normal() );
+}
+
+inline void
+CgFXShader::setParameter( std::string aName, const GLTextureImage &aTexture )
+{
+	ASSERT(isInitialized());
+	setTextureParameter( aName, aTexture.GetTextureGLID() );
+}
+
+inline void
+CgFXShader::setParameter( std::string aName, const GLTextureImage3D &aImage )
+{
+	ASSERT(isInitialized());
+	setTextureParameter(aName + ".data", aImage.GetTextureGLID() );
+
+	setParameter(aName + ".size", aImage.getExtents().maximum - aImage.getExtents().minimum );
+
+	setParameter(aName + ".realSize", aImage.getExtents().realMaximum - aImage.getExtents().realMinimum );
+
+	setParameter(aName + ".realMinimum", aImage.getExtents().realMinimum );
+
+	setParameter(aName + ".realMaximum", aImage.getExtents().realMaximum );
+}
+
+inline void
+CgFXShader::setParameter(std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction )
+{
+	ASSERT(isInitialized());
+	setTextureParameter( TO_STRING( aName << ".data" ), aTransferFunction.getTextureID() );
+
+	setParameter( TO_STRING( aName << ".interval" ), aTransferFunction.getMappedInterval() );
+
+	setParameter( TO_STRING( aName << ".sampleCount" ), aTransferFunction.getSampleCount() );
+}
+
+inline void
+CgFXShader::setParameter(std::string aName, const BoundingBox3D &aValue)
+{
+	ASSERT(isInitialized());
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), TO_STRING( aName << ".vertices" ).data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuefr( cgParameter, 3*8, &(aValue.vertices[0].x) );
+}
+
+inline void
+CgFXShader::setTextureParameter(std::string aName, GLuint aTexture)
+{
+	ASSERT(isInitialized());
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect->get(), aName.data());
+//	ASSERT( )	TODO check type;
+
+	cgGLSetupSampler( cgParameter, aTexture );
+	//cgSetSamplerState( cgParameter );
+}
+
 template< typename TGeometryRenderFunctor >
 void
-CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry )
+CgFXShader::executeTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry )
 {
 	if (!isInitialized()) {
 		_THROW_ EObjectNotInitialized();
 	}
 	M4D::GLPushAtribs pushAttribs; // GL_CHECKED_CALL( glPushAttrib( GL_ALL_ATTRIB_BITS ) );
 
-	prepareState();
 	
 	std::map< std::string, CGtechnique >::iterator it = mCgTechniques.find( aTechniqueName );
 	if ( it == mCgTechniques.end() ) {
@@ -157,7 +296,7 @@ CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunct
 	CGtechnique cgTechnique = it->second;
 
 	CGpass pass = cgGetFirstPass( cgTechnique );
-	CheckForCgError( TO_STRING( "getting first pass for technique " << cgGetTechniqueName( cgTechnique ) ) );
+	checkForCgError( TO_STRING( "getting first pass for technique " << cgGetTechniqueName( cgTechnique ) ) );
 	while ( pass ) {
 		cgSetPassState( pass );
 
@@ -171,173 +310,8 @@ CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunct
 	//GL_CHECKED_CALL( glPopAttrib() );
 }
 
-template< size_t Dim >
-void
-CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
-{
-	ASSERT(isInitialized());
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
 
-//	ASSERT( )	TODO check type;
-	cgSetParameterValuefr( cgParameter, Dim, value.GetData() );	
-}
-
-template< size_t Dim >
-void
-CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
-{
-	ASSERT(isInitialized());
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
-
-//	ASSERT( )	TODO check type;
-	cgSetParameterValuedr( cgParameter, Dim, value.GetData() );	
-}
-
-template< size_t Dim >
-void
-CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &value )
-{
-	ASSERT(isInitialized());
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
-
-//	ASSERT( )	TODO check type;
-	cgSetParameterValueir( cgParameter, Dim, reinterpret_cast< const int* >( value.GetData() ) );	
-}
-
-template< size_t Dim >
-void
-CgEffect::SetParameter( std::string aName, const Vector<int, Dim> &value )
-{
-	ASSERT(isInitialized());
-	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect->get(), aName.data() );
-
-//	ASSERT( )	TODO check type;
-	cgSetParameterValueir( cgParameter, Dim, value.GetData() );	
-}
-
-struct AShaderConfig
-{
-	void
-	Initialize(	CGcontext   				&cgContext,
-			const boost::filesystem::path 		&fragmentProgramFile, 
-			const std::string 			&fragmentProgramName 
-			);
-	void
-	Finalize();
-
-	void
-	Enable();
-
-	void
-	Disable();
-
-	CGcontext   cgContext;
-
-	CGprofile   cgFragmentProfile;
-	CGprogram   cgFragmentProgram;
-};
-
-struct CgBrightnessContrastShaderConfig : public AShaderConfig
-{
-	void
-	Initialize(	CGcontext   				&cgContext,
-			const boost::filesystem::path 		&fragmentProgramFile, 
-			const std::string 			&fragmentProgramName 
-			);
-
-	void
-	Enable();
-
-	void
-	Disable();
-	
-	GLuint			textureName;
-	Vector< float, 2 >	brightnessContrast;
-
-	CGparameter cgFragmentParam_Texture;
-	CGparameter cgFragmentParam_BrightnessContrast;
-};
-
-
-struct CgMaskBlendShaderConfig : public AShaderConfig
-{
-	void
-	Initialize(	CGcontext   				&cgContext,
-			const boost::filesystem::path 		&fragmentProgramFile, 
-			const std::string 			&fragmentProgramName 
-			);
-
-	void
-	Enable();
-
-	void
-	Disable();
-
-	GLuint			textureName;
-	Vector< float, 4 >	blendColor;
-
-	CGparameter 		cgFragmentParam_Texture;
-	CGparameter 		cgFragmentParam_BlendColor;
-};
-
-struct CgSimpleTransferFunctionShaderConfig : public AShaderConfig
-{
-	void
-	Initialize(	CGcontext   				&cgContext,
-			const boost::filesystem::path 		&fragmentProgramFile, 
-			const std::string 			&fragmentProgramName 
-			);
-
-	void
-	Enable();
-
-	void
-	Disable();
-	
-	GLuint			dataTexture;
-	GLuint			transferFunctionTexture;
-
-	CGparameter cgFragmentParam_Data;
-	CGparameter cgFragmentParam_TransferFunction;
-};
-
-struct CgTransferFunctionShadingShaderConfig : public AShaderConfig
-{
-	void
-	Initialize(	CGcontext   				&cgContext,
-			const boost::filesystem::path 		&fragmentProgramFile, 
-			const std::string 			&fragmentProgramName 
-			);
-
-	void
-	Enable();
-
-	void
-	Disable();
-	
-	GLuint			dataTexture;
-	GLuint			transferFunctionTexture;
-	Vector< float, 3 >	eyePosition;
-	Vector< float, 3 >	lightPosition;
-	Vector< float, 3 >	sliceNormal;
-	float			sliceSpacing;
-
-	CGparameter cgFragmentParam_Data;
-	CGparameter cgFragmentParam_TransferFunction;
-	CGparameter cgFragmentParam_EyePosition;
-	CGparameter cgFragmentParam_LightPosition;
-	CGparameter cgFragmentParam_SliceSpacing;
-	CGparameter cgFragmentParam_SliceNormal;
-};
-
-
-void
-GLDrawVolumeSlicesForVertexShader(
-		M4D::BoundingBox3D	bbox,
-		Camera		camera,
-		unsigned 	numberOfSteps,
-		float		cutPlane = 1.0f
-		);
+typedef CgFXShader CgEffect;
 
 
 } //namespace M4D

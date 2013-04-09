@@ -83,7 +83,7 @@ void
 AGLViewer::initializeGL()
 {
 	InitOpenGL();
-	InitializeCg();
+	initializeCg();
 	glClearColor( mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF() );
 	
 	mFrameBufferObject.Initialize( width(), height() );

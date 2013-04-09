@@ -33,8 +33,8 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
-		Vector3f dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
-		Vector3f pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+		Vector3f dir = fromGLM(-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection());
+		Vector3f pos = fromGLM(state.getViewerWindow< GeneralViewer >().getCameraTargetPosition()) + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
 		state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
 		return true;
 	}
@@ -94,8 +94,8 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			//LOG( aEventInfo.event->modifiers() );
 			if ( aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers /*&& state.mVolumeRenderConfig.enableCutPlane*/ ) {
 				mInteractionMode = imCUT_PLANE;
-				Vector3f dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
-				Vector3f pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+				Vector3f dir = fromGLM(-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection());
+				Vector3f pos = fromGLM(state.getViewerWindow< GeneralViewer >().getCameraTargetPosition()) + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
 				state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
 				state.getViewerWindow< GeneralViewer >().enableCutPlane( true );
 				//LOG( "ENABLING CUTPLANE" );

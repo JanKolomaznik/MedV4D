@@ -233,10 +233,11 @@ void
 GeneralViewer::setCutPlane( const Planef &aCutPlane )
 {
 	getViewerState().mVolumeRenderConfig.cutPlane = aCutPlane;
-	Vector3f point = aCutPlane.point();
-	Vector3f dir = VectorProjection(aCutPlane.normal(), point - getCameraTargetPosition());
-	float offset = VectorSize( dir );
-	if( dir * aCutPlane.normal() < 0.0f ) {
+	glm::fvec3 point = glm::fvec3(aCutPlane.point()[0], aCutPlane.point()[1], aCutPlane.point()[2]);
+	glm::fvec3 normal = glm::fvec3(aCutPlane.normal()[0], aCutPlane.normal()[1], aCutPlane.normal()[2]);
+	glm::fvec3 dir = vectorProjection(normal, point - getCameraTargetPosition());
+	float offset = glm::length(dir);
+	if( glm::dot(dir, normal) < 0.0f ) {
 		offset *= -1.0f;
 	}
 	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = offset;
@@ -255,7 +256,8 @@ void
 GeneralViewer::setCutPlaneCameraTargetOffset( float aOffset )
 {
 	Vector3f normal = getViewerState().mVolumeRenderConfig.cutPlane.normal();
-	Planef plane( getCameraTargetPosition() + aOffset * normal, normal );
+	glm::fvec3 point = getCameraTargetPosition() + aOffset * glm::fvec3(normal[0], normal[1], normal[2]);
+	Planef plane(Vector3f(point.x, point.y, point.z), normal );
 	getViewerState().mVolumeRenderConfig.cutPlane = plane;
 	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = aOffset;
 
@@ -620,9 +622,9 @@ GeneralViewer::setJitterStrength( float aValue )
 void
 GeneralViewer::resetView()
 {
-	Vector3f pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
+	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
 	pos[1] += -550;
-	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
+	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
 	
 	update();
 }
@@ -692,8 +694,8 @@ GeneralViewer::initializeRenderingEnvironment()
 	getViewerState().mVolumeRenderer.Initialize();
 	
 	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
-	getViewerState().mSceneSlicingCgEffect.Initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
-	getViewerState().mBasicCgEffect.Initialize( dataDirName / "shaders" / "BasicShader.cgfx" );
+	getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
+	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );
 }
 
 bool
@@ -738,22 +740,22 @@ GeneralViewer::prepareForRenderingStep()
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
 			
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
-			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
+			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( glm::fvec3(getViewerState().getRealCenter()[0], getViewerState().getRealCenter()[1], getViewerState().getRealCenter()[2]) );
 			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
 			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->getExtents().elementExtents[plane];
-			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
-			Vector3f up;
+			glm::vec3 eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
+			glm::vec3 up;
 			switch ( plane ) {
 			case YZ_PLANE:
-				up = Vector3f( 0.0f, 0.0f, 1.0f );
+				up = glm::vec3( 0.0f, 0.0f, 1.0f );
 				eye[0] =  + 500.0f;
 				break;
 			case XZ_PLANE:
-				up = Vector3f( 0.0f, 0.0f, 1.0f );
+				up = glm::vec3( 0.0f, 0.0f, 1.0f );
 				eye[1] = 500.0f;
 				break;
 			case XY_PLANE:
-				up = Vector3f( 0.0f, 1.0f, 0.0f );
+				up = glm::vec3( 0.0f, 1.0f, 0.0f );
 				eye[2] = 500.0f;
 				break;
 			default:
@@ -761,7 +763,7 @@ GeneralViewer::prepareForRenderingStep()
 			}
 			getViewerState().mSliceRenderConfig.camera.SetEyePosition( eye, up );
 			
-			getViewerState().mSliceRenderConfig.sliceNormal = getViewerState().mSliceRenderConfig.camera.GetTargetDirection();
+			getViewerState().mSliceRenderConfig.sliceNormal = Vector3f(&(getViewerState().mSliceRenderConfig.camera.GetTargetDirection().x));
 			VectorNormalization( getViewerState().mSliceRenderConfig.sliceNormal );
 			getViewerState().glViewSetup = getViewSetupFromOrthoCamera( getViewerState().mSliceRenderConfig.camera );
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, subVPortW, subVPortH );
@@ -780,17 +782,19 @@ GeneralViewer::render()
 		{
 			glViewport(0, 0, width(), height());
 			
-			M4D::BoundingBox3D bbox( getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents().realMaximum, 
-						getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents().realMinimum );
+			
+			M4D::Imaging::ImageExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
+			M4D::BoundingBox3D bbox( glm::fvec3(extents.realMaximum[0], extents.realMaximum[1], extents.realMaximum[2]), 
+						 glm::fvec3(extents.realMinimum[0], extents.realMinimum[1], extents.realMinimum[2]) );
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-			getViewerState().mBasicCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
+			getViewerState().mBasicCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
-				getViewerState().mBasicCgEffect.ExecuteTechniquePass( "Basic", boost::bind( &M4D::GLDrawBoundingBox, bbox ) );
+				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GLDrawBoundingBox, bbox ) );
 			}
 			//Draw cut plane if enabled TODO - set color
-			getViewerState().mBasicCgEffect.ExecuteTechniquePass( 
+			getViewerState().mBasicCgEffect.executeTechniquePass( 
 				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) ) 
 				);
 		
@@ -802,7 +806,7 @@ GeneralViewer::render()
 
 			//LOG( getViewerState().glViewSetup );
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
-				getViewerState().mBasicCgEffect.ExecuteTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::preRender3D, mRenderingExtension ) );
+				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::preRender3D, mRenderingExtension ) );
 				//mRenderingExtension->preRender3D();	
 			}
 
@@ -814,7 +818,7 @@ GeneralViewer::render()
 
 			GL_CHECKED_CALL( glClear( GL_DEPTH_BUFFER_BIT ) );//TODO disable depth storing during volume rendering
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
-				getViewerState().mBasicCgEffect.ExecuteTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::postRender3D, mRenderingExtension ) );
+				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::postRender3D, mRenderingExtension ) );
 				//mRenderingExtension->postRender3D();
 			}
 		}
@@ -847,11 +851,11 @@ GeneralViewer::render()
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = config.getCurrentRealSlice();
 						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
-						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
-						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
-						getViewerState().mSceneSlicingCgEffect.SetParameter( "gPlaneWidth", 2*hextents[plane] );
-						getViewerState().mSceneSlicingCgEffect.SetParameter( "gViewSetup", getViewerState().glViewSetup );
-						getViewerState().mSceneSlicingCgEffect.ExecuteTechniquePass( 
+						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
+						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
+						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneWidth", 2*hextents[plane] );
+						getViewerState().mSceneSlicingCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );
+						getViewerState().mSceneSlicingCgEffect.executeTechniquePass( 
 									"SceneSlicing", 
 									boost::bind( &M4D::GUI::Viewer::RenderingExtension::render2DAlignedSlices,
 									mRenderingExtension,
@@ -893,23 +897,23 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 				direction = getDirectionFromScreenCoordinatesAndCameraPosition(
 				       	Vector2f( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), 
 					mViewerState->glViewSetup, 
-					getCameraPosition()					 
+					Vector3f(getCameraPosition().x, getCameraPosition().y, getCameraPosition().z)
 					);				
 			} catch (...){
 				LOG( "Unprojecting of screen coordinates failed" );
 			}
 			
-			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, getCameraPosition(), direction );
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, Vector3f(getCameraPosition().x, getCameraPosition().y, getCameraPosition().z), direction );
 		}
 		break;
 	case vt2DAlignedSlices:
 		{
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
-			Vector3f eye = getViewerState().mSliceRenderConfig.camera.GetEyePosition();
-			Vector3f target = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
-			Vector3f dir = target - eye;
-			VectorNormalization( dir );
+			glm::fvec3 eye = getViewerState().mSliceRenderConfig.camera.GetEyePosition();
+			glm::fvec3 target = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
+			glm::fvec3 dir = target - eye;
+			dir = glm::normalize(dir);
 			
 			int x = event->pos().x() / subVPortW;
 			int y = event->pos().y() / subVPortH;
@@ -919,9 +923,9 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			Vector3f intersection;
 			IntersectionResult res = AxisPlaneIntersection( 
 					Vector3f( pom ), 
-					dir,
+					Vector3f(dir.x, dir.y, dir.z),
 					slicePoint, 
-					dir,
+					Vector3f(dir.x, dir.y, dir.z),
 					intersection
 					);
 			//LOG( "Intersection res = " << res << "; " << intersection );
@@ -1007,9 +1011,10 @@ GeneralViewer::PrepareData()
 		getViewerState().mVolumeRenderConfig.secondaryImageData.reset();
 	}
 
-	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition( getViewerState().getRealCenter() );
+	Vector3f tmp = getViewerState().getRealCenter();
+	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
-	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
+	getViewerState().mVolumeRenderConfig.camera.SetEyePosition(glm::fvec3( 0.0f, 0.0f, 750.0f ));
 	resetView();
 
 	_prepared = true;

@@ -4,6 +4,9 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
 class Camera;
 namespace M4D
 {
@@ -11,39 +14,39 @@ namespace M4D
 struct BoundingBox3D
 {
 	static const unsigned VertexCount = 8;
-	BoundingBox3D( const Vector3f &corner1 = Vector3f(), const Vector3f &corner2 = Vector3f() )
+	BoundingBox3D( const glm::fvec3 &corner1 = glm::fvec3(), const glm::fvec3 &corner2 = glm::fvec3() )
 	{
-		vertices[0] = Vector3f( corner1 );
-		vertices[1] = Vector3f( corner2[0], corner1[1], corner1[2] );
-		vertices[2] = Vector3f( corner2[0], corner2[1], corner1[2] );
-		vertices[3] = Vector3f( corner1[0], corner2[1], corner1[2] );
+		vertices[0] = glm::fvec3( corner1 );
+		vertices[1] = glm::fvec3( corner2.x, corner1.y, corner1.z );
+		vertices[2] = glm::fvec3( corner2.x, corner2.y, corner1.z );
+		vertices[3] = glm::fvec3( corner1.x, corner2.y, corner1.z );
 
-		vertices[4] = Vector3f( corner1[0], corner1[1], corner2[2] );
-		vertices[5] = Vector3f( corner2[0], corner1[1], corner2[2] );
-		vertices[6] = Vector3f( corner2 );
-		vertices[7] = Vector3f( corner1[0], corner2[1], corner2[2] );
+		vertices[4] = glm::fvec3( corner1.x, corner1.y, corner2.z );
+		vertices[5] = glm::fvec3( corner2.x, corner1.y, corner2.z );
+		vertices[6] = glm::fvec3( corner2 );
+		vertices[7] = glm::fvec3( corner1.x, corner2.y, corner2.z );
 	}
 
-	Vector3f
+	glm::fvec3
 	getMin()const
 	{
 		return vertices[0];
 	}
 
-	Vector3f
+	glm::fvec3
 	getMax()const
 	{
 		return vertices[6];
 	}
 
-	Vector3f
+	glm::fvec3
 	getCenter()const
 	{
 		return 0.5f * (vertices[0] + vertices[6]);
 	}
 
 
-	Vector< float, 3 >	vertices[VertexCount];
+	glm::fvec3	vertices[VertexCount];
 };
 
 inline std::ostream &
@@ -54,14 +57,14 @@ operator<<( std::ostream & s, const BoundingBox3D &bbox )
 }
 
 void
-GetBBoxMinMaxDistance( 
-			const BoundingBox3D		&bbox, 
-			const Vector< float, 3 > 	&eyePoint, 
-			const Vector< float,3 > 	&direction, 
-			float 				&min, 
-			float 				&max,
-		       	unsigned			&minId,	
-		       	unsigned			&maxId	
+getBBoxMinMaxDistance( 
+			const BoundingBox3D	&bbox, 
+			const glm::fvec3 	&eyePoint, 
+			const glm::fvec3  	&direction, 
+			float 			&min, 
+			float 			&max,
+		       	unsigned		&minId,
+		       	unsigned		&maxId
 			);
 
 unsigned

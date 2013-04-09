@@ -7,16 +7,16 @@ ACamera::RotateAroundTarget( const Quaternion<ACamera::FloatType> &q )
 	FloatType sizeSqr = dist * dist;*/
 
 
-	Position direction = RotatePoint( mTargetDirection, q );
-	VectorNormalization( direction );
-	Position dist = -1.0f * direction * mTargetDistance;
+	Position direction = toGLM(RotatePoint(fromGLM(mTargetDirection), q));
+	direction = glm::normalize(direction);
+	Position dist = -mTargetDistance * direction;
 
 	mEyePos = mTargetPos + dist;
-	mUpDirection = RotatePoint( mUpDirection, q );
-	VectorNormalization( mUpDirection );
+	mUpDirection = toGLM(RotatePoint(fromGLM(mUpDirection), q ));
+	mUpDirection = glm::normalize(mUpDirection);
 
 	mTargetDirection = direction;
-	mRightDirection = VectorProduct( mTargetDirection, mUpDirection );
+	mRightDirection = glm::cross(mTargetDirection, mUpDirection);
 }
 
 void
@@ -33,8 +33,8 @@ ACamera::SetTargetPosition( const Position &aPosition, const Position &aUpDirect
 	UpdateTargetDirection();
 
 	mUpDirection = aUpDirection;
-	Ortogonalize( mTargetDirection, mUpDirection );
-	VectorNormalization( mUpDirection );
+	glm::orthonormalize(mTargetDirection, mUpDirection);
+	mUpDirection = glm::normalize(mUpDirection);
 
 	UpdateRightDirection();
 }
@@ -53,8 +53,8 @@ ACamera::SetEyePosition( const Position &aPosition, const Position &aUpDirection
 	UpdateTargetDirection();
 
 	mUpDirection = aUpDirection;
-	Ortogonalize( mTargetDirection, mUpDirection );
-	VectorNormalization( mUpDirection );
+	glm::orthonormalize(mTargetDirection, mUpDirection);
+	mUpDirection = glm::normalize(mUpDirection);
 
 	UpdateRightDirection();
 }
@@ -63,8 +63,8 @@ void
 ACamera::SetUpDirection( const Direction & aUpDirection )
 {
 	mUpDirection = aUpDirection;
-	Ortogonalize( mTargetDirection, mUpDirection );
-	VectorNormalization( mUpDirection );
+	glm::orthonormalize(mTargetDirection, mUpDirection);
+	mUpDirection = glm::normalize(mUpDirection);
 
 	UpdateRightDirection();
 }
@@ -72,21 +72,21 @@ ACamera::SetUpDirection( const Direction & aUpDirection )
 void
 ACamera::YawAround( ACamera::FloatType angle )
 {
-	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, mUpDirection );
+	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, fromGLM(mUpDirection) );
 	RotateAroundTarget( q );
 }
 
 void
 ACamera::PitchAround( ACamera::FloatType angle )
 {
-	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, mRightDirection );
+	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, fromGLM(mRightDirection) );
 	RotateAroundTarget( q );
 }
 
 void
 ACamera::YawPitchAround( ACamera::FloatType yangle, ACamera::FloatType pangle )
 {
-	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( yangle, mUpDirection ) * CreateRotationQuaternion( pangle, mRightDirection );
+	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( yangle, fromGLM(mUpDirection) ) * CreateRotationQuaternion( pangle, fromGLM(mRightDirection) );
 	RotateAroundTarget( q );
 }
 

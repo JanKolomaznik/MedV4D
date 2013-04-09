@@ -291,15 +291,15 @@ public:
 	QualityMode
 	getRenderingQuality();
 
-	Vector3f
+	glm::fvec3
 	getCameraPosition()const
 	{ return getViewerState().mVolumeRenderConfig.camera.GetEyePosition(); }
 
-	Vector3f
+	glm::fvec3
 	getCameraTargetPosition()const
 	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition(); }
 
-	Vector3f
+	glm::fvec3
 	getCameraTargetDirection()const
 	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetDirection(); }
 

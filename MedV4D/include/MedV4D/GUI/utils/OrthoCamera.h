@@ -11,9 +11,9 @@
 class OrthoCamera: public ACamera
 {
 public:
-	typedef float	FloatType;
-	typedef Vector< FloatType, 3 > Position;
-	typedef Vector< FloatType, 3 > Direction;
+	typedef ACamera::FloatType FloatType;
+	typedef ACamera::Position Position;
+	typedef ACamera::Direction Direction;
 	
 	OrthoCamera( const Position &eye = Position(), const Position &center = Position() ) 
 		: ACamera( eye, center ), mLeft( -1.0f ), mRight( 1.0f ), mBottom( -1.0f ), mTop( 1.0f ), mNear( 0.0f ), mFar( 1000.0f )

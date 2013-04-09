@@ -604,7 +604,7 @@ Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
  **/
 template< typename CoordType, size_t Dim >
 Vector< CoordType, Dim >
-VectorProjection( const Vector< CoordType, Dim > &u, const Vector< CoordType, Dim > &v )
+vectorProjection( const Vector< CoordType, Dim > &u, const Vector< CoordType, Dim > &v )
 {
 	return Vector< CoordType, Dim >( (v*u) * u );
 }

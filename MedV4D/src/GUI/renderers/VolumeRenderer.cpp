@@ -1,5 +1,8 @@
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
+#include <glm/gtx/component_wise.hpp>
+#include <glm/gtx/verbose_operator.hpp>
+
 namespace M4D
 {
 namespace GUI
@@ -12,25 +15,27 @@ boost::filesystem::path gVolumeRendererShaderPath;
 void
 applyVolumeRestrictionsOnBoundingBox( M4D::BoundingBox3D &aBBox, const VolumeRestrictions &aVolumeRestrictions )
 {
-	Vector3f corner1 = aBBox.getMin();
-	Vector3f corner2 = aBBox.getMax();
-	Vector3f size = corner2 - corner1;
+	glm::fvec3 corner1 = aBBox.getMin();
+	glm::fvec3 corner2 = aBBox.getMax();
+	glm::fvec3 size = corner2 - corner1;
 	
-	Vector3f i1, i2;
-	aVolumeRestrictions.get3D( i1, i2 );
+	Vector3f i1Tmp, i2Tmp;
+	aVolumeRestrictions.get3D(i1Tmp, i2Tmp);
 
+	glm::fvec3 i1(i1Tmp[0], i1Tmp[1], i1Tmp[2]);
+	glm::fvec3 i2(i2Tmp[0], i2Tmp[1], i2Tmp[2]);
 	//LOG( "Restrictions : " << i1 << " - " << i2 );
 
-	corner2 = corner1 + VectorMemberProduct( i2, size );
-	corner1 += VectorMemberProduct( i1, size );
+	corner2 = corner1 + (i2 * size);
+	corner1 += (i1 * size);
 	aBBox = M4D::BoundingBox3D( corner1, corner2 );
 }
 
 void
 VolumeRenderer::Initialize()
 {
-	InitializeCg();
-	mCgEffect.Initialize( gVolumeRendererShaderPath/*"ImageRender.cgfx"*/ );
+	initializeCg();
+	mCgEffect.initialize( gVolumeRendererShaderPath/*"ImageRender.cgfx"*/ );
 
 	initJitteringTexture();
 
@@ -110,19 +115,19 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
 	
-	mCgEffect.SetParameter( "gPrimaryImageData3D", *primaryData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
+	mCgEffect.setParameter( "gPrimaryImageData3D", *primaryData );
+	mCgEffect.setParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
 	
 	GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
 	if( secondaryData ) {
-		mCgEffect.SetParameter( "gSecondaryImageData3D", *secondaryData );
+		mCgEffect.setParameter( "gSecondaryImageData3D", *secondaryData );
 	}
 	
 	size_t sliceCount = aConfig.sampleCount;
 	if( sliceCount > mMaxSampleCount ) {
 		reallocateArrays( sliceCount );
 	}
-	M4D::BoundingBox3D bbox( primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum );
+	M4D::BoundingBox3D bbox( toGLM(primaryData->getExtents().realMinimum), toGLM(primaryData->getExtents().realMaximum) );
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
@@ -131,7 +136,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;
-	GetBBoxMinMaxDistance( 
+	getBBoxMinMaxDistance( 
 			bbox, 
 			aConfig.camera.GetEyePosition(), 
 			aConfig.camera.GetTargetDirection(), 
@@ -142,29 +147,29 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			);
 	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
-	mCgEffect.SetParameter( "gLight.position", aConfig.lightPosition );
-	mCgEffect.SetParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
-	mCgEffect.SetParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
-	mCgEffect.SetParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
-	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
+	mCgEffect.setParameter( "gLight.position", aConfig.lightPosition );
+	mCgEffect.setParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
+	mCgEffect.setParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
+	mCgEffect.setParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
+	mCgEffect.setParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
-	mCgEffect.SetParameter( "gViewDirection", aConfig.camera.GetTargetDirection() );
-	mCgEffect.SetParameter( "edgeOrder", edgeOrder, 8*12 );
-	mCgEffect.SetParameter( "gMinID", (int)minId );
-	mCgEffect.SetParameter( "gBBox", bbox );
+	mCgEffect.setParameter( "gViewDirection", aConfig.camera.GetTargetDirection() );
+	mCgEffect.setParameter( "edgeOrder", edgeOrder, 8*12 );
+	mCgEffect.setParameter( "gMinID", (int)minId );
+	mCgEffect.setParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), primaryData->getExtents().realMaximum-primaryData->getExtents().realMinimum );
-	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
-	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
-	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
-	mCgEffect.SetParameter( "gJitterStrength", aConfig.jitterStrength  );
+	Vector3f tmp = VectorMemberDivision( fromGLM(aConfig.camera.GetTargetDirection()), primaryData->getExtents().realMaximum-primaryData->getExtents().realMinimum);
+	mCgEffect.setParameter( "gSliceNormalTexCoords", tmp );
+	mCgEffect.setTextureParameter( "gNoiseMap", mNoiseMap );
+	mCgEffect.setParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+	mCgEffect.setParameter( "gJitterStrength", aConfig.jitterStrength  );
 
-	mCgEffect.SetParameter( "gEnableCutPlane", aConfig.enableCutPlane );
-	mCgEffect.SetParameter( "gCutPlane", aConfig.cutPlane );
-	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
+	mCgEffect.setParameter( "gEnableCutPlane", aConfig.enableCutPlane );
+	mCgEffect.setParameter( "gCutPlane", aConfig.cutPlane );
+	mCgEffect.setParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 
 	//mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
-	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
+	mCgEffect.setParameter( "gViewSetup", aViewSetup );
 	
 	std::string techniqueName;
 	GLTransferFunctionBuffer1D::ConstPtr transferFunction;
@@ -177,11 +182,11 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
 
-			mCgEffect.SetParameter( "gTransferFunction1D", *transferFunction );
+			mCgEffect.setParameter( "gTransferFunction1D", *transferFunction );
 
 			integralTransferFunction = aConfig.integralTransferFunction.lock();
 			if( integralTransferFunction ) {
-				mCgEffect.SetParameter( "gIntegralTransferFunction1D", *integralTransferFunction );
+				mCgEffect.setParameter( "gIntegralTransferFunction1D", *integralTransferFunction );
 			}
 			unsigned configurationMask = 0;
 
@@ -230,13 +235,13 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		break;
 	case ctMaxIntensityProjection:
 		{
-			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
+			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
 			techniqueName = "WLWindowMIP_3D";
 		}
 		break;
 	case ctBasic:
 		{
-			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
+			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
 			techniqueName = "WLWindowBasic_3D";
 		}
 		break;
@@ -244,7 +249,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	mCgEffect.ExecuteTechniquePass(
+	mCgEffect.executeTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
 				bbox,

@@ -221,7 +221,7 @@ GLDrawVolumeSlices(
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;	
-	GetBBoxMinMaxDistance( 
+	getBBoxMinMaxDistance( 
 		bbox, 
 		camera.GetEyePosition(), 
 		camera.GetTargetDirection(), 
@@ -232,13 +232,13 @@ GLDrawVolumeSlices(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
+	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= stepSize * camera.GetTargetDirection();
+		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
 		//Get n-gon as intersection of the current plane and bounding box
 		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, camera.GetTargetDirection(), minId, vertices
+				bbox, planePoint, fromGLM(camera.GetTargetDirection()), minId, vertices
 				);
 
 		//Render n-gon
@@ -279,7 +279,7 @@ GLDrawVolumeSlices_Buffered(
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;	
-	GetBBoxMinMaxDistance( 
+	getBBoxMinMaxDistance( 
 		bbox, 
 		camera.GetEyePosition(), 
 		camera.GetTargetDirection(), 
@@ -290,7 +290,7 @@ GLDrawVolumeSlices_Buffered(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
+	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
 
 	Vector3f *currentVertexPtr = vertices;
 	unsigned *currentIndexPtr = indices;
@@ -298,10 +298,10 @@ GLDrawVolumeSlices_Buffered(
 	size_t indicesSize = 0;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= stepSize * camera.GetTargetDirection();
+		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
 		//Get n-gon as intersection of the current plane and bounding box
 		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, camera.GetTargetDirection(), minId, currentVertexPtr
+				bbox, planePoint, fromGLM(camera.GetTargetDirection()), minId, currentVertexPtr
 				);
 
 		currentVertexPtr += count;
@@ -341,7 +341,7 @@ GLDrawVolumeSliceCenterSamples(
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;	
-	GetBBoxMinMaxDistance( 
+	getBBoxMinMaxDistance( 
 		bbox, 
 		camera.GetEyePosition(), 
 		camera.GetTargetDirection(), 
@@ -353,10 +353,10 @@ GLDrawVolumeSliceCenterSamples(
 	
 	//numberOfSteps = 1; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
+	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= stepSize * camera.GetTargetDirection();
+		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
 
 		glBegin( GL_POINTS );
 				GLVertexVector( planePoint );
@@ -617,27 +617,27 @@ void
 GLDrawBoundingBox( const BoundingBox3D &aBBox )
 {
 	glBegin( GL_LINE_LOOP );
-		GLVertexVector( aBBox.vertices[0] );
-		GLVertexVector( aBBox.vertices[1] );
-		GLVertexVector( aBBox.vertices[2] );
-		GLVertexVector( aBBox.vertices[3] );
-		GLVertexVector( aBBox.vertices[7] );
-		GLVertexVector( aBBox.vertices[6] );
-		GLVertexVector( aBBox.vertices[5] );
-		GLVertexVector( aBBox.vertices[4] );
+		GLVertexVector( fromGLM(aBBox.vertices[0]) );
+		GLVertexVector( fromGLM(aBBox.vertices[1]) );
+		GLVertexVector( fromGLM(aBBox.vertices[2]) );
+		GLVertexVector( fromGLM(aBBox.vertices[3]) );
+		GLVertexVector( fromGLM(aBBox.vertices[7]) );
+		GLVertexVector( fromGLM(aBBox.vertices[6]) );
+		GLVertexVector( fromGLM(aBBox.vertices[5]) );
+		GLVertexVector( fromGLM(aBBox.vertices[4]) );
 	glEnd();
 	glBegin( GL_LINES );
-		GLVertexVector( aBBox.vertices[0] );
-		GLVertexVector( aBBox.vertices[3] );
+		GLVertexVector( fromGLM(aBBox.vertices[0]) );
+		GLVertexVector( fromGLM(aBBox.vertices[3]) );
 
-		GLVertexVector( aBBox.vertices[1] );
-		GLVertexVector( aBBox.vertices[5] );
+		GLVertexVector( fromGLM(aBBox.vertices[1]) );
+		GLVertexVector( fromGLM(aBBox.vertices[5]) );
 
-		GLVertexVector( aBBox.vertices[2] );
-		GLVertexVector( aBBox.vertices[6] );
+		GLVertexVector( fromGLM(aBBox.vertices[2]) );
+		GLVertexVector( fromGLM(aBBox.vertices[6]) );
 
-		GLVertexVector( aBBox.vertices[4] );
-		GLVertexVector( aBBox.vertices[7] );
+		GLVertexVector( fromGLM(aBBox.vertices[4]) );
+		GLVertexVector( fromGLM(aBBox.vertices[7]) );
 	glEnd();
 }
 

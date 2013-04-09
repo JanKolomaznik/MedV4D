@@ -12,8 +12,8 @@ boost::filesystem::path gSliceRendererShaderPath;
 void
 SliceRenderer::Initialize()
 {
-	InitializeCg();
-	mCgEffect.Initialize( gSliceRendererShaderPath/*"ImageRender.cgfx"*/ );
+	initializeCg();
+	mCgEffect.initialize( gSliceRendererShaderPath/*"ImageRender.cgfx"*/ );
 
 
 	mAvailableColorTransforms.clear();
@@ -40,24 +40,24 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
 	
-	mCgEffect.SetParameter( "gPrimaryImageData3D", *primaryData );
-	mCgEffect.SetParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
+	mCgEffect.setParameter( "gPrimaryImageData3D", *primaryData );
+	mCgEffect.setParameter( "gMappedIntervalBands", primaryData->GetMappedInterval() );
 	
 	GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
 	if( secondaryData ) {
-		mCgEffect.SetParameter( "gSecondaryImageData3D", *secondaryData );
+		mCgEffect.setParameter( "gSecondaryImageData3D", *secondaryData );
 	}
 	
-	mCgEffect.SetParameter( "gEnableInterpolation", aConfig.enableInterpolation );
+	mCgEffect.setParameter( "gEnableInterpolation", aConfig.enableInterpolation );
 	
-	mCgEffect.SetParameter( "gViewSetup", aViewSetup );
+	mCgEffect.setParameter( "gViewSetup", aViewSetup );
 
 	std::string techniqueName;
 	GLTransferFunctionBuffer1D::ConstPtr transferFunction;
 	switch ( aConfig.colorTransform ) {
 	case ctLUTWindow:
 		{
-			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
+			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
 			techniqueName = "WLWindow_3D";
 		} 
 		break;
@@ -67,7 +67,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 			if ( !transferFunction ) {
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
-			mCgEffect.SetParameter( "gTransferFunction1D", *transferFunction );
+			mCgEffect.setParameter( "gTransferFunction1D", *transferFunction );
 			techniqueName = "TransferFunction1D_3DNoBlending";
 		}
 		break;
@@ -81,7 +81,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 		ASSERT( false );
 	}
 
-	mCgEffect.ExecuteTechniquePass( 
+	mCgEffect.executeTechniquePass( 
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
 				primaryData->getExtents().realMinimum, 
@@ -92,7 +92,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const GL
 			); 
 	
 	if( secondaryData ) {
-		mCgEffect.ExecuteTechniquePass( 
+		mCgEffect.executeTechniquePass( 
 			"OverlayMask_3D", 
 			boost::bind( &M4D::GLDrawVolumeSlice3D, 
 				secondaryData->getExtents().realMinimum, 

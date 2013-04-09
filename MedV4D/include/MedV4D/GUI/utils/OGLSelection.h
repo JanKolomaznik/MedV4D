@@ -99,7 +99,7 @@ PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup,
 	//glColor4f( 0.0f, 0.3f, 0.0f, 0.5f );
 	//GL_CHECKED_CALL(DrawRectangleOverViewPort(-1000, -1000, 1000, 1000));
 	
-	mCgEffect.ExecuteTechniquePass( "PickingEffect", aFunctor );
+	mCgEffect.executeTechniquePass( "PickingEffect", aFunctor );
 	
 	//glClearColor(0.2f,0.2f, 0.3f, 1.0f);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

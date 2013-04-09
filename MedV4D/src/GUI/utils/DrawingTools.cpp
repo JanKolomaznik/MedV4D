@@ -53,22 +53,22 @@ GetBBoxEdgePointB( unsigned idx )
 }
 
 void
-GetBBoxMinMaxDistance( 
-			const BoundingBox3D		&bbox, 
-			const Vector< float, 3 > 	&eyePoint, 
-			const Vector< float,3 > 	&direction, 
-			float 				&min, 
-			float 				&max, 
-		       	unsigned			&minId,	
-		       	unsigned			&maxId	
+getBBoxMinMaxDistance( 
+			const BoundingBox3D	&bbox, 
+			const glm::fvec3 	&eyePoint, 
+			const glm::fvec3 	&direction, 
+			float 			&min, 
+			float 			&max, 
+		       	unsigned		&minId,	
+		       	unsigned		&maxId	
 			)
 {
-	min = VectorSize( VectorProjection( direction, bbox.vertices[0] - eyePoint ) );
+	min = glm::length( vectorProjection( direction, bbox.vertices[0] - eyePoint ) );
 	minId = 0;
-	max = VectorSize( VectorProjection( direction, bbox.vertices[0] - eyePoint ) );
+	max = glm::length( vectorProjection( direction, bbox.vertices[0] - eyePoint ) );
 	maxId = 0;
 	for( unsigned i=1; i<8; ++i ) {
-		float tmpSize = VectorSize( VectorProjection( direction, bbox.vertices[i] - eyePoint ) );
+		float tmpSize = glm::length( vectorProjection( direction, bbox.vertices[i] - eyePoint ) );
 		if( tmpSize < min ) {
 			min = tmpSize;
 			minId = i;
@@ -96,7 +96,7 @@ GetPlaneVerticesInBoundingBox(
 		unsigned lineAIdx = GetBBoxEdgePointA( edgeOrder[minId][i] ); 
 		unsigned lineBIdx = GetBBoxEdgePointB( edgeOrder[minId][i] );
 		if( ie_UNIQUE_INTERSECTION == 
-				LineSegmentPlaneIntersection( bbox.vertices[ lineAIdx ], bbox.vertices[ lineBIdx ], planePoint, planeNormal, vertices[idx] ) 
+				LineSegmentPlaneIntersection( fromGLM(bbox.vertices[ lineAIdx ]), fromGLM(bbox.vertices[ lineBIdx ]), planePoint, planeNormal, vertices[idx] ) 
 		  ) {
 			++idx;
 			//center += vertices[idx];
@@ -133,12 +133,12 @@ GetPlaneVerticesInBoundingBox(
 		)
 {
 	unsigned maxId = 0;
-	Vector< float,3 > vec = VectorProjection( plane.normal(), bbox.vertices[0] - plane.point() );
+	Vector< float,3 > vec = vectorProjection( plane.normal(), fromGLM(bbox.vertices[0]) - plane.point() );
 	float maxSize = VectorSize( vec );
 	int multiplier = sgn( vec * plane.normal() );
 	if( multiplier == 0 ) { multiplier = 1; }
 	for( unsigned i=1; i<8; ++i ) {
-		vec = VectorProjection( plane.normal(), bbox.vertices[i] - plane.point() );
+		vec = vectorProjection( plane.normal(), fromGLM(bbox.vertices[i]) - plane.point() );
 		if ( static_cast<float>( multiplier ) * (vec * plane.normal()) > 0.0f ) {
 			float tmpSize = VectorSize( vec );
 			if( tmpSize > maxSize ) {
@@ -186,10 +186,10 @@ fillEdgeIntersectionComputationInfo( const BoundingBox3D &bbox, const Vector3f &
 	for( unsigned i = 0; i < 12; ++i ) {
 		unsigned lineAIdx = GetBBoxEdgePointA( edgeOrder[minId][i] ); 
 		unsigned lineBIdx = GetBBoxEdgePointB( edgeOrder[minId][i] );
-		infos[i].startPoint = bbox.vertices[ lineAIdx ];
-	        infos[i].direction = bbox.vertices[ lineBIdx ] - bbox.vertices[ lineAIdx ];
+		infos[i].startPoint = fromGLM(bbox.vertices[ lineAIdx ]);
+	        infos[i].direction = fromGLM(bbox.vertices[ lineBIdx ] - bbox.vertices[ lineAIdx ]);
 		infos[i].D = planeNormal * infos[i].direction;
-		infos[i].N0 = -planeNormal * (bbox.vertices[ lineAIdx ] - planePoint) ;
+		infos[i].N0 = -planeNormal * (fromGLM(bbox.vertices[ lineAIdx ]) - planePoint) ;
 	}
 }
 
@@ -240,7 +240,7 @@ fillPlaneBBoxIntersectionBufferFill(
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;	
-	GetBBoxMinMaxDistance( 
+	getBBoxMinMaxDistance( 
 		bbox, 
 		camera.GetEyePosition(), 
 		camera.GetTargetDirection(), 
@@ -251,8 +251,8 @@ fillPlaneBBoxIntersectionBufferFill(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
-	Vector3f stepDirection = camera.GetTargetDirection();
+	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
+	Vector3f stepDirection = fromGLM(camera.GetTargetDirection());
 
 	EdgeIntersectionComputationInfo infos[12];
 	fillEdgeIntersectionComputationInfo( bbox, stepDirection, planePoint, minId, infos );

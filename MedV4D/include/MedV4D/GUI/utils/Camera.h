@@ -10,9 +10,9 @@
 class Camera: public ACamera
 {
 public:
-	typedef float	FloatType;
-	typedef Vector< FloatType, 3 > Position;
-	typedef Vector< FloatType, 3 > Direction;
+	typedef ACamera::FloatType FloatType;
+	typedef ACamera::Position Position;
+	typedef ACamera::Direction Direction;
 
 	Camera( const Position &eye = Position(), const Position &center = Position() ) 
 		: ACamera( eye, center ), mFieldOfViewY( 45.0f ), mAspectRatio( 1.0f ), mZNear( 0.5f ), mZFar( 10000 )
