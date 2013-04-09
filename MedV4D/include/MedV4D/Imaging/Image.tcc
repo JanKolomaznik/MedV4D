@@ -308,7 +308,7 @@ Image< ElementType, Dim >::GetPointer() const
 
 
 template< typename ElementType, size_t Dim >
-template< unsigned NewDim >
+template< size_t NewDim >
 typename Image< ElementType, NewDim >::Ptr
 Image< ElementType, Dim >::GetRestrictedImage (
         ImageRegion< ElementType, NewDim > region

@@ -454,21 +454,21 @@ GeneralViewer::enableInterpolation( bool aEnable )
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
 {
-	getViewerState().mVolumeRenderConfig.camera.YawPitchAround( aAngles[0], aAngles[1] );
+	getViewerState().mVolumeRenderConfig.camera.yawPitchAround( aAngles[0], aAngles[1] );
 	update();
 }
 
 void
 GeneralViewer::cameraOrbitAbsolute( Vector2f aAngles )
 {
-	getViewerState().mVolumeRenderConfig.camera.YawPitchAbsolute( aAngles[0], aAngles[1] );
+	getViewerState().mVolumeRenderConfig.camera.yawPitchAbsolute( aAngles[0], aAngles[1] );
 	update();
 }
 
 void
 GeneralViewer::cameraDolly( float aDollyRatio )
 {
-	DollyCamera( getViewerState().mVolumeRenderConfig.camera, aDollyRatio );
+	dollyCamera( getViewerState().mVolumeRenderConfig.camera, aDollyRatio );
 	update();
 }
 
@@ -622,9 +622,9 @@ GeneralViewer::setJitterStrength( float aValue )
 void
 GeneralViewer::resetView()
 {
-	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.camera.GetTargetPosition();
+	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.camera.targetPosition();
 	pos[1] += -550;
-	getViewerState().mVolumeRenderConfig.camera.SetEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
+	getViewerState().mVolumeRenderConfig.camera.setEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
 	
 	update();
 }
@@ -740,10 +740,10 @@ GeneralViewer::prepareForRenderingStep()
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
 			
 			getViewerState().mSliceRenderConfig.camera.SetWindow( subVPortW / zoom, subVPortH / zoom );
-			getViewerState().mSliceRenderConfig.camera.SetTargetPosition( glm::fvec3(getViewerState().getRealCenter()[0], getViewerState().getRealCenter()[1], getViewerState().getRealCenter()[2]) );
+			getViewerState().mSliceRenderConfig.camera.setTargetPosition( glm::fvec3(getViewerState().getRealCenter()[0], getViewerState().getRealCenter()[1], getViewerState().getRealCenter()[2]) );
 			getViewerState().mSliceRenderConfig.sliceCenter = getViewerState().getRealCenter();
 			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->getExtents().elementExtents[plane];
-			glm::vec3 eye = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
+			glm::vec3 eye = getViewerState().mSliceRenderConfig.camera.targetPosition();
 			glm::vec3 up;
 			switch ( plane ) {
 			case YZ_PLANE:
@@ -761,9 +761,9 @@ GeneralViewer::prepareForRenderingStep()
 			default:
 				ASSERT( false );
 			}
-			getViewerState().mSliceRenderConfig.camera.SetEyePosition( eye, up );
+			getViewerState().mSliceRenderConfig.camera.setEyePosition( eye, up );
 			
-			getViewerState().mSliceRenderConfig.sliceNormal = Vector3f(&(getViewerState().mSliceRenderConfig.camera.GetTargetDirection().x));
+			getViewerState().mSliceRenderConfig.sliceNormal = Vector3f(&(getViewerState().mSliceRenderConfig.camera.targetDirection().x));
 			VectorNormalization( getViewerState().mSliceRenderConfig.sliceNormal );
 			getViewerState().glViewSetup = getViewSetupFromOrthoCamera( getViewerState().mSliceRenderConfig.camera );
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, subVPortW, subVPortH );
@@ -910,8 +910,8 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 		{
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
-			glm::fvec3 eye = getViewerState().mSliceRenderConfig.camera.GetEyePosition();
-			glm::fvec3 target = getViewerState().mSliceRenderConfig.camera.GetTargetPosition();
+			glm::fvec3 eye = getViewerState().mSliceRenderConfig.camera.eyePosition();
+			glm::fvec3 target = getViewerState().mSliceRenderConfig.camera.targetPosition();
 			glm::fvec3 dir = target - eye;
 			dir = glm::normalize(dir);
 			
@@ -1012,9 +1012,9 @@ GeneralViewer::PrepareData()
 	}
 
 	Vector3f tmp = getViewerState().getRealCenter();
-	getViewerState().mVolumeRenderConfig.camera.SetTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
+	getViewerState().mVolumeRenderConfig.camera.setTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
 	getViewerState().mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
-	getViewerState().mVolumeRenderConfig.camera.SetEyePosition(glm::fvec3( 0.0f, 0.0f, 750.0f ));
+	getViewerState().mVolumeRenderConfig.camera.setEyePosition(glm::fvec3( 0.0f, 0.0f, 750.0f ));
 	resetView();
 
 	_prepared = true;

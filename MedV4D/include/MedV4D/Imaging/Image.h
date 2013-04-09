@@ -273,7 +273,7 @@ public:
          * \param[in] region Region, which will be shared among images.
          * \return Smart pointer to new image.
          **/
-        template< unsigned NewDim >
+        template< size_t NewDim >
         typename Image< ElementType, NewDim >::Ptr
         GetRestrictedImage (
                 ImageRegion< ElementType, NewDim > region

@@ -242,8 +242,8 @@ fillPlaneBBoxIntersectionBufferFill(
 	unsigned			maxId = 0;	
 	getBBoxMinMaxDistance( 
 		bbox, 
-		camera.GetEyePosition(), 
-		camera.GetTargetDirection(), 
+		camera.eyePosition(), 
+		camera.targetDirection(), 
 		min, 
 		max,
 		minId,	
@@ -251,8 +251,8 @@ fillPlaneBBoxIntersectionBufferFill(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
-	Vector3f stepDirection = fromGLM(camera.GetTargetDirection());
+	Vector< float, 3> planePoint = fromGLM(camera.eyePosition() + camera.targetDirection() * max);
+	Vector3f stepDirection = fromGLM(camera.targetDirection());
 
 	EdgeIntersectionComputationInfo infos[12];
 	fillEdgeIntersectionComputationInfo( bbox, stepDirection, planePoint, minId, infos );

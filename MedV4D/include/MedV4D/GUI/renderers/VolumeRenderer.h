@@ -15,6 +15,18 @@ namespace GUI
 {
 namespace Renderer
 {
+	
+enum RenderingFlags
+{
+	rf_NONE        = 0,
+	
+	rf_SHADING     = 1,
+	rf_JITTERING     = 1 << 1,
+	
+	rf_PREINTEGRATED     = 1 << 2,
+	rf_INTERPOLATION     = 1 << 3
+};
+	
 
 extern boost::filesystem::path gVolumeRendererShaderPath;
 	
@@ -72,6 +84,53 @@ public:
 		return mAvailableColorTransforms;
 	}
 protected:
+	
+	void
+	basicRendering( 
+		const Camera &aCamera, 
+		const GLTextureImageTyped<3> &aImage, 
+		const M4D::BoundingBox3D &aBoundingBox, 
+		size_t aSliceCount,
+		bool aJitterEnabled,
+		float aJitterStrength, 
+		bool aEnableCutPlane,
+		Planef aCutPlane,
+		bool aEnableInterpolation,
+		Vector2f aLutWindow,
+		const GLViewSetup &aViewSetup,
+		bool aMIP,
+		uint64 aFlags
+     	);
+	
+	void
+	transferFunctionRendering( 
+		const Camera &aCamera, 
+		const GLTextureImageTyped<3> &aImage, 
+		const M4D::BoundingBox3D &aBoundingBox, 
+		size_t aSliceCount, 
+		bool aJitterEnabled,
+		float aJitterStrength, 
+		bool aEnableCutPlane,
+		Planef aCutPlane,
+		bool aEnableInterpolation,
+		const GLViewSetup &aViewSetup,
+		const GLTransferFunctionBuffer1D &aTransferFunction,
+		Vector3f aLightPosition,
+		uint64 aFlags
+	);
+	
+	void
+	setupJittering(float aJitterStrength);
+	
+	void
+	setupView(const Camera &aCamera, const GLViewSetup &aViewSetup);
+	
+	void
+	setupSamplingProcess(const M4D::BoundingBox3D &aBoundingBox, const Camera &aCamera, size_t aSliceCount);
+	
+	void
+	setupLights(const Vector3f &aLightPosition);
+	
 	void
 	initJitteringTexture();
 

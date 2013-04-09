@@ -52,42 +52,42 @@ public:
 	Reset();
 
 	const Position &
-	GetEyePosition() const
+	eyePosition() const
 		{ return mEyePos; }
 
 	const Position &
-	GetTargetPosition() const
+	targetPosition() const
 		{ return mTargetPos; }
 
 	void
-	SetTargetPosition( const Position &pos );
+	setTargetPosition( const Position &pos );
 
 	void
-	SetTargetPosition( const Position &aPosition, const Position &aUpDirection );
+	setTargetPosition( const Position &aPosition, const Position &aUpDirection );
 
 	void
-	SetEyePosition( const Position &pos );
+	setEyePosition( const Position &pos );
 
 	void
-	SetEyePosition( const Position &aPosition, const Position &aUpDirection );
+	setEyePosition( const Position &aPosition, const Position &aUpDirection );
 
 	void
-	SetUpDirection( const Direction & );
+	setUpDirection( const Direction & );
 		
 	const Direction &
-	GetUpDirection() const
+	upDirection() const
 		{ return mUpDirection; }
 
 	const Direction &
-	GetTargetDirection() const
+	targetDirection() const
 		{ return mTargetDirection; }
 
 	const Direction &
-	GetRightDirection() const
+	rightDirection() const
 		{ return mRightDirection; }
 
 	FloatType
-	GetTargetDistance()
+	targetDistance()
 	{ return mTargetDistance; }
 
 	/*SIMPLE_GET_SET_METHODS( FloatType, AspectRatio, mFieldOfViewY );
@@ -96,38 +96,38 @@ public:
 	SIMPLE_GET_SET_METHODS( FloatType, ZFar, mZFar );*/
 
 	void
-	RotateAroundTarget( const Quaternion<FloatType> &q );
+	rotateAroundTarget( const Quaternion<FloatType> &q );
 
 	void
-	YawAround( FloatType angle );
+	yawAround( FloatType angle );
 
 	void
-	PitchAround( FloatType angle );
+	pitchAround( FloatType angle );
 
 	void
-	YawPitchAround( FloatType yangle, FloatType pangle );
+	yawPitchAround( FloatType yangle, FloatType pangle );
 
 	void
-	YawPitchAbsolute( FloatType yangle, FloatType pangle );
+	yawPitchAbsolute( FloatType yangle, FloatType pangle );
 
 	
 protected:
 	void
-	ResetOrbit();
+	resetOrbit();
 
 	void
-	UpdateDistance()
+	updateDistance()
 	{ 
 		mTargetDistance = glm::distance(mTargetPos, mEyePos);
 	}
 	void
-	UpdateTargetDirection()
+	updateTargetDirection()
 	{ 
 		mTargetDirection = mTargetPos - mEyePos;
 		mTargetDirection = glm::normalize(mTargetDirection);
 	}
 	void
-	UpdateRightDirection()
+	updateRightDirection()
 	{ 
 		mRightDirection = glm::cross(mTargetDirection, mUpDirection);
 	}
@@ -154,16 +154,16 @@ inline std::ostream &
 operator<<( std::ostream & stream, ACamera & camera )
 {
 	stream << "Camera info" << std::endl;
-	stream << "   Position : " << camera.GetEyePosition() << std::endl;
-	stream << "   Target :   " << camera.GetTargetPosition() << std::endl;
-	stream << "   Up :       " << camera.GetUpDirection() << std::endl;
-	stream << "   Right :    " << camera.GetRightDirection() << std::endl;
+	stream << "   Position : " << camera.eyePosition() << std::endl;
+	stream << "   Target :   " << camera.targetPosition() << std::endl;
+	stream << "   Up :       " << camera.upDirection() << std::endl;
+	stream << "   Right :    " << camera.rightDirection() << std::endl;
 	//stream << "   FOV :      " << camera.GetFieldOfView() << std::endl;
 	return stream;
 }
 
 void
-DollyCamera( ACamera &aCamera, float32 aRatio );
+dollyCamera( ACamera &aCamera, float32 aRatio );
 
 
 #endif /*ACAMERA_H*/

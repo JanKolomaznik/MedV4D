@@ -68,6 +68,13 @@ struct Light
 	float3 position;
 };
 
+struct Camera
+{
+	float3 eyePosition;
+	float3 viewDirection;
+	float3 upDirection;	
+};
+
 struct BoundingBox
 {
 	float3	vertices[8];

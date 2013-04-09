@@ -1,7 +1,7 @@
 #include "MedV4D/GUI/utils/ACamera.h"
 
 void
-ACamera::RotateAroundTarget( const Quaternion<ACamera::FloatType> &q )
+ACamera::rotateAroundTarget( const Quaternion<ACamera::FloatType> &q )
 {
 	/*Position dist( mEyePos - mTargetPos );
 	FloatType sizeSqr = dist * dist;*/
@@ -20,98 +20,98 @@ ACamera::RotateAroundTarget( const Quaternion<ACamera::FloatType> &q )
 }
 
 void
-ACamera::SetTargetPosition( const Position &pos )
+ACamera::setTargetPosition( const Position &pos )
 {
-	SetTargetPosition( pos, mUpDirection );
+	setTargetPosition( pos, mUpDirection );
 }
 
 void
-ACamera::SetTargetPosition( const Position &aPosition, const Position &aUpDirection )
+ACamera::setTargetPosition( const Position &aPosition, const Position &aUpDirection )
 {
 	mTargetPos = aPosition;
-	UpdateDistance();
-	UpdateTargetDirection();
+	updateDistance();
+	updateTargetDirection();
 
 	mUpDirection = aUpDirection;
 	glm::orthonormalize(mTargetDirection, mUpDirection);
 	mUpDirection = glm::normalize(mUpDirection);
 
-	UpdateRightDirection();
+	updateRightDirection();
 }
 
 void
-ACamera::SetEyePosition( const Position &pos )
+ACamera::setEyePosition( const Position &pos )
 {
-	SetEyePosition( pos, mUpDirection );
+	setEyePosition( pos, mUpDirection );
 }
 
 void
-ACamera::SetEyePosition( const Position &aPosition, const Position &aUpDirection )
+ACamera::setEyePosition( const Position &aPosition, const Position &aUpDirection )
 {
 	mEyePos = aPosition;
-	UpdateDistance();
-	UpdateTargetDirection();
+	updateDistance();
+	updateTargetDirection();
 
 	mUpDirection = aUpDirection;
 	glm::orthonormalize(mTargetDirection, mUpDirection);
 	mUpDirection = glm::normalize(mUpDirection);
 
-	UpdateRightDirection();
+	updateRightDirection();
 }
 
 void
-ACamera::SetUpDirection( const Direction & aUpDirection )
+ACamera::setUpDirection( const Direction & aUpDirection )
 {
 	mUpDirection = aUpDirection;
 	glm::orthonormalize(mTargetDirection, mUpDirection);
 	mUpDirection = glm::normalize(mUpDirection);
 
-	UpdateRightDirection();
+	updateRightDirection();
 }
 
 void
-ACamera::YawAround( ACamera::FloatType angle )
+ACamera::yawAround( ACamera::FloatType angle )
 {
 	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, fromGLM(mUpDirection) );
-	RotateAroundTarget( q );
+	rotateAroundTarget( q );
 }
 
 void
-ACamera::PitchAround( ACamera::FloatType angle )
+ACamera::pitchAround( ACamera::FloatType angle )
 {
 	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( angle, fromGLM(mRightDirection) );
-	RotateAroundTarget( q );
+	rotateAroundTarget( q );
 }
 
 void
-ACamera::YawPitchAround( ACamera::FloatType yangle, ACamera::FloatType pangle )
+ACamera::yawPitchAround( ACamera::FloatType yangle, ACamera::FloatType pangle )
 {
 	Quaternion<ACamera::FloatType> q = CreateRotationQuaternion( yangle, fromGLM(mUpDirection) ) * CreateRotationQuaternion( pangle, fromGLM(mRightDirection) );
-	RotateAroundTarget( q );
+	rotateAroundTarget( q );
 }
 
 void
-ACamera::YawPitchAbsolute( FloatType yangle, FloatType pangle )
+ACamera::yawPitchAbsolute( FloatType yangle, FloatType pangle )
 {
-	ResetOrbit();
-	YawPitchAround( yangle, pangle );
+	resetOrbit();
+	yawPitchAround( yangle, pangle );
 }
 
 void
-ACamera::ResetOrbit()
+ACamera::resetOrbit()
 {
 	mEyePos = mTargetPos + Position( 0.0f, 0.0f, mTargetDistance );
 	mUpDirection = Direction( 0.0f, 1.0f, 0.0f );
-	UpdateTargetDirection();
-	UpdateRightDirection();	
+	updateTargetDirection();
+	updateRightDirection();	
 }
 
 void
-DollyCamera( ACamera &aCamera, float32 aRatio )
+dollyCamera( ACamera &aCamera, float32 aRatio )
 {
-	ACamera::Position center = aCamera.GetTargetPosition();
-	ACamera::Position eye = aCamera.GetEyePosition();
+	ACamera::Position center = aCamera.targetPosition();
+	ACamera::Position eye = aCamera.eyePosition();
 	ACamera::Direction moveVector = (1.0f - aRatio) * (center - eye);
 	
-	aCamera.SetEyePosition( eye + moveVector );
+	aCamera.setEyePosition( eye + moveVector );
 }

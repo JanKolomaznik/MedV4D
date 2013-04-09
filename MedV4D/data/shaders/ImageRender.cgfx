@@ -14,15 +14,11 @@ float2 gNoiseMapSize;
 ImageData3D gPrimaryImageData3D;
 ImageData3D gSecondaryImageData3D;
 
-float3 gSliceNormalTexCoords;
-
 //int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
 
 Light gLight;
-float3 gEyePosition;
-float3 gViewDirection;
-
+Camera gCamera;
 
 TransferFunction1D gTransferFunction1D;
 TransferFunction1D gIntegralTransferFunction1D;
@@ -85,7 +81,7 @@ technique TransferFunction1D_3DNoBlending {
 	}
 }
 
-technique TransferFunction1D_3D {
+technique TransferFunction1DSimple_3D {
 	pass t0 {
 		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1D_3D( 
@@ -108,33 +104,33 @@ technique TransferFunction1DShading_3D {
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLight, 
-									gEyePosition 
+									gCamera.eyePosition 
 									);
 		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
 	}
 }
 
-technique TransferFunction1DShadingJitter_3D {
+technique TransferFunction1DJitteringShading_3D {
 	pass t0 {
 		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
 		//VertexProgram = compile gp4vp vertexPassThru();
 
-		//GeometryProgram = compile gp4gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
+		//GeometryProgram = compile gp4gp gp_GenerateSlice( gCamera.viewDirection, gMinID, gBBox );
 		FragmentProgram = compile gp4fp fp_TransferFunction1DShadingJitter_3D( 
 									gPrimaryImageData3D, 
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLight,
-									gEyePosition,
-									gViewDirection 
+									gCamera.eyePosition,
+									gCamera.viewDirection 
 									);
 		DepthTestEnable = true;	DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
 	}
 }
 
 
-technique TransferFunction1DJitter_3D {
+technique TransferFunction1DJittering_3D {
 	pass t0 {
 		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_TransferFunction1DJitter_3D( 
@@ -142,7 +138,7 @@ technique TransferFunction1DJitter_3D {
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
-									gViewDirection 
+									gCamera.viewDirection 
 									);
 		DepthTestEnable = true; DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
 	}
@@ -160,9 +156,7 @@ technique TransferFunction1DJitter_3D {
 		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
 	}
 }*/
-
-
-technique IntegralTransferFunction1DShading_3D {
+technique TransferFunction1DPreintegratedSimple_3D {//TODO - version without shading
 	pass t0 {
 		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_IntegralTransferFunction1DShading_3D( 
@@ -171,17 +165,33 @@ technique IntegralTransferFunction1DShading_3D {
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLight, 
-									gEyePosition, 
-									gViewDirection 
+									gCamera.eyePosition, 
+									gCamera.viewDirection 
 									);
 		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
 	}
 }
 
-technique IntegralTransferFunction1DShadingJitter_3D {
+technique TransferFunction1DPreintegratedShading_3D {
+	pass t0 {
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_IntegralTransferFunction1DShading_3D( 
+									gPrimaryImageData3D, 
+									gIntegralTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight, 
+									gCamera.eyePosition, 
+									gCamera.viewDirection 
+									);
+		DepthTestEnable = true;DepthMask = true;CullFaceEnable = false;BlendEnable = true;BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );DepthFunc = LEqual;
+	}
+}
+
+technique TransferFunction1DPreintegratedJittering_3D {//TODO - version without shading
 	pass t0 {
 		//VertexProgram = compile gp5vp vertexPassThru();
-		//GeometryProgram = compile gp5gp gp_GenerateSlice( gViewDirection, gMinID, gBBox );
+		//GeometryProgram = compile gp5gp gp_GenerateSlice( gCamera.viewDirection, gMinID, gBBox );
 		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile gp4fp fp_IntegralTransferFunction1DShadingJitter_3D( 
 									gPrimaryImageData3D, 
@@ -189,8 +199,26 @@ technique IntegralTransferFunction1DShadingJitter_3D {
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
 									gLight,
-									gEyePosition,
-									gViewDirection 
+									gCamera.eyePosition,
+									gCamera.viewDirection 
+									);
+		DepthTestEnable = true;	DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
+	}
+}
+
+technique TransferFunction1DPreintegratedJitteringShading_3D {
+	pass t0 {
+		//VertexProgram = compile gp5vp vertexPassThru();
+		//GeometryProgram = compile gp5gp gp_GenerateSlice( gCamera.viewDirection, gMinID, gBBox );
+		VertexProgram = compile gp4vp vp_VertexPassPosAsTexCoords();
+		FragmentProgram = compile gp4fp fp_IntegralTransferFunction1DShadingJitter_3D( 
+									gPrimaryImageData3D, 
+									gIntegralTransferFunction1D, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLight,
+									gCamera.eyePosition,
+									gCamera.viewDirection 
 									);
 		DepthTestEnable = true;	DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
 	}
@@ -205,7 +233,7 @@ technique IntegralTransferFunction1DJitter_3D {
 									gTransferFunction1D, 
 									gRenderingSliceThickness, 
 									gMappedIntervalBands, 
-									gViewDirection 
+									gCamera.viewDirection 
 									);
 		DepthTestEnable = true; DepthMask = true; CullFaceEnable = false; BlendEnable = true; BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha ); DepthFunc = LEqual;
 	}

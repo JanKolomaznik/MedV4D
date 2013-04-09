@@ -107,15 +107,15 @@ SetViewAccordingToCamera( const Camera &camera )
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(	
-		camera.GetEyePosition()[0], 
-		camera.GetEyePosition()[1], 
-		camera.GetEyePosition()[2], 
-		camera.GetTargetPosition()[0], 
-		camera.GetTargetPosition()[1], 
-		camera.GetTargetPosition()[2], 
-		camera.GetUpDirection()[0], 
-		camera.GetUpDirection()[1], 
-		camera.GetUpDirection()[2]
+		camera.eyePosition()[0], 
+		camera.eyePosition()[1], 
+		camera.eyePosition()[2], 
+		camera.targetPosition()[0], 
+		camera.targetPosition()[1], 
+		camera.targetPosition()[2], 
+		camera.upDirection()[0], 
+		camera.upDirection()[1], 
+		camera.upDirection()[2]
 		);
 }
 
@@ -153,9 +153,9 @@ getProjectionAndViewMatricesFromCamera( const Camera &camera, glm::dmat4x4 &aPro
 	);
 	
 	aView = glm::lookAt<double>( 
-		glm::dvec3( camera.GetEyePosition()[0], camera.GetEyePosition()[1], camera.GetEyePosition()[2] ),
-		glm::dvec3( camera.GetTargetPosition()[0], camera.GetTargetPosition()[1], camera.GetTargetPosition()[2] ),
-		glm::dvec3( camera.GetUpDirection()[0], camera.GetUpDirection()[1], camera.GetUpDirection()[2] )
+		glm::dvec3(camera.eyePosition()),
+		glm::dvec3(camera.targetPosition()),
+		glm::dvec3(camera.upDirection())
 	);
 }
 
@@ -172,9 +172,9 @@ getProjectionAndViewMatricesFromOrthoCamera( const OrthoCamera &camera, glm::dma
 			   );
 	
 	aView = glm::lookAt<double>( 
-		glm::dvec3( camera.GetEyePosition()[0], camera.GetEyePosition()[1], camera.GetEyePosition()[2] ),
-		glm::dvec3( camera.GetTargetPosition()[0], camera.GetTargetPosition()[1], camera.GetTargetPosition()[2] ),
-		glm::dvec3( camera.GetUpDirection()[0], camera.GetUpDirection()[1], camera.GetUpDirection()[2] )
+		glm::dvec3(camera.eyePosition()),
+		glm::dvec3(camera.targetPosition()),
+		glm::dvec3(camera.upDirection())
 	);
 }
 
@@ -223,8 +223,8 @@ GLDrawVolumeSlices(
 	unsigned			maxId = 0;	
 	getBBoxMinMaxDistance( 
 		bbox, 
-		camera.GetEyePosition(), 
-		camera.GetTargetDirection(), 
+		camera.eyePosition(), 
+		camera.targetDirection(), 
 		min, 
 		max,
 		minId,	
@@ -232,13 +232,13 @@ GLDrawVolumeSlices(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
+	Vector< float, 3> planePoint = fromGLM(camera.eyePosition() + camera.targetDirection() * max);
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
+		planePoint -= fromGLM(stepSize * camera.targetDirection());
 		//Get n-gon as intersection of the current plane and bounding box
 		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, fromGLM(camera.GetTargetDirection()), minId, vertices
+				bbox, planePoint, fromGLM(camera.targetDirection()), minId, vertices
 				);
 
 		//Render n-gon
@@ -281,8 +281,8 @@ GLDrawVolumeSlices_Buffered(
 	unsigned			maxId = 0;	
 	getBBoxMinMaxDistance( 
 		bbox, 
-		camera.GetEyePosition(), 
-		camera.GetTargetDirection(), 
+		camera.eyePosition(), 
+		camera.targetDirection(), 
 		min, 
 		max,
 		minId,	
@@ -290,7 +290,7 @@ GLDrawVolumeSlices_Buffered(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
+	Vector< float, 3> planePoint = fromGLM(camera.eyePosition() + camera.targetDirection() * max);
 
 	Vector3f *currentVertexPtr = vertices;
 	unsigned *currentIndexPtr = indices;
@@ -298,10 +298,10 @@ GLDrawVolumeSlices_Buffered(
 	size_t indicesSize = 0;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
+		planePoint -= fromGLM(stepSize * camera.targetDirection());
 		//Get n-gon as intersection of the current plane and bounding box
 		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, fromGLM(camera.GetTargetDirection()), minId, currentVertexPtr
+				bbox, planePoint, fromGLM(camera.targetDirection()), minId, currentVertexPtr
 				);
 
 		currentVertexPtr += count;
@@ -343,8 +343,8 @@ GLDrawVolumeSliceCenterSamples(
 	unsigned			maxId = 0;	
 	getBBoxMinMaxDistance( 
 		bbox, 
-		camera.GetEyePosition(), 
-		camera.GetTargetDirection(), 
+		camera.eyePosition(), 
+		camera.targetDirection(), 
 		min, 
 		max,
 		minId,	
@@ -353,10 +353,10 @@ GLDrawVolumeSliceCenterSamples(
 	
 	//numberOfSteps = 1; //**************
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = fromGLM(camera.GetEyePosition() + camera.GetTargetDirection() * max);
+	Vector< float, 3> planePoint = fromGLM(camera.eyePosition() + camera.targetDirection() * max);
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= fromGLM(stepSize * camera.GetTargetDirection());
+		planePoint -= fromGLM(stepSize * camera.targetDirection());
 
 		glBegin( GL_POINTS );
 				GLVertexVector( planePoint );

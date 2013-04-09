@@ -83,6 +83,9 @@ public:
 	void
 	setParameter(std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction);
 	
+	void
+	setParameter(std::string aName, const Camera &aCamera);
+	
 	template< typename TGeometryRenderFunctor >
 	void
 	executeTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry );
@@ -251,11 +254,21 @@ inline void
 CgFXShader::setParameter(std::string aName, const GLTransferFunctionBuffer1D &aTransferFunction )
 {
 	ASSERT(isInitialized());
-	setTextureParameter( TO_STRING( aName << ".data" ), aTransferFunction.getTextureID() );
+	setTextureParameter(aName + ".data", aTransferFunction.getTextureID() );
 
-	setParameter( TO_STRING( aName << ".interval" ), aTransferFunction.getMappedInterval() );
+	setParameter(aName + ".interval", aTransferFunction.getMappedInterval() );
 
-	setParameter( TO_STRING( aName << ".sampleCount" ), aTransferFunction.getSampleCount() );
+	setParameter(aName + ".sampleCount", aTransferFunction.getSampleCount() );
+}
+
+inline void
+CgFXShader::setParameter(std::string aName, const Camera &aCamera)
+{
+	setParameter(aName + ".eyePosition", aCamera.eyePosition());
+	
+	setParameter(aName + ".viewDirection", aCamera.targetDirection());
+	
+	setParameter(aName + ".upDirection", aCamera.upDirection());
 }
 
 inline void

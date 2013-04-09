@@ -293,15 +293,15 @@ public:
 
 	glm::fvec3
 	getCameraPosition()const
-	{ return getViewerState().mVolumeRenderConfig.camera.GetEyePosition(); }
+	{ return getViewerState().mVolumeRenderConfig.camera.eyePosition(); }
 
 	glm::fvec3
 	getCameraTargetPosition()const
-	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetPosition(); }
+	{ return getViewerState().mVolumeRenderConfig.camera.targetPosition(); }
 
 	glm::fvec3
 	getCameraTargetDirection()const
-	{ return getViewerState().mVolumeRenderConfig.camera.GetTargetDirection(); }
+	{ return getViewerState().mVolumeRenderConfig.camera.targetDirection(); }
 
 	void
 	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );

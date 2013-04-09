@@ -90,16 +90,35 @@ VolumeRenderer::Finalize()
 	//TODO
 }
 
-enum TFConfigurationFlags{
-	tfShading	= 1,
-	tfJittering	= 1 << 1,
-	tfIntegral	= 1 << 2
-};
 
 void
-VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
+VolumeRenderer::setupView(const Camera &aCamera, const GLViewSetup &aViewSetup)
 {
-	static int edgeOrder[8*12] = {
+	mCgEffect.setParameter("gCamera", aCamera);
+	mCgEffect.setParameter("gViewSetup", aViewSetup );
+	//mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
+}
+
+void
+VolumeRenderer::setupLights(const Vector3f &aLightPosition)
+{
+	mCgEffect.setParameter( "gLight.position", aLightPosition );
+	mCgEffect.setParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
+	mCgEffect.setParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
+}
+
+void
+VolumeRenderer::setupJittering(float aJitterStrength)
+{
+	mCgEffect.setTextureParameter( "gNoiseMap", mNoiseMap );
+	mCgEffect.setParameter("gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+	mCgEffect.setParameter("gJitterStrength", aJitterStrength  );
+}
+
+void
+VolumeRenderer::setupSamplingProcess(const M4D::BoundingBox3D &aBoundingBox, const Camera &aCamera, size_t aSliceCount)
+{
+	/*static int edgeOrder[8*12] = {
 		 10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
 		 11,  8, 10,  5,  9,  6,  2,  1,  7,  3,  0,  4,
 		  8,  9, 11,  6, 10,  7,  3,  2,  4,  0,  1,  5,
@@ -109,6 +128,68 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		  3,  2,  0,  6,  1,  5,  8,  9,  4, 11, 10,  7,
 		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
 	};
+	mCgEffect.setParameter( "edgeOrder", edgeOrder, 8*12 );
+	mCgEffect.setParameter( "gMinID", (int)minId );
+	mCgEffect.setParameter( "gBBox", aBoundingBox );*/
+	
+	float 		min = 0; 
+	float 		max = 0;
+	unsigned		minId = 0;	
+	unsigned		maxId = 0;
+	getBBoxMinMaxDistance( 
+			aBoundingBox, 
+			aCamera.eyePosition(), 
+			aCamera.targetDirection(), 
+			min, 
+			max, 
+		       	minId,	
+		       	maxId	
+			);
+	float renderingSliceThickness = (max-min)/static_cast< float >( aSliceCount );
+
+	mCgEffect.setParameter("gRenderingSliceThickness", renderingSliceThickness);
+}
+
+
+
+enum TFConfigurationFlags{
+	tfShading	= 1,
+	tfJittering	= 1 << 1,
+	tfIntegral	= 1 << 2
+};
+
+namespace detail {
+	
+static const uint64 FLAGS_TO_NAME_SUFFIXES_MASK = rf_SHADING | rf_JITTERING | rf_PREINTEGRATED;
+static const std::string gFlagsToNameSuffixes[] = 
+	{
+		std::string("Simple"),
+		std::string("Shading"),
+		std::string("Jittering"),
+		std::string("JitteringShading"),
+		std::string("PreintegratedSimple"),
+		std::string("PreintegratedShading"),
+		std::string("PreintegratedJittering"),
+		std::string("PreintegratedJitteringShading"),
+		
+		std::string("UNDEFINED_COMBINATION")
+	};
+	
+}
+
+void
+VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup )
+{
+	/*static int edgeOrder[8*12] = {
+		 10, 11,  9,  4,  8,  5,  1,  0,  6,  2,  3,  7,
+		 11,  8, 10,  5,  9,  6,  2,  1,  7,  3,  0,  4,
+		  8,  9, 11,  6, 10,  7,  3,  2,  4,  0,  1,  5,
+		  9, 10,  8,  7, 11,  4,  0,  3,  5,  1,  2,  6,
+		  1,  0,  2,  4,  3,  7, 10, 11,  6,  9,  8,  5,
+		  2,  1,  3,  5,  0,  4, 11,  8,  7, 10,  9,  6,
+		  3,  2,  0,  6,  1,  5,  8,  9,  4, 11, 10,  7,
+		  0,  3,  1,  7,  2,  6,  9, 10,  5,  8, 11,  4
+	};*/
 
 	GLTextureImageTyped<3>::Ptr primaryData = aConfig.primaryImageData.lock();
 	if ( !primaryData ) {
@@ -131,15 +212,15 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
-	//LOG( bbox );
+	/*//LOG( bbox );
 	float 				min = 0; 
 	float 				max = 0;
 	unsigned			minId = 0;	
 	unsigned			maxId = 0;
 	getBBoxMinMaxDistance( 
 			bbox, 
-			aConfig.camera.GetEyePosition(), 
-			aConfig.camera.GetTargetDirection(), 
+			aConfig.camera.eyePosition(), 
+			aConfig.camera.targetDirection(), 
 			min, 
 			max, 
 		       	minId,	
@@ -147,48 +228,71 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			);
 	float renderingSliceThickness = (max-min)/static_cast< float >( sliceCount );
 
+
 	mCgEffect.setParameter( "gLight.position", aConfig.lightPosition );
 	mCgEffect.setParameter( "gLight.color", Vector3f( 1.0f, 1.0f, 1.0f ) );
 	mCgEffect.setParameter( "gLight.ambient", Vector3f( 0.3f, 0.3f, 0.3f ) );
-	mCgEffect.setParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
-	mCgEffect.setParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
-	mCgEffect.setParameter( "gViewDirection", aConfig.camera.GetTargetDirection() );
+	mCgEffect.setParameter("gCamera", aConfig.camera);
+	mCgEffect.setParameter( "gViewSetup", aViewSetup );
+	
 	mCgEffect.setParameter( "edgeOrder", edgeOrder, 8*12 );
 	mCgEffect.setParameter( "gMinID", (int)minId );
 	mCgEffect.setParameter( "gBBox", bbox );
 
-	Vector3f tmp = VectorMemberDivision( fromGLM(aConfig.camera.GetTargetDirection()), primaryData->getExtents().realMaximum-primaryData->getExtents().realMinimum);
-	mCgEffect.setParameter( "gSliceNormalTexCoords", tmp );
+	mCgEffect.setParameter( "gRenderingSliceThickness", renderingSliceThickness );
+	
 	mCgEffect.setTextureParameter( "gNoiseMap", mNoiseMap );
 	mCgEffect.setParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
 	mCgEffect.setParameter( "gJitterStrength", aConfig.jitterStrength  );
 
 	mCgEffect.setParameter( "gEnableCutPlane", aConfig.enableCutPlane );
 	mCgEffect.setParameter( "gCutPlane", aConfig.cutPlane );
-	mCgEffect.setParameter( "gEnableInterpolation", aConfig.enableInterpolation );
+	mCgEffect.setParameter( "gEnableInterpolation", aConfig.enableInterpolation );*/
 
 	//mCgEffect.SetGLStateMatrixParameter( "gModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
-	mCgEffect.setParameter( "gViewSetup", aViewSetup );
+	
+	uint64 flags = 0;
+	flags |= aConfig.jitterEnabled ? rf_JITTERING : 0;
+	
 	
 	std::string techniqueName;
-	GLTransferFunctionBuffer1D::ConstPtr transferFunction;
-	GLTransferFunctionBuffer1D::ConstPtr integralTransferFunction;
+	
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
+			GLTransferFunctionBuffer1D::ConstPtr transferFunction;
+			GLTransferFunctionBuffer1D::ConstPtr integralTransferFunction;
 			transferFunction = aConfig.transferFunction.lock();
 			if ( !transferFunction ) {
 				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
 			}
 
-			mCgEffect.setParameter( "gTransferFunction1D", *transferFunction );
-
 			integralTransferFunction = aConfig.integralTransferFunction.lock();
 			if( integralTransferFunction ) {
 				mCgEffect.setParameter( "gIntegralTransferFunction1D", *integralTransferFunction );
 			}
-			unsigned configurationMask = 0;
+			
+			flags |= aConfig.integralTFEnabled ? rf_PREINTEGRATED : 0;
+			flags |= aConfig.shadingEnabled ? rf_SHADING : 0;
+			
+			transferFunctionRendering( 
+				aConfig.camera, 
+				*primaryData, 
+				bbox, 
+				sliceCount,
+				aConfig.jitterEnabled,
+				aConfig.jitterStrength, 
+				aConfig.enableCutPlane,
+				aConfig.cutPlane,
+				aConfig.enableInterpolation,
+				aViewSetup,
+				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
+				aConfig.lightPosition,
+				flags
+				);
+			
+			/*unsigned configurationMask = 0;
 
 			if ( aConfig.jitterEnabled ) configurationMask |= tfJittering;
 			if ( aConfig.shadingEnabled ) configurationMask |= tfShading;
@@ -217,7 +321,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				break;
 			default:
 				ASSERT( false );
-			}
+			}*/
 			/*if ( aConfig.jitterEnabled ) {
 				if ( aConfig.shadingEnabled ) {
 					techniqueName = "TransferFunction1DShadingJitter_3D";
@@ -234,22 +338,33 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		}
 		break;
 	case ctMaxIntensityProjection:
-		{
-			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
-			techniqueName = "WLWindowMIP_3D";
-		}
-		break;
 	case ctBasic:
 		{
 			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
 			techniqueName = "WLWindowBasic_3D";
+			basicRendering( 
+				aConfig.camera, 
+				*primaryData, 
+				bbox, 
+				sliceCount,
+				aConfig.jitterEnabled,
+				aConfig.jitterStrength, 
+				aConfig.enableCutPlane,
+				aConfig.cutPlane,
+				aConfig.enableInterpolation,
+				aConfig.lutWindow,
+				aViewSetup,
+				aConfig.colorTransform == ctMaxIntensityProjection,
+				flags
+     			);
+			return;
 		}
 		break;
 	default:
 		ASSERT( false );
 	}
 	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
-	mCgEffect.executeTechniquePass(
+	/*mCgEffect.executeTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
 				bbox,
@@ -259,7 +374,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				mIndices,
 				1.0f
 				) 
-			); 
+			); */
 	/*mCgEffect.ExecuteTechniquePass(
 			techniqueName, 
 			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
@@ -284,6 +399,122 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 
 	M4D::CheckForGLError( "OGL error : " );
 }
+
+
+void
+VolumeRenderer::basicRendering( 
+	const Camera &aCamera, 
+	const GLTextureImageTyped<3> &aImage, 
+	const M4D::BoundingBox3D &aBoundingBox, 
+	size_t aSliceCount, 
+	bool aJitterEnabled,
+	float aJitterStrength, 
+	bool aEnableCutPlane,
+	Planef aCutPlane,
+	bool aEnableInterpolation,
+	Vector2f aLutWindow,
+	const GLViewSetup &aViewSetup,
+	bool aMIP,
+	uint64 aFlags
+      			)
+{
+	D_PRINT("FLAGS " << aFlags);
+	
+	mCgEffect.setParameter( "gPrimaryImageData3D", aImage );
+	mCgEffect.setParameter( "gMappedIntervalBands", aImage.GetMappedInterval() );
+	
+	setupView(aCamera, aViewSetup);
+	setupJittering(aJitterStrength);
+	setupSamplingProcess(aBoundingBox, aCamera, aSliceCount);
+	
+
+	
+	
+
+	mCgEffect.setParameter("gEnableCutPlane", aEnableCutPlane );
+	mCgEffect.setParameter("gCutPlane", aCutPlane );
+	
+	mCgEffect.setParameter("gEnableInterpolation", aEnableInterpolation );
+
+
+	
+	mCgEffect.setParameter("gWLWindow", aLutWindow );
+
+	std::string techniqueName = aMIP ? "WLWindowMIP_3D" : "WLWindowBasic_3D";
+	
+	mCgEffect.executeTechniquePass(
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
+				aBoundingBox,
+				aCamera,
+				aSliceCount,
+				mVertices,
+				mIndices,
+				1.0f
+				) 
+			); 
+
+
+	M4D::CheckForGLError( "OGL error : " );
+}
+
+void
+VolumeRenderer::transferFunctionRendering( 
+	const Camera &aCamera, 
+	const GLTextureImageTyped<3> &aImage, 
+	const M4D::BoundingBox3D &aBoundingBox, 
+	size_t aSliceCount, 
+	bool aJitterEnabled,
+	float aJitterStrength, 
+	bool aEnableCutPlane,
+	Planef aCutPlane,
+	bool aEnableInterpolation,
+	const GLViewSetup &aViewSetup,
+	const GLTransferFunctionBuffer1D &aTransferFunction,
+	Vector3f aLightPosition,
+	uint64 aFlags
+	)
+{
+	mCgEffect.setParameter( "gPrimaryImageData3D", aImage );
+	mCgEffect.setParameter( "gMappedIntervalBands", aImage.GetMappedInterval() );
+	
+	setupView(aCamera, aViewSetup);
+	setupJittering(aJitterStrength);
+	setupSamplingProcess(aBoundingBox, aCamera, aSliceCount);
+	setupLights(aLightPosition);
+
+	mCgEffect.setParameter("gEnableCutPlane", aEnableCutPlane );
+	mCgEffect.setParameter("gCutPlane", aCutPlane );
+	
+	mCgEffect.setParameter("gEnableInterpolation", aEnableInterpolation );
+
+	
+	std::string techniqueName;
+	if (aFlags & rf_PREINTEGRATED) {
+		mCgEffect.setParameter( "gIntegralTransferFunction1D", aTransferFunction );
+	} else {
+		mCgEffect.setParameter( "gTransferFunction1D", aTransferFunction );
+	}
+
+	techniqueName = "TransferFunction1D";
+	techniqueName += detail::gFlagsToNameSuffixes[aFlags & detail::FLAGS_TO_NAME_SUFFIXES_MASK];
+	techniqueName += "_3D";
+	
+	mCgEffect.executeTechniquePass(
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSlices_Buffered, 
+				aBoundingBox,
+				aCamera,
+				aSliceCount,
+				mVertices,
+				mIndices,
+				1.0f
+				) 
+			); 
+
+	M4D::CheckForGLError( "OGL error : " );
+}
+
 
 }//Renderer
 }//GUI
