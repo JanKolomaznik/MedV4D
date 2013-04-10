@@ -56,6 +56,16 @@ void
 GLDrawVolumeSlices_Buffered(
 		const BoundingBox3D	&bbox,
 		const Camera		&camera,
+		unsigned 		numberOfSteps,
+		glm::fvec3		*vertices,
+		unsigned		*indices,
+		float			cutPlane
+		);
+
+void
+GLDrawVolumeSlices_Buffered_bac(
+		const BoundingBox3D	&bbox,
+		const Camera		&camera,
 		unsigned 	numberOfSteps,
 		Vector3f	*vertices,
 		unsigned	*indices,

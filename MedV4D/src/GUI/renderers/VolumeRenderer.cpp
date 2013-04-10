@@ -241,8 +241,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			mCgEffect.setParameter( "gWLWindow", aConfig.lutWindow );
-			techniqueName = "WLWindowBasic_3D";
 			basicRendering( 
 				aConfig.camera, 
 				*primaryData, 

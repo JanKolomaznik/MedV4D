@@ -144,7 +144,7 @@ protected:
 			delete [] mIndices;
 		}
 
-		mVertices = new Vector3f[ (aNewMaxSampleCount+1) * 6 ];
+		mVertices = new glm::fvec3[ (aNewMaxSampleCount+1) * 6 ];
 		mIndices = new unsigned[ (aNewMaxSampleCount+1) * 7 ];
 		mMaxSampleCount = aNewMaxSampleCount;
 	}
@@ -155,8 +155,8 @@ protected:
 
 	ColorTransformNameIDList		mAvailableColorTransforms;
 
-	Vector3f	*mVertices;
-	unsigned	*mIndices;
+	glm::fvec3 *mVertices;
+	unsigned *mIndices;
 	size_t		mMaxSampleCount;
 };
 

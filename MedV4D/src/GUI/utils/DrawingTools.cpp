@@ -107,6 +107,72 @@ GetPlaneVerticesInBoundingBox(
 	return idx;
 }
 
+//--------------------------------------------------------------------------------
+inline IntersectionResult
+lineSegmentPlaneIntersection( 
+		const glm::fvec3	&lineA, 
+		const glm::fvec3	&lineB,
+		const glm::fvec3	&planePoint, 
+		const glm::fvec3	&planeNormal,
+		glm::fvec3	&intersection
+		)
+{
+	glm::fvec3 u( lineB - lineA );
+	glm::fvec3 w( lineA - planePoint );
+
+	intersection = glm::fvec3();
+
+	float D = glm::dot(planeNormal, u);
+	float N = glm::dot(-planeNormal, w);
+
+	if ( abs(D) < Epsilon ) {          // segment is parallel to plane
+		if ( abs(N) < Epsilon ) {                   // segment lies in plane
+		    return ie_WHOLE_INSIDE;
+		} else {
+		    return ie_NO_INTERSECTION;                   // no intersection
+		}
+	}
+	// they are not parallel
+	// compute intersect param
+	float sI = N / D;
+	if (sI < 0 || sI > 1) {
+		return ie_NO_INTERSECTION;                       // no intersection
+	}
+
+	intersection = lineA + sI * u;                 // compute segment intersect point
+	return ie_UNIQUE_INTERSECTION;
+}
+
+
+
+unsigned
+getPlaneVerticesInBoundingBox( 
+		const BoundingBox3D	&bbox, 
+		const glm::fvec3 	&planePoint, 
+		const glm::fvec3 	&planeNormal,
+		unsigned			minId,
+	       	glm::fvec3 		vertices[]
+		)
+{
+	//Vector< float, 3 > center;
+	unsigned idx = 0;
+	for( unsigned i = 0; i < 12; ++i ) {
+		unsigned lineAIdx = GetBBoxEdgePointA( edgeOrder[minId][i] ); 
+		unsigned lineBIdx = GetBBoxEdgePointB( edgeOrder[minId][i] );
+		if( ie_UNIQUE_INTERSECTION == 
+			lineSegmentPlaneIntersection( bbox.vertices[ lineAIdx ], bbox.vertices[ lineBIdx ], planePoint, planeNormal, vertices[idx] ) 
+		  ) {
+			++idx;
+			//center += vertices[idx];
+			if( idx == 6 ) break;
+		}
+	}
+	ASSERT( idx <= 6 ) //plane and box edges can have 6 intersections maximally
+	return idx;
+}
+
+//--------------------------------------------------------------------------------
+
 unsigned
 GetPlaneVerticesInBoundingBox( 
 		const BoundingBox3D		&bbox, 
