@@ -45,7 +45,6 @@ struct BoundingBox3D
 		return 0.5f * (vertices[0] + vertices[6]);
 	}
 
-
 	glm::fvec3	vertices[VertexCount];
 };
 

@@ -70,9 +70,6 @@ struct GLViewSetup
 	glm::dmat4x4 modelViewProj;
 	glm::dmat4x4 projection;
 	glm::ivec4  viewport;
-	//GLdouble model[16];
-	//GLdouble proj[16];
-	//GLint view[4];
 };
 
 
