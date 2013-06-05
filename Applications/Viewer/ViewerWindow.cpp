@@ -55,7 +55,7 @@ public:
 			mSecondaryConnection->ConnectConsumer( viewer->InputPort()[1] );
 		}
 
-		viewer->setLUTWindow( Vector2f( 1500.0f,100.0f ) );
+		viewer->setLUTWindow(glm::fvec2(1500.0f,100.0f));
 
 		viewer->enableShading( GET_SETTINGS( "gui.viewer.volume_rendering.shading_enabled", bool, true ) );
 
@@ -109,14 +109,14 @@ protected:
 } /*namespace M4D*/
 
 
-bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
 	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->Size() != domain)
+	if(!buffer || buffer->size() != domain)
 	{
-		buffer = M4D::GUI::TransferFunctionBuffer1D::Ptr(new M4D::GUI::TransferFunctionBuffer1D(domain, M4D::GUI::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
+		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
 	}
 
 	M4D::GUI::TF::Coordinates coords(1);
@@ -126,7 +126,7 @@ bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::T
 		coords[0] = i;
 		color = function.getRGBfColor(coords);
 
-		(*buffer)[i] = M4D::GUI::TransferFunctionBuffer1D::value_type(
+		(*buffer)[i] = vorgl::TransferFunctionBuffer1D::value_type(
 			color.component1,
 			color.component2,
 			color.component3,
@@ -135,14 +135,14 @@ bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::T
 	return true;
 }
 
-bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
 	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->Size() != domain)
+	if(!buffer || buffer->size() != domain)
 	{
-		buffer = M4D::GUI::TransferFunctionBuffer1D::Ptr(new M4D::GUI::TransferFunctionBuffer1D(domain, M4D::GUI::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
+		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
 	}
 
 	M4D::GUI::TF::Coordinates coords(1);
@@ -155,7 +155,7 @@ bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, M4D
 
 		M4D::GUI::TF::Color tmpColor = (lastColor + color)*0.5f;
 		float alpha = 1.0f;//tmpColor.alpha;
-		(*buffer)[i] = (*buffer)[i-1] + M4D::GUI::TransferFunctionBuffer1D::value_type(
+		(*buffer)[i] = (*buffer)[i-1] + vorgl::TransferFunctionBuffer1D::value_type(
 			tmpColor.component1 * alpha,
 			tmpColor.component2 * alpha,
 			tmpColor.component3 * alpha,
@@ -399,7 +399,7 @@ ViewerWindow::updateGui()
 
 struct SetTransferFunctionFtor
 {
-	SetTransferFunctionFtor( M4D::GUI::TransferFunctionBuffer1D::Ptr aTF ): mTF( aTF )
+	SetTransferFunctionFtor( vorgl::TransferFunctionBuffer1D::Ptr aTF ): mTF( aTF )
 	{ /*empty*/ }
 
 	void
@@ -412,7 +412,7 @@ struct SetTransferFunctionFtor
 		}
 	}
 
-	M4D::GUI::TransferFunctionBuffer1D::Ptr mTF;
+	vorgl::TransferFunctionBuffer1D::Ptr mTF;
 };
 
 void
@@ -513,7 +513,7 @@ ViewerWindow::changedViewerSelection()
 
 	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 	if(pGenViewer != NULL) {
-		M4D::GUI::TransferFunctionBufferInfo info = pGenViewer->getTransferFunctionBufferInfo();
+		vorgl::TransferFunctionBufferInfo info = pGenViewer->getTransferFunctionBufferInfo();
 		mTFEditingSystem->selectTransferFunction( info.id );
 	}
 	//LOG( __FUNCTION__ );
@@ -521,8 +521,8 @@ ViewerWindow::changedViewerSelection()
 
 struct CreateGLTFBuffer
 {
-	M4D::GUI::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
-	M4D::GUI::TransferFunctionBuffer1D::Ptr tfBuffer;
+	vorgl::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
+	vorgl::TransferFunctionBuffer1D::Ptr tfBuffer;
 
 	void
 	operator()()
@@ -532,7 +532,7 @@ struct CreateGLTFBuffer
 };
 
 bool
-fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, M4D::GUI::TransferFunctionBufferInfo &info )
+fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
 {
 	if( fillBufferFromTF( function, info.tfBuffer ) ) {
 		//std::ofstream file( "TF.txt" );
@@ -553,7 +553,7 @@ fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, M4D::GU
 			ftor = OpenGLManager::getInstance()->doGL( ftor );
 			info.tfGLIntegralBuffer = ftor.tfGLBuffer;
 		} else {
-			info.tfGLIntegralBuffer = M4D::GUI::GLTransferFunctionBuffer1D::Ptr();
+			info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
 		}
 		//file.close();
 	} else { 
@@ -566,7 +566,7 @@ fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, M4D::GU
 void
 ViewerWindow::transferFunctionAdded( int idx )
 {
-	M4D::GUI::TransferFunctionBufferInfo info;
+	vorgl::TransferFunctionBufferInfo info;
 	info.id = idx;
 
 	if ( fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), info ) ) {
@@ -585,7 +585,7 @@ ViewerWindow::changedTransferFunctionSelection()
 	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 	if(pGenViewer != NULL) {
 		M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
-		M4D::GUI::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
+		vorgl::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
 		
 		if ( idx == oldInfo.id ) {
 			return; //No change

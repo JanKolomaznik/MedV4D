@@ -33,14 +33,14 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
-		Vector3f dir = fromGLM(-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection());
-		Vector3f pos = fromGLM(state.getViewerWindow< GeneralViewer >().getCameraTargetPosition()) + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
-		state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
+		glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
+		glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+		state.getViewerWindow< GeneralViewer >().setCutPlane( soglu::Planef( pos, dir ) );
 		return true;
 	}
 	if ( mInteractionMode == imLUT_SETTING ) {
-		Vector2f oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
-		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + Vector2f( diff.x(), diff.y() ) );
+		glm::fvec2 oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
+		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + glm::fvec2(diff.x(), diff.y()));
 		return true;
 	}
 	if ( mInteractionMode == imCUT_PLANE_OFFSET ) {
@@ -64,7 +64,7 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 
 	if ( state.viewType == vt2DAlignedSlices ) {
-		state.getViewerWindow< GeneralViewer >().updateMouseInfo( aEventInfo.realCoordinates );
+		state.getViewerWindow< GeneralViewer >().updateMouseInfo( fromGLM(aEventInfo.realCoordinates) );
 	}
 	return false;
 }
@@ -94,9 +94,9 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			//LOG( aEventInfo.event->modifiers() );
 			if ( aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers /*&& state.mVolumeRenderConfig.enableCutPlane*/ ) {
 				mInteractionMode = imCUT_PLANE;
-				Vector3f dir = fromGLM(-1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection());
-				Vector3f pos = fromGLM(state.getViewerWindow< GeneralViewer >().getCameraTargetPosition()) + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
-				state.getViewerWindow< GeneralViewer >().setCutPlane( Planef( pos, dir ) );
+				glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
+				glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+				state.getViewerWindow< GeneralViewer >().setCutPlane( soglu::Planef( pos, dir ) );
 				state.getViewerWindow< GeneralViewer >().enableCutPlane( true );
 				//LOG( "ENABLING CUTPLANE" );
 			} else {

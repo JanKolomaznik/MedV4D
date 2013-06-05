@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "ui_ViewerWindow.h"
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include <vorgl/TransferFunctionBuffer.hpp>
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include "MedV4D/GUI/utils/ProxyRenderingExtension.h"
 #include "MedV4D/GUI/managers/DatasetManager.h"
@@ -21,12 +21,10 @@
 #include "MedV4D/GUI/TF/TFPalette.h"
 #include "MedV4D/GUI/TF/TFFunctionInterface.h"
 
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
-
 typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord
 {
-	M4D::GUI::TransferFunctionBufferInfo info;
+	vorgl::TransferFunctionBufferInfo info;
 	ViewerList viewers;
 };
 typedef std::map< M4D::Common::IDNumber, TransferFunctionBufferUsageRecord > TransferBufferUsageMap;

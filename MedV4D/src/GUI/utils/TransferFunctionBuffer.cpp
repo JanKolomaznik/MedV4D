@@ -2,6 +2,8 @@
 
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 
+#ifdef DISABLE_0
+
 namespace M4D
 {
 namespace GUI
@@ -179,3 +181,4 @@ createGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 } /*namespace GUI*/
 } /*namespace M4D*/
 
+#endif //DISABLE_0

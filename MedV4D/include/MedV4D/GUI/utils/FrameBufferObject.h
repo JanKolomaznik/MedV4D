@@ -1,4 +1,5 @@
-#ifndef FRAME_BUFFER_OBJECT_H
+#ifdef DISABLE_0
+//#ifndef FRAME_BUFFER_OBJECT_H
 #define FRAME_BUFFER_OBJECT_H
 
 #include "MedV4D/Common/Common.h"
@@ -59,7 +60,7 @@ public:
 	Render()
 	{
 		ASSERT(isGLContextActive());
-		M4D::GLPushAtribs pushAttribs;
+		soglu::GLPushAtribs pushAttribs;
 		GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
 		GL_CHECKED_CALL( glLoadIdentity() );
 		GL_CHECKED_CALL( glMatrixMode( GL_MODELVIEW ) );

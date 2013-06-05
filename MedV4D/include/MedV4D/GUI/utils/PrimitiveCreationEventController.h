@@ -1,7 +1,13 @@
 #ifndef PRIMITIVE_CREATION_EVENT_CONTROLLER_H
 #define PRIMITIVE_CREATION_EVENT_CONTROLLER_H
 
+//Temporary workaround
+#ifndef Q_MOC_RUN 
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/Common/GeometricAlgorithms.h"
+#include "MedV4D/Common/GeometricPrimitives.h"
+#include "MedV4D/Common/Sphere.h"
+#endif //Q_MOC_RUN 
 
 class APrimitiveCreationEventController: public M4D::GUI::Viewer::AViewerController
 {
@@ -159,7 +165,7 @@ public:
 		if ( (aEventInfo.event->buttons() == Qt::NoButton) && (state.viewType == M4D::GUI::Viewer::vt3D) && (mCurrentStage > 0) ) 
 		{
 			float t1, t2;
-			if ( closestPointsOnTwoLines( mPoint, mDirection, aEventInfo.point, aEventInfo.direction, t1, t2 ) ) {
+			if ( M4D::closestPointsOnTwoLines( mPoint, mDirection, fromGLM(aEventInfo.point), fromGLM(aEventInfo.direction), t1, t2 ) ) {
 				Vector3f point = mPoint + (t1 * mDirection);
 				*mPrimitive = M4D::Point3Df( point );
 			}
@@ -177,7 +183,7 @@ public:
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
 			
-			mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.realCoordinates ) );
+			mPrimitive = this->beginPrimitive( M4D::Point3Df( fromGLM(aEventInfo.realCoordinates) ) );
 			if ( mPrimitive == NULL ) {
 				return true;
 			}
@@ -191,9 +197,9 @@ public:
 			
 			LOG( "ADDING PRIMITIVE IN 3D" );
 			if ( mCurrentStage == 0 ) {
-				mPoint = aEventInfo.point;
-				mDirection = aEventInfo.direction;
-				mPrimitive = this->beginPrimitive( M4D::Point3Df( aEventInfo.point ) );
+				mPoint = fromGLM(aEventInfo.point);
+				mDirection = fromGLM(aEventInfo.direction);
+				mPrimitive = this->beginPrimitive( M4D::Point3Df( fromGLM(aEventInfo.point) ) );
 				if ( mPrimitive == NULL ) {
 					return true;
 				}
@@ -224,7 +230,7 @@ public:
 		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
 			&& mCurrentStage > 0 ) 
 		{
-			mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+			mPrimitive->secondPoint() = fromGLM(aEventInfo.realCoordinates);
 			state.viewerWindow->update();
 			return true;
 		}
@@ -239,13 +245,13 @@ public:
 			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = this->beginPrimitive( M4D::Line3Df( aEventInfo.realCoordinates, aEventInfo.realCoordinates ) );
+				mPrimitive = this->beginPrimitive( M4D::Line3Df( fromGLM(aEventInfo.realCoordinates), fromGLM(aEventInfo.realCoordinates) ) );
 				if ( mPrimitive == NULL ) {
 					return true;
 				}
 				++mCurrentStage;
 			} else {
-				mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+				mPrimitive->secondPoint() = fromGLM(aEventInfo.realCoordinates);
 				this->endPrimitive( mPrimitive );
 			}
 			state.viewerWindow->update();
@@ -271,7 +277,7 @@ public:
 		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
 			&& mCurrentStage > 0 ) 
 		{
-			mPrimitive->radius() = VectorSize(mPrimitive->center() - aEventInfo.realCoordinates);
+			mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.realCoordinates));
 			state.viewerWindow->update();
 			return true;
 		}
@@ -286,13 +292,13 @@ public:
 			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( aEventInfo.realCoordinates, 0.0f ) );
+				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( fromGLM(aEventInfo.realCoordinates), 0.0f ) );
 				if ( mPrimitive == NULL ) {
 					return true;
 				}
 				++mCurrentStage;
 			} else {
-				mPrimitive->radius() = VectorSize(mPrimitive->center() - aEventInfo.realCoordinates);
+				mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.realCoordinates));
 				this->endPrimitive( mPrimitive );
 				mCurrentStage = 0;
 			}

@@ -11,9 +11,9 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 	setMinimumSize ( 256, 256 );
 
 
-	mTransferFunctionBuffer = M4D::GUI::TransferFunctionBuffer1D::Ptr( new M4D::GUI::TransferFunctionBuffer1D( 4096, Vector2f( 0.0f, 4096.0f ) ) );
+	mTransferFunctionBuffer = vorgl::TransferFunctionBuffer1D::Ptr( new vorgl::TransferFunctionBuffer1D( 4096, glm::fvec2( 0.0f, 4096.0f ) ) );
 
-	M4D::GUI::TransferFunctionBuffer1D::Iterator it;
+	vorgl::TransferFunctionBuffer1D::Iterator it;
 	float r,g,b,a;
 	float step = 1.0f / (4096.0f);
 	int i = 0;
@@ -23,8 +23,8 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 	level = 1440;
 	width = 350;
 
-	for( it = mTransferFunctionBuffer->Begin(); it != mTransferFunctionBuffer->End(); ++it ) {
-		*it = RGBAf( r, g, b, a );
+	for( it = mTransferFunctionBuffer->begin(); it != mTransferFunctionBuffer->end(); ++it ) {
+		*it = vorgl::RGBAf( r, g, b, a );
 		++i;
 		float intensity = clampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width); 
 		r = intensity;
@@ -66,43 +66,43 @@ TransferFunction1DEditor::RenderForeground()
 	mPainter.setBrush( brush );
 	mPainter.drawRect( QRectF( mMin, mMMin, mMax - mMin, mMMax - mMMin ) );*/
 
-	double aStep = (mTransferFunctionBuffer->GetMappedInterval()[1]- mTransferFunctionBuffer->GetMappedInterval()[0]) / (float)mTransferFunctionBuffer->Size();
-	double aStart = mTransferFunctionBuffer->GetMappedInterval()[0];
+	double aStep = (mTransferFunctionBuffer->getMappedInterval()[1]- mTransferFunctionBuffer->getMappedInterval()[0]) / (float)mTransferFunctionBuffer->size();
+	double aStart = mTransferFunctionBuffer->getMappedInterval()[0];
 	mPainter.setPen ( QColor( 255, 0, 0, 255 ) );
 	DrawPolyline(
 			mPainter,
-			mTransferFunctionBuffer->Begin(),
-			mTransferFunctionBuffer->End(),
+			mTransferFunctionBuffer->begin(),
+			mTransferFunctionBuffer->end(),
 			aStep,
 			aStart,
-			RGBAf::ValueAccessor< 0 >()
+			vorgl::RGBAf::ValueAccessor< 0 >()
 			);
 	mPainter.setPen ( QColor( 0, 255, 0, 255 ) );
 	DrawPolyline(
 			mPainter,
-			mTransferFunctionBuffer->Begin(),
-			mTransferFunctionBuffer->End(),
+			mTransferFunctionBuffer->begin(),
+			mTransferFunctionBuffer->end(),
 			aStep,
 			aStart,
-			RGBAf::ValueAccessor< 1 >()
+			vorgl::RGBAf::ValueAccessor< 1 >()
 			);
 	mPainter.setPen ( QColor( 0, 0, 255, 255 ) );
 	DrawPolyline(
 			mPainter,
-			mTransferFunctionBuffer->Begin(),
-			mTransferFunctionBuffer->End(),
+			mTransferFunctionBuffer->begin(),
+			mTransferFunctionBuffer->end(),
 			aStep,
 			aStart,
-			RGBAf::ValueAccessor< 2 >()
+			vorgl::RGBAf::ValueAccessor< 2 >()
 			);
 	mPainter.setPen ( QApplication::palette().color( QPalette::BrightText ) );
 	DrawPolyline(
 			mPainter,
-			mTransferFunctionBuffer->Begin(),
-			mTransferFunctionBuffer->End(),
+			mTransferFunctionBuffer->begin(),
+			mTransferFunctionBuffer->end(),
 			aStep,
 			aStart,
-			RGBAf::ValueAccessor< 3 >()
+			vorgl::RGBAf::ValueAccessor< 3 >()
 			);
 
 
@@ -139,13 +139,13 @@ TransferFunction1DEditor::FillTransferFunctionValues( float aLeft, float aLeftVa
 	if ( first == -1 && last == -1 ) {
 		return;
 	}
-	if ( first == (int)mTransferFunctionBuffer->Size() && last == (int)mTransferFunctionBuffer->Size() ) {
+	if ( first == (int)mTransferFunctionBuffer->size() && last == (int)mTransferFunctionBuffer->size() ) {
 		return;
 	}
 	if ( first == -1 ) {
 		first = 0;
 	}
-	if ( last == (int)mTransferFunctionBuffer->Size() ) {
+	if ( last == (int)mTransferFunctionBuffer->size() ) {
 		--last;
 	}
 	//TODO fix for right interval
@@ -161,7 +161,7 @@ TransferFunction1DEditor::UpdateSettings()
 {
 	ScaleVisualizer::UpdateSettings();
 
-	mTransferFunctionBuffer->SetMappedInterval( Vector2f( mMin, mMax ) );
+	mTransferFunctionBuffer->SetMappedInterval( glm::fvec2( mMin, mMax ) );
 }
 
 void

@@ -21,7 +21,7 @@ vp_VertexPassPosAsTexCoords(
 	)
 {
 	VertexOutput result;
-	result.position = mul(position, gViewSetup.modelViewProj );
+	result.position = mul(position, gViewSetup.modelViewProj);
 	result.color    = float4( 1.0f, 0.0f, 0.0f, 1.0f );
 	result.texCoord = position.xyz;
 	return result;

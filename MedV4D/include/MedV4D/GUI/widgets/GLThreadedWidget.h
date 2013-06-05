@@ -1,7 +1,7 @@
 #ifndef _GL_THREADED_WIDGET_H
 #define _GL_THREADED_WIDGET_H
-
-#include "MedV4D/GUI/utils/OGLTools.h"
+#include <soglu/OGLTools.hpp>
+//#include "MedV4D/GUI/utils/OGLTools.h"
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QMutex>

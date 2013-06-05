@@ -1,6 +1,10 @@
 #ifndef CG_SHADER_TOOLS_H
 #define CG_SHADER_TOOLS_H
 
+#include <soglu/CgFXShader.hpp>
+
+#ifdef DISABLE_0
+
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
 #include <Cg/cgGL.h>
@@ -331,3 +335,4 @@ typedef CgFXShader CgEffect;
 } //namespace GUI
 
 #endif /*CG_SHADER_TOOLS_H*/
+#endif //DISABLE_0

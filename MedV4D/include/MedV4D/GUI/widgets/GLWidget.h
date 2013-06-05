@@ -1,7 +1,8 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include "MedV4D/GUI/utils/OGLTools.h"
+#include <soglu/OGLTools.hpp>
+//#include "MedV4D/GUI/utils/OGLTools.h"
 #include <QGLWidget>
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 

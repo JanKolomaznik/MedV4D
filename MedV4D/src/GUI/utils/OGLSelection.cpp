@@ -10,7 +10,7 @@ boost::filesystem::path gPickingShaderPath;
 void
 PickManager::initialize( unsigned aPickingRadius )
 {
-	ASSERT(isGLContextActive());
+	ASSERT(soglu::isGLContextActive());
 	mPickingRadius = aPickingRadius;
 	mCgEffect.initialize( gPickingShaderPath );
 	mFrameBuffer.Initialize( 2*mPickingRadius, 2*mPickingRadius, SELECTION_BUFFER_COLOR_DEPTH );
@@ -21,7 +21,7 @@ PickManager::initialize( unsigned aPickingRadius )
 void
 PickManager::finalize()
 {
-	ASSERT((!mCgEffect.isInitialized() && !mFrameBuffer.isInitialized()) || isGLContextActive());
+	ASSERT((!mCgEffect.isInitialized() && !mFrameBuffer.isInitialized()) || soglu::isGLContextActive());
 	mCgEffect.finalize();
 	mFrameBuffer.Finalize();
 }
@@ -45,7 +45,7 @@ PickManager::getIDs( SelectedIDsSet &aIDs )
 void
 PickManager::getBufferFromGPU()
 {
-	ASSERT(isGLContextActive());
+	ASSERT(soglu::isGLContextActive());
 	ASSERT( mBuffer );
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, mFrameBuffer.GetColorBuffer() ) );
 	GL_CHECKED_CALL( glGetTexImage(	

@@ -19,6 +19,9 @@ namespace GUI
 namespace Viewer
 {
 
+typedef glm::fvec3 Point3Df;	
+	
+	
 enum ViewType
 {
 	vt2DAlignedSlices	= 1,
@@ -28,30 +31,30 @@ enum ViewType
 
 struct MouseEventInfo
 {
-	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType )
+	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType )
 		{ }
 
-	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Vector3f aPos ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
+	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPos ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
 		{ }
 
-	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, Vector3f aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+	//MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, glm::fvec3 aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
+	//	{ }
+
+	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPoint, glm::fvec3 aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
 		{ }
 
-	MouseEventInfo( const GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Vector3f aPoint, Vector3f aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
-		{ }
-
-	GLViewSetup viewSetup;
+	soglu::GLViewSetup viewSetup;
 		
 	QMouseEvent *event;
 	ViewType viewType;
 
 	//2D section
-	Vector3f realCoordinates;
+	glm::fvec3 realCoordinates;
 
 	//3D section
 	
-	Point3Df point; 
-	Vector3f direction;
+	glm::fvec3 point; 
+	glm::fvec3 direction;
 	//HalfAxis axis;
 
 };
@@ -70,10 +73,10 @@ public:
 
 	QColor		backgroundColor;
 
-	unsigned	availableViewTypes;
-	ViewType	viewType;
+	unsigned availableViewTypes;
+	ViewType viewType;
 
-	GLViewSetup 	glViewSetup;
+	soglu::GLViewSetup 	glViewSetup;
 	
 	template< typename TViewerType >
 	TViewerType &
@@ -119,14 +122,14 @@ public:
 		//TODO check
 		mViewerController = aController;
 	}
-	const GLViewSetup &
+	const soglu::GLViewSetup &
 	getCurrentGLViewSetup()const
 	{
 		return mViewerState->glViewSetup;
 	}
 
 	void
-	getCurrentViewImageBuffer( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer );
+	getCurrentViewImageBuffer(size_t &aWidth, size_t &aHeight, boost::shared_array< uint8_t > &aBuffer );
 
 	QImage
 	getCurrentViewImage();
@@ -188,7 +191,7 @@ protected:
 	void
 	updateGLViewSetupInfo()
 	{
-		getCurrentGLSetup( mViewerState->glViewSetup );
+		soglu::getCurrentGLSetup( mViewerState->glViewSetup );
 	}
 
 	void	
@@ -225,7 +228,7 @@ protected:
 	wheelEvent ( QWheelEvent * event );
 
 
-	FrameBufferObject	mFrameBufferObject;
+	soglu::FrameBufferObject	mFrameBufferObject;
 	BaseViewerState::Ptr	mViewerState;
 	AViewerController::Ptr	mViewerController;
 

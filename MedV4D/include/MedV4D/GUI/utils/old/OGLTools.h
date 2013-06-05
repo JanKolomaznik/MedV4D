@@ -39,18 +39,18 @@
 #include <QColor>
 
 
-#ifdef DEBUG_LEVEL
-#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
-#else
-#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; }
-#endif /*DEBUG_LEVEL*/
+//#ifdef DEBUG_LEVEL
+//#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; M4D::CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
+//#else
+//#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; }
+//#endif /*DEBUG_LEVEL*/
 
-
+/*
 #define GL_ERROR_CLEAR_AFTER_CALL( ... ) { __VA_ARGS__ ; glGetError(); }
-
+*/
 namespace M4D
 {
-
+/*
 	
 class GLException: public M4D::ErrorHandling::ExceptionBase
 {
@@ -90,7 +90,7 @@ std::ostream &
 operator<<( std::ostream & stream, const GLViewSetup &setup );
 
 void 
-getCurrentGLSetup( GLViewSetup &aSetup );
+getCurrentGLSetup( soglu::GLViewSetup &aSetup );
 
 Vector3d
 getPointFromScreenCoordinates( Vector2f aScreenCoords, const GLViewSetup &aViewSetup, double aZValue = 0.0 );
@@ -111,6 +111,7 @@ isGLContextActive()
 
 void
 getImageBufferFromTexture( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer, GLuint aTexture );
+*/
 
 #ifdef USE_DEVIL
 
@@ -130,7 +131,7 @@ void
 SaveTextureToImageFile( uint32 aWidth, uint32 aHeight, GLuint aTexture, std::string aPath, bool aOverwrite = false );
 #endif /*USE_DEVIL*/
 
-
+/*
 void
 InitOpenGL();
 
@@ -165,8 +166,8 @@ struct GLPushMatrices
 };
 
 
-//*******************************************************************************************************************
-//*******************************************************************************************************************
+//-*******************************************************************************************************************
+//-*******************************************************************************************************************
 //GLenum
 
 #define TYPE_FROM_GL_b	int8
@@ -209,13 +210,13 @@ GL_VERTEX_VECTOR_DEFINITION_MACRO( i, 4 )
 GL_VERTEX_VECTOR_DEFINITION_MACRO( f, 4 )
 GL_VERTEX_VECTOR_DEFINITION_MACRO( d, 4 )
 
-//***************************************
+//-***************************************
 GL_NORMAL_VECTOR_DEFINITION_MACRO( b, 3 )
 GL_NORMAL_VECTOR_DEFINITION_MACRO( s, 3 )
 GL_NORMAL_VECTOR_DEFINITION_MACRO( i, 3 )
 GL_NORMAL_VECTOR_DEFINITION_MACRO( f, 3 )
 GL_NORMAL_VECTOR_DEFINITION_MACRO( d, 3 )
-//***************************************
+//-***************************************
 GL_COLOR_VECTOR_DEFINITION_MACRO(  b, 3 )
 GL_COLOR_VECTOR_DEFINITION_MACRO( ub, 3 )
 GL_COLOR_VECTOR_DEFINITION_MACRO(  s, 3 )
@@ -233,7 +234,7 @@ GL_COLOR_VECTOR_DEFINITION_MACRO(  i, 4 )
 GL_COLOR_VECTOR_DEFINITION_MACRO( ui, 4 )
 GL_COLOR_VECTOR_DEFINITION_MACRO(  f, 4 )
 GL_COLOR_VECTOR_DEFINITION_MACRO(  d, 4 )
-//***************************************
+//-***************************************
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( s, 1 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( i, 1 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( f, 1 )
@@ -253,7 +254,7 @@ GL_TEXTURE_VECTOR_DEFINITION_MACRO( s, 4 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( i, 4 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( f, 4 )
 GL_TEXTURE_VECTOR_DEFINITION_MACRO( d, 4 )
-//***************************************
+//-***************************************
 
 
 inline void
@@ -309,7 +310,7 @@ struct M4DToGLType< float32 >
 {
 	static const GLenum GLTypeID = GL_FLOAT;
 };
-//**************************************************************************
+//-**************************************************************************
 template< typename T >
 struct M4DToGLTextureInternal
 {
@@ -376,7 +377,7 @@ struct M4DToGLTextureInternal< float64 >
 	static const GLint GLInternal = GL_R32F;
 };
 
-
+*/
 } /*namespace M4D*/
 
 #endif /*OGL_TOOLS_H*/

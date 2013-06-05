@@ -1,4 +1,6 @@
-#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include <soglu/OGLDrawing.hpp>
+#include <soglu/OGLTools.hpp>
+//#include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
@@ -15,9 +17,9 @@ struct AAAHELPER
 {
 	void operator()()
 	{
-		drawCylinder( Vector3f(), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
+		soglu::drawCylinder(glm::fvec3(), glm::fvec3(0.0f,0.0f,1.0f), 10, 50 );
 		
-		drawCylinder( Vector3f( 200.0, 200.0, 100.0f), Vector3f(0.0f,0.0f,1.0f), 10, 50 );
+		soglu::drawCylinder(glm::fvec3(200.0, 200.0, 100.0f), glm::fvec3(0.0f,0.0f,1.0f), 10, 50);
 	}
 };
 
@@ -43,17 +45,17 @@ AGLViewer::~AGLViewer()
 }
 
 void
-AGLViewer::getCurrentViewImageBuffer( uint32 &aWidth, uint32 &aHeight, boost::shared_array< uint8 > &aBuffer )
+AGLViewer::getCurrentViewImageBuffer(size_t &aWidth, size_t &aHeight, boost::shared_array< uint8 > &aBuffer )
 {
 	makeCurrent();
-	getImageBufferFromTexture( aWidth, aHeight, aBuffer, mFrameBufferObject.GetColorBuffer() );	
+	soglu::getImageBufferFromTexture(aWidth, aHeight, aBuffer, mFrameBufferObject.GetColorBuffer());	
 	doneCurrent();
 }
 
 QImage
 AGLViewer::getCurrentViewImage()
 {
-	uint32 width = 0, height = 0;
+	size_t width = 0, height = 0;
 	boost::shared_array< uint8 > buffer;
 
 	getCurrentViewImageBuffer( width, height, buffer );
@@ -82,8 +84,8 @@ AGLViewer::deselect()
 void	
 AGLViewer::initializeGL()
 {
-	InitOpenGL();
-	initializeCg();
+	soglu::initOpenGL();
+	soglu::initializeCg();
 	glClearColor( mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF() );
 	
 	mFrameBufferObject.Initialize( width(), height() );
@@ -123,7 +125,7 @@ AGLViewer::paintGL()
 		//GLViewSetup  setup = getCurrentGLViewSetup();
 		//mPickManager.render( Vector2i( tmpX,tmpY ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );//-----------------------------------------------------------------
 		
-		M4D::CheckForGLError( "OGL error occured during rendering: " );
+		soglu::checkForGLError( "OGL error occured during rendering: " );
 		
 		mFrameBufferObject.Unbind();
 
@@ -154,12 +156,13 @@ AGLViewer::paintGL()
 		glLoadIdentity();
 
 		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
-			glBegin( GL_LINE_LOOP );
+		soglu::drawRectangle(glm::fvec2(5.0f, 5.0f), glm::fvec2(width()-5.0f, height()-5.0f));
+			/*glBegin( GL_LINE_LOOP );
 				GLVertexVector( Vector2f( 5.0f, 5.0f ) );
 				GLVertexVector( Vector2f( 5.0f, height()-5.0f ) );
 				GLVertexVector( Vector2f( width()-5.0f, height()-5.0f ) );
 				GLVertexVector( Vector2f( width()-5.0f, 5.0f ) );
-			glEnd();
+			glEnd();*/
 	}
 
 	if( mEnableFPS ) {

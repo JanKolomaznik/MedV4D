@@ -1,9 +1,12 @@
 #ifndef OGL_SELECTION_H
 #define OGL_SELECTION_H
 
-#include "MedV4D/GUI/utils/OGLTools.h"
-#include "MedV4D/GUI/utils/CgShaderTools.h"
-#include "MedV4D/GUI/utils/FrameBufferObject.h"
+#include <soglu/OGLTools.hpp>
+#include <soglu/CgFXShader.hpp>
+
+//#include "MedV4D/GUI/utils/OGLTools.h"
+//#include "MedV4D/GUI/utils/CgShaderTools.h"
+#include "soglu/FrameBufferObject.hpp"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <boost/shared_array.hpp>
@@ -53,7 +56,7 @@ public:
 	
 	template< typename TFunctor >
 	void
-	render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor );
+	render( Vector2i aScreenCoordinates, const soglu::GLViewSetup &aViewSetup, TFunctor aFunctor );
 	
 	void
 	getIDs( SelectedIDsSet &aIDs );
@@ -66,19 +69,19 @@ protected:
 	getBufferFromGPU();
 	
 	unsigned mPickingRadius;
-	FrameBufferObject mFrameBuffer;
-	M4D::GUI::CgEffect mCgEffect;
+	soglu::FrameBufferObject mFrameBuffer;
+	soglu::CgFXShader mCgEffect;
 	BufferArray mBuffer;
 };
 
 
 template< typename TFunctor >
 void
-PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup, TFunctor aFunctor )
+PickManager::render( Vector2i aScreenCoordinates, const soglu::GLViewSetup &aViewSetup, TFunctor aFunctor )
 {
-	ASSERT(isGLContextActive());
+	ASSERT(soglu::isGLContextActive());
 	try {
-	M4D::GLPushAtribs pushAttribs;
+	soglu::GLPushAtribs pushAttribs;
 	mFrameBuffer.Bind();
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -109,7 +112,7 @@ PickManager::render( Vector2i aScreenCoordinates, const GLViewSetup &aViewSetup,
 	
 	//GL_CHECKED_CALL( glViewport(aScreenCoordinates[0]-mPickingRadius, aScreenCoordinates[1]-mPickingRadius, aScreenCoordinates[0]+mPickingRadius, aScreenCoordinates[1]+mPickingRadius) );
 	//mFrameBuffer.Render();
-	CheckForGLError( "Selection rendering" );
+	soglu::checkForGLError( "Selection rendering" );
 	} catch (std::exception &e) {
 		LOG( e.what() );
 		throw;

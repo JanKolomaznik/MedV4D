@@ -37,6 +37,12 @@ INCLUDE_DIRECTORIES( ${MEDV4D_INCLUDE_DIR} "${MEDV4D_ROOT_DIRECTORY}/include/3rd
 SET( MEDV4D_GENERATED_HEADERS_DIR "${MEDV4D_ROOT_DIRECTORY}/include/MedV4D/generated" )
 
 
+ADD_SUBDIRECTORY(../extern/soglu soglu)
+INCLUDE_DIRECTORIES(../extern/soglu/include)
+
+ADD_SUBDIRECTORY(../extern/vorgl vorgl)
+INCLUDE_DIRECTORIES(../extern/vorgl/include)
+
 ADD_SUBDIRECTORY( src/Common )
 ADD_SUBDIRECTORY( src/Imaging )
 ADD_SUBDIRECTORY( src/DICOMInterface )

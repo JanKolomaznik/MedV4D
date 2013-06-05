@@ -46,7 +46,7 @@ public slots:
 			
 			mUpdating = true;
 			
-			Vector2f win = pGenViewer->getLUTWindow();
+			glm::fvec2 win = pGenViewer->getLUTWindow();
 			windowCenterSpinBox->setValue( win[0] );
 			windowWidthSpinBox->setValue( win[1] );
 

@@ -1,7 +1,7 @@
 #ifndef TRANSFER_FUNCTION_1D_EDITOR_H
 #define TRANSFER_FUNCTION_1D_EDITOR_H
-
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include <vorgl/TransferFunctionBuffer.hpp>
+//#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 #include "MedV4D/GUI/widgets/ScaleVisualizer.h"
 #include "MedV4D/Imaging/Histogram.h"
 
@@ -16,7 +16,7 @@ class TransferFunction1DEditor: public ScaleVisualizer
 public:
 	TransferFunction1DEditor( QWidget *aParent = NULL );
 
-	M4D::GUI::TransferFunctionBuffer1D::Ptr
+	vorgl::TransferFunctionBuffer1D::Ptr
 	GetTransferFunctionBuffer() const
 	{
 		return mTransferFunctionBuffer;
@@ -80,7 +80,7 @@ protected:
 	void
 	FillTransferFunctionValues( float aLeft, float aLeftVal, float aRight, float aRightVal );
 
-	M4D::GUI::TransferFunctionBuffer1D::Ptr mTransferFunctionBuffer;
+	vorgl::TransferFunctionBuffer1D::Ptr mTransferFunctionBuffer;
 	size_t	mEditedChannelIdx;
 
 	M4D::Common::TimeStamp	mEditTimeStamp;

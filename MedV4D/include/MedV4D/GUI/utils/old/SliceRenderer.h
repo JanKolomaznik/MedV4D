@@ -4,6 +4,7 @@
 
 #include "MedV4D/GUI/utils/GLTextureImage.h"
 #include "MedV4D/GUI/utils/ARenderer.h"
+#include <soglu/GLTextureImage.hpp>
 
 namespace M4D
 {
@@ -12,7 +13,7 @@ class SliceRenderer: public ARenderer
 {
 public:
 	void
-	SetData( GLTextureImage::Ptr data );
+	SetData( soglu::GLTextureImage::Ptr data );
 
 	bool
 	IsRenderingVolume()const;

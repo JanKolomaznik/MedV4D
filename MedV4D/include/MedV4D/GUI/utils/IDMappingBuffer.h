@@ -3,7 +3,8 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/DefinitionMacros.h"
-#include "MedV4D/GUI/utils/OGLTools.h"
+//#include "MedV4D/GUI/utils/OGLTools.h"
+#include <soglu/OGLTools.hpp>
 
 #include <vector>
 #include "MedV4D/GUI/managers/OpenGLManager.h"
@@ -144,7 +145,7 @@ createGLMappingBuffer( const IDMappingBuffer &aBuffer )
 			);
 
 		
-		M4D::CheckForGLError( "OGL building texture for transfer function: " );
+		soglu::checkForGLError( "OGL building texture for transfer function: " );
 	} 
 	catch( ... ) {
 		if( texName != 0 ) {

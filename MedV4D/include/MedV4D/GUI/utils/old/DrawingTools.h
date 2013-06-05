@@ -7,6 +7,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <soglu/Primitives.hpp>
+#include <soglu/BoundingBox.hpp>
+
 class Camera;
 namespace M4D
 {
@@ -78,26 +81,26 @@ getPlaneVerticesInBoundingBox(
 
 unsigned
 GetPlaneVerticesInBoundingBox( 
-		const BoundingBox3D		&bbox, 
-		const Vector< float, 3 > 	&planePoint, 
-		const Vector< float,3 > 	&planeNormal,
+		const soglu::BoundingBox3D		&bbox, 
+		const glm::fvec3 	&planePoint, 
+		const glm::fvec3 	&planeNormal,
 		unsigned			minId,
-	       	Vector< float,3 > 		vertices[]
+	       	glm::fvec3 		vertices[]
 		);
 
 unsigned
 GetPlaneVerticesInBoundingBox( 
-		const BoundingBox3D		&bbox, 
-		const Planef			&plane,
+		const soglu::BoundingBox3D		&bbox, 
+		const soglu::Planef			&plane,
 		unsigned			minId,
-	       	Vector< float,3 > 		vertices[]
+	       	glm::fvec3 		vertices[]
 		);
 
 unsigned
 GetPlaneVerticesInBoundingBox( 
-		const BoundingBox3D		&bbox, 
-		const Planef			&plane,
-	       	Vector< float,3 > 		vertices[]
+		const soglu::BoundingBox3D		&bbox, 
+		const soglu::Planef			&plane,
+	       	glm::fvec3 		vertices[]
 		);
 
 size_t

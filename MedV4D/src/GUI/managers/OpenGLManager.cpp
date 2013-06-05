@@ -1,5 +1,7 @@
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 #include "MedV4D/Common/RAII.h"
+#include <soglu/OGLTools.hpp>
+#include <MedV4D/GUI/utils/TextureUtils.h>
 
 class DummyOGLWidget: public QGLWidget
 {
@@ -7,7 +9,7 @@ public:
 	DummyOGLWidget(const QGLFormat & format ):QGLWidget( format )
 	{
 		makeCurrent();
-		M4D::InitOpenGL();
+		soglu::initOpenGL();
 		doneCurrent();
 	}
 protected:
@@ -20,7 +22,7 @@ protected:
 
 struct TextureRecord
 {
-	M4D::GLTextureImage::Ptr texture;
+	soglu::GLTextureImage::Ptr texture;
 	M4D::Common::TimeStamp editTimeStamp; //<Contents timestamp
 	M4D::Common::TimeStamp structTimeStamp;
 };
@@ -89,14 +91,14 @@ OpenGLManager::getSharedGLWidget()
 	return mPimpl->widget;
 }
 
-M4D::GLTextureImage::Ptr
+soglu::GLTextureImage::Ptr
 OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
 	ASSERT( mPimpl );
 	D_FUNCTION_COMMENT;
 	boost::unique_lock< boost::recursive_mutex > lock( mPimpl->mTextureMutex );
 
-	M4D::GLTextureImage::Ptr result;
+	soglu::GLTextureImage::Ptr result;
 	result = getActualizedTextureFromImage( aImage );
 	
 	if ( result ) {
@@ -106,7 +108,7 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 	return createNewTextureFromImage( aImage );
 }
 
-M4D::GLTextureImage::Ptr
+soglu::GLTextureImage::Ptr
 OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
 	D_FUNCTION_COMMENT;
@@ -120,7 +122,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 		M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 		M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
 		if ( structTimestamp != it->second.structTimeStamp ) { //Dataset structure changed
-			return M4D::GLTextureImage::Ptr();
+			return soglu::GLTextureImage::Ptr();
 		}
 		
 		if ( timestamp == it->second.editTimeStamp ) { //Dataset contents didn't changed - texture is actual
@@ -136,11 +138,11 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 			return it->second.texture;
 		}
 	}
-	return M4D::GLTextureImage::Ptr();
+	return soglu::GLTextureImage::Ptr();
 }
 
 
-M4D::GLTextureImage::Ptr
+soglu::GLTextureImage::Ptr
 OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 {
 	D_FUNCTION_COMMENT;
@@ -151,22 +153,19 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	
 	M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
-	//makeCurrent();
+	makeCurrent();
 	{
 		try {
 			rec.texture = M4D::createTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
-		} catch ( M4D::GLException &e) {
-			LOG_ERR( e.what() );
-			throw;
-		} catch ( ... ) {
-			LOG_ERR( "Problem with texture creation" );
+		} catch ( std::exception &e) {
+			LOG_ERR( "Create texture " << e.what() );
 			throw;
 		}
 		rec.structTimeStamp = structTimestamp;
 		rec.editTimeStamp = timestamp;
 		mPimpl->textureStorage[ id ] = rec;
 	}
-	//doneCurrent();
+	doneCurrent();
 	D_PRINT( "Returning newly created texture instance" );
 	return rec.texture;
 }
@@ -184,5 +183,7 @@ OpenGLManager::doneCurrent()
 	//TODO handle in better way
 	mPimpl->context->doneCurrent();
 }
+
+
 
 

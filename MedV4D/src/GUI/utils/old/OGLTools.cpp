@@ -9,13 +9,13 @@
 #include <IL/ilu.h>
 #endif /*USE_DEVIL*/	
 
-
+#ifdef DISABLE_0
 
 namespace M4D
 {
 
 void 
-getCurrentGLSetup( GLViewSetup &aSetup )
+getCurrentGLSetup(soglu::GLViewSetup &aSetup)
 {
 	glGetDoublev( GL_PROJECTION_MATRIX, glm::value_ptr( aSetup.projection) );
 	glGetDoublev( GL_MODELVIEW_MATRIX, glm::value_ptr( aSetup.modelView ) );
@@ -192,3 +192,4 @@ InitOpenGL()
 
 } /*namespace M4D*/
 
+#endif //DISABLE_0

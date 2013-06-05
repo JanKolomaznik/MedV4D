@@ -2,12 +2,24 @@
 #define SLICE_RENDERER_H
 
 #include "MedV4D/Common/Common.h"
-#include "MedV4D/GUI/utils/CgShaderTools.h"
-#include "MedV4D/GUI/utils/GLTextureImage.h"
+
+#include <soglu/Camera.hpp>
+#include <soglu/CgFXShader.hpp>
+#include <soglu/GLTextureImage.hpp>
+#include <vorgl/TransferFunctionBuffer.hpp>
+
+//#include "MedV4D/GUI/utils/CgShaderTools.h"
+//#include "MedV4D/GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
-#include "MedV4D/GUI/utils/OrthoCamera.h"
+//#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+//#include "MedV4D/GUI/utils/OrthoCamera.h"
+
 #include "MedV4D/GUI/renderers/RendererTools.h"
+
+#include <soglu/GLTextureImage.hpp>
+#include <soglu/ViewConfiguration.hpp>
+#include <vorgl/TransferFunctionBuffer.hpp>
+#include <vorgl/SliceRenderer.hpp>
 
 namespace M4D
 {
@@ -18,7 +30,7 @@ namespace Renderer
 
 extern boost::filesystem::path gSliceRendererShaderPath;
 
-class SliceRenderer
+class SliceRenderer: public vorgl::SliceRenderer
 {
 public:
 	struct RenderingConfiguration;
@@ -30,7 +42,7 @@ public:
 	Finalize();
 
 	virtual void
-	Render( RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup );
+	Render( RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup );
 
 	const ColorTransformNameIDList&
 	GetAvailableColorTransforms()const
@@ -39,7 +51,7 @@ public:
 	}
 protected:
 	CGcontext   				mCgContext;
-	CgEffect				mCgEffect;
+	soglu::CgFXShader			mCgEffect;
 
 	ColorTransformNameIDList		mAvailableColorTransforms;
 };
@@ -56,31 +68,31 @@ struct SliceRenderer::RenderingConfiguration
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{}
 
-	GLTextureImage3D::WPtr			primaryImageData;
-	GLTextureImage3D::WPtr			secondaryImageData;
+	soglu::GLTextureImage3D::WPtr			primaryImageData;
+	soglu::GLTextureImage3D::WPtr			secondaryImageData;
 	CartesianPlanes				plane;
-	Vector3i				currentSlice;
+	glm::ivec3				currentSlice;
 	
-	OrthoCamera				camera;
-	Vector3f sliceCenter;
-	Vector3f sliceNormal;
+	soglu::OrthoCamera				camera;
+	glm::fvec3 sliceCenter;
+	glm::fvec3 sliceNormal;
 
-	Vector3f
+	glm::fvec3
 	getCurrentRealSlice()const
 	{
-		GLTextureImageTyped<3>::Ptr primaryData = primaryImageData.lock();
+		soglu::GLTextureImageTyped<3>::Ptr primaryData = primaryImageData.lock();
 		
 		if ( primaryData ) {
-			return primaryData->getExtents().realMinimum + VectorMemberProduct( currentSlice, primaryData->getExtents().elementExtents );
+			return primaryData->getExtents().realMinimum + /*VectorMemberProduct*/( glm::fvec3(currentSlice) * primaryData->getExtents().elementExtents );
 		} else {
-			return Vector3f();
+			return glm::fvec3();
 		}
 	}
 
 	int					colorTransform;
-	GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
-	Vector2f					lutWindow;
-	ViewConfiguration2D			viewConfig;
+	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
+	glm::fvec2					lutWindow;
+	soglu::ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
 	
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;

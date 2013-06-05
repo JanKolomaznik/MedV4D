@@ -1,3 +1,5 @@
+#ifdef DISABLE_0
+
 #include "MedV4D/GUI/utils/CgShaderTools.h"
 #include <boost/bind.hpp>
 
@@ -331,3 +333,4 @@ checkForCgError( const std::string &situation, CGcontext &context  )
 
 } //namespace M4D
 } //namespace GUI
+#endif //DISABLE_0

@@ -47,5 +47,8 @@ operator<<( std::ostream & stream, Camera & camera )
 DollyCamera( Camera &aCamera, float32 aRatio );*/
 
 
+
+
+
 #endif /*CAMERA_H*/
 

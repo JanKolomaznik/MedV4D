@@ -6,11 +6,17 @@
 
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/GUI/utils/IUserEvents.h"
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include <vorgl/TransferFunctionBuffer.hpp>
+//#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
 #include "MedV4D/GUI/utils/IDMappingBuffer.h"
-#include "MedV4D/GUI/utils/CgShaderTools.h"
-#include "MedV4D/GUI/utils/GLTextureImage.h"
-#include "MedV4D/GUI/utils/FrameBufferObject.h"
+
+#include <soglu/FrameBufferObject.hpp>
+#include <soglu/CgFXShader.hpp>
+#include <soglu/GLTextureImage.hpp>
+
+//#include "MedV4D/GUI/utils/CgShaderTools.h"
+//#include "MedV4D/GUI/utils/GLTextureImage.h"
+//#include "MedV4D/GUI/utils/FrameBufferObject.h"
 #include "MedV4D/GUI/utils/ViewerController.h"
 #include "MedV4D/GUI/utils/MouseTracking.h"
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
@@ -85,11 +91,11 @@ public:
 	}
 	
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
-	GLTextureImage::WPtr mPrimaryImageTexture;
+	soglu::GLTextureImage::WPtr mPrimaryImageTexture;
 	M4D::Common::TimeStamp mPrimaryEditTimestamp;
 	
 	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
-	GLTextureImage::WPtr mSecondaryImageTexture;
+	soglu::GLTextureImage::WPtr mSecondaryImageTexture;
 	M4D::Common::TimeStamp mSecondaryEditTimestamp;
 	
 	/*Vector< float, 3 > 			_regionRealMin;
@@ -100,7 +106,7 @@ public:
 
 	//TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
 	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
-	TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
+	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
 	IDMappingBufferInfo			mMappingBufferInfo;
 
@@ -115,8 +121,8 @@ public:
 	QualityMode				mQualityMode;
 	
 	
-	CgEffect mSceneSlicingCgEffect;
-	CgEffect mBasicCgEffect;
+	soglu::CgFXShader mSceneSlicingCgEffect;
+	soglu::CgFXShader mBasicCgEffect;
 };
 
 class RenderingExtension
@@ -168,18 +174,18 @@ public:
 	setLUTWindow( float32 center, float32 width );
 
 	void
-	setLUTWindow( Vector2f window );
+	setLUTWindow(glm::fvec2 window);
 
-	Vector2f
+	glm::fvec2
 	getLUTWindow() const;
 
 	void
-	setTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
+	setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
 
 	void
-	setTransferFunctionBufferInfo( TransferFunctionBufferInfo aTFunctionBufferInfo );
+	setTransferFunctionBufferInfo( vorgl::TransferFunctionBufferInfo aTFunctionBufferInfo );
 
-	TransferFunctionBufferInfo
+	vorgl::TransferFunctionBufferInfo
 	getTransferFunctionBufferInfo()const;
 
 	void
@@ -216,9 +222,9 @@ public:
 	setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ );
 
 	void
-	setCutPlane( const Planef &aCutPlane );
+	setCutPlane( const soglu::Planef &aCutPlane );
 
-	Planef
+	soglu::Planef
 	getCutPlane()const;
 
 	void

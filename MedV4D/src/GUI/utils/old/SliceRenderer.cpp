@@ -4,7 +4,7 @@ namespace M4D
 {
 	
 void
-SliceRenderer::SetData( GLTextureImage::Ptr data )
+SliceRenderer::SetData( soglu::GLTextureImage::Ptr data )
 {
 
 }

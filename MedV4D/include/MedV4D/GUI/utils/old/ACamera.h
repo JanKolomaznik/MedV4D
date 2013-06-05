@@ -6,6 +6,7 @@
 #include "MedV4D/Common/Quaternion.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 inline std::ostream &
 operator<< (std::ostream &out, const glm::vec3 &vec) {
@@ -109,7 +110,6 @@ public:
 
 	void
 	yawPitchAbsolute( FloatType yangle, FloatType pangle );
-
 	
 protected:
 	void
@@ -164,6 +164,8 @@ operator<<( std::ostream & stream, ACamera & camera )
 
 void
 dollyCamera( ACamera &aCamera, float32 aRatio );
+
+
 
 
 #endif /*ACAMERA_H*/

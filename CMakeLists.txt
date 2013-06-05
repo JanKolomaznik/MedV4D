@@ -28,6 +28,6 @@ INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/SetupOutputPrefixAndPostfix.cmake" )
 
 ADD_SUBDIRECTORY( MedV4D )
 ADD_SUBDIRECTORY( Applications/Viewer )
-ADD_SUBDIRECTORY( Applications/tools )
+#ADD_SUBDIRECTORY( Applications/tools )
 ADD_DEPENDENCIES( Viewer MedV4D )
-ADD_DEPENDENCIES( CudaFilters MedV4D )
+#ADD_DEPENDENCIES( CudaFilters MedV4D )

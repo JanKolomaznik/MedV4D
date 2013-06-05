@@ -3,10 +3,16 @@
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
-#include "MedV4D/GUI/utils/CgShaderTools.h"
-#include "MedV4D/GUI/utils/GLTextureImage.h"
+//#include "MedV4D/GUI/utils/CgShaderTools.h"
+#include <soglu/CgFXShader.hpp>
+
+//#include "MedV4D/GUI/utils/GLTextureImage.h"
+#include <soglu/GLTextureImage.hpp>
 #include <boost/bind.hpp>
-#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+//#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
+#include <vorgl/TransferFunctionBuffer.hpp>
+#include <vorgl/VolumeRenderer.hpp>
+
 #include "MedV4D/GUI/renderers/RendererTools.h"
 
 namespace M4D
@@ -61,7 +67,7 @@ struct VolumeRestrictions
 };
 
 
-class VolumeRenderer
+class VolumeRenderer: public vorgl::VolumeRenderer
 {
 public:
 	//typedef std::map< std::wstring, int > ColorTransformNameToIDMap;
@@ -70,13 +76,23 @@ public:
 	struct RenderingConfiguration;
 
 	void
-	Initialize();
+	initialize()
+	{
+		vorgl::VolumeRenderer::initialize(gVolumeRendererShaderPath);
+		
+		mAvailableColorTransforms.clear();
+		//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
+		//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
+	}
 
-	void
-	Finalize();
+	/*void
+	Finalize();*/
 	
 	virtual void
-	Render( RenderingConfiguration & aConfig, const GLViewSetup &aViewSetup );
+	Render( RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup );
 
 	const ColorTransformNameIDList&
 	GetAvailableColorTransforms()const
@@ -85,79 +101,8 @@ public:
 	}
 protected:
 	
-	void
-	basicRendering( 
-		const Camera &aCamera, 
-		const GLTextureImageTyped<3> &aImage, 
-		const M4D::BoundingBox3D &aBoundingBox, 
-		size_t aSliceCount,
-		bool aJitterEnabled,
-		float aJitterStrength, 
-		bool aEnableCutPlane,
-		Planef aCutPlane,
-		bool aEnableInterpolation,
-		Vector2f aLutWindow,
-		const GLViewSetup &aViewSetup,
-		bool aMIP,
-		uint64 aFlags
-     	);
 	
-	void
-	transferFunctionRendering( 
-		const Camera &aCamera, 
-		const GLTextureImageTyped<3> &aImage, 
-		const M4D::BoundingBox3D &aBoundingBox, 
-		size_t aSliceCount, 
-		bool aJitterEnabled,
-		float aJitterStrength, 
-		bool aEnableCutPlane,
-		Planef aCutPlane,
-		bool aEnableInterpolation,
-		const GLViewSetup &aViewSetup,
-		const GLTransferFunctionBuffer1D &aTransferFunction,
-		Vector3f aLightPosition,
-		uint64 aFlags
-	);
-	
-	void
-	setupJittering(float aJitterStrength);
-	
-	void
-	setupView(const Camera &aCamera, const GLViewSetup &aViewSetup);
-	
-	void
-	setupSamplingProcess(const M4D::BoundingBox3D &aBoundingBox, const Camera &aCamera, size_t aSliceCount);
-	
-	void
-	setupLights(const Vector3f &aLightPosition);
-	
-	void
-	initJitteringTexture();
-
-	void
-	reallocateArrays( size_t aNewMaxSampleCount )
-	{
-		if( mVertices ) {
-			delete [] mVertices;
-		}
-		if( mIndices ) {
-			delete [] mIndices;
-		}
-
-		mVertices = new glm::fvec3[ (aNewMaxSampleCount+1) * 6 ];
-		mIndices = new unsigned[ (aNewMaxSampleCount+1) * 7 ];
-		mMaxSampleCount = aNewMaxSampleCount;
-	}
-
-	CGcontext   				mCgContext;
-	CgEffect				mCgEffect;
-	GLuint					mNoiseMap;
-
 	ColorTransformNameIDList		mAvailableColorTransforms;
-
-	glm::fvec3 *mVertices;
-	unsigned *mIndices;
-	size_t		mMaxSampleCount;
 };
 
 struct VolumeRenderer::RenderingConfiguration
@@ -177,28 +122,28 @@ struct VolumeRenderer::RenderingConfiguration
 		cutPlaneCameraTargetOffset( 0.0f ),
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{ }
-	GLTextureImage3D::WPtr			primaryImageData;
-	GLTextureImage3D::WPtr			secondaryImageData;
+	soglu::GLTextureImage3D::WPtr		primaryImageData;
+	soglu::GLTextureImage3D::WPtr		secondaryImageData;
 	
 	int					colorTransform;
-	GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
-	GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
-	Vector2f				lutWindow;
-	Camera					camera;
+	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
+	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
+	glm::fvec2				lutWindow;
+	soglu::Camera				camera;
 	bool					jitterEnabled;
 	float					jitterStrength;
 	bool					shadingEnabled;
 	bool					integralTFEnabled;
-	size_t					sampleCount;				
+	size_t					sampleCount;
 	bool					enableInterpolation;
 
-	Vector3f				lightPosition;
+	glm::fvec3				lightPosition;
 
 	bool					enableVolumeRestrictions;
 	VolumeRestrictions			volumeRestrictions;
 
 	bool					enableCutPlane;
-	Planef					cutPlane;
+	soglu::Planef				cutPlane;
 	float					cutPlaneCameraTargetOffset;
 	
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;

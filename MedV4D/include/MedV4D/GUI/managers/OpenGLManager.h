@@ -3,9 +3,9 @@
 
 //Temporary workaround
 #ifndef Q_MOC_RUN 
-#include "MedV4D/GUI/utils/OGLTools.h"
-#include "MedV4D/GUI/utils/GLTextureImage.h"
-#include "MedV4D/Common/Common.h"
+#include "soglu/OGLTools.hpp"
+#include "soglu/GLTextureImage.hpp"
+#include "MedV4D/Imaging/AImage.h"
 #include <boost/thread.hpp> 
 #include <boost/thread/recursive_mutex.hpp>
 //#include <boost/thread/unique_lock.hpp>
@@ -16,7 +16,8 @@
 #include <QGLContext>
 #include <QColor>
 
-
+#include <soglu/GLTextureImage.hpp>
+#include <soglu/OGLTools.hpp>
 
 #include <map>
 
@@ -56,7 +57,7 @@ public:
 	QGLWidget *
 	getSharedGLWidget();
 
-	virtual M4D::GLTextureImage::Ptr
+	virtual soglu::GLTextureImage::Ptr
 	getTextureFromImage( const M4D::Imaging::AImage &aImage );
 
 	template< typename TFtor >
@@ -66,7 +67,7 @@ public:
 		CurrentContext curr( *this );
 		//makeCurrent();
 		ftor();
-		M4D::CheckForGLError( "OpenGL manager - doGL() call" );
+		soglu::checkForGLError( "OpenGL manager - doGL() call" );
 		//doneCurrent();
 		return ftor;
 	}
@@ -78,10 +79,10 @@ public:
 		GL_CHECKED_CALL( glDeleteTextures( static_cast<GLsizei>(aCount), &aTexture ) );
 	}
 protected:
-	virtual M4D::GLTextureImage::Ptr
+	virtual soglu::GLTextureImage::Ptr
 	getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage );
 	
-	virtual M4D::GLTextureImage::Ptr
+	virtual soglu::GLTextureImage::Ptr
 	createNewTextureFromImage( const M4D::Imaging::AImage &aImage );
 	
 	

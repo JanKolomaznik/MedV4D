@@ -8,12 +8,13 @@
 #include <GL/glu.h>
 #endif
 
+#ifdef DISABLE_0
 
 namespace M4D
 {
 
 
-
+/*
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 {
@@ -45,7 +46,7 @@ SetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-
+*/
 /*void
 aaaSetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 {
@@ -1080,3 +1081,4 @@ drawGrid( const Vector3f &aCenter, const Vector3f &aVDirection, const Vector3f &
 
 } /*namespace M4D*/
 
+#endif //DISABLE_0

@@ -1,6 +1,7 @@
 #ifndef RENDERER_TOOLS_H
 #define RENDERER_TOOLS_H
 
+#include <QtCore>
 #include "MedV4D/Common/Common.h"
 #include <vector>
 

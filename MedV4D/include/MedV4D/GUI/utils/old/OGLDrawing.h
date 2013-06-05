@@ -1,4 +1,5 @@
-#ifndef OGL_DRAWING_H
+#ifdef DISABLE_0
+//#ifndef OGL_DRAWING_H
 #define OGL_DRAWING_H
 
 

@@ -1,4 +1,5 @@
-#ifndef GL_TEXTURE_IMAGE_H
+#ifdef DISABLE_0 
+//#ifndef GL_TEXTURE_IMAGE_H
 #define GL_TEXTURE_IMAGE_H
 
 #include <boost/shared_ptr.hpp>
