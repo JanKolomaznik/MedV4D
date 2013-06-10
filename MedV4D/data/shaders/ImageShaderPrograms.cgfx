@@ -86,7 +86,7 @@ fp_WLWindow_3D(
 			1.0f
 			);
 		
-	OUT.color = float4( value.xxx, 1.0f );
+	OUT.color = float4(value.xxx, 1.0f );
 
 	return OUT;
 }

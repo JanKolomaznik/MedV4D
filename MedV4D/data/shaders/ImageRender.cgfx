@@ -244,7 +244,7 @@ technique IntegralTransferFunction1DJitter_3D {
 
 technique WLWindow_3D {
 	pass t0 {
-		//VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
+		VertexProgram = compile VERTEX_SHADER_PROFILE vp_VertexPassPosAsTexCoords();
 		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_WLWindow_3D( 
 							gPrimaryImageData3D, 
 							float3( 

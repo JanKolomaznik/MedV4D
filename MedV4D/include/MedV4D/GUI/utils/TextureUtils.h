@@ -84,6 +84,7 @@ createTextureFromImageTyped(const M4D::Imaging::AImageRegionDim<Dim> &image, boo
 	ext.realMaximum = toGLM(extents.realMaximum);
 	ext.minimum = toGLM(extents.minimum);
 	ext.maximum = toGLM(extents.maximum);
+	ext.elementExtents = toGLM(extents.elementExtents);
 	
 	typename soglu::GLMDimension<Dim>::fvec elementExtents;
 	
@@ -106,6 +107,7 @@ recreateTextureFromImageTyped(soglu::GLTextureImageTyped< Dim > &aTexImage, cons
 	ext.realMaximum = toGLM(extents.realMaximum);
 	ext.minimum = toGLM(extents.minimum);
 	ext.maximum = toGLM(extents.maximum);
+	ext.elementExtents = toGLM(extents.elementExtents);
 	
 	GLuint textureID = GLPrepareTextureFromImageData( image, aTexImage.linearInterpolation() ); //TODO prevent loosing texture during exception
 	aTexImage.updateTexture(textureID, ext);
