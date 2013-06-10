@@ -45,6 +45,7 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const so
 		{
 			std::cout << "aConfig.currentSlice " << glm::to_string(aConfig.currentSlice) << std::endl;
 			std::cout << "primaryData->getExtents().elementExtents " << glm::to_string(primaryData->getExtents().elementExtents) << std::endl;
+			std::cout << "aConfig.lutWindow " << glm::to_string(aConfig.lutWindow) << std::endl;
 	
 			lutWindowRendering(
 				*primaryData,

@@ -81,13 +81,13 @@ LinePlaneIntersection(
 float3
 texCoordsFromPosition( float3 pos, ImageData3D image )
 {
-	float3 elementSize = 1.0f / image.size;
 	float3 relPos = pos - image.realMinimum;
 
 	float3 texCoord =  float3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
 	if (gEnableInterpolation) {
 		return texCoord;
 	}
+	float3 elementSize = 1.0f / image.size;
 	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
 }
 
