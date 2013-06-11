@@ -919,20 +919,20 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
-			throw "TODO";
-			/*Vector3f direction;
+			//throw "TODO";
+			glm::fvec3 direction;
 			//LOG( mViewerState->glViewSetup );
 			try{
-				direction = getDirectionFromScreenCoordinatesAndCameraPosition(
-				       	Vector2f( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), 
+				direction = soglu::getDirectionFromScreenCoordinatesAndCameraPosition(
+				       	glm::fvec2( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), 
 					mViewerState->glViewSetup, 
-					Vector3f(getCameraPosition().x, getCameraPosition().y, getCameraPosition().z)
+					getCameraPosition()
 					);
 			} catch (...){
 				LOG( "Unprojecting of screen coordinates failed" );
 			}
 			
-			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, Vector3f(getCameraPosition().x, getCameraPosition().y, getCameraPosition().z), direction );*/
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, getCameraPosition(), direction );
 		}
 		break;
 	case vt2DAlignedSlices:

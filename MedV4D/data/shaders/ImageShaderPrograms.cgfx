@@ -133,7 +133,7 @@ fp_TransferFunction1D_3D(
 {
 	CUT_PLANE_TEST( aPosition );
 	FragmentOutput OUT;
-		
+	
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
 	//OUT.color = float4( coordinates, 1.0f );
 	//return OUT;
@@ -145,6 +145,7 @@ fp_TransferFunction1D_3D(
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
 
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	//OUT.color = float4(aMappedIntervalBands.xy, 1.0, 0.01);
 	return OUT;
 }
 

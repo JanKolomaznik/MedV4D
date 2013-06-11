@@ -28,11 +28,11 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 
 	QPoint diff = mTrackInfo.trackUpdate( aEventInfo.event->pos(), aEventInfo.event->globalPos() );
 	if ( state.viewType == vt3D && mInteractionMode == imORBIT_CAMERA ) {
-		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.2f, diff.y() * -0.2f ) );
 		return true;
 	}
 	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
-		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.02f, diff.y() * -0.02f ) );
+		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.2f, diff.y() * -0.2f ) );
 		glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
 		glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
 		state.getViewerWindow< GeneralViewer >().setCutPlane( soglu::Planef( pos, dir ) );
