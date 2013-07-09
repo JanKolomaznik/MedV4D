@@ -5,6 +5,7 @@
 #include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
+#include <boost/timer/timer.hpp>
 
 namespace M4D
 {
@@ -105,6 +106,8 @@ void
 AGLViewer::paintGL()
 {
 	M4D::Common::Clock timer;
+	
+	//boost::timer::auto_cpu_timer t;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -157,12 +160,6 @@ AGLViewer::paintGL()
 
 		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
 		soglu::drawRectangle(glm::fvec2(5.0f, 5.0f), glm::fvec2(width()-5.0f, height()-5.0f));
-			/*glBegin( GL_LINE_LOOP );
-				GLVertexVector( Vector2f( 5.0f, 5.0f ) );
-				GLVertexVector( Vector2f( 5.0f, height()-5.0f ) );
-				GLVertexVector( Vector2f( width()-5.0f, height()-5.0f ) );
-				GLVertexVector( Vector2f( width()-5.0f, 5.0f ) );
-			glEnd();*/
 	}
 
 	if( mEnableFPS ) {
@@ -176,6 +173,7 @@ AGLViewer::paintGL()
 		sum /= double(MEASUREMENT_SAMPLE_COUNT);
 		LOG( "FPS = " << 1.0 / sum );
 	}
+	glFinish();
 }
 
 void	

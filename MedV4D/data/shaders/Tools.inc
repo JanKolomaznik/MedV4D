@@ -121,14 +121,18 @@ float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light
 	float3 ambient = material.Ka * light.ambient;
 
 	//compute diffuse term
-	float diffuseLight = max( dot( L, N ), 0 );
+	/*float diffuseLight = max( dot( L, N ), 0 );
 	float3 diffuse = material.Kd * light.color * diffuseLight;
 
 	//compute specular term
 	float specularLight = pow( max( dot( H, N ), 0), material.shininess );
 	if( diffuseLight <= 0.0 )
 		specularLight = 0.0;
-	float3 specular = material.Ks * light.color * specularLight;
+	float3 specular = material.Ks * light.color * specularLight;*/
+
+	float4 koef = lit(dot(N,L), dot(N, H), material.shininess);
+	float3 diffuse = material.Kd * light.color * koef.y;
+	float3 specular = material.Ks * light.color * koef.z;
 
 	return ambient + diffuse + specular;
 }

@@ -135,17 +135,15 @@ fp_TransferFunction1D_3D(
 	FragmentOutput OUT;
 	
 	float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	//OUT.color = float4( coordinates, 1.0f );
-	//return OUT;
-	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
-	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
+
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
 		
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D );
 
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
-	//OUT.color = float4(aMappedIntervalBands.xy, 1.0, 0.01);
+
+	//OUT.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
 	return OUT;
 }
 
@@ -371,10 +369,7 @@ fp_IntegralTransferFunction1DShadingJitter_3D(
 	float3 pos = aPosition + offset * aViewDirection;
 	float3 coordinates1 = texCoordsFromPosition( pos, aTextureData );
 	float3 coordinates2 = texCoordsFromPosition( pos + aRenderingSliceThickness* aViewDirection , aTextureData );
-	//float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	//coordinates += offset *aSliceNormalTexCoords;
-
-	//float3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	raw_values.x = tex3D( aTextureData.data, coordinates1 ).x;
 	raw_values.y = tex3D( aTextureData.data, coordinates2 ).x;
@@ -390,6 +385,9 @@ fp_IntegralTransferFunction1DShadingJitter_3D(
 		aLight,
 		aEyePosition
 		);
+	FragmentOutput OUT;
+	OUT.color = float4(1.0f, 0.0f, 0.0f, 0.05f);
+	return OUT;
 }
 
 FragmentOutput 

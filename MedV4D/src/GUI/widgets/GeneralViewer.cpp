@@ -726,12 +726,7 @@ GeneralViewer::prepareForRenderingStep()
 		{
 			getViewerState().mVolumeRenderConfig.camera.setAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
-			/*SetViewAccordingToCamera( getViewerState().mVolumeRenderConfig.camera );
-			GLViewSetup tmpSetup;
-			getCurrentGLSetup( tmpSetup );*/
 			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.camera );
-			//LOG( "******************************\n" << tmpSetup );
-			//LOG( "------------------------------\n" << getViewerState().glViewSetup );
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -776,12 +771,6 @@ GeneralViewer::prepareForRenderingStep()
 			
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, subVPortW, subVPortH );
 			
-			D_PRINT("Slice center " << glm::to_string(getViewerState().mSliceRenderConfig.sliceCenter));
-			D_PRINT("Eye " << glm::to_string(eye));
-			D_PRINT("Up " << glm::to_string(up));
-			D_PRINT("Current slice " << glm::to_string(getViewerState().mSliceRenderConfig.currentSlice) << "; currentPlane = " << getViewerState().mSliceRenderConfig.plane);
-			
-			D_PRINT("\n\nVIEW SETUP\n" << getViewerState().glViewSetup);
 		}
 		break;
 	default:

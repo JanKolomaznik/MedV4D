@@ -43,10 +43,6 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const so
 	switch ( aConfig.colorTransform ) {
 	case ctLUTWindow:
 		{
-			std::cout << "aConfig.currentSlice " << glm::to_string(aConfig.currentSlice) << std::endl;
-			std::cout << "primaryData->getExtents().elementExtents " << glm::to_string(primaryData->getExtents().elementExtents) << std::endl;
-			std::cout << "aConfig.lutWindow " << glm::to_string(aConfig.lutWindow) << std::endl;
-	
 			lutWindowRendering(
 				*primaryData,
 				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],

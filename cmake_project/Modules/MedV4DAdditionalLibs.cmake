@@ -20,7 +20,7 @@ IF(WIN32)
 	ADD_DEFINITIONS(-DBOOST_HAS_THREADS)
 ELSE(WIN32)
 	SET(Boost_USE_MULTITHREADED ON)
-	FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread ${BOOST_PYTHON})
+	FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread timer ${BOOST_PYTHON})
 ENDIF(WIN32)
 #**************************************************************
 FIND_PACKAGE(OpenGL REQUIRED)
