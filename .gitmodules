@@ -1,0 +1,9 @@
+[submodule "extern/soglu"]
+	path = extern/soglu
+	url = git@github.com:JanKolomaznik/soglu.git
+[submodule "extern/vorgl"]
+	path = extern/vorgl
+	url = git@github.com:JanKolomaznik/vorgl.git
+[submodule "extern/cugip"]
+	path = extern/cugip
+	url = git@github.com:JanKolomaznik/cugip.git
