@@ -30,9 +30,9 @@ processCommandLine( int argc, char** argv )
 	inFilename = inFilenameArg.getValue();
 }
 #ifdef EXTENSION_MODULES_ENABLED
-#include "AnnotationModule/AnnotationModule.hpp"
+//#include "AnnotationModule/AnnotationModule.hpp"
 #include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
-#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
+//#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #endif
 void
 createModules()
@@ -40,9 +40,9 @@ createModules()
 	ApplicationManager *appManager = ApplicationManager::getInstance();
 
 #ifdef EXTENSION_MODULES_ENABLED	
-	appManager->addModule( createModule< AnnotationModule >() );
+//	appManager->addModule( createModule< AnnotationModule >() );
 	appManager->addModule( createModule< ShoulderMeasurementModule >() );
-	appManager->addModule( createModule< OrganSegmentationModule >() );
+//	appManager->addModule( createModule< OrganSegmentationModule >() );
 #endif
 }
 

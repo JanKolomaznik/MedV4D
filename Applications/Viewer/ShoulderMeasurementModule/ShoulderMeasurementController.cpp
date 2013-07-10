@@ -1,5 +1,34 @@
 #include "ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
 #include <algorithm>
+#include <soglu/OGLDrawing.hpp>
+
+//temporary hack
+template< typename TIterator >
+void
+drawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianPlanes aPlane )
+{
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			if ( soglu::intervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
+				soglu::GLVertexVector( toGLM(VectorPurgeDimension( *it, aPlane ) ) );
+			}
+		}
+	glEnd();
+}
+
+template< typename TIterator >
+void
+drawPointSet( TIterator aBegin, TIterator aEnd )
+{
+	glBegin( GL_POINTS );
+		for( TIterator it = aBegin; it != aEnd; ++it ) {
+			soglu::GLVertexVector( toGLM(*it) );
+		}
+	glEnd();
+}
+
+//----------------------------------------------------------------------
+
 
 class PointGroupPrimitiveController: public TemplatedPrimitiveCreationEventController< M4D::Point3Df >
 {
@@ -106,7 +135,7 @@ ShoulderMeasurementController::wheelEvent ( M4D::GUI::Viewer::BaseViewerState::P
 unsigned
 ShoulderMeasurementController::getAvailableViewTypes()const
 {
-
+	return 0;
 }
 
 void
@@ -160,22 +189,22 @@ ShoulderMeasurementController::render3D()
 
 	//**************************************
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
-	M4D::drawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
+	drawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
 
 	if ( mHeadMeasurementData.available ) {
 		GL_CHECKED_CALL( glColor4f( 0.0f, 1.0f, 0.0f, 1.0f ) );
-		M4D::drawGrid( mHeadMeasurementData.point, mHeadMeasurementData.vDirection, mHeadMeasurementData.wDirection, 80.0f, 80.0f, 5.0f );
+		soglu::drawGrid( toGLM(mHeadMeasurementData.point), toGLM(mHeadMeasurementData.vDirection), toGLM(mHeadMeasurementData.wDirection), 80.0f, 80.0f, 5.0f );
 
-		M4D::drawStippledLine( mHeadMeasurementData.point + mHeadMeasurementData.normal * 70.0f, mHeadMeasurementData.point - mHeadMeasurementData.normal * 70.0f );
+		soglu::drawStippledLine( toGLM(mHeadMeasurementData.point + mHeadMeasurementData.normal * 70.0f), toGLM(mHeadMeasurementData.point - mHeadMeasurementData.normal * 70.0f) );
 	}
 
 	//**************************************
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.75f, 0.0f, 1.0f ) );
-	M4D::drawPointSet( mProximalShaftPoints.begin(), mProximalShaftPoints.end() );
+	drawPointSet( mProximalShaftPoints.begin(), mProximalShaftPoints.end() );
 
 	if ( mProximalShaftMeasurementData.available ) {
 		GL_CHECKED_CALL( glColor4f( 0.0f, 1.0f, 1.0f, 1.0f ) );
-		M4D::GLDrawBoundingBox( mProximalShaftMeasurementData.minimum, mProximalShaftMeasurementData.maximum );
+		soglu::drawBoundingBox(soglu::BoundingBox3D(toGLM(mProximalShaftMeasurementData.minimum), toGLM(mProximalShaftMeasurementData.maximum)));
 		/*glBegin( GL_QUADS );
 			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( 30.0f, 10.0f, 0.0f ) );
 			M4D::GLVertexVector( mProximalShaftMeasurementData.bboxP1 + Vector3f( -30.0f, 10.0f, 0.0f ) );
@@ -190,7 +219,7 @@ ShoulderMeasurementController::render3D()
 		glEnd();*/
 
 		GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
-		M4D::drawCylinder( mProximalShaftMeasurementData.point, mProximalShaftMeasurementData.direction, mProximalShaftMeasurementData.radius, mProximalShaftMeasurementData.height );
+		soglu::drawCylinder( toGLM(mProximalShaftMeasurementData.point), toGLM(mProximalShaftMeasurementData.direction), mProximalShaftMeasurementData.radius, mProximalShaftMeasurementData.height );
 
 		//M4D::drawStippledLine( mHeadMeasurementData.point + mHeadMeasurementData.normal * 70.0f, mHeadMeasurementData.point - mHeadMeasurementData.normal * 70.0f );
 	}
