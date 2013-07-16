@@ -11,7 +11,7 @@ struct ViewSetup
 
 struct ImageData3D
 {
-	sampler3D data: TEX0;
+	sampler3D data;
 	int3 size;
 	float3 realSize;
 	float3 realMinimum;
@@ -20,7 +20,7 @@ struct ImageData3D
 
 struct UnsignedImageData3D
 {
-	usampler3D data: TEX0;
+	usampler3D data;
 	int3 size;
 	float3 realSize;
 	float3 realMinimum;
@@ -29,14 +29,14 @@ struct UnsignedImageData3D
 
 struct TransferFunction1D
 {
-	sampler1D data: TEX1;
+	sampler1D data;
 	float2 interval;
 	int sampleCount;
 };
 
 struct IDMappingBuffer
 {
-	sampler1D data: TEX1;
+	sampler1D data;
 	int sampleCount;
 };
 

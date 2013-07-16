@@ -20,7 +20,7 @@ fp_Picking(/* uniform int aCurrentObjectID */)
 
 technique PickingEffect {
 	pass t0 {
-		FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_Picking();
+		/*FragmentProgram = compile FRAGMENT_SHADER_PROFILE fp_Picking();
 		DepthTestEnable = false;
 		DepthMask = true;
 		CullFaceEnable = false;
@@ -28,6 +28,6 @@ technique PickingEffect {
 		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
 		BlendEquation = Max;
 
-		DepthFunc = LEqual;
+		DepthFunc = LEqual;*/
 	}
 }
