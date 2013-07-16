@@ -197,6 +197,8 @@ public:
 			
 			LOG( "ADDING PRIMITIVE IN 3D" );
 			if ( mCurrentStage == 0 ) {
+				D_PRINT("aEventInfo.point " << aEventInfo.point);
+				D_PRINT("aEventInfo.direction " << aEventInfo.direction);
 				mPoint = fromGLM(aEventInfo.point);
 				mDirection = fromGLM(aEventInfo.direction);
 				mPrimitive = this->beginPrimitive( M4D::Point3Df( fromGLM(aEventInfo.point) ) );

@@ -727,6 +727,7 @@ GeneralViewer::prepareForRenderingStep()
 			getViewerState().mVolumeRenderConfig.camera.setAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
 			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.camera );
+			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, width(), height() );
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -838,31 +839,13 @@ GeneralViewer::render()
 				for ( unsigned i = 0; i < getViewerState().m2DMultiSliceGrid[1]; ++i ) {
 					
 					GL_CHECKED_CALL( glViewport( i * subVPortW, j * subVPortH, subVPortW, subVPortH ) );
-					//SetToViewConfiguration2D( config.viewConfig );
-					//soglu::drawRectangle(glm::fvec2(-100, -100), glm::fvec2(100, 100));
 					try {
-						/*glBegin( GL_QUADS );
-		glColor3d( 1.0, 0.0, 1.0 ); 
-		glVertex3d( 0.0, 0.0, 0.0 );
-
-		glColor3d( 1.0, 0.0, 0.0 );
-		glVertex3d( 0.0, 500.0, 500.0 );
-
-		glColor3d( 0.0, 0.0, 1.0 ); 
-		glVertex3d( 500.0, 500.0, 500.0 );
-
-		glColor3d( 0.0, 1.0, 0.0 ); 
-		glVertex3d( 500.0, 500.0, -500.0 );
-	glEnd();*/
 						getViewerState().mSliceRenderer.Render( config, getViewerState().glViewSetup );
 					}catch( std::exception &e ) {
 						LOG( e.what() );
 					}
 					
 					glClear( GL_DEPTH_BUFFER_BIT );
-					/*if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
-						
-					}*/
 					
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
 						CartesianPlanes plane = config.plane;

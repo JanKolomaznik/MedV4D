@@ -9,9 +9,9 @@ drawPointSet2D( TIterator aBegin, TIterator aEnd, Vector2f aInterval, CartesianP
 {
 	glBegin( GL_POINTS );
 		for( TIterator it = aBegin; it != aEnd; ++it ) {
-			if ( soglu::intervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
+			//if ( soglu::intervalTest( aInterval[0], aInterval[1], (*it)[aPlane] ) ) { 
 				soglu::GLVertexVector( toGLM(VectorPurgeDimension( *it, aPlane ) ) );
-			}
+			//}
 		}
 	glEnd();
 }
@@ -149,12 +149,11 @@ ShoulderMeasurementController::render2DAlignedSlices( int32 aSliceIdx, Vector2f 
 	GL_CHECKED_CALL( glPointSize( 4.0f ) );
 
 	GL_CHECKED_CALL( glDisable( GL_DEPTH_TEST ) );
-	
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.0f, 0.0f, 1.0f ) );
-	drawPointSet2D( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end(), aInterval, aPlane );
+	drawPointSet( mHumeralHeadPoints.begin(), mHumeralHeadPoints.end() );
 
 	GL_CHECKED_CALL( glColor4f( 1.0f, 0.75f, 0.0f, 1.0f ) );
-	drawPointSet2D( mProximalShaftPoints.begin(), mProximalShaftPoints.end(), aInterval, aPlane );
+	drawPointSet( mProximalShaftPoints.begin(), mProximalShaftPoints.end() );
 
 	GL_CHECKED_CALL( glPopAttrib() );
 }
