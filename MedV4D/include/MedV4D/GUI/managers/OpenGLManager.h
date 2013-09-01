@@ -2,22 +2,22 @@
 #define OPENGL_MANAGER_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
-#include "soglu/OGLTools.hpp"
-#include "soglu/GLTextureImage.hpp"
+#ifndef Q_MOC_RUN
+//#include "soglu/OGLTools.hpp"
+#include <soglu/ErrorHandling.hpp>
+#include <soglu/GLTextureImage.hpp>
 #include "MedV4D/Imaging/AImage.h"
-#include <boost/thread.hpp> 
+#include <boost/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 //#include <boost/thread/unique_lock.hpp>
 #endif
 
 //#include <QtOpenGL>
-#include <QGLWidget>
-#include <QGLContext>
+#include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLContext>
 #include <QColor>
 
-#include <soglu/GLTextureImage.hpp>
-#include <soglu/OGLTools.hpp>
+//#include <soglu/OGLTools.hpp>
 
 #include <map>
 
@@ -40,7 +40,7 @@ public:
 		}
 
 		OpenGLManager &manager;
-	};	
+	};
 
 	static OpenGLManager *
 	getInstance();
@@ -51,7 +51,7 @@ public:
 	virtual void
 	finalize();
 
-	virtual 
+	virtual
 	~OpenGLManager();
 
 	QGLWidget *
@@ -71,7 +71,7 @@ public:
 		//doneCurrent();
 		return ftor;
 	}
-	
+
 	void
 	deleteTextures( GLuint &aTexture, size_t aCount = 1 )
 	{
@@ -81,11 +81,11 @@ public:
 protected:
 	virtual soglu::GLTextureImage::Ptr
 	getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage );
-	
+
 	virtual soglu::GLTextureImage::Ptr
 	createNewTextureFromImage( const M4D::Imaging::AImage &aImage );
-	
-	
+
+
 	void
 	makeCurrent();
 	void

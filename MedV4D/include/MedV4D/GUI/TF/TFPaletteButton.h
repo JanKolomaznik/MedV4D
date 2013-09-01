@@ -3,11 +3,11 @@
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 
-#include <QtGui/QFrame>
-#include <QtGui/QPainter>
-#include <QtGui/QImage>
-#include <QtGui/QLabel>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QFrame>
+#include <QPainter>
+#include <QImage>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QCheckBox>
 
 namespace M4D {
 namespace GUI {
@@ -49,7 +49,7 @@ protected:
 	QImage preview_;
 	QLabel name_;
 	QRect previewRect_;
-	
+
 	bool active_;
 	bool available_;
 	bool previewEnabled_;
@@ -69,7 +69,7 @@ public:
 
 	TFPaletteCheckButton(const TF::Size index, QWidget* parent = 0);
 	~TFPaletteCheckButton();
-	
+
 	void setup(const std::string& name = "", bool enablePreview = true);
 
 	void togglePreview(bool enabled);

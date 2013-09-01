@@ -3,9 +3,9 @@
 
 #include <set>
 
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QCheckBox>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFPaletteButton.h"
@@ -59,7 +59,7 @@ private:
 
 	Selection indexesMemory_;
 	Selection indexes_;
-	
+
 	Buttons buttons_;
 
 	void clearLayout_();

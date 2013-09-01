@@ -7,7 +7,7 @@
 #include <ostream>
 #include <boost/shared_ptr.hpp>
 
-#include <QtGui/QColor>
+#include <QColor>
 
 #include "MedV4D/GUI/TF/TFXmlWriterInterface.h"
 #include "MedV4D/GUI/TF/TFXmlReaderInterface.h"
@@ -92,9 +92,9 @@ private:
 };
 
 inline void abort( const char * s, const char * f, int l)
-{	
+{
     std::cout << f << "(" << l << "): " << s << std::endl;
-    throw TFException(); 
+    throw TFException();
 }
 
 // if TF_NDEBUG macro is defined, switch off debugging support

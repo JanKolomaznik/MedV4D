@@ -4,7 +4,7 @@
 
 #include "MedV4D/GUI/utils/OGLDrawing.h"
 #include "MedV4D/GUI/utils/CgShaderTools.h"
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "MedV4D/Imaging/ImageRegion.h"
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/Common/Vector.h"
@@ -12,8 +12,8 @@
 
 #include "MedV4D/GUI/utils/DrawingTools.h"
 
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#include <QtWidgets/QMouseEvent>
+#include <QtWidgets/QWheelEvent>
 #include <QtCore/QPoint>
 
 template< typename SupportGLWidget >
@@ -24,7 +24,7 @@ public:
 	typedef M4D::Imaging::AImageRegionDim< 2 > 	ARegion2D;
 
 	SimpleVolumeViewer( QWidget *parent = NULL )
-		: SupportGLWidget( parent ), _region( NULL ), 
+		: SupportGLWidget( parent ), _region( NULL ),
 		_camera( Vector<float,3>( 0.0f, 0.0f, 1500.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) ), _linearInterpolation( true )
 	{
 		_cutPlane = 1.0f;
@@ -47,24 +47,24 @@ public:
 
 	void
 	SetImageRegion( ARegion3D *region )
-		{ 
+		{
 			if( region == NULL ) {
 				_THROW_ M4D::ErrorHandling::ENULLPointer( "NULL pointer to ARegion3D" );
 			}
 
-			_region = region; 
+			_region = region;
 			_bbox = M4D::BoundingBox3D( _region->GetRealMinimum(), _region->GetRealMaximum() );
 
 			Vector< float, 3> center( 0.5f * (_region->GetRealMaximum() - _region->GetRealMinimum()) );
 			_camera.SetCenterPosition( center );
-			/*_viewConfiguration = GetOptimalViewConfiguration( 
+			/*_viewConfiguration = GetOptimalViewConfiguration(
 					_region->GetRealMinimum(),
 					_region->GetRealMaximum(),
-					Vector< unsigned, 2 >( this->width(), this->height() ) 
-					);*/ 		
+					Vector< unsigned, 2 >( this->width(), this->height() )
+					);*/
 		}
 
-	GLuint 
+	GLuint
 	CreateTransferFunction()
 	{
 		uint32 * func = new uint32[ 256 ];
@@ -98,17 +98,17 @@ public:
 		glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
 		glEnable( GL_TEXTURE_1D );
-		
+
 		glBindTexture( GL_TEXTURE_1D, texName );
 
-		glTexImage1D(	GL_TEXTURE_1D, 
-				0, 
-				GL_RGBA, 
-				256, 
-				0, 
-				GL_RGBA, 
-				GL_UNSIGNED_INT_8_8_8_8, 
-				func 
+		glTexImage1D(	GL_TEXTURE_1D,
+				0,
+				GL_RGBA,
+				256,
+				0,
+				GL_RGBA,
+				GL_UNSIGNED_INT_8_8_8_8,
+				func
 				);
 
 		M4D::CheckForGLError( "OGL building texture : " );
@@ -139,7 +139,7 @@ public:
 
 		_transferFuncShaderConfig.transferFunctionTexture = CreateTransferFunction();
 	}
-	
+
 	void
 	resizeGL( int width, int height )
 	{
@@ -148,22 +148,22 @@ public:
 		_camera.SetAspectRatio( x );
 	}
 
-	void	
+	void
 	paintGL()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if( _region == NULL ) {
 			return;
 		}
-		
+
 		if( _volumeRendering ) {
 			VolumeRender();
 		} else {
-			SliceRender();		
+			SliceRender();
 		}
 	}
 
-	void	
+	void
 	VolumeRender()
 	{
 
@@ -175,8 +175,8 @@ public:
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		
-		
+
+
 		Vector< float, 3> size = _region->GetRealSize();
 		Vector< float, 3> minCoord = _region->GetRealMinimum();
 
@@ -199,7 +199,7 @@ public:
 		_transferFuncShaderConfig.lightPosition = Vector< float, 3 > ( 3000.0f, 3000.0f, -3000.0f );
 		//_transferFuncShaderConfig.sliceSpacing = 1.0;
 		//_transferFuncShaderConfig.sliceNormal = _camera.GetCenterDirection();
-		
+
 		//-------------	RENDERING ------------------
 		//Draw bounding box
 		glColor3f( 1.0f, 0.0f, 0.0f );
@@ -216,18 +216,18 @@ public:
 
 		M4D::DisableVolumeTextureCoordinateGeneration();
 		M4D::CheckForGLError( "OGL error : " );
-		glFlush();		
+		glFlush();
 	}
 
-	void	
+	void
 	SliceRender()
 	{
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		
-		
-		_viewConfiguration = GetOptimalViewConfiguration( 
+
+
+		_viewConfiguration = GetOptimalViewConfiguration(
 					VectorPurgeDimension( _region->GetRealMinimum(), _plane ),
 					VectorPurgeDimension( _region->GetRealMaximum(), _plane ),
 					Vector< unsigned, 2 >( this->width(), this->height() ) ,
@@ -235,14 +235,14 @@ public:
 					);
 
 		M4D::SetToViewConfiguration2D( _viewConfiguration );
-		
+
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
 		if( _texName == 0 ) {
 			_texName = M4D::GLPrepareTextureFromImageData( *_region, _linearInterpolation );
 		}
-			
+
 		glBindTexture( GL_TEXTURE_1D, 0 );
 		glBindTexture( GL_TEXTURE_2D, 0 );
 		glBindTexture( GL_TEXTURE_3D, 0 );
@@ -258,23 +258,23 @@ public:
 
 		CheckForCgError("Check befor drawing ", _cgContext );
 
-		M4D::GLDrawVolumeSlice( 
-				_region->GetRealMinimum(), 
+		M4D::GLDrawVolumeSlice(
+				_region->GetRealMinimum(),
 				_region->GetRealMaximum(),
 			        _sliceCoord,
-				_plane	
+				_plane
 				);
-		
+
 		_brightnessContrastShaderConfig.Disable();
-		
+
 		glFlush();
-		
+
 	}
 protected:
 	void	mouseMoveEvent ( QMouseEvent * event )
-	{ 
+	{
 		if( _mouseDown && _volumeRendering) {
-			QPoint tmp = event->globalPos(); 
+			QPoint tmp = event->globalPos();
 			int x = (tmp - _lastPoint).x();
 			int y = (tmp - _lastPoint).y();
 			_lastPoint = event->globalPos();
@@ -286,12 +286,12 @@ protected:
 
 
 	void	mousePressEvent ( QMouseEvent * event )
-	{ 	
+	{
 		if( event->button() == Qt::RightButton ) {
 			_volumeRendering = !_volumeRendering;
 			this->update();
 		} else {
-			_mouseDown = true; 
+			_mouseDown = true;
 			_lastPoint = event->globalPos();
 		}
 	}

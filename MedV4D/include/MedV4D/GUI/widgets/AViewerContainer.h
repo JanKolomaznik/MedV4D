@@ -2,7 +2,7 @@
 #define AVIEWER_CONTAINER_H
 
 #include "MedV4D/GUI/widgets/ADesktopContainer.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D

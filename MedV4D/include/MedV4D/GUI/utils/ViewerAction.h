@@ -2,8 +2,8 @@
 #define VIEWER_ACTION_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
-#include <QtGui>
+#ifndef Q_MOC_RUN
+#include <QtWidgets>
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
 #include "MedV4D/GUI/managers/ApplicationManager.h"
@@ -37,7 +37,7 @@ public:
 		mActions.push_back( aAction );
 		aAction->setParent( this );
 		//QObject::connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( updateActions() ) );
-		
+
 	}
 
 	void
@@ -49,13 +49,13 @@ public:
 		mActions.append( aActionGroup->actions() );
 		//QObject::connect( aActionGroup, SIGNAL( triggered(QAction *) ), this, SLOT( updateActions() ) );
 	}
-	
+
 	QList<QAction *> &
 	getActions()
 	{
 		return mActions;
 	}
-	
+
 	void
 	addSeparator()
 	{
@@ -118,14 +118,14 @@ public:
 	ViewerAction( const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
 		: HelperViewerAction( aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
 	{
-		//setCheckable( tCheckable );		
+		//setCheckable( tCheckable );
 		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
 
 	ViewerAction( const QIcon & icon, const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
 		: HelperViewerAction( icon, aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
 	{
-		//setCheckable( tCheckable );		
+		//setCheckable( tCheckable );
 		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
 
@@ -276,7 +276,7 @@ protected:
 			combo->setEnabled( isEnabled() );
 			combo->setEditable( mEditable );
 			rebuildCombo( mStrings, mCurrentOption, combo );
-			QObject::connect( combo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( callChangeOption( const QString & ) ) ); 
+			QObject::connect( combo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( callChangeOption( const QString & ) ) );
 			return combo;
 		}
 		D_PRINT( "Unhandled parent class: " << parent->metaObject()->className() );

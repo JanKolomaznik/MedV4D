@@ -2,7 +2,7 @@
 #define TERMINAL_WIDGET_HPP
 
 #include "MedV4D/Common/Common.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <list>
 
 
@@ -15,7 +15,7 @@ class PromptLineWidget: public QTextEdit
 {
 	Q_OBJECT;
 public:
-	PromptLineWidget( QWidget *aParent = NULL ): QTextEdit( aParent ) 
+	PromptLineWidget( QWidget *aParent = NULL ): QTextEdit( aParent )
 	{
 		setMinimumHeight( 25 );
 		setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
@@ -67,7 +67,7 @@ protected:
 			break;
 		default:
 			QTextEdit::keyPressEvent( e );
-			break;			
+			break;
 		}
 	}
 
@@ -86,7 +86,7 @@ public:
 	TerminalWidget( QWidget *aParent = NULL ): QWidget( aParent )
 	{
 		mPromptText = ">>>";
-		
+
 		QVBoxLayout *layout1 = new QVBoxLayout;
 		QHBoxLayout *layout2 = new QHBoxLayout;
 
@@ -143,7 +143,7 @@ protected slots:
 		mOutput->ensureCursorVisible();
 
 		if ( !str.isEmpty() && //TODO check for whitespace only strings
-			( mCommands.empty() || str != mCommands.back() ) ) 
+			( mCommands.empty() || str != mCommands.back() ) )
 		{
 			mCommands.push_back( str );
 		}

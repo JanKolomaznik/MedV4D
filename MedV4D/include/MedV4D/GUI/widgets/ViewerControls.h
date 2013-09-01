@@ -1,7 +1,7 @@
 #ifndef VIEWER_CONTROLS_H
 #define VIEWER_CONTROLS_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 #include "MedV4D/generated/ui_ViewerControls.h"
 #include "MedV4D/GUI/managers/ApplicationManager.h"
@@ -26,10 +26,10 @@ public slots:
 
 		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 		if(pGenViewer != NULL) {
-			pGenViewer->setVolumeRestrictions( 
-					Vector2f( 0.0f, 1.0f ), 
-					Vector2f( 0.0f, 1.0f ), 
-					Vector2f( 0.0f, 1.0f ) 
+			pGenViewer->setVolumeRestrictions(
+					Vector2f( 0.0f, 1.0f ),
+					Vector2f( 0.0f, 1.0f ),
+					Vector2f( 0.0f, 1.0f )
 					);
 		}
 	}
@@ -43,9 +43,9 @@ public slots:
 		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 		if(pGenViewer != NULL) {
 			setEnabled( true );
-			
+
 			mUpdating = true;
-			
+
 			glm::fvec2 win = pGenViewer->getLUTWindow();
 			windowCenterSpinBox->setValue( win[0] );
 			windowWidthSpinBox->setValue( win[1] );
@@ -57,7 +57,7 @@ public slots:
 			zIntervalASpinBox->setValue(z[0]); zIntervalBSpinBox->setValue(z[1]);
 
 			volumeRestrictionsGroupBox->setChecked( pGenViewer->isVolumeRestrictionEnabled() );
-			
+
 			Vector2u grid = pGenViewer->getTiling();
 			viewportTilesRows->setValue( grid[0] );
 			viewportTilesCols->setValue( grid[1] );
@@ -90,15 +90,15 @@ public slots:
 
 		M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 		if(pGenViewer != NULL) {
-			pGenViewer->setVolumeRestrictions( 
+			pGenViewer->setVolumeRestrictions(
 					volumeRestrictionsGroupBox->isChecked(),
-					Vector2f( static_cast<float>(xIntervalASpinBox->value()), static_cast<float>(xIntervalBSpinBox->value()) ), 
-					Vector2f( static_cast<float>(yIntervalASpinBox->value()), static_cast<float>(yIntervalBSpinBox->value()) ), 
-					Vector2f( static_cast<float>(zIntervalASpinBox->value()), static_cast<float>(zIntervalBSpinBox->value()) ) 
+					Vector2f( static_cast<float>(xIntervalASpinBox->value()), static_cast<float>(xIntervalBSpinBox->value()) ),
+					Vector2f( static_cast<float>(yIntervalASpinBox->value()), static_cast<float>(yIntervalBSpinBox->value()) ),
+					Vector2f( static_cast<float>(zIntervalASpinBox->value()), static_cast<float>(zIntervalBSpinBox->value()) )
 					);
 		}
 	}
-	
+
 	void
 	viewportTilingChanged()
 	{

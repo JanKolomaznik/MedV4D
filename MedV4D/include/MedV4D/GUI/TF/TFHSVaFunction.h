@@ -2,7 +2,7 @@
 #define TF_HSVA_FUNCTION
 
 #include "MedV4D/GUI/TF/TFAbstractFunction.h"
-#include <QtGui/QColor>
+#include <QColor>
 
 namespace M4D {
 namespace GUI {
@@ -37,12 +37,12 @@ public:
 			tfColor.component2,
 			tfColor.component3,
 			tfColor.alpha);
-		
+
 		return TF::Color(qColor.redF(), qColor.greenF(), qColor.blueF(), qColor.alphaF());
 	}
 
 	void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value){
-		
+
 		QColor qColor;
 		qColor.setRgbF(value.component1, value.component2, value.component3, value.alpha);
 

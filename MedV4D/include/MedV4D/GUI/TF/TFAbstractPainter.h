@@ -2,13 +2,13 @@
 #define TF_ABSTRACT_PAINTER
 
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFWorkCopy.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 
 namespace M4D {

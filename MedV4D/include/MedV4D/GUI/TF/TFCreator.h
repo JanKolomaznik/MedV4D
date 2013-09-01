@@ -1,8 +1,8 @@
 #ifndef TF_CREATOR
 #define TF_CREATOR
 
-#include <QtGui/QDialog>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QVBoxLayout>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 
@@ -37,7 +37,7 @@ public:
 	TFCreator(QMainWindow* mainWindow, TFPalette* palette, const std::vector<TF::Size>& dataStructure);
 	~TFCreator();
 
-	TFEditor* 
+	TFEditor*
 	createEditor();
 
 	TFEditor*
@@ -57,7 +57,7 @@ private slots:
 	void painterButton_clicked(TF::Types::Painter painter);
 	void modifierButton_clicked(TF::Types::Modifier modifier);
 
-private:	
+private:
 
 	enum State{
 		ModeSelection,
@@ -92,7 +92,7 @@ private:
 	bool functionSet_;
 	bool painterSet_;
 	bool modifierSet_;
-	
+
 	QMainWindow* mainWindow_;
 	TFPalette* palette_;
 	std::vector<TF::Size> dataStructure_;
@@ -102,7 +102,7 @@ private:
 	void setStateDimension_();
 	void setStateFunction_();
 	void setStatePainter_();
-	void setStateModifier_();	
+	void setStateModifier_();
 
 	void clearLayout_(bool deleteItems = true);
 

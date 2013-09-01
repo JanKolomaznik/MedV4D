@@ -2,8 +2,8 @@
 #define TF_ABSTRACTFUNCTION
 
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFColor.h"
@@ -31,28 +31,28 @@ public:
 
 	virtual TF::Color getRGBfColor(const TF::Coordinates& coords) = 0;
 	virtual void setRGBfColor(const TF::Coordinates& coords, const TF::Color& value) = 0;
-	
+
 	TF::Size getDimension(){
 
 		return dim;
 	}
-	
+
 	TF::Size getDomain(const TF::Size dimension){
 
 		return colorMap_->size(dimension);
 	}
-	
+
 	void resize(const std::vector<TF::Size>& dataStructure){
 
 		colorMap_->recalculate(dataStructure);
 	}
-	 
+
 	void save(TF::XmlWriterInterface* writer){
 
 		writer->writeStartElement("Function");
 
 			writer->writeAttribute("Dimensions", TF::convert<TF::Size, std::string>(dim));
-				
+
 			for(TF::Size i = 1; i <= dim; ++i)
 			{
 				writer->writeAttribute("Dimension" + TF::convert<TF::Size, std::string>(i),
@@ -74,7 +74,7 @@ public:
 
 		bool ok = false;
 		if(reader->readElement("Function"))
-		{		
+		{
 			TF::Size dimControl = TF::convert<std::string, TF::Size>(
 				reader->readAttribute("Dimensions"));
 			if(dimControl != dim) return false;
@@ -88,7 +88,7 @@ public:
 			resize(dataStructure);
 
 			TF::Coordinates coords(dim);
-			ok = loadDimensions_(reader, coords);	
+			ok = loadDimensions_(reader, coords);
 
 			bool settingsLoaded = loadSettings_(reader);
 			ok = ok && settingsLoaded;
@@ -134,9 +134,9 @@ protected:
 						TF::convert<float, std::string>(colorMap_->value(coords).component3));
 					writer->writeAttribute("Alpha",
 						TF::convert<float, std::string>(colorMap_->value(coords).alpha));
-			
+
 				writer->writeEndElement();
-				
+
 				++coords[currentDim - 1];
 			}
 
@@ -166,7 +166,7 @@ protected:
 			for(TF::Size i = 0; i < colorMap_->size(currentDim); ++i)
 			{
 				if(reader->readElement("Color"))
-				{		
+				{
 					colorMap_->value(coords).component1 = TF::convert<std::string, float>(
 						reader->readAttribute("Component1"));
 					colorMap_->value(coords).component2 = TF::convert<std::string, float>(
@@ -180,7 +180,7 @@ protected:
 				{
 					ok = false;
 				}
-				
+
 				++coords[currentDim - 1];
 			}
 

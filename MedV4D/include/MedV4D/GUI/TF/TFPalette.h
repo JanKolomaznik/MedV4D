@@ -5,16 +5,16 @@
 
 #include <map>
 
-#include "QtGui/QWidget"
-#include "QtGui/QDockWidget"
-#include "QtGui/QMainWindow"
-#include "QtGui/QFileDialog"
-#include "QtGui/QMessageBox"
-#include "QtGui/QMenuBar"
-#include "QtGui/QKeySequence"
-#include "QtGui/QKeyEvent"
-#include "QtGui/QGridLayout"
-#include "QtCore/QTimer"
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMenuBar>
+#include <QKeySequence>
+#include <QKeyEvent>
+#include <QtWidgets/QGridLayout>
+#include <QtCore/QTimer>
 
 #include "MedV4D/GUI/TF/TFCreator.h"
 #include "MedV4D/GUI/TF/TFPaletteButton.h"
@@ -40,30 +40,30 @@ public:
 	TFPalette(QMainWindow* parent, const std::vector<TF::Size>& dataStructure);
 	~TFPalette();
 
-	void 
+	void
 	setupDefault();
 
-	void 
+	void
 	setDataStructure(const std::vector<TF::Size>& dataStructure);
-	bool 
+	bool
 	setHistogram(const TF::HistogramInterface::Ptr histogram);
 
-	void 
+	void
 	setPreview(const QImage& preview, const int index = -1);
-	QImage 
+	QImage
 	getPreview(const int index = -1);
-	QSize 
+	QSize
 	getPreviewSize();
 
-	TF::Size 
-	getDomain(const TF::Size dimension);	
-	TF::Size 
-	getDimension();	
+	TF::Size
+	getDomain(const TF::Size dimension);
+	TF::Size
+	getDimension();
 
-	Editors 
-	getEditors();	
-	
-	TFFunctionInterface::Const 
+	Editors
+	getEditors();
+
+	TFFunctionInterface::Const
 	getTransferFunction(const int index = -1);
 
 	Common::IDNumber
@@ -72,10 +72,10 @@ public:
 		return activeEditor_;
 	}
 
-	Common::TimeStamp 
+	Common::TimeStamp
 	lastChange();
-	
-	Common::TimeStamp 
+
+	Common::TimeStamp
 	lastPaletteChange();
 
 public slots:
@@ -91,13 +91,13 @@ public slots:
 		TFEditor* created = creator_.loadEditorFromFile( fileName );
 
 		if(!created) return;
-		
+
 		addToPalette_(created, showGui);
 	}
 
 signals:
 
-	void 
+	void
 	UpdatePreview(M4D::GUI::TF::Size index);
 
 	void
@@ -111,19 +111,19 @@ signals:
 
 private slots:
 
-	void 
+	void
 	close_triggered(TF::Size index);
 
-	void 
+	void
 	on_addButton_clicked();
 
-	void 
+	void
 	change_activeHolder(TF::Size index);
 
-	void 
+	void
 	update_previews();
-	
-	void 
+
+	void
 	on_previewsCheck_toggled(bool enable);
 
 	void
@@ -131,12 +131,12 @@ private slots:
 
 protected:
 
-	void 
+	void
 	resizeEvent(QResizeEvent*);
-	void 
+	void
 	closeEvent(QCloseEvent *);
 
-private:	
+private:
 
 	struct Editor
 	{
@@ -153,7 +153,7 @@ private:
 		Editor(TFEditor* editor, TFPaletteButton* button): editor(editor), button(button)
 		{ }
 
-		void 
+		void
 		updatePreview()
 		{
 			previewUpdate = M4D::Common::TimeStamp();
@@ -189,19 +189,19 @@ private:
 
 	QTimer mChangeDetectionTimer;
 
-	void 
+	void
 	addToPalette_(TFEditor* editor, bool visible = true );
 
-	void 
+	void
 	removeFromPalette_(const TF::Size index);
 
-	void 
+	void
 	reformLayout_(bool forceReform = false);
 
-	void 
+	void
 	activateNext_(HolderMapIt it);
 
-	void 
+	void
 	changeDomain_(const TF::Size dimension);
 };
 

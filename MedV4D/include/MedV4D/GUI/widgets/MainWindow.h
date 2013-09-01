@@ -1,7 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 #include "MedV4D/GUI/widgets/MultiDockWidget.h"

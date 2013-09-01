@@ -1,12 +1,12 @@
 #ifndef TF_EDITOR
 #define TF_EDITOR
 
-#include <QtGui/QDockWidget>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMainWindow>
 
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFHistogram.h"
@@ -20,7 +20,7 @@
 #include <set>
 
 namespace M4D {
-namespace GUI {	
+namespace GUI {
 
 class TFEditor: public QMainWindow{
 
@@ -34,7 +34,7 @@ public:
 		Composition
 	};
 	typedef std::set<Attribute> Attributes;
-	
+
 	TFEditor(TFAbstractModifier::Ptr modifier,
 		TF::Types::Structure structure,
 		Attributes attributes,
@@ -42,58 +42,58 @@ public:
 
 	virtual ~TFEditor();
 
-	bool 
+	bool
 	load(TF::XmlReaderInterface* reader, bool& sideError);
 
-	bool 
+	bool
 	loadFunction(TF::XmlReaderInterface* reader);
 
-	bool 
+	bool
 	save();
 
-	bool 
+	bool
 	saveFunction();
 
-	bool 
+	bool
 	close();
 
-	virtual void 
+	virtual void
 	setup(QMainWindow* mainWindow, const int index = -1) = 0;
 
-	void 
+	void
 	setHistogram(TF::HistogramInterface::Ptr histogram);
 
-	void 
+	void
 	setDataStructure(const std::vector<TF::Size>& dataStructure);
 
-	TF::Size 
+	TF::Size
 	getIndex();
 
-	std::string 
+	std::string
 	getName();
 
-	Attributes 
+	Attributes
 	getAttributes();
 
-	bool 
+	bool
 	hasAttribute(const Attribute attribute);
 
-	TF::Size 
+	TF::Size
 	getDimension();
 
-	TFFunctionInterface::Const 
+	TFFunctionInterface::Const
 	getFunction();
 
-	QDockWidget* 
+	QDockWidget*
 	getDockWidget() const;
 
-	virtual void 
+	virtual void
 	setActive(const bool active);
 
-	virtual void 
+	virtual void
 	setAvailable(const bool available){}
 
-	Common::TimeStamp 
+	Common::TimeStamp
 	lastChange();
 
 signals:
@@ -120,7 +120,7 @@ protected:
 	bool active_;
 
 	TFAbstractModifier::Ptr modifier_;
-	
+
 	virtual void saveSettings_(TF::XmlWriterInterface* writer);
 
 	virtual bool loadSettings_(TF::XmlReaderInterface* reader);

@@ -1,7 +1,7 @@
 #ifndef COLOR_CHOOSER_BUTTON_H
 #define COLOR_CHOOSER_BUTTON_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 class ColorChooserButton: public QPushButton
 {
@@ -57,7 +57,7 @@ protected:
 
 		QPainter painter(this);
 		QRect rect = QRect( QPoint(), size() );
-		//TODO	
+		//TODO
 		painter.setBrush( QBrush( mColor ) );
 		painter.drawRect(rect);
 	}

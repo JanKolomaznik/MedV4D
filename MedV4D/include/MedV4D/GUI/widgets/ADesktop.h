@@ -1,10 +1,9 @@
-#ifndef AVIEWER_DESKTOP_H
-#define AVIEWER_DESKTOP_H
+#pragma once
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 #endif
 namespace M4D
@@ -30,4 +29,3 @@ private:
 } /*namespace M4D*/
 
 
-#endif /*AVIEWER_DESKTOP_H*/

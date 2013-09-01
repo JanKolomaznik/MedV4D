@@ -5,7 +5,7 @@ namespace M4D
 {
 namespace GUI
 {
-	
+
 TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVisualizer( aParent ), mEditedChannelIdx( 0 )
 {
 	setMinimumSize ( 256, 256 );
@@ -26,7 +26,7 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 	for( it = mTransferFunctionBuffer->begin(); it != mTransferFunctionBuffer->end(); ++it ) {
 		*it = vorgl::RGBAf( r, g, b, a );
 		++i;
-		float intensity = clampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width); 
+		float intensity = clampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width);
 		r = intensity;
 		g = intensity;
 		b = intensity;
@@ -49,7 +49,7 @@ TransferFunction1DEditor::RenderBackground()
 {
 	if ( mBackgroundHistogram ) {
 		mPainter.setTransform( mBackgroundTransform );
-		
+
 		mPainter.setPen ( QColor( 0, 255, 255, 255 )/*QApplication::palette().color( QPalette::Background )*/ );
 		RenderHistogram( mPainter, *mBackgroundHistogram );
 	}
@@ -115,7 +115,7 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 	UpdateTransform();
 
 	mPainter.begin( this );
-	
+
 	mPainter.setWorldMatrixEnabled( false );
 	mPainter.setClipRegion ( QRegion( mBorderWidth, mBorderWidth, width() - 2 * mBorderWidth + 1, height() - 2 * mBorderWidth + 1 ) );
 	QBrush brush( QApplication::palette().color( QPalette::Shadow ) );
@@ -150,7 +150,7 @@ TransferFunction1DEditor::FillTransferFunctionValues( float aLeft, float aLeftVa
 	}
 	//TODO fix for right interval
 	float step = (aRightVal - aLeftVal) / (last - first);
-	
+
 	for ( ; first <= last; ++first, aLeftVal += step ) {
 		(*mTransferFunctionBuffer)[first][mEditedChannelIdx] = aLeftVal;
 	}
@@ -174,7 +174,7 @@ TransferFunction1DEditor::mouseMoveEvent ( QMouseEvent * event )
 	if ( !mIsLineEditing ) {
 		mLastPoint = mCurrentPoint;
 	}
-	mCurrentPoint = event->posF()*mInversionTransform;
+	mCurrentPoint = event->localPos()*mInversionTransform;
 
 	float left;
 	float right;
@@ -192,7 +192,7 @@ TransferFunction1DEditor::mouseMoveEvent ( QMouseEvent * event )
 		leftVal = clampToInterval( 0.0f, 1.0f, (float)mCurrentPoint.y() );
 		rightVal = clampToInterval( 0.0f, 1.0f, (float)mLastPoint.y() );
 	}
-	
+
 	FillTransferFunctionValues( left, leftVal, right, rightVal );
 
 	++mEditTimeStamp;
@@ -209,7 +209,7 @@ TransferFunction1DEditor::mousePressEvent ( QMouseEvent * event )
 		update();
 		return;
 	}
-	mLastPoint = mCurrentPoint = event->posF()*mInversionTransform;
+	mLastPoint = mCurrentPoint = event->localPos()*mInversionTransform;
 
 	mMouseDown = true;
 

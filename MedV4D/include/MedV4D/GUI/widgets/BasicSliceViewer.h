@@ -7,7 +7,7 @@
 #include "MedV4D/GUI/utils/FrameBufferObject.h"
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
 #include "MedV4D/Imaging/Imaging.h"
@@ -67,7 +67,7 @@ public:
 
 		GL_CHECKED_CALL( glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, mSize.width(), mSize.height() ) );
 
-		GL_CHECKED_CALL( glFramebufferRenderbufferEXT( 
+		GL_CHECKED_CALL( glFramebufferRenderbufferEXT(
 					GL_FRAMEBUFFER_EXT,
 					GL_DEPTH_ATTACHMENT_EXT,
 					GL_RENDERBUFFER_EXT,
@@ -90,16 +90,16 @@ protected:
 	run()
 	{
 
-		
 
-		
 
-		/*GL_CHECKED_CALL( glFramebufferTexture2DEXT( 
+
+
+		/*GL_CHECKED_CALL( glFramebufferTexture2DEXT(
 					GL_FRAMEBUFFER_EXT,
 					GL_COLOR_ATTACHMENT0_EXT,
 					GL_TEXTURE_2D,
 					mColorTexture,
-					0 
+					0
 					) );*/
 		while ( true ) {
 			mContext->makeCurrent();
@@ -107,28 +107,28 @@ protected:
 
 
 		}
-		
+
 
 	}
-	GLuint	mFrameBufferObject, 
-		mDepthBuffer, 
+	GLuint	mFrameBufferObject,
+		mDepthBuffer,
 		mColorTexture;
 	QGLContext	*mContext;
 	QSize	mSize;
 };
 
 
-class BasicSliceViewer : 
-	public ViewerConstructionKit<   QGLWidget, 
+class BasicSliceViewer :
+	public ViewerConstructionKit<   QGLWidget,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
 					>
 {
 	Q_OBJECT;
 public:
-	typedef ViewerConstructionKit<  QGLWidget, 
+	typedef ViewerConstructionKit<  QGLWidget,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
 					>	PredecessorType;
-	
+
 
 	BasicSliceViewer( QWidget *parent = NULL );
 
@@ -171,9 +171,9 @@ public:
 
 
 	void
-	ReceiveMessage( 
-		M4D::Imaging::PipelineMessage::Ptr 			msg, 
-		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
+	ReceiveMessage(
+		M4D::Imaging::PipelineMessage::Ptr 			msg,
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle,
 		M4D::Imaging::FlowDirection				direction
 	)
 	{
@@ -213,7 +213,7 @@ public slots:
 	SetRendererType( int aRendererType )
 	{
 		mRendererType = aRendererType;
-		//TODO 
+		//TODO
 
 		mCurrentEventHandler = mUserEventHandlers[ aRendererType ].get();
 		update();
@@ -224,7 +224,7 @@ public slots:
 	void
 	SetColorTransformType( int aColorTransform )
 	{
-		//TODO 
+		//TODO
 		mSliceRenderConfig.colorTransform = aColorTransform;
 		mVolumeRenderConfig.colorTransform = aColorTransform;
 
@@ -267,14 +267,14 @@ public slots:
 		mSaveCycle = true;
 		update();
 	}
-	
+
 	void
 	ResetView()
 	{
 		Vector3f pos = mVolumeRenderConfig.camera.GetTargetPosition();
 		pos[1] += -550;
 		mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
-		
+
 		update();
 	}
 
@@ -299,28 +299,28 @@ protected:
 	render();
 
 
-	void	
+	void
 	initializeGL ();
 
-	void	
+	void
 	initializeOverlayGL ();
 
-	void	
+	void
 	paintGL ();
 
-	void	
+	void
 	paintOverlayGL ();
 
-	void	
+	void
 	resizeGL ( int width, int height );
 
-	void	
+	void
 	resizeOverlayGL ( int width, int height );
 
 	void
 	mouseMoveEvent ( QMouseEvent * event );
 
-	void	
+	void
 	mouseDoubleClickEvent ( QMouseEvent * event );
 
 	void
@@ -357,7 +357,7 @@ protected:
 	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
 	 bool					_prepared;
-	
+
 	//RenderingThread				mRenderingThread;
 	//QGLContext 				*mOtherContext;
 

@@ -1,7 +1,7 @@
 #ifndef ADESKTOP_CONTAINER_H
 #define ADESKTOP_CONTAINER_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D

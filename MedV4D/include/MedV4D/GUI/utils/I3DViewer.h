@@ -2,7 +2,7 @@
 #define A_3D_VIEWER_H
 
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
@@ -32,10 +32,10 @@ public:
 	MoveCamera( const Vector<float32,3> &translation ) = 0;
 
 	virtual void
-	SetCameraRotationXYZ( const Vector<float32,3> &angles ) = 0; 
+	SetCameraRotationXYZ( const Vector<float32,3> &angles ) = 0;
 
 	virtual void
-	RotateCameraXYZ( const Vector<float32,3> &angles ) = 0; 
+	RotateCameraXYZ( const Vector<float32,3> &angles ) = 0;
 
 	virtual void
 	RotateCameraAxis( float32 angle, const Vector<float32,3> &axis ) = 0;
@@ -44,7 +44,7 @@ public:
 	OrbitCamera( float32 angle, const Vector<float32,3> &axis ) = 0;
 
 
-	
+
 };
 
 } /*namespace Viewer*/

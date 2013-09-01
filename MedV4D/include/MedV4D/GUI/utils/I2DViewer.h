@@ -2,7 +2,7 @@
 #define A_2D_VIEWER_H
 
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
@@ -39,7 +39,7 @@ public:
 
 	virtual float32
 	GetVerticalFieldOfView()const = 0;
-	
+
 	virtual float32
 	GetHorizontalFieldOfView()const = 0;
 
@@ -48,7 +48,7 @@ public:
 
 	virtual const Vector< float32, 2 > &
 	GetCenterPosition( const Vector< float32, 2 > &coord )const = 0;
-	
+
 };
 
 } /*namespace Viewer*/

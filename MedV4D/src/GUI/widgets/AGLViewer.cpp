@@ -1,9 +1,12 @@
-#include <soglu/OGLDrawing.hpp>
-#include <soglu/OGLTools.hpp>
-//#include "MedV4D/GUI/utils/OGLDrawing.h"
-#include "MedV4D/GUI/utils/QtM4DTools.h"
-#include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
+#include <soglu/OGLDrawing.hpp>
+#include <soglu/TextureUtils.hpp>
+#include <soglu/ErrorHandling.hpp>
+#include <soglu/CgFXShader.hpp>
+#include <soglu/Init.hpp>
+#include "MedV4D/GUI/utils/QtM4DTools.h"
+//#include "MedV4D/GUI/utils/OGLDrawing.h"
+#include "MedV4D/Common/MathTools.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
 #include <boost/timer/timer.hpp>
 
@@ -14,15 +17,15 @@ namespace GUI
 namespace Viewer
 {
 
-struct AAAHELPER
+/*struct AAAHELPER
 {
 	void operator()()
 	{
 		soglu::drawCylinder(glm::fvec3(), glm::fvec3(0.0f,0.0f,1.0f), 10, 50 );
-		
+
 		soglu::drawCylinder(glm::fvec3(200.0, 200.0, 100.0f), glm::fvec3(0.0f,0.0f,1.0f), 10, 50);
 	}
-};
+};*/
 
 
 AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false ), mLastMeasurement( 0 ), mEnableFPS( false )
@@ -39,7 +42,7 @@ AGLViewer::~AGLViewer()
 {
 	makeCurrent();
 	mFrameBufferObject.Finalize();
-	mPickManager.finalize();
+	//mPickManager.finalize();
 	doneCurrent();
 
 	deselect();
@@ -49,7 +52,7 @@ void
 AGLViewer::getCurrentViewImageBuffer(size_t &aWidth, size_t &aHeight, boost::shared_array< uint8 > &aBuffer )
 {
 	makeCurrent();
-	soglu::getImageBufferFromTexture(aWidth, aHeight, aBuffer, mFrameBufferObject.GetColorBuffer());	
+	soglu::getImageBufferFromTexture(aWidth, aHeight, aBuffer, mFrameBufferObject.GetColorBuffer());
 	doneCurrent();
 }
 
@@ -82,31 +85,31 @@ AGLViewer::deselect()
 }
 
 
-void	
+void
 AGLViewer::initializeGL()
 {
 	soglu::initOpenGL();
 	soglu::initializeCg();
 	glClearColor( mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF() );
-	
+
 	mFrameBufferObject.Initialize( width(), height() );
 
-	mPickManager.initialize( 150 );D_PRINT("REMOVE THIS" );
-	
+	//mPickManager.initialize( 150 );D_PRINT("REMOVE THIS" );
+
 	initializeRenderingEnvironment();
 }
 
-void	
+void
 AGLViewer::initializeOverlayGL()
 {
 
 }
 
-void	
+void
 AGLViewer::paintGL()
 {
 	M4D::Common::Clock timer;
-	
+
 	//boost::timer::auto_cpu_timer t;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -115,7 +118,7 @@ AGLViewer::paintGL()
 
 		mFrameBufferObject.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		//****************************************
 		prepareForRenderingStep();
 		//updateGLViewSetupInfo();
@@ -127,9 +130,9 @@ AGLViewer::paintGL()
 
 		//GLViewSetup  setup = getCurrentGLViewSetup();
 		//mPickManager.render( Vector2i( tmpX,tmpY ), setup, AAAHELPER() );D_PRINT("REMOVE THIS" );//-----------------------------------------------------------------
-		
+
 		soglu::checkForGLError( "OGL error occured during rendering: " );
-		
+
 		mFrameBufferObject.Unbind();
 
 		GL_CHECKED_CALL( glViewport(0, 0, width(), height()) );
@@ -137,21 +140,21 @@ AGLViewer::paintGL()
 	} else {
 		//D_PRINT( "Rendering not possible at the moment" );
 	}
-	
-	
+
+
 	if( mSelected ) {
 		GL_CHECKED_CALL( glDisable(GL_DEPTH_TEST ) );
 		GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-		//****************************************************	
+		//****************************************************
 		glClear( GL_DEPTH_BUFFER_BIT );
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho( 
-			(double)0, 
-			(double)width(), 
-			(double)0, 
-			(double)height(), 
-			-1.0, 
+		glOrtho(
+			(double)0,
+			(double)width(),
+			(double)0,
+			(double)height(),
+			-1.0,
 			1.0
 			);
 
@@ -176,7 +179,7 @@ AGLViewer::paintGL()
 	glFinish();
 }
 
-void	
+void
 AGLViewer::paintOverlayGL()
 {
 	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -193,7 +196,7 @@ AGLViewer::paintOverlayGL()
 	}*/
 }
 
-void	
+void
 AGLViewer::resizeGL( int width, int height )
 {
 	glViewport(0, 0, width, height);
@@ -204,7 +207,7 @@ AGLViewer::resizeGL( int width, int height )
 	mViewerState->aspectRatio = static_cast< float >(width) / height;
 }
 
-void	
+void
 AGLViewer::resizeOverlayGL( int width, int height )
 {
 	/*glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -212,12 +215,12 @@ AGLViewer::resizeOverlayGL( int width, int height )
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho( 
-		(double)0, 
-		(double)width, 
-		(double)0, 
-		(double)height, 
-		-1.0, 
+	glOrtho(
+		(double)0,
+		(double)width,
+		(double)0,
+		(double)height,
+		-1.0,
 		1.0
 		);
 
@@ -225,15 +228,15 @@ AGLViewer::resizeOverlayGL( int width, int height )
 	glLoadIdentity();*/
 }
 
-void	
+void
 AGLViewer::mouseMoveEvent ( QMouseEvent * event )
-{ 
+{
 	if ( mViewerController && mViewerController->mouseMoveEvent( mViewerState, getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }
 
-void	
+void
 AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
 	tmpX = event->x();
@@ -246,9 +249,9 @@ AGLViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 	}
 }
 
-void	
+void
 AGLViewer::mousePressEvent ( QMouseEvent * event )
-{ 	
+{
 	ViewerManager::getInstance()->selectViewer( this );
 
 	if ( mViewerController && mViewerController->mousePressEvent( mViewerState,  getMouseEventInfo( event ) ) ) {
@@ -256,9 +259,9 @@ AGLViewer::mousePressEvent ( QMouseEvent * event )
 	}
 }
 
-void	
+void
 AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
-{ 
+{
 	ViewerManager::getInstance()->selectViewer( this );
 
 	if ( mViewerController && mViewerController->mouseReleaseEvent( mViewerState, getMouseEventInfo( event ) ) ) {
@@ -266,7 +269,7 @@ AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
 	}
 }
 
-void	
+void
 AGLViewer::wheelEvent ( QWheelEvent * event )
 {
 	if ( mViewerController && mViewerController->wheelEvent( mViewerState, event ) ) {

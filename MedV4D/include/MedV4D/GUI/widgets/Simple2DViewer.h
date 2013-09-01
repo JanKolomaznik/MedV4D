@@ -2,7 +2,7 @@
 #define _SIMPLE_2D_VIEWER_H
 
 #include "MedV4D/GUI/utils/OGLDrawing.h"
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "MedV4D/Imaging/ImageRegion.h"
 #include "MedV4D/GUI/utils/ViewConfiguration.h"
 #include "MedV4D/Common/Vector.h"
@@ -27,19 +27,19 @@ public:
 
 	void
 	SetImageRegion( ARegion2D *region )
-		{ 
-			_region = region; 
-			_viewConfiguration = GetOptimalViewConfiguration( 
+		{
+			_region = region;
+			_viewConfiguration = GetOptimalViewConfiguration(
 					_region->GetRealMinimum(),
 					_region->GetRealMaximum(),
-					Vector< unsigned, 2 >( this->width(), this->height() ) 
-					);		
+					Vector< unsigned, 2 >( this->width(), this->height() )
+					);
 		}
 	void
 	SetMaskRegion( ARegion2D *region )
-		{ 
-			_mask = region; 
-			
+		{
+			_mask = region;
+
 		}
 
 	void
@@ -59,7 +59,7 @@ public:
 		_shaderConfig.Initialize( _cgContext, "LUT.cg", "LUT_texture" );
 		_blendShaderConfig.Initialize( _cgContext, "MaskBlend.cg", "MaskBlend" );
 	}
-	
+
 	void
 	resizeGL( int width, int height )
 	{
@@ -68,7 +68,7 @@ public:
 		glLoadIdentity();
 	}
 
-	void	
+	void
 	paintGL()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -77,7 +77,7 @@ public:
 		if( !_region ) {
 			return;
 		}
-		_viewConfiguration = GetOptimalViewConfiguration( 
+		_viewConfiguration = GetOptimalViewConfiguration(
 					_region->GetRealMinimum(),
 					_region->GetRealMaximum(),
 					Vector< unsigned, 2 >( this->width(), this->height() ) ,
@@ -86,19 +86,19 @@ public:
 		_shaderConfig.brightnessContrast[0] = 8.0f;
 
 		M4D::SetToViewConfiguration2D( _viewConfiguration );
-	
+
 		if( _region ) {
 			//M4D::GLDrawImageDataContrastBrightness( *_region, 0.0f, 1.0f, _linearInterpolation );
 			GLuint texName = M4D::GLPrepareTextureFromImageData( *_region, false );
-			
+
 			_shaderConfig.textureName = texName;
 			_shaderConfig.Enable();
 
 			CheckForCgError("Check befor drawing ", _cgContext );
 			M4D::GLDrawTexturedQuad( _region->GetRealMinimum(), _region->GetRealMaximum() );
-			
+
 			_shaderConfig.Disable();
-			
+
 			glDeleteTextures( 1, &texName );
 			glFlush();
 		}
@@ -107,17 +107,17 @@ public:
 
 			_blendShaderConfig.textureName = texName;
 			_blendShaderConfig.blendColor = Vector< float, 4 >( 1.0f, 0.0f, 0.0f, 1.0f );
-			_blendShaderConfig.Enable();	
+			_blendShaderConfig.Enable();
 
 			M4D::GLDrawTexturedQuad( _mask->GetRealMinimum(), _mask->GetRealMaximum() );
-			
+
 			_blendShaderConfig.Disable();
 
 			glDeleteTextures( 1, &texName );
 			glFlush();
 
 		}
-		
+
 	}
 protected:
 	ARegion2D		*_region;

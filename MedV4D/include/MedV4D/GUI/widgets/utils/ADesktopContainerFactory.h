@@ -1,7 +1,7 @@
 #ifndef ADESKTOP_CONTAINER_FACTORY_H
 #define ADESKTOP_CONTAINER_FACTORY_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 #include "MedV4D/GUI/widgets/ADesktopContainer.h"
 #include "MedV4D/Common/ParameterSet.h"

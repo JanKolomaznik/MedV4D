@@ -1,33 +1,33 @@
 #ifndef GENERAL_VIEWER_H
 #define GENERAL_VIEWER_H
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
+
 #include "MedV4D/Imaging/Imaging.h"
-
-#include "MedV4D/GUI/utils/ViewConfiguration.h"
-#include "MedV4D/GUI/utils/IUserEvents.h"
-#include <vorgl/TransferFunctionBuffer.hpp>
-//#include "MedV4D/GUI/utils/TransferFunctionBuffer.h"
-#include "MedV4D/GUI/utils/IDMappingBuffer.h"
-
-#include <soglu/FrameBufferObject.hpp>
-#include <soglu/CgFXShader.hpp>
-#include <soglu/GLTextureImage.hpp>
-
-//#include "MedV4D/GUI/utils/CgShaderTools.h"
-//#include "MedV4D/GUI/utils/GLTextureImage.h"
-//#include "MedV4D/GUI/utils/FrameBufferObject.h"
 #include "MedV4D/GUI/utils/ViewerController.h"
-#include "MedV4D/GUI/utils/MouseTracking.h"
-#include "MedV4D/GUI/widgets/AGUIViewer.h"
+#include <soglu/GLTextureImage.hpp>
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
-
 #include "MedV4D/GUI/widgets/AGLViewer.h"
+
+///#include "MedV4D/GUI/utils/ViewConfiguration.h"
+//#include "MedV4D/GUI/utils/IUserEvents.h"
+
+/*#include "MedV4D/GUI/utils/MouseTracking.h"
+#include "MedV4D/GUI/widgets/AGUIViewer.h"
+
+*/
+
+//#include <vorgl/TransferFunctionBuffer.hpp>
+//#include "MedV4D/GUI/utils/IDMappingBuffer.h"
+
+#include <soglu/CgFXShader.hpp>
+
+
 #include "MedV4D/GUI/renderers/RendererTools.h"
 #include "MedV4D/GUI/renderers/SliceRenderer.h"
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
-#include <QtGui>
+#include <QtWidgets>
 //#include <QtOpenGL>
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
@@ -56,11 +56,11 @@ class ViewerState : public BaseViewerState
 {
 public:
 	typedef boost::shared_ptr< ViewerState > Ptr;
-	
+
 	//GLTextureImage::Ptr	_textureData;
 
 	unsigned colorTransform;
-	
+
 	Vector3i
 	getMaxSlice()const
 	{
@@ -72,13 +72,13 @@ public:
 	{
 		return mPrimaryImageExtents.minimum;
 	}
-	
+
 	Vector3f
 	getRealSize()const
 	{
 		return mPrimaryImageExtents.realMaximum - mPrimaryImageExtents.realMinimum;
 	}
-	
+
 	Vector3f
 	getRealCenter()const
 	{
@@ -89,15 +89,15 @@ public:
 	{
 		return mPrimaryImageExtents.elementExtents;
 	}
-	
+
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
 	soglu::GLTextureImage::WPtr mPrimaryImageTexture;
 	M4D::Common::TimeStamp mPrimaryEditTimestamp;
-	
+
 	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
 	soglu::GLTextureImage::WPtr mSecondaryImageTexture;
 	M4D::Common::TimeStamp mSecondaryEditTimestamp;
-	
+
 	/*Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;
 	Vector< float, 3 >			_elementExtents;
@@ -108,7 +108,7 @@ public:
 	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
-	IDMappingBufferInfo			mMappingBufferInfo;
+//	IDMappingBufferInfo			mMappingBufferInfo;
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
@@ -119,8 +119,8 @@ public:
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
 	bool 					mEnableVolumeBoundingBox;
 	QualityMode				mQualityMode;
-	
-	
+
+
 	soglu::CgFXShader mSceneSlicingCgEffect;
 	soglu::CgFXShader mBasicCgEffect;
 };
@@ -144,14 +144,14 @@ public:
 };
 
 
-class GeneralViewer : 
-	public ViewerConstructionKit<   AGLViewer, 
+class GeneralViewer :
+	public ViewerConstructionKit<   AGLViewer,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
 					>
 {
 	Q_OBJECT;
 public:
-	typedef ViewerConstructionKit<  AGLViewer, 
+	typedef ViewerConstructionKit<  AGLViewer,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
 					>	PredecessorType;
 
@@ -160,13 +160,13 @@ public:
 
 	void
 	setTiling( unsigned aRows, unsigned aCols );
-	
+
 	void
 	setTiling( unsigned aRows, unsigned aCols, unsigned aSliceStep );
-	
+
 	Vector2u
 	getTiling() const;
-	
+
 	size_t
 	getTilingSliceStep() const;
 
@@ -188,8 +188,8 @@ public:
 	vorgl::TransferFunctionBufferInfo
 	getTransferFunctionBufferInfo()const;
 
-	void
-	setMappingBuffer( IDMappingBuffer::Ptr aMappingBuffer );
+	/*void
+	setMappingBuffer( IDMappingBuffer::Ptr aMappingBuffer );*/
 
 	void
 	setCurrentSlice( int32 slice );
@@ -211,7 +211,7 @@ public:
 
 	void
 	changeCurrentSlice( int32 diff );
-	
+
 	bool
 	isColorTransformAvailable( unsigned aTransformType );
 
@@ -246,9 +246,9 @@ public:
 	getColorTransformName();
 
 	void
-	ReceiveMessage( 
-		M4D::Imaging::PipelineMessage::Ptr 			msg, 
-		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
+	ReceiveMessage(
+		M4D::Imaging::PipelineMessage::Ptr 			msg,
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle,
 		M4D::Imaging::FlowDirection				direction
 		);
 
@@ -282,15 +282,15 @@ public:
 	ViewType
 	getViewType()const;
 
-	QStringList 
+	QStringList
 	getAvailableColorTransformationNames();
 
 	GUI::Renderer::ColorTransformNameIDList
 	getAvailableColorTransformations();
-	
+
 	void
 	setRenderingExtension( RenderingExtension::Ptr aRenderingExtension );
-	
+
 	bool
 	isBoundingBoxEnabled()const;
 
@@ -364,7 +364,7 @@ public slots:
 
 	void
 	enableInterpolation( bool aEnable );
-	
+
 	void
 	resetView();
 
@@ -412,7 +412,7 @@ protected:
 	MouseEventInfo
 	getMouseEventInfo( QMouseEvent * event );
 
-	void	
+	void
 	resizeGL ( int width, int height )
 	{
 		PredecessorType::resizeGL( width, height );
@@ -426,7 +426,7 @@ protected:
 	bool
 	PrepareData();
 
-	
+
 
 	bool _prepared;
 //******** TMP ************
@@ -440,13 +440,13 @@ private:
 	getViewerState()
 	{
 		ASSERT( mViewerState );
-		return *(boost::polymorphic_downcast< ViewerState *>( mViewerState.get() ) ); 
+		return *(boost::polymorphic_downcast< ViewerState *>( mViewerState.get() ) );
 	}
 	const ViewerState &
 	getViewerState() const
 	{
 		ASSERT( mViewerState );
-		return *(boost::polymorphic_downcast< const ViewerState *>( mViewerState.get() ) ); 
+		return *(boost::polymorphic_downcast< const ViewerState *>( mViewerState.get() ) );
 	}
 };
 

@@ -2,10 +2,10 @@
 #define MULTI_DOCK_WIDGET_H
 
 #include <QMoveEvent>
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #endif
@@ -33,7 +33,7 @@ public:
 	{
 		resize( QSize( 100, 15 ) );
 		setMinimumSize( QSize( 50, 12 ) );
-		
+
 		QHBoxLayout *layout = new QHBoxLayout;
 		QLabel *label = new QLabel( aTitle );
 		layout->addWidget( label );
@@ -43,20 +43,20 @@ public:
 	getClickPos()
 	{
 		return mClickPos;
-	}	
+	}
 protected:
-	void	
+	void
 	mouseDoubleClickEvent ( QMouseEvent * event )
 	{
 		event->ignore();
 	}
-	
+
 	void
 	mouseMoveEvent ( QMouseEvent * event )
 	{
 		event->ignore();
 	}
-	
+
 	void
 	mousePressEvent ( QMouseEvent * event )
 	{
@@ -65,7 +65,7 @@ protected:
 		LOG( "Mouse event - global: " << event->globalX() << "; " << event->globalY() );
 		event->ignore();
 	}
-	
+
 	void
 	mouseReleaseEvent ( QMouseEvent * event )
 	{
@@ -113,7 +113,7 @@ public:
 		//QObject::connect( mCurrentDockWidget, SIGNAL( dockMoved( QPoint, QPoint ) ), this, SLOT( dockMoved( QPoint, QPoint ) ), Qt::QueuedConnection );
 		setLayout( new QVBoxLayout() );
 	}
-	
+
 	void
 	addDockingWindow( Qt::DockWidgetArea aArea, QMainWindow *aWin )
 	{
@@ -151,7 +151,7 @@ protected:
 	switchCurrentMainWindow( WinRecord aRecord, QPoint globPos, QPoint locPos, bool dragging )
 	{
 		ASSERT( aRecord.win );
-		
+
 		LOG( "Switching main window" );
 
 		/*mCurrentDockWidget->setVisible( false );
@@ -160,7 +160,7 @@ protected:
 		mCurrentMainWindow->addDockWidget( Qt::RightDockWidgetArea, mCurrentDockWidget );
 		mCurrentDockWidget->setVisible( true );*/
 		DockWidgetPrivate *dock = new DockWidgetPrivate( mTitle );
-	
+
 		aRecord.win->addDockWidget( aRecord.area, dock );
 		dock->setWidget( this );
 		dock->setVisible( false );
@@ -181,7 +181,7 @@ protected:
 			//emit continueInDrag( titleBar, pos );
 			LOG( "sending event " << M4D::GUI::QPointToVector2i( locPos ) );
 			QMouseEvent *event = new QMouseEvent( QEvent::MouseButtonPress, locPos, globPos, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier );
-			QCoreApplication::postEvent ( dock->titleBarWidget(), event );  
+			QCoreApplication::postEvent ( dock->titleBarWidget(), event );
 		}
 	}
 protected slots:

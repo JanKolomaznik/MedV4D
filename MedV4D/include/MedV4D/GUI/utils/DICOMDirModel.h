@@ -1,7 +1,7 @@
 #ifndef DICOM_DIR_MODEL_H
 #define DICOM_DIR_MODEL_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 
 
@@ -17,13 +17,13 @@ public:
 	{
 		return 1;
 	}
-	
+
 	QVariant
 	data( const QModelIndex & index, int role = Qt::DisplayRole ) const
 	{
 		return QVariant();
 	}
-	
+
 	QModelIndex
 	index( int row, int column, const QModelIndex & parent = QModelIndex() ) const
 	{
@@ -39,10 +39,10 @@ public:
 		}
 		return QModelIndex();
 	}
-	
+
 	QModelIndex
 	parent( const QModelIndex & index ) const;
-	
+
 	int
 	rowCount( const QModelIndex & parent = QModelIndex() ) const
 	{

@@ -2,7 +2,7 @@
 #define A_GUI_VIEWER_H
 
 #include "MedV4D/GUI/widgets/AViewer.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
@@ -14,7 +14,7 @@ namespace Viewer
 
 /*class AGUIViewer;
 
-enum{ 
+enum{
 	EID_KEY_PRESS,
 	EID_KEY_RELEASE,
 	EID_MOUSE_DOUBLE_CLICK,
@@ -38,25 +38,25 @@ public:
 	IsHandlingEvent( uint32 eventID )const
 	{ return _handleFlags[ eventID ]; }
 
-	virtual void 
+	virtual void
 	keyPressEvent ( AGUIViewer &viewer, QKeyEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	keyReleaseEvent ( AGUIViewer &viewer, QKeyEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	mouseDoubleClickEvent ( AGUIViewer &viewer, QMouseEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	mouseMoveEvent ( AGUIViewer &viewer, QMouseEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	mousePressEvent ( AGUIViewer &viewer, QMouseEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	mouseReleaseEvent ( AGUIViewer &viewer, QMouseEvent * event ) = 0;
-	
-	virtual void 
+
+	virtual void
 	wheelEvent ( AGUIViewer &viewer, QWheelEvent * event ) = 0;
 
 protected:
@@ -77,11 +77,11 @@ public:
 	* of QWidget, like QVTKWidget or QGLWidget).
 	*  @return Pointer that is casted to the QWidget base of the implementing class
 	**/
-	virtual QWidget* 
+	virtual QWidget*
 	CastToQWidget()=0;
 
 	/*void
-	SetEventHandler( AEventHandler::Ptr handler ) 
+	SetEventHandler( AEventHandler::Ptr handler )
 	{ _eventHandler = handler; }*/
 
 

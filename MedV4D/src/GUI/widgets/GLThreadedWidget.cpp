@@ -1,7 +1,7 @@
 
 #include "MedV4D/GUI/widgets/GLThreadedWidget.h"
 
-#include <QtGui/QResizeEvent>
+#include <QResizeEvent>
 
 GLThreadedWidget::GLThreadedWidget(QWidget *parent)
     : QGLWidget(parent)
@@ -21,7 +21,7 @@ GLThreadedWidget::~GLThreadedWidget()
 	StopRenderingThread();
 }
 
-void 
+void
 GLThreadedWidget::InitRenderingThread( )
 {
     // start the rendering thread
@@ -30,7 +30,7 @@ GLThreadedWidget::InitRenderingThread( )
     _renderCondition.wakeAll();
 }
 
-void 
+void
 GLThreadedWidget::StopRenderingThread()
 {
     // request stopping
@@ -41,7 +41,7 @@ GLThreadedWidget::StopRenderingThread()
     _renderingThread->wait();
 }
 
-void 
+void
 GLThreadedWidget::initializeGL()
 {
     // typical OpenGL init
@@ -52,7 +52,7 @@ GLThreadedWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 }
 
-void 
+void
 GLThreadedWidget::resizeGL(int width, int height)
 {
     // nothing special
@@ -65,7 +65,7 @@ GLThreadedWidget::resizeGL(int width, int height)
     glMatrixMode(GL_MODELVIEW);
 }
 
-void 
+void
 GLThreadedWidget::paintGL()
 {
     // clear all and draw the scene
@@ -117,13 +117,13 @@ GLThreadedWidget::paintGL()
     }
 }
 
-void 
+void
 GLThreadedWidget::glDraw()
 {
     RenderRequest();
 }
 
-void 
+void
 GLThreadedWidget::closeEvent( QCloseEvent * event )
 {
     // request stopping
@@ -169,7 +169,7 @@ GLThreadedWidget::RenderingThread::RenderingThread( GLThreadedWidget &motherWidg
 
 }
 
-void 
+void
 GLThreadedWidget::RenderingThread::resizeViewport( const QSize& size )
 {
     // set size and flag to request resizing
@@ -177,7 +177,7 @@ GLThreadedWidget::RenderingThread::resizeViewport( const QSize& size )
     _resizeFlag = true;
 }
 
-void 
+void
 GLThreadedWidget::RenderingThread::stop()
 {
     // set flag to request thread to exit
@@ -186,7 +186,7 @@ GLThreadedWidget::RenderingThread::stop()
     _renderFlag = false;
 }
 
-void 
+void
 GLThreadedWidget::RenderingThread::run()
 {
     // lock the render mutex of the Gl widget

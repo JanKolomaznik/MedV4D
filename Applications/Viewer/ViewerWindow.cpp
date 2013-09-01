@@ -198,12 +198,12 @@ ViewerWindow::ViewerWindow()
 		QPoint putAt=myRegion.topRight();
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
-		
+
 
 	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
 	M4D::GUI::Renderer::gSliceRendererShaderPath = dataDirName / "shaders" / "ImageRender.cgfx";
 	M4D::GUI::Renderer::gVolumeRendererShaderPath = dataDirName / "shaders" / "ImageRender.cgfx";
-	M4D::gPickingShaderPath = dataDirName / "shaders" / "PickingShader.cgfx";
+	//M4D::gPickingShaderPath = dataDirName / "shaders" / "PickingShader.cgfx";
 
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
@@ -214,19 +214,19 @@ ViewerWindow::ViewerWindow()
 
 	createDockWidget( tr("Transfer Function Palette"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
 	/*QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
-	
+
 	dockWidget->setWidget( &(*mTFEditingSystem) );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
-	
+
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);*/
 	//dockWidget->setFloating(true);
-	
+
 	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./data/TF" ) ) );
 
 	LOG( "TF framework initialized" );
 //*****************
-	
+
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
 	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
 
@@ -313,13 +313,13 @@ ViewerWindow::ViewerWindow()
 	//mOpenDialog->setOption(QFileDialog::DontUseNativeDialog, false);
 }
 
-void 
+void
 ViewerWindow::denoiseImage()
 {
 	LOG( "denoiseImage()" );
 	ImageRecord::Ptr rec = DatasetManager::getInstance()->getCurrentImageInfo();
 	M4D::Imaging::AImage::Ptr image = rec->image;
-	if( !image ) { 
+	if( !image ) {
 		return;
 	}
 	#ifdef USE_CUDA
@@ -329,7 +329,7 @@ ViewerWindow::denoiseImage()
 			IMAGE_TYPE::Ptr outputImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 
 			median3D( typedImage->GetRegion(), outputImage->GetRegion(), 2 );
-			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );	
+			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );
 			rec->image = outputImage;
 		);
 	#endif
@@ -466,7 +466,7 @@ ViewerWindow::updateJoyControl()
 		iInputValue = mJoyInput.getAxis(0, 4);
 		iInputValue = (iInputValue < 0)? M4D::min(iInputValue + iOffset, 0): M4D::max(iInputValue - iOffset, 0); // left stick Y
 		camZ2 = fConstant * iInputValue / 65535.0f;
-		pGenViewer->cameraDolly(1.0f + camZ1 + camZ2);		
+		pGenViewer->cameraDolly(1.0f + camZ1 + camZ2);
 	}
 }
 #endif
@@ -556,7 +556,7 @@ fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, vorgl::
 			info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
 		}
 		//file.close();
-	} else { 
+	} else {
 		D_PRINT( "TF buffer not created" );
 		return false;
 	}
@@ -586,7 +586,7 @@ ViewerWindow::changedTransferFunctionSelection()
 	if(pGenViewer != NULL) {
 		M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
 		vorgl::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
-		
+
 		if ( idx == oldInfo.id ) {
 			return; //No change
 		}
@@ -677,35 +677,35 @@ ViewerWindow::openFile()
 	}
 }
 
-void 
+void
 ViewerWindow::openFile( const QString &aPath )
 {
 	ASSERT( false );
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
-	
+
 	//M4D::Common::Clock clock;
-	
+
 	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
-	);*/ 
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	);*/
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		IMAGE_TYPE::PointType strides;
 		IMAGE_TYPE::SizeType size;
 		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
 		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
-	);*/ 
+	);*/
 
 /*	M4D::Imaging::Histogram64::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
-*/	
+*/
 
 	//applyTransferFunction();
 	//
@@ -716,7 +716,7 @@ ViewerWindow::openFile( const QString &aPath )
 	M4D::Common::Clock clock;
 
 	Histogram::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
@@ -742,7 +742,7 @@ ViewerWindow::openFile( const QString &aPath )
 	statusbar->clearMessage();
 }
 
-void 
+void
 ViewerWindow::openDicom( const QString &aPath )
 {
 	ASSERT( false );
@@ -759,10 +759,10 @@ ViewerWindow::openDicom( const QString &aPath )
 		mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
 		QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
 	}
-	/*boost::thread th = boost::thread( 
-			&M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo,  
-			std::string( pathInfo.absoluteFilePath().toLocal8Bit().data() ), 
-			std::string( pathInfo.absolutePath().toLocal8Bit().data() ), 
+	/*boost::thread th = boost::thread(
+			&M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo,
+			std::string( pathInfo.absoluteFilePath().toLocal8Bit().data() ),
+			std::string( pathInfo.absolutePath().toLocal8Bit().data() ),
 			boost::ref( *mDicomObjSet ),
 			mProgressDialog
 			);
@@ -788,34 +788,34 @@ ViewerWindow::dataLoaded()
 	M4D::Imaging::AImage::Ptr image = iRec->image;
 
 	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
-	
+
 	//M4D::Common::Clock clock;
-	
+
 	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
-	);*/ 
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	);*/
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		IMAGE_TYPE::PointType strides;
 		IMAGE_TYPE::SizeType size;
 		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
 		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
-	);*/ 
+	);*/
 
 	/*M4D::Imaging::Histogram64::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );*/
-	
+
 
 	//applyTransferFunction();
-	
+
 	//boost::thread th = boost::thread( boost::bind( &ViewerWindow::computeHistogram, this, image ) );
 	//th.detach();
-	
+
 	computeHistogram( image );
 
 }
@@ -833,7 +833,7 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	M4D::Common::Clock clock;
 
 	Histogram::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage, 
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
@@ -850,11 +850,11 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	tfHistogram->seal();
 
 	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
-	
-	
+
+
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	
+
 
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();

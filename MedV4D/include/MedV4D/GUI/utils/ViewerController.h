@@ -2,8 +2,8 @@
 #define VIEWER_CONTROLLER_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
-#include "MedV4D/GUI/widgets/AGLViewer.h"
+#ifndef Q_MOC_RUN
+#include "MedV4D/GUI/utils/AViewerController.h"
 #include "MedV4D/GUI/utils/MouseTracking.h"
 #endif
 
@@ -15,14 +15,14 @@ namespace Viewer
 {
 
 class GeneralViewer;
-	
+
 class ViewerController: public AViewerController
 {
 	Q_OBJECT;
 public:
 	typedef boost::shared_ptr< ViewerController > Ptr;
-	
-	enum InteractionMode { 
+
+	enum InteractionMode {
 		imNONE,
 		imORBIT_CAMERA,
 		imLUT_SETTING,
@@ -36,7 +36,7 @@ public:
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
-	bool	
+	bool
 	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo );
 
 	bool

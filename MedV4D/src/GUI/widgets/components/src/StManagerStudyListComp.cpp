@@ -4,7 +4,7 @@
  */
 #include "MedV4D/GUI/widgets/components/StManagerStudyListComp.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include <vector>
 
@@ -32,7 +32,7 @@ namespace GUI {
 /// Number of exam/image attributes (e.g in study tables)
 #define ATTRIBUTE_NUMBER   10
 /// Names of exam/image attributes (e.g in study tables)
-const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Modality", "Description", 
+const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Modality", "Description",
                                                          "Date", "Time", "Study ID", "Sex",
                                                          "Birthdate", "Referring MD" };
 /// Exam/image attributes resize information - wheather to resize to contents in study tables
@@ -57,7 +57,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   viewButton->setEnabled( false );
   buttonLayout->addWidget( viewButton, 0, 0, 1, 2 );
 
-  QSpacerItem *horSpacerViewOther = new QSpacerItem( 2, 28, QSizePolicy::Minimum, 
+  QSpacerItem *horSpacerViewOther = new QSpacerItem( 2, 28, QSizePolicy::Minimum,
                                                      QSizePolicy::Minimum );
   buttonLayout->addItem( horSpacerViewOther, 1, 0, 1, 2 );
 
@@ -72,38 +72,38 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   recentDICOMDIRButton = createToolButton( QIcon( ":/icons/dicomdir.png" ), SLOT(recentChanged()) );
   buttonLayout->addWidget( recentDICOMDIRButton, 3, 1 );
 
-  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
+  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum,
                                                  QSizePolicy::Expanding );
   buttonLayout->addItem( verticalSpacer, 4, 0, 1, 2 );
 
   // =-=-=-=-=-=-=-=- Tabs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-  
+
   studyListTab = new QTabWidget;
 
   // Recent Exams tab
   QHBoxLayout *recentExamsLayout = new QHBoxLayout;
-  
+
   recentExamsTable = createStudyTable();
   activeExamTable  = recentExamsTable;
   recentExamsLayout->addWidget( recentExamsTable );
-  
+
   QWidget *recentExamsPane = new QWidget;
   recentExamsPane->setLayout( recentExamsLayout );
   studyListTab->addTab( recentExamsPane, QIcon( ":/icons/recent.png" ), tr( RECENT_EXAMS_NAME ) );
 
   // Remote Exams tab
   QHBoxLayout *remoteExamsLayout = new QHBoxLayout;
-  
+
   remoteExamsTable = createStudyTable();
   remoteExamsLayout->addWidget( remoteExamsTable );
-  
+
   QWidget *remoteExamsPane = new QWidget;
   remoteExamsPane->setLayout( remoteExamsLayout );
   studyListTab->addTab( remoteExamsPane, QIcon( ":/icons/remote.png" ), tr( REMOTE_EXAMS_NAME ) );
 
   // DICOMDIR tab
   QHBoxLayout *DICOMDIRLayout = new QHBoxLayout;
-  
+
   QSplitter *DICOMDIRsplitter = new QSplitter();
 
   DICOMDIRTable = createStudyTable();
@@ -128,7 +128,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
 
   QHBoxLayout *studyListLayout = new QHBoxLayout;
   studyListLayout->addLayout( buttonLayout );
-  QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+  QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum,
                                                    QSizePolicy::Minimum );
   studyListLayout->addItem( horizontalSpacer );
   studyListLayout->addWidget( studyListTab );
@@ -136,7 +136,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   setLayout( studyListLayout );
 
   studyManagerDialogTitle = QString( studyManagerDialog->windowTitle() );
-  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +
                                       QString( "0" ) + tr( " studies found on " ) +
                                       tr( RECENT_REMOTE_EXAMS_NAME ) );
 
@@ -156,8 +156,8 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   {
 	  buildMessage = QString( e.what() );
     buildSuccessful = false;
-  } 
-  
+  }
+
   activeResultSet = recentResultSet;
 
 	// connections here - because signals are emited during initialization
@@ -183,7 +183,7 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 
 
 void StManagerStudyListComp::find ( const string &firstName, const string &lastName,
-                                    const string &patientID, 
+                                    const string &patientID,
                                     const string &fromDate, const string &toDate,
                                     const StringVector &modalitiesVect,
                                     const string &referringMD, const string &description )
@@ -192,7 +192,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
     // for recent exams
     QSettings settings;
-    
+
     // for DICOMDIR
     QString DICOMDIRPath;
     QModelIndex qm;
@@ -207,16 +207,16 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         // Recent Exams tab active
         if ( recentRemoteButton->isChecked() ) {
           loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
-        } 
-        else 
+        }
+        else
         {
           loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
 
           dialogTitle = RECENT_DICOMDIR_NAME;
         }
 
-        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
-                                fromDate, toDate, modalitiesVect, referringMD, 
+        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID,
+                                fromDate, toDate, modalitiesVect, referringMD,
                                 description );
 
         reverse( activeResultSet->begin(), activeResultSet->end() );
@@ -224,7 +224,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
       case 1:
         // Remote Exams tab active
-        DcmProvider::Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, 
+        DcmProvider::Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate,
                             referringMD, description );
         StudyFilter::filterModalities( activeResultSet, modalitiesVect );
 
@@ -251,8 +251,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         }
 
         DcmProvider::LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
-        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
-                                fromDate, toDate, modalitiesVect, referringMD, 
+        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID,
+                                fromDate, toDate, modalitiesVect, referringMD,
                                 description );
 
         dialogTitle = DICOMDIR_NAME;
@@ -260,8 +260,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     }
 
     QString resNum;
-    studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
-                                        resNum.setNum( activeResultSet->size() ) + 
+    studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +
+                                        resNum.setNum( activeResultSet->size() ) +
                                         tr( " studies found on " ) + tr( dialogTitle ) );
 
     // it can handle empty resultSet
@@ -271,10 +271,10 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
       QMessageBox::warning( this, tr( "No results" ), tr( "No search results match your criteria" ) );
     }
 
-  } 
+  }
   catch ( ErrorHandling::ExceptionBase &e ) {
 	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
-  } 
+  }
   catch( std::exception &e ) {
 	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
   }
@@ -284,7 +284,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 void StManagerStudyListComp::view ()
 {
   // no selection (not necessary test, view button is disabled) or no allocated space for dicomObjSet
-  if ( activeExamTable->selectedItems().empty() || 
+  if ( activeExamTable->selectedItems().empty() ||
        dicomObjectSet == 0 || leftOverlayInfo == 0 || rightOverlayInfo == 0 ) {
     return;
   }
@@ -298,7 +298,7 @@ void StManagerStudyListComp::view ()
 
   SerieInfoVector info;
   unsigned seriesIndex = 0;
-  
+
   const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
   bool isLocal = false;
 
@@ -318,7 +318,7 @@ void StManagerStudyListComp::view ()
         {
           // find some info about selected study
       	  DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
-         
+
           recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
           isLocal = true;
         }
@@ -350,12 +350,12 @@ void StManagerStudyListComp::view ()
                                                                 dicomObjectSet, this ) );
 
   }
-  catch ( ErrorHandling::ExceptionBase &e ) 
+  catch ( ErrorHandling::ExceptionBase &e )
   {
     loadingException( e.what() );
 
     return;
-  } 
+  }
 
   // fill the overlay info map
   fillOverlayInfo( activeExamTable, selectedRow );
@@ -367,7 +367,7 @@ void StManagerStudyListComp::view ()
 
 void StManagerStudyListComp::setEnabledView ()
 {
-  !activeExamTable->selectedItems().empty() ? viewButton->setEnabled( true ) : 
+  !activeExamTable->selectedItems().empty() ? viewButton->setEnabled( true ) :
                                               viewButton->setEnabled( false );
 }
 
@@ -429,8 +429,8 @@ void StManagerStudyListComp::activeTabChanged ()
   }
 
   QString resNum;
-  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
-                                      resNum.setNum( activeResultSet->size() ) + 
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +
+                                      resNum.setNum( activeResultSet->size() ) +
                                       tr( " studies found on " ) + tr( dialogTitle ) );
 }
 
@@ -442,7 +442,7 @@ void StManagerStudyListComp::recentChanged ()
   addResultSetToStudyTable( activeResultSet, activeExamTable );
 
   const char *dialogTitle = ( recentRemoteButton->isChecked() ? RECENT_REMOTE_EXAMS_NAME : RECENT_DICOMDIR_NAME );
-  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) + QString( "0" ) +                                    
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) + QString( "0" ) +
                                       tr( " studies found on " ) + tr( dialogTitle ) );
 }
 
@@ -487,19 +487,19 @@ void StManagerStudyListComp::loadingException ( const QString &description )
 }
 
 
-void StManagerStudyListComp::loadRecentExams ( ResultSet &resultSet, 
+void StManagerStudyListComp::loadRecentExams ( ResultSet &resultSet,
                                                const QString &prefix )
 {
   QSettings settings;
   int size = settings.beginReadArray( prefix );
- 
+
   for ( int i = 0; i < size; i++ )
   {
     TableRow row;
 
     settings.setArrayIndex( i );
     loadRecentRow( row, settings );
-    
+
     resultSet.push_back( row );
   }
 
@@ -522,7 +522,7 @@ void StManagerStudyListComp::loadRecentRow ( TableRow &row, const QSettings &set
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const ResultSet *resultSet, 
+void StManagerStudyListComp::addResultSetToStudyTable ( const ResultSet *resultSet,
                                                         QTableWidget *table )
 {
   // for correct inserting sorting must be disabled
@@ -541,7 +541,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( const ResultSet *resultS
 }
 
 
-void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row, 
+void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row,
                                                   QTableWidget *table )
 {
   int rowNum = table->rowCount();
@@ -552,7 +552,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row,
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
 
   size_t found = row->name.find( "_" );
-  tableRowItems.push_back( new QTableWidgetItem( found != string::npos ? 
+  tableRowItems.push_back( new QTableWidgetItem( found != string::npos ?
                                                  QString( row->name.c_str() ).replace( found, 1, " " ) :
                                                  QString( row->name.c_str() ) ) );
 
@@ -569,7 +569,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row,
 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
 
-  tableRowItems.push_back( new QTableWidgetItem( row->sex ? QString( tr( "male" ) ) : 
+  tableRowItems.push_back( new QTableWidgetItem( row->sex ? QString( tr( "male" ) ) :
                                                             QString( tr( "female" ) ) ) );
 
   QDate birthDate = QDate::fromString( QString( row->birthDate.c_str() ), "yyyyMMdd" );
@@ -577,7 +577,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row,
 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->referringMD.c_str() ) ) );
 
-  for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
+  for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
 
@@ -600,7 +600,7 @@ unsigned StManagerStudyListComp::getSeriesIndex( const SerieInfoVector info )
   QLabel *seriesLabel = new QLabel( tr( "Series in selected study:\n(their descriptions)" ) );
   mainLayout->addWidget( seriesLabel );
 
-  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 10, QSizePolicy::Minimum, 
+  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 10, QSizePolicy::Minimum,
                                                  QSizePolicy::Minimum );
   mainLayout->addItem( verticalSpacer );
 
@@ -624,7 +624,7 @@ void StManagerStudyListComp::fillOverlayInfo ( QTableWidget *table, int row )
   leftOverlayInfo->push_back( table->item( row, 3 )->text().toStdString() );
 
   rightOverlayInfo->push_back( table->item( row, 1 )->text().toStdString() );
-  rightOverlayInfo->push_back( table->item( row, 8 )->text().toStdString() + " " + 
+  rightOverlayInfo->push_back( table->item( row, 8 )->text().toStdString() + " " +
                                table->item( row, 7 )->text().toStdString() );
   rightOverlayInfo->push_back( table->item( row, 0 )->text().toStdString() );
   rightOverlayInfo->push_back( table->item( row, 4 )->text().toStdString() );
@@ -639,18 +639,18 @@ void StManagerStudyListComp::updateRecentExams ( const TableRow *row, const QStr
 
   StudyFilter::filterDuplicates( &resultSet, row );
 
-  resultSet.push_back( *row ); 
+  resultSet.push_back( *row );
   if ( resultSet.size() > RECENT_EXAMS_NUMBER ) {
     resultSet.erase( resultSet.begin() );
   }
 
   QSettings settings;
   settings.beginWriteArray( prefix );
-  
+
   for ( unsigned i = 0; i < resultSet.size(); i++ )
   {
     settings.setArrayIndex( i );
-    updateRecentRow ( &resultSet[i], settings );  
+    updateRecentRow ( &resultSet[i], settings );
   }
 
   settings.endArray();
@@ -684,12 +684,12 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   for ( int i = 0; i < ATTRIBUTE_NUMBER; i++ ) {
     labels << tr( attributeNames[i] );
   }
-  
+
   table->setColumnCount( labels.size() + 1 );
   table->setHorizontalHeaderLabels( labels );
   table->setColumnHidden( ATTRIBUTE_NUMBER, true );
 
-  for ( int i = 0; i < ATTRIBUTE_NUMBER; i++ ) 
+  for ( int i = 0; i < ATTRIBUTE_NUMBER; i++ )
   {
     if ( attributeResizes[i] ) {
       table->horizontalHeader()->setResizeMode( i, QHeaderView::ResizeToContents );
@@ -723,7 +723,7 @@ QTreeView *StManagerStudyListComp::createDirectoryTreeView ()
 QComboBox *StManagerStudyListComp::createDirectoryComboBox ( const QString &text )
 {
   QComboBox *comboBox = new QComboBox;
-  
+
   comboBox->setEditable( true );
   comboBox->setEditText( text );
 

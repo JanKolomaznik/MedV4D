@@ -1,8 +1,8 @@
 #ifndef TF_CREATORDIALOGBUTTONS
 #define TF_CREATORDIALOGBUTTONS
 
-#include <QtGui/QRadioButton>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QRadioButton>
+#include <QtWidgets/QVBoxLayout>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 
@@ -23,7 +23,7 @@ public:
 
 	TFPredefinedDialogButton(TF::Types::Predefined type, QWidget* parent = 0):
 		QRadioButton(parent),
-		type_(type){	
+		type_(type){
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
@@ -36,7 +36,7 @@ signals:
 
 private slots:
 
-	void on_toggled(bool checked){			
+	void on_toggled(bool checked){
 
 		if(checked) emit Activated(type_);
 	}
@@ -54,7 +54,7 @@ public:
 
 	TFDimensionDialogButton(TF::Types::Dimension type, QWidget* parent = 0):
 		QRadioButton(parent),
-		type_(type){		
+		type_(type){
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
@@ -67,7 +67,7 @@ signals:
 
 private slots:
 
-	void on_toggled(bool checked){	
+	void on_toggled(bool checked){
 
 		if(checked) emit Activated(type_);
 	}
@@ -85,7 +85,7 @@ public:
 
 	TFFunctionDialogButton(TF::Types::Function type, QWidget* parent = 0):
 		QRadioButton(parent),
-		type_(type){		
+		type_(type){
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
@@ -98,7 +98,7 @@ signals:
 
 private slots:
 
-	void on_toggled(bool checked){	
+	void on_toggled(bool checked){
 
 		if(checked) emit Activated(type_);
 	}
@@ -116,7 +116,7 @@ public:
 
 	TFPainterDialogButton(TF::Types::Painter type, QWidget* parent = 0):
 		QRadioButton(parent),
-		type_(type){		
+		type_(type){
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
@@ -129,7 +129,7 @@ signals:
 
 private slots:
 
-	void on_toggled(bool checked){	
+	void on_toggled(bool checked){
 
 		if(checked) emit Activated(type_);
 	}
@@ -147,7 +147,7 @@ public:
 
 	TFModifierDialogButton(TF::Types::Modifier type, QWidget* parent = 0):
 		QRadioButton(parent),
-		type_(type){	
+		type_(type){
 
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
@@ -160,7 +160,7 @@ signals:
 
 private slots:
 
-	void on_toggled(bool checked){			
+	void on_toggled(bool checked){
 
 		if(checked) emit Activated(type_);
 	}

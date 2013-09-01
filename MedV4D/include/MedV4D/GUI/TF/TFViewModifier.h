@@ -3,8 +3,8 @@
 
 #include "MedV4D/GUI/TF/TFAbstractModifier.h"
 
-#include "QtGui/QGridLayout"
-#include "QtGui/QSpacerItem"
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QSpacerItem>
 
 #include "MedV4D/generated/ui_TFViewModifier.h"
 #include "MedV4D/generated/ui_TFDimensionZoom.h"
@@ -43,7 +43,7 @@ protected:
 	TF::PaintingPoint zoomMoveHelper_;
 
 	virtual void createTools_();
-	
+
 	virtual void computeInput_() = 0;
 	virtual std::vector<int> computeZoomMoveIncrements_(const int moveX, const int moveY) = 0;
 
@@ -60,7 +60,7 @@ protected:
 	TF::PaintingPoint getRelativePoint_(const int x, const int y, bool acceptOutOfBounds = false);
 
 	void updateZoomTools_();
-	
+
 	QGridLayout* centerWidget_(QWidget *widget,
 		bool top = true, bool bottom = true,
 		bool left = true, bool right = true);

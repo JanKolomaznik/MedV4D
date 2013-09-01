@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 #include "MedV4D/Common/RAII.h"
 #include <soglu/OGLTools.hpp>
@@ -13,7 +14,7 @@ public:
 		doneCurrent();
 	}
 protected:
-	void 
+	void
 	initializeGL()
 	{
 	}
@@ -32,7 +33,7 @@ struct OpenGLManagerPimpl
 {
 	QGLWidget *widget;
 	QGLContext *context;
-	
+
 	TextureStorage textureStorage; //<Indexed by ID from structural timestamp
 	mutable boost::recursive_mutex mTextureMutex;
 };
@@ -100,7 +101,7 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 
 	soglu::GLTextureImage::Ptr result;
 	result = getActualizedTextureFromImage( aImage );
-	
+
 	if ( result ) {
 		return result;
 	}
@@ -113,7 +114,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 {
 	D_FUNCTION_COMMENT;
 	//Image should be locked!!!
-	
+
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 
@@ -124,7 +125,7 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 		if ( structTimestamp != it->second.structTimeStamp ) { //Dataset structure changed
 			return soglu::GLTextureImage::Ptr();
 		}
-		
+
 		if ( timestamp == it->second.editTimeStamp ) { //Dataset contents didn't changed - texture is actual
 			D_PRINT( "Returning valid texture instance" );
 			return it->second.texture;
@@ -150,7 +151,7 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
-	
+
 	M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
 	makeCurrent();

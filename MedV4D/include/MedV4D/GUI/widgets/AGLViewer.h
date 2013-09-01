@@ -1,16 +1,16 @@
 #ifndef A_GL_VIEWER_H
 #define A_GL_VIEWER_H
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
 #include "MedV4D/GUI/widgets/GLWidget.h"
-//#include "MedV4D/GUI/widgets/AViewer.h"
-#include "MedV4D/GUI/utils/FrameBufferObject.h"
-#include <QtGui>
-//#include <QtOpenGL>
+#include <QtWidgets>
+#include "soglu/FrameBufferObject.hpp"
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
 #include <boost/cast.hpp>
 
-#include "MedV4D/GUI/utils/OGLSelection.h"
+//#include "MedV4D/GUI/utils/OGLSelection.h"
+#include "MedV4D/GUI/utils/AViewerController.h"
 #endif
 namespace M4D
 {
@@ -18,16 +18,6 @@ namespace GUI
 {
 namespace Viewer
 {
-
-typedef glm::fvec3 Point3Df;	
-	
-	
-enum ViewType
-{
-	vt2DAlignedSlices	= 1,
-	vt2DGeneralSlices	= 1 << 1,
-	vt3D			= 1 << 2
-};
 
 struct MouseEventInfo
 {
@@ -44,7 +34,7 @@ struct MouseEventInfo
 		{ }
 
 	soglu::GLViewSetup viewSetup;
-		
+
 	QMouseEvent *event;
 	ViewType viewType;
 
@@ -52,61 +42,12 @@ struct MouseEventInfo
 	glm::fvec3 realCoordinates;
 
 	//3D section
-	
-	glm::fvec3 point; 
+
+	glm::fvec3 point;
 	glm::fvec3 direction;
 	//HalfAxis axis;
 
 };
-
-
-class BaseViewerState
-{
-public:
-	typedef boost::shared_ptr< BaseViewerState > Ptr;
-	virtual ~BaseViewerState(){}
-
-	Vector2u	mWindowSize;
-	float		aspectRatio;
-
-	QWidget		*viewerWindow;
-
-	QColor		backgroundColor;
-
-	unsigned availableViewTypes;
-	ViewType viewType;
-
-	soglu::GLViewSetup 	glViewSetup;
-	
-	template< typename TViewerType >
-	TViewerType &
-	getViewerWindow()
-	{
-		return *boost::polymorphic_cast< TViewerType *>( viewerWindow );//TODO exceptions
-	}
-};
-
-class AViewerController: public QObject
-{
-public:
-	typedef boost::shared_ptr< AViewerController > Ptr;
-
-	virtual bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
-
-	virtual bool	
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
-
-	virtual bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
-
-	virtual bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
-
-	virtual bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) = 0;
-};
-
 
 class AGLViewer: public GLWidget
 {
@@ -184,7 +125,7 @@ protected:
 	virtual void
 	finalizeAfterRenderingStep() = 0;
 
-	virtual MouseEventInfo 
+	virtual MouseEventInfo
 	getMouseEventInfo( QMouseEvent * event ) = 0;
 
 //**************************************************************
@@ -194,28 +135,28 @@ protected:
 		soglu::getCurrentGLSetup( mViewerState->glViewSetup );
 	}
 
-	void	
+	void
 	initializeGL ();
 
-	void	
+	void
 	initializeOverlayGL ();
 
-	void	
+	void
 	paintGL ();
 
-	void	
+	void
 	paintOverlayGL ();
 
-	void	
+	void
 	resizeGL ( int width, int height );
 
-	void	
+	void
 	resizeOverlayGL ( int width, int height );
 
 	void
 	mouseMoveEvent ( QMouseEvent * event );
 
-	void	
+	void
 	mouseDoubleClickEvent ( QMouseEvent * event );
 
 	void
@@ -241,10 +182,10 @@ protected:
 	size_t mLastMeasurement;
 	bool mEnableFPS;
 	QLabel *mFPSLabel;
-	
-		
-	
-	M4D::PickManager mPickManager;
+
+
+
+	//M4D::PickManager mPickManager;
 	int tmpX,tmpY;
 };
 

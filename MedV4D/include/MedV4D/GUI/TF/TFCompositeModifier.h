@@ -5,7 +5,7 @@
 #include "MedV4D/GUI/TF/TFCompositionDialog.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 #include "MedV4D/generated/ui_TFCompositeModifier.h"
 
@@ -24,7 +24,7 @@ public:
 
 	TFCompositeModifier(
 		TFFunctionInterface::Ptr function,
-		TFPainter1D::Ptr painter,		
+		TFPainter1D::Ptr painter,
 		TFPalette* palette);
 
 	~TFCompositeModifier();
@@ -56,7 +56,7 @@ protected:
 	QWidget* compositeWidget_;
 	QVBoxLayout* layout_;
 	QSpacerItem* pushUpSpacer_;
-	
+
 	TFPalette* palette_;
 	Common::TimeStamp lastPaletteChange_;
 	std::map<TF::Size, TFEditor*> editors_;

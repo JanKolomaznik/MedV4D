@@ -2,19 +2,19 @@
 #define TF_ABSTRACT_MODIFIER
 
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFWorkCopy.h"
 #include "MedV4D/GUI/TF/TFAbstractPainter.h"
 #include "MedV4D/GUI/TF/TFAbstractFunction.h"
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 namespace M4D {
 namespace GUI {
@@ -25,40 +25,40 @@ public:
 
 	typedef boost::shared_ptr<TFAbstractModifier> Ptr;
 
-	virtual 
+	virtual
 	~TFAbstractModifier(){}
 
-	virtual void 
+	virtual void
 	setDataStructure(const std::vector<TF::Size>& dataStructure) = 0;
 
-	void 
+	void
 	setHistogram(const TF::HistogramInterface::Ptr histogram);
 
-	QWidget* 
+	QWidget*
 	getTools();
 
-	TF::Size 
+	TF::Size
 	getDimension();
 
-	TFFunctionInterface::Const 
+	TFFunctionInterface::Const
 	getFunction();
 
-	bool 
+	bool
 	changed();
 
-	M4D::Common::TimeStamp 
+	M4D::Common::TimeStamp
 	getTimeStamp();
 
-	virtual void 
+	virtual void
 	save(TF::XmlWriterInterface* writer);
 
-	void 
+	void
 	saveFunction(TF::XmlWriterInterface* writer);
 
-	bool 
+	bool
 	load(TF::XmlReaderInterface* reader, bool& sideError);
 
-	bool 
+	bool
 	loadFunction(TF::XmlReaderInterface* reader);
 
 protected:

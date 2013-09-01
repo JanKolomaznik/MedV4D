@@ -1,14 +1,15 @@
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
-//#include "MedV4D/GUI/utils/OGLDrawing.h"
+
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/Common/MathTools.h"
 
 #include "MedV4D/Imaging/ImageFactory.h"
-//#include "MedV4D/GUI/utils/CameraManipulator.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 
 #include <soglu/OGLDrawing.hpp>
+#include <soglu/Camera.hpp>
+//#include <soglu/FrameBufferObject.hpp>
 
 namespace M4D
 {
@@ -16,16 +17,16 @@ namespace GUI
 {
 namespace Viewer
 {
-	
+
 void
 handleCutPlane( bool aEnabled, const soglu::BoundingBox3D &aBBox, const soglu::Planef &aCutPlane, RGBAf aColor = RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) )
 {
 	if( !aEnabled ) return;
-	
+
 	glColor4fv(aColor.GetData());
 	//GLColorVector( aColor );
 	glm::fvec3 vertices[6];
-	
+
 	unsigned count = soglu::getPlaneVerticesInBoundingBox( aBBox, aCutPlane, vertices );
 	//Render n-gon
 	soglu::drawPolygon(vertices, count);
@@ -35,7 +36,7 @@ handleCutPlane( bool aEnabled, const soglu::BoundingBox3D &aBBox, const soglu::P
 		}
 	glEnd();*/
 }
-	
+
 
 //********************************************************************************************
 
@@ -60,7 +61,7 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 
 	state->availableViewTypes = 5;
 	state->viewType = vt2DAlignedSlices;
-	
+
 	state->m2DMultiSliceGrid = Vector2u( 1, 1 );
 	state->m2DMultiSliceStep = 1;
 
@@ -134,9 +135,9 @@ GeneralViewer::setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr a
 	getViewerState().mTransferFunctionBufferInfo.id = 0;
 	getViewerState().mTransferFunctionBufferInfo.tfBuffer = aTFunctionBuffer;
 	//getViewerState().mTFunctionBuffer = aTFunctionBuffer;
-	
+
 	makeCurrent();
-	getViewerState().mTransferFunctionBufferInfo.tfGLBuffer = createGLTransferFunctionBuffer1D( *aTFunctionBuffer );	
+	getViewerState().mTransferFunctionBufferInfo.tfGLBuffer = createGLTransferFunctionBuffer1D( *aTFunctionBuffer );
 	//getViewerState().mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
 	doneCurrent();
 
@@ -166,19 +167,19 @@ GeneralViewer::getTransferFunctionBufferInfo()const
 	return getViewerState().mTransferFunctionBufferInfo;
 }
 
-void
+/*void
 GeneralViewer::setMappingBuffer( IDMappingBuffer::Ptr aMappingBuffer )
 {
 	getViewerState().mMappingBufferInfo.buffer = aMappingBuffer;
-	getViewerState().mMappingBufferInfo.glBuffer = createGLMappingBuffer( *aMappingBuffer ); 
-}
+	getViewerState().mMappingBufferInfo.glBuffer = createGLMappingBuffer( *aMappingBuffer );
+}*/
 
 void
 GeneralViewer::setCurrentSlice( int32 slice )
 {
 	CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = max( 
-								min( getViewerState().getMaxSlice()[plane]-1, slice ), 
+	getViewerState().mSliceRenderConfig.currentSlice[ plane ] = max(
+								min( getViewerState().getMaxSlice()[plane]-1, slice ),
 								getViewerState().getMinSlice()[plane] );
 	notifyAboutSettingsChange();
 	update();
@@ -197,7 +198,7 @@ void
 GeneralViewer::setCurrentViewPlane( CartesianPlanes aPlane )
 {
 	getViewerState().mSliceRenderConfig.plane = aPlane;
-	
+
 	zoomFit(); //TODO remove
 	notifyAboutSettingsChange();
 	update();
@@ -351,9 +352,9 @@ GeneralViewer::getColorTransformName()
 }
 
 void
-GeneralViewer::ReceiveMessage( 
-	M4D::Imaging::PipelineMessage::Ptr 			msg, 
-	M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
+GeneralViewer::ReceiveMessage(
+	M4D::Imaging::PipelineMessage::Ptr 			msg,
+	M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle,
 	M4D::Imaging::FlowDirection				direction
 )
 {
@@ -456,7 +457,7 @@ GeneralViewer::enableInterpolation( bool aEnable )
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
 {
-	soglu::cameraYawPitchAroundPoint(getViewerState().mVolumeRenderConfig.camera, 
+	soglu::cameraYawPitchAroundPoint(getViewerState().mVolumeRenderConfig.camera,
 					glm::fvec2(aAngles[0], aAngles[1]),
 					getViewerState().mVolumeRenderConfig.camera.targetPosition()
 					);
@@ -485,7 +486,7 @@ GeneralViewer::getViewType()const
 	return getViewerState().viewType;
 }
 
-QStringList 
+QStringList
 GeneralViewer::getAvailableColorTransformationNames()
 {
 	QStringList strList;
@@ -511,10 +512,10 @@ GUI::Renderer::ColorTransformNameIDList
 GeneralViewer::getAvailableColorTransformations()
 {
 	switch ( getViewerState().viewType ) {
-	case vt3D: 
+	case vt3D:
 		return getViewerState().mVolumeRenderer.GetAvailableColorTransforms();
 		break;
-	case vt2DAlignedSlices: 
+	case vt2DAlignedSlices:
 		return getViewerState().mSliceRenderer.GetAvailableColorTransforms();
 		break;
 	default:
@@ -536,12 +537,12 @@ void
 GeneralViewer::setViewType( int aViewType )
 {
 	getViewerState().viewType = (ViewType)aViewType;
-	//TODO 
+	//TODO
 	switch ( getViewerState().viewType ) {
-	case vt3D: 
+	case vt3D:
 		setColorTransformType( GUI::Renderer::ctTransferFunction1D );
 		break;
-	case vt2DAlignedSlices: 
+	case vt2DAlignedSlices:
 		setColorTransformType( GUI::Renderer::ctLUTWindow );
 		break;
 	default:
@@ -582,7 +583,7 @@ GeneralViewer::setColorTransformType( const QString & aColorTransformName )
 void
 GeneralViewer::setColorTransformType( int aColorTransform )
 {
-	//TODO 
+	//TODO
 	getViewerState().colorTransform = aColorTransform;
 	getViewerState().mSliceRenderConfig.colorTransform = aColorTransform;
 	getViewerState().mVolumeRenderConfig.colorTransform = aColorTransform;
@@ -632,7 +633,7 @@ GeneralViewer::resetView()
 	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.camera.targetPosition();
 	pos[1] += -550;
 	getViewerState().mVolumeRenderConfig.camera.setEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
-	
+
 	update();
 }
 
@@ -699,7 +700,7 @@ GeneralViewer::initializeRenderingEnvironment()
 {
 	getViewerState().mSliceRenderer.Initialize();
 	getViewerState().mVolumeRenderer.initialize();
-	
+
 	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
 	getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
 	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );
@@ -733,15 +734,15 @@ GeneralViewer::prepareForRenderingStep()
 	case vt2DAlignedSlices:
 		{
 			//SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
-			
+
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
 			CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-			/*Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane ); 
+			/*Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane );
 			Vector2f regMax = VectorPurgeDimension( getViewerState()._regionRealMax, plane );*/
 			Vector2f size = VectorPurgeDimension( getViewerState().getRealSize(), plane );
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
-			
+
 			getViewerState().mSliceRenderConfig.camera.setWindow( subVPortW / zoom, subVPortH / zoom );
 			getViewerState().mSliceRenderConfig.camera.setTargetPosition( glm::fvec3(getViewerState().getRealCenter()[0], getViewerState().getRealCenter()[1], getViewerState().getRealCenter()[2]) );
 			getViewerState().mSliceRenderConfig.sliceCenter = toGLM(getViewerState().getRealCenter());
@@ -765,13 +766,13 @@ GeneralViewer::prepareForRenderingStep()
 				ASSERT( false );
 			}
 			getViewerState().mSliceRenderConfig.camera.setEyePosition( eye, up );
-			
+
 			getViewerState().mSliceRenderConfig.sliceNormal = glm::normalize(getViewerState().mSliceRenderConfig.camera.targetDirection());
-			
+
 			getViewerState().glViewSetup = soglu::getViewSetupFromOrthoCamera( getViewerState().mSliceRenderConfig.camera );
-			
+
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, subVPortW, subVPortH );
-			
+
 		}
 		break;
 	default:
@@ -786,8 +787,8 @@ GeneralViewer::render()
 	case vt3D:
 		{
 			glViewport(0, 0, width(), height());
-			
-			
+
+
 			soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
 			soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
@@ -798,10 +799,10 @@ GeneralViewer::render()
 				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &soglu::drawBoundingBox, bbox ) );
 			}
 			//Draw cut plane if enabled TODO - set color
-			getViewerState().mBasicCgEffect.executeTechniquePass( 
-				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) ) 
+			getViewerState().mBasicCgEffect.executeTechniquePass(
+				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) )
 				);
-		
+
 			/*GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_AMBIENT, Vector4f( 0.25f, 0.25f, 0.25f, 1.0f ).GetData() ) );
@@ -811,7 +812,7 @@ GeneralViewer::render()
 			//LOG( getViewerState().glViewSetup );
 			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::preRender3D, mRenderingExtension ) );
-				//mRenderingExtension->preRender3D();	
+				//mRenderingExtension->preRender3D();
 			}
 
 			try {
@@ -832,21 +833,21 @@ GeneralViewer::render()
 			ASSERT( getViewerState().m2DMultiSliceGrid[0] > 0 && getViewerState().m2DMultiSliceGrid[1] > 0 );
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
-			
+
 			//size_t sliceOffset = 0;
 			Renderer::SliceRenderer::RenderingConfiguration config = getViewerState().mSliceRenderConfig;
 			for ( unsigned j = 0; j < getViewerState().m2DMultiSliceGrid[0]; ++j ) {
 				for ( unsigned i = 0; i < getViewerState().m2DMultiSliceGrid[1]; ++i ) {
-					
+
 					GL_CHECKED_CALL( glViewport( i * subVPortW, j * subVPortH, subVPortW, subVPortH ) );
 					try {
 						getViewerState().mSliceRenderer.Render( config, getViewerState().glViewSetup );
 					}catch( std::exception &e ) {
 						LOG( e.what() );
 					}
-					
+
 					glClear( GL_DEPTH_BUFFER_BIT );
-					
+
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
@@ -855,22 +856,22 @@ GeneralViewer::render()
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneWidth", 2*hextents[plane] );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );
-						getViewerState().mSceneSlicingCgEffect.executeTechniquePass( 
-									"SceneSlicing", 
+						getViewerState().mSceneSlicingCgEffect.executeTechniquePass(
+									"SceneSlicing",
 									boost::bind( &M4D::GUI::Viewer::RenderingExtension::render2DAlignedSlices,
 									mRenderingExtension,
-									config.currentSlice[ config.plane ], 
-									Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
+									config.currentSlice[ config.plane ],
+									Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ),
 									config.plane
 									) );
-						/*mRenderingExtension->render2DAlignedSlices( config.currentSlice[ config.plane ], 
-								Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ), 
-								config.plane 
+						/*mRenderingExtension->render2DAlignedSlices( config.currentSlice[ config.plane ],
+								Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ),
+								config.plane
 								);*/
 					}
 					//sliceOffset += getViewerState().m2DMultiSliceStep;
 					config.currentSlice[ config.plane ] += getViewerState().m2DMultiSliceStep;
-				} 
+				}
 			}
 		}
 		break;
@@ -896,14 +897,14 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			//LOG( mViewerState->glViewSetup );
 			try{
 				direction = soglu::getDirectionFromScreenCoordinatesAndCameraPosition(
-				       	glm::fvec2( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ), 
-					mViewerState->glViewSetup, 
+				       	glm::fvec2( event->localPos().x(), mViewerState->glViewSetup.viewport[3] - event->localPos().y() ),
+					mViewerState->glViewSetup,
 					getCameraPosition()
 					);
 			} catch (...){
 				LOG( "Unprojecting of screen coordinates failed" );
 			}
-			
+
 			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, getCameraPosition(), direction );
 		}
 		break;
@@ -915,29 +916,29 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			glm::fvec3 target = getViewerState().mSliceRenderConfig.camera.targetPosition();
 			glm::fvec3 dir = target - eye;
 			dir = glm::normalize(dir);
-			
+
 			int x = event->pos().x() / subVPortW;
 			int y = event->pos().y() / subVPortH;
 			Vector3f slicePoint = fromGLM(getViewerState().mSliceRenderConfig.sliceCenter);
-			glm::dvec3 pom = soglu::getPointFromScreenCoordinates( 
-						glm::fvec2(event->posF().x() - subVPortW * x, mViewerState->glViewSetup.viewport[3] - event->posF().y() + subVPortH * y), 
+			glm::dvec3 pom = soglu::getPointFromScreenCoordinates(
+						glm::fvec2(event->localPos().x() - subVPortW * x, mViewerState->glViewSetup.viewport[3] - event->localPos().y() + subVPortH * y),
 						mViewerState->glViewSetup
 						);
-			//LOG( event->posF().x() << ";  " << event->posF().y() );
+			//LOG( event->localPos().x() << ";  " << event->localPos().y() );
 			Vector3f intersection;
-			IntersectionResult res = AxisPlaneIntersection( 
-					Vector3f(pom.x, pom.y, pom.z), 
+			IntersectionResult res = AxisPlaneIntersection(
+					Vector3f(pom.x, pom.y, pom.z),
 					Vector3f(dir.x, dir.y, dir.z),
-					slicePoint, 
+					slicePoint,
 					Vector3f(dir.x, dir.y, dir.z),
 					intersection
 					);
 			//LOG( "Intersection res = " << res << "; " << intersection );
-			
-			/*Vector2f pos = GetRealCoordinatesFromScreen( 
-				Vector2f( event->posF().x(), event->posF().y() ), 
-				getViewerState().mWindowSize, 
-				getViewerState().mSliceRenderConfig.viewConfig 
+
+			/*Vector2f pos = GetRealCoordinatesFromScreen(
+				Vector2f( event->localPos().x(), event->localPos().y() ),
+				getViewerState().mWindowSize,
+				getViewerState().mSliceRenderConfig.viewConfig
 				);
 			float32 realSlice = getCurrentRealSlice();*/
 			//Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
@@ -980,11 +981,11 @@ GeneralViewer::PrepareData()
 		return false;
 	}
 
-	
+
 	if ( mInputDatasets[0].lock() ) {
 		M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0].lock() );
 		if ( ! primaryImage ) return false;
-	
+
 		getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
 		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *primaryImage );
 	} else {
@@ -1000,7 +1001,7 @@ GeneralViewer::PrepareData()
 			getViewerState().mSecondaryImageTexture.reset();
 		}
 	}
-	
+
 	ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
@@ -1026,13 +1027,13 @@ GeneralViewer::PrepareData()
 	return true;
 }
 
-void	
+void
 GeneralViewer::zoomFit( ZoomType zoomType )
 {
 	/*getViewerState().mSliceRenderConfig.viewConfig = GetOptimalViewConfiguration(//TODO
-			VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane ), 
+			VectorPurgeDimension( getViewerState()._regionRealMin, getViewerState().mSliceRenderConfig.plane ),
 			VectorPurgeDimension( getViewerState()._regionRealMax, getViewerState().mSliceRenderConfig.plane ),
-			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ), 
+			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ),
 			zoomType );*/
 	emit settingsChanged();
 	update();

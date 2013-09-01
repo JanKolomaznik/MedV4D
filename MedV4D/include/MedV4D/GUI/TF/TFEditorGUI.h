@@ -1,10 +1,10 @@
 #ifndef TF_BASICHOLDER
 #define TF_BASICHOLDER
 
-#include <QtGui/QDockWidget>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMainWindow>
 
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 #include "MedV4D/GUI/TF/TFCommon.h"
 #include "MedV4D/GUI/TF/TFEditor.h"
@@ -12,14 +12,14 @@
 #include "MedV4D/generated/ui_TFEditorGUI.h"
 
 namespace M4D {
-namespace GUI {	
+namespace GUI {
 
 class TFEditorGUI: public TFEditor{
 
 	Q_OBJECT
 
 public:
-	
+
 	TFEditorGUI(TFAbstractModifier::Ptr modifier,
 		TF::Types::Structure structure,
 		Attributes attributes,

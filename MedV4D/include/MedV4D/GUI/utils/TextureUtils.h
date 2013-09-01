@@ -2,6 +2,7 @@
 
 #include <MedV4D/Imaging/Imaging.h>
 #include <soglu/GLTextureImage.hpp>
+#include <soglu/GLMUtils.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -9,7 +10,7 @@
 #include <MedV4D/Common/Common.h>
 
 namespace M4D {
-	
+
 template< typename ImageRegionType >
 GLuint
 GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterpolation );
@@ -40,13 +41,13 @@ GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegi
 
 void
 GLUpdateTextureFromSubImageData( GLuint aTexture, const M4D::Imaging::AImageRegionDim< 3 > &image, Vector3i aMinimum, Vector3i aMaximum );
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 template < size_t Dim >
 void
 updateTextureSubImageTyped(soglu::GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum)
@@ -62,7 +63,7 @@ updateTextureSubImage(soglu::GLTextureImage &aTexImage, const M4D::Imaging::AIma
 	if ( aTexImage.GetDimension() != aSubImage.GetDimension() || Dim != aTexImage.GetDimension() ) {
 		_THROW_ M4D::ErrorHandling::EBadParameter( "Texture and subimage have different dimension" );
 	}
-	
+
 	updateTextureSubImageTyped< Dim >( aTexImage.GetDimensionedInterface<Dim>(), static_cast< const M4D::Imaging::AImageRegionDim<Dim> & >( aSubImage ), aMinimum, aMaximum);
 }
 
@@ -78,16 +79,16 @@ createTextureFromImageTyped(const M4D::Imaging::AImageRegionDim<Dim> &image, boo
 	M4D::Imaging::ImageExtentsRecord< Dim > extents = image.GetImageExtentsRecord();
 	GLuint textureID = GLPrepareTextureFromImageData( image, aLinearInterpolation ); //TODO prevent loosing texture during exception
 	D_PRINT("Obtained texture : " << textureID);
-	
+
 	soglu::ExtentsRecord< Dim > ext;
-	ext.realMinimum = toGLM(extents.realMinimum);
-	ext.realMaximum = toGLM(extents.realMaximum);
-	ext.minimum = toGLM(extents.minimum);
-	ext.maximum = toGLM(extents.maximum);
-	ext.elementExtents = toGLM(extents.elementExtents);
-	
+	soglu::set(ext.realMinimum, extents.realMinimum.GetData());
+	soglu::set(ext.realMaximum, extents.realMaximum.GetData());
+	soglu::set(ext.minimum, extents.minimum.GetData());
+	soglu::set(ext.maximum, extents.maximum.GetData());
+	soglu::set(ext.elementExtents, extents.elementExtents.GetData());
+
 	typename soglu::GLMDimension<Dim>::fvec elementExtents;
-	
+
 	return typename TextureImage::Ptr( new TextureImage( textureID, aLinearInterpolation, ext ) );
 }
 
@@ -100,15 +101,15 @@ recreateTextureFromImageTyped(soglu::GLTextureImageTyped< Dim > &aTexImage, cons
 {
 	//TODO test image properties if same
 	aTexImage.DeleteTexture();
-	
+
 	M4D::Imaging::ImageExtentsRecord< Dim > extents = image.GetImageExtentsRecord();
 	soglu::ExtentsRecord< Dim > ext;
-	ext.realMinimum = toGLM(extents.realMinimum);
-	ext.realMaximum = toGLM(extents.realMaximum);
-	ext.minimum = toGLM(extents.minimum);
-	ext.maximum = toGLM(extents.maximum);
-	ext.elementExtents = toGLM(extents.elementExtents);
-	
+	soglu::set(ext.realMinimum, extents.realMinimum.GetData());
+	soglu::set(ext.realMaximum, extents.realMaximum.GetData());
+	soglu::set(ext.minimum, extents.minimum.GetData());
+	soglu::set(ext.maximum, extents.maximum.GetData());
+	soglu::set(ext.elementExtents, extents.elementExtents.GetData());
+
 	GLuint textureID = GLPrepareTextureFromImageData( image, aTexImage.linearInterpolation() ); //TODO prevent loosing texture during exception
 	aTexImage.updateTexture(textureID, ext);
 	/*aTexImage.SetImage( image );
@@ -241,11 +242,11 @@ GLuint
 GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterpolation )
 {
 	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 2);
-	
+
 	//Test whether image data have properties needed by OGL - continuous piece of memory
 	ASSERT( image.GetStride( 0 ) == 1 );
-	
-	
+
+
 	Vector< unsigned, 2 > size = image.GetSize();
 
 	GLuint texName;
@@ -276,18 +277,18 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 
 
 	glEnable( GL_TEXTURE_2D );
-	
+
 	glBindTexture( GL_TEXTURE_2D, texName );
 
-	glTexImage2D(	GL_TEXTURE_2D, 
-			0, 
-			GL_LUMINANCE16, 
-			size[0], 
-			size[1], 
-			0, 
-			GL_LUMINANCE, 
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
-			image.GetPointer() 
+	glTexImage2D(	GL_TEXTURE_2D,
+			0,
+			GL_LUMINANCE16,
+			size[0],
+			size[1],
+			0,
+			GL_LUMINANCE,
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			image.GetPointer()
 			);
 
 	soglu::checkForGLError( "OGL building texture : " );
@@ -300,11 +301,11 @@ GLuint
 GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterpolation )
 {
 	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 3);
-	
+
 	//Test whether image data have properties needed by OGL - continuous piece of memory
 	ASSERT( image.GetStride( 0 ) == 1 );
-	
-	
+
+
 	Vector< unsigned, 3 > size = image.GetSize();
 
 	GLuint texName;
@@ -327,19 +328,19 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 
 
 	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_3D ) ); //Opengl 3.3 throws error
-	
+
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_3D, texName ) );
 
-	GL_CHECKED_CALL( glTexImage3D(	GL_TEXTURE_3D, 
-			0, 
-			M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal, 
-			size[0], 
-			size[1], 
-			size[2], 
-			0, 
-			GL_RED, 
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
-			image.GetPointer() 
+	GL_CHECKED_CALL( glTexImage3D(	GL_TEXTURE_3D,
+			0,
+			M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal,
+			size[0],
+			size[1],
+			size[2],
+			0,
+			GL_RED,
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			image.GetPointer()
 			) );
 
 	soglu::checkForGLError( "OGL building texture : " );
@@ -352,11 +353,11 @@ void
 GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image, Vector2i aMinimum, Vector2i aMaximum )
 {
 	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 2);
-	
+
 	//Test whether image data have properties needed by OGL - continuous piece of memory
 	ASSERT( image.GetStride( 0 ) == 1 );
-	
-	
+
+
 	Vector2u size = aMaximum - aMinimum;
 	Vector2i offset = aMinimum - image.GetMinimum();
 
@@ -369,18 +370,18 @@ GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image
 	GL_ERROR_CLEAR_AFTER_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
 
 	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_2D ) ); //Opengl 3.3 throws error
-	
+
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, aTexture ) );
 
-	GL_CHECKED_CALL( glTexSubImage2D( 
-			GL_TEXTURE_2D,  
-			0,  
-			offset[0],  
-			offset[1],  
-			size[0], 
-			size[1], 
-			GL_RED, 
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
+	GL_CHECKED_CALL( glTexSubImage2D(
+			GL_TEXTURE_2D,
+			0,
+			offset[0],
+			offset[1],
+			size[0],
+			size[1],
+			GL_RED,
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
 			image.GetPointer()
 		       ) );
 
@@ -393,11 +394,11 @@ void
 GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image, Vector3i aMinimum, Vector3i aMaximum )
 {
 	BOOST_STATIC_ASSERT(ImageRegionType::Dimension == 3);
-	
+
 	//Test whether image data have properties needed by OGL - continuous piece of memory
 	ASSERT( image.GetStride( 0 ) == 1 );
 	ASSERT( glIsTexture( aTexture ) );
-	
+
 	Vector3u size = aMaximum - aMinimum;
 	Vector3i offset = aMinimum - image.GetMinimum();
 
@@ -407,25 +408,25 @@ GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image
 	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_IMAGE_HEIGHT, image.GetStride( 2 ) / image.GetStride( 1 ) ) );
 	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
 	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
-	
+
 	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_3D, aTexture ) );
 	GL_ERROR_CLEAR_AFTER_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
 
 	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_3D ) ); //Opengl 3.3 throws error
-	
+
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_3D, aTexture ) );
 
-	GL_CHECKED_CALL( glTexSubImage3D( 
-			GL_TEXTURE_3D,  
-			0,  
-			offset[0],  
-			offset[1],  
-			offset[2],  
-			size[0], 
-			size[1], 
-			size[2],  
-			GL_RED, 
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
+	GL_CHECKED_CALL( glTexSubImage3D(
+			GL_TEXTURE_3D,
+			0,
+			offset[0],
+			offset[1],
+			offset[2],
+			size[0],
+			size[1],
+			size[2],
+			GL_RED,
+			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
 			image.GetPointer() + offset * image.GetStride()
 		       ) );
 

@@ -3,7 +3,7 @@
 #include "MedV4D/GUI/TF/TFPalette.h"
 #include "MedV4D/GUI/TF/TFEditor.h"
 
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Debug.h"
 
@@ -12,7 +12,7 @@ namespace GUI {
 
 TFCompositeModifier::TFCompositeModifier(
 		TFFunctionInterface::Ptr function,
-		TFPainter1D::Ptr painter,		
+		TFPainter1D::Ptr painter,
 		TFPalette* palette
 		):
 	TFModifier1D(function, painter),
@@ -186,14 +186,14 @@ void TFCompositeModifier::change_check(){
 	}
 
 	bool recalculate = false;
-	
+
 	Common::TimeStamp lastChange = palette_->lastPaletteChange();
 	if(lastPaletteChange_ != lastChange)
 	{
 		lastPaletteChange_ = lastChange;
 		editors_ = palette_->getEditors();
 		//editors_.swap(palette_->getEditors());
-		
+
 		bool compositionEnabled = false;
 		Composition newComposition;
 		Composition::iterator found;
@@ -248,7 +248,7 @@ void TFCompositeModifier::computeResultFunction_(){
 	}
 
 	for(TF::Size i = 0; i < domain; ++i)
-	{		
+	{
 		coords_[0] = i;
 		TF::Color result;
 		TF::Color color;

@@ -1,6 +1,6 @@
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/DICOMInterface/DcmProvider.h"
-#include <QtGui>
+#include <QtWidgets>
 
 
 ApplicationManager *appManagerInstance = NULL;
@@ -60,7 +60,7 @@ ApplicationManager::~ApplicationManager()
 	finalize();
 }
 
-QIcon 
+QIcon
 ApplicationManager::getIcon( QString name )const
 {
 	name = name.toLower();
@@ -123,11 +123,11 @@ ApplicationManager::executeBackgroundTask( const boost::function< void () > &aFt
 	boost::packaged_task<void> task( aFtor );
 	boost::unique_future<void> uniqueFut = task.get_future();
 	BackgroundTaskFuture fut = boost::move( uniqueFut );
-	
+
 	boost::thread backThread( boost::move( task ) ); // launch task on a thread
 	//TODO better GUI response
-	
-	
+
+
 	return fut;
 }
 

@@ -6,8 +6,11 @@
 #include <QPoint>
 #include <QSize>
 #include <QString>
-#include <QtGui>
+//#include <QtWidgets>
 #include <QtCore>
+#include <QAction>
+#include <QToolBar>
+#include <QLabel>
 
 namespace M4D {
 namespace GUI {

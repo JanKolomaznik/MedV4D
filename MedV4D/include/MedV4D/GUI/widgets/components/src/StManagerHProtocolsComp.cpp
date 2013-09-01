@@ -4,7 +4,7 @@
  */
 #include "MedV4D/GUI/widgets/components/StManagerHProtocolsComp.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 
 namespace M4D {

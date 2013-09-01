@@ -1,7 +1,7 @@
 #ifndef SCALE_VISUALIZER_H
 #define SCALE_VISUALIZER_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 
 class ScaleVisualizer: public QWidget
@@ -57,9 +57,9 @@ protected:
 			);
 
 
-	void	
+	void
 	paintEvent( QPaintEvent * event );
-	
+
 	QPainter	mPainter;
 	QTransform	mCanvasTransform;
 	QTransform 	mInversionTransform;
@@ -79,7 +79,7 @@ private:
 
 template< typename TIterator, typename TValueAccessor >
 void
-ScaleVisualizer::DrawPolyline( 
+ScaleVisualizer::DrawPolyline(
 		QPainter &aPainter,
 		TIterator aFirst,
 		TIterator aLast,
@@ -91,7 +91,7 @@ ScaleVisualizer::DrawPolyline(
 	if ( aFirst == aLast ) {
 		return;
 	}
-	
+
 	double p1x, p1y, p2x, p2y;
 
 	p2x = aStart;
@@ -104,7 +104,7 @@ ScaleVisualizer::DrawPolyline(
 
 		p2x += aStep;
 		p2y = aValueAccesor( *aFirst );
-		
+
 		aPainter.drawLine( QLineF( p1x, p1y, p2x, p2y ) );
 
 		++aFirst;

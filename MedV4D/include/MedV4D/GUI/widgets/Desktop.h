@@ -1,7 +1,6 @@
-#ifndef VIEWER_DESKTOP_H
-#define VIEWER_DESKTOP_H
+#pragma once
 
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/shared_ptr.hpp>
 #include "MedV4D/GUI/widgets/ADesktop.h"
 #include "MedV4D/GUI/widgets/ADesktopContainer.h"
@@ -38,5 +37,4 @@ private:
 } /*namespace M4D*/
 
 
-#endif /*VIEWER_DESKTOP_H*/
 

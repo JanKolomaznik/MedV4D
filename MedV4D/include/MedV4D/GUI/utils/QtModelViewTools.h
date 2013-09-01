@@ -2,8 +2,8 @@
 #define QT_MODEL_VIEW_TOOLS_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
-#include <QtGui>
+#ifndef Q_MOC_RUN
+#include <QtWidgets>
 
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
@@ -27,10 +27,10 @@ struct TypeQtMVTraits< M4D::Point3D< TCoordType > >
 {
 	typedef M4D::Point3D< TCoordType > Type;
 	static const int colCount = 3;
-	static int 
+	static int
 	columnCount(){ return colCount; }
-	
-	static QVariant 
+
+	static QVariant
 	headerData( int section )
 	{
 		switch( section ) {
@@ -44,7 +44,7 @@ struct TypeQtMVTraits< M4D::Point3D< TCoordType > >
 			return QVariant();
 		}
 	}
-	static QVariant 
+	static QVariant
 	data( int column, const Type &item )
 	{
 		ASSERT( column >= 0 && column < colCount );
@@ -57,10 +57,10 @@ struct TypeQtMVTraits< M4D::Sphere< taDim, TCoordType > >
 {
 	typedef M4D::Sphere< taDim, TCoordType > Type;
 	static const int colCount = taDim + 1;
-	static int 
+	static int
 	columnCount(){ return colCount; }
-	
-	static QVariant 
+
+	static QVariant
 	headerData( int section )
 	{
 		if ( section > (int)taDim ) {
@@ -79,7 +79,7 @@ struct TypeQtMVTraits< M4D::Sphere< taDim, TCoordType > >
 			return QVariant();
 		}
 	}
-	static QVariant 
+	static QVariant
 	data( int column, const Type &item )
 	{
 		ASSERT( column >= 0 && column < colCount );
@@ -95,10 +95,10 @@ struct TypeQtMVTraits< M4D::Line< TType, tDim > >
 {
 	typedef M4D::Line< TType, tDim > Type;
 	static const int colCount = 2*tDim;
-	static int 
+	static int
 	columnCount(){ return colCount; }
-	
-	static QVariant 
+
+	static QVariant
 	headerData( int section )
 	{
 		if ( section > (int)(2*tDim) ) {
@@ -129,13 +129,13 @@ struct TypeQtMVTraits< M4D::Line< TType, tDim > >
 		}
 
 	}
-	static QVariant 
+	static QVariant
 	data( int column, const Type &item )
 	{
 		ASSERT( column >= 0 && column < colCount );
 		if( column < (int)tDim ) {
 			return item.firstPoint()[column];
-		} 
+		}
 		return item.secondPoint()[column-tDim];
 	}
 };
@@ -151,7 +151,7 @@ public:
 	VectorItemModel( QObject *parent = 0): AVectorItemModel(parent)
 	{}
 
-	int 
+	int
 	rowCount(const QModelIndex &parent = QModelIndex()) const
 	{
 		return this->size();
@@ -173,11 +173,11 @@ public:
 		QAbstractListModel::endRemoveRows();
 	}
 
-	int 
+	int
 	columnCount(const QModelIndex &parent = QModelIndex()) const
 	{ return Traits::columnCount(); }
 
-	QVariant 
+	QVariant
 	data(const QModelIndex &index, int role) const
 	{
 		if (!index.isValid())
@@ -185,15 +185,15 @@ public:
 
 		if ( index.row() >= (int)this->size() || index.column() >= Traits::columnCount() )
 			return QVariant();
-		
+
 		if (role == Qt::DisplayRole) {
 			return Traits::data( index.column(), this->at( index.row() ) );
 		}
-		
+
 		return QVariant();
 	}
 
-	QVariant 
+	QVariant
 	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
 	{
 		if (role != Qt::DisplayRole)
@@ -210,15 +210,15 @@ public:
 {
 	Q_OBJECT;
 public:
-	
-	PointSet( QObject *parent = 0): VectorItemModel< M4D::Point3Df >(parent) 
+
+	PointSet( QObject *parent = 0): VectorItemModel< M4D::Point3Df >(parent)
 	{}
 
-	int 
+	int
 	columnCount(const QModelIndex &parent = QModelIndex()) const
 	{return 3;}
 
-	QVariant 
+	QVariant
 	data(const QModelIndex &index, int role) const
 	{
 		if (!index.isValid())
@@ -226,15 +226,15 @@ public:
 
 		if ( index.row() >= (int)size() || index.column() > 2 )
 			return QVariant();
-		
+
 		if (role == Qt::DisplayRole) {
 			return at( index.row() )[index.column()];
 		}
-		
+
 		return QVariant();
 	}
 
-	QVariant 
+	QVariant
 	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
 	{
 		if (role != Qt::DisplayRole)
@@ -261,18 +261,18 @@ class SphereSet : public VectorItemModel< M4D::Sphere3Df >
 {
 	Q_OBJECT;
 public:
-	SphereSet( QObject *parent = 0): VectorItemModel< M4D::Sphere3Df >(parent) 
+	SphereSet( QObject *parent = 0): VectorItemModel< M4D::Sphere3Df >(parent)
 	{
-	
+
 	}
 
-	int 
+	int
 	columnCount(const QModelIndex &parent = QModelIndex()) const
 	{
 		return 4;
 	}
 
-	QVariant 
+	QVariant
 	data(const QModelIndex &index, int role) const
 	{
 		if (!index.isValid())
@@ -280,7 +280,7 @@ public:
 
 		if ( index.row() >= (int)size() || index.column() > 3 )
 			return QVariant();
-		
+
 		if (role == Qt::DisplayRole) {
 			if( index.column() <= 2 ) {
 				return at( index.row() ).center()[index.column()];
@@ -288,11 +288,11 @@ public:
 				return at( index.row() ).radius();
 			}
 		}
-		
+
 		return QVariant();
 	}
 
-	QVariant 
+	QVariant
 	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
 	{
 		if (role != Qt::DisplayRole)
@@ -321,18 +321,18 @@ class LineSet : public VectorItemModel<  M4D::Line3Df >
 {
 	Q_OBJECT;
 public:
-	LineSet( QObject *parent = 0): VectorItemModel<  M4D::Line3Df >(parent) 
+	LineSet( QObject *parent = 0): VectorItemModel<  M4D::Line3Df >(parent)
 	{
-	
+
 	}
 
-	int 
+	int
 	columnCount(const QModelIndex &parent = QModelIndex()) const
 	{
 		return 6;
 	}
 
-	QVariant 
+	QVariant
 	data(const QModelIndex &index, int role) const
 	{
 		if (!index.isValid())
@@ -340,7 +340,7 @@ public:
 
 		if ( index.row() >= (int)size() || index.column() > 5 )
 			return QVariant();
-		
+
 		if (role == Qt::DisplayRole) {
 			if ( index.column() < 3 ) {
 				return at( index.row() ).firstPoint()[index.column()];
@@ -348,11 +348,11 @@ public:
 				return at( index.row() ).secondPoint()[index.column()-3];
 			}
 		}
-		
+
 		return QVariant();
 	}
 
-	QVariant 
+	QVariant
 	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const
 	{
 		if (role != Qt::DisplayRole)

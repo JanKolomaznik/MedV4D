@@ -5,7 +5,7 @@
  */
 #include "MedV4D/GUI/widgets/components/StManagerFilterComp.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include <vector>
 #include <string>
@@ -19,7 +19,7 @@ namespace GUI {
 /// Number of possible modalities - in filter - number of checkboxes
 #define MODALITY_NUMBER   14
 
-const char *StManagerFilterComp::modalities[] = { "CR", "ES", "NM", "RF", "US", "CT", "MG", 
+const char *StManagerFilterComp::modalities[] = { "CR", "ES", "NM", "RF", "US", "CT", "MG",
                                                   "OT", "RT", "XA", "DX", "MR", "PT", "SC" };
 
 StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComponent, QWidget *parent )
@@ -47,22 +47,22 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
   // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  QSpacerItem *horSpacerButInp = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+  QSpacerItem *horSpacerButInp = new QSpacerItem( 8, 2, QSizePolicy::Minimum,
                                                   QSizePolicy::Minimum );
 
   // =-=-=-=-=-=-=-=- Inputs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-  
+
   QGridLayout *inputLayout = new QGridLayout;
-  
+
   QLabel *patientIDLabel = new QLabel( tr( "Patient ID:" ) );
   QLabel *lastNameLabel  = new QLabel( tr( "Last Name:" ) );
   QLabel *firstNameLabel = new QLabel( tr( "First Name:" ) );
-  
+
   patientIDComboBox = createComboBox();
   lastNameComboBox  = createComboBox();
   firstNameComboBox = createComboBox();
 
-  QSpacerItem *vertSpacerR1R2 = new QSpacerItem( 2, 5, QSizePolicy::Minimum, 
+  QSpacerItem *vertSpacerR1R2 = new QSpacerItem( 2, 5, QSizePolicy::Minimum,
                                                  QSizePolicy::Minimum );
 
   fromDateCheckBox = createCheckBox( tr( "From:" ), false, SLOT(from()) );
@@ -78,7 +78,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   toDateDateEdit->setCalendarPopup( true );
   toDateDateEdit->setEnabled( false );
 
-  QSpacerItem *vertSpacerR2R3 = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
+  QSpacerItem *vertSpacerR2R3 = new QSpacerItem( 2, 6, QSizePolicy::Minimum,
                                                  QSizePolicy::Minimum );
 
   QLabel *accesionLabel    = new QLabel( tr( "Accession#:" ) );
@@ -88,7 +88,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   accesionComboBox    = createComboBox();
   studyDescComboBox   = createComboBox();
   referringMDComboBox = createComboBox();
-   
+
   inputLayout->addWidget( patientIDLabel,    0, 0 );
   inputLayout->addWidget( lastNameLabel,     0, 1 );
   inputLayout->addWidget( firstNameLabel,    0, 2 );
@@ -97,14 +97,14 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   inputLayout->addWidget( firstNameComboBox, 1, 2 );
 
   inputLayout->addItem( vertSpacerR1R2, 2, 0, 1, 3 );
-  
+
   inputLayout->addWidget( fromDateCheckBox,  3, 0 );
   inputLayout->addWidget( toDateCheckBox,    3, 1 );
   inputLayout->addWidget( fromDateDateEdit,  4, 0 );
   inputLayout->addWidget( toDateDateEdit,    4, 1 );
 
   inputLayout->addItem( vertSpacerR2R3, 5, 0, 1, 3 );
-  
+
   inputLayout->addWidget( accesionLabel,       6, 0 );
   inputLayout->addWidget( studyDescLabel,      6, 1 );
   inputLayout->addWidget( referringMDLabel,    6, 2 );
@@ -112,13 +112,13 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   inputLayout->addWidget( studyDescComboBox,   7, 1 );
   inputLayout->addWidget( referringMDComboBox, 7, 2 );
 
-  QSpacerItem *vertSpacerBottom = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
+  QSpacerItem *vertSpacerBottom = new QSpacerItem( 2, 2, QSizePolicy::Minimum,
                                                    QSizePolicy::Expanding );
   inputLayout->addItem( vertSpacerBottom, 8, 0, 1, 3 );
 
   // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  QSpacerItem *horSpacerInpMod = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+  QSpacerItem *horSpacerInpMod = new QSpacerItem( 8, 2, QSizePolicy::Minimum,
                                                   QSizePolicy::Minimum );
 
   // =-=-=-=-=-=-=-=- Modalities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -130,7 +130,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   allCheckBox = createCheckBox( tr( "All" ), true, SLOT(all()) );
 
   // Spacer between All checkBox and other checkBoxes
-  QSpacerItem *vertSpacerAllMod = new QSpacerItem( 2, 20, QSizePolicy::Minimum, 
+  QSpacerItem *vertSpacerAllMod = new QSpacerItem( 2, 20, QSizePolicy::Minimum,
                                                    QSizePolicy::Minimum );
 
   QGridLayout *gridModalLayout = new QGridLayout;
@@ -169,28 +169,28 @@ void StManagerFilterComp::search ()
   QString lastNameText  = lastNameComboBox->currentText();
 
   QString patientIDText = patientIDComboBox->currentText();
-    
+
   QString fromDateText  = fromDateDateEdit->isEnabled() ?
                             fromDateDateEdit->date().toString( "yyyyMMdd" ) : "";
   QString toDateText    = toDateDateEdit->isEnabled() ?
                             toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
-  
+
   // construct the modalities vector (from checked ones)
   vector< string > modalitiesVect;
-  for ( int i = 0; i < MODALITY_NUMBER; i++ ) 
+  for ( int i = 0; i < MODALITY_NUMBER; i++ )
   {
     if ( modalityCheckBoxes[i]->isChecked() ) {
       modalitiesVect.push_back( StManagerFilterComp::modalities[i] );
     }
   }
- 
+
   QString referringMD = referringMDComboBox->currentText();
   QString description = studyDescComboBox->currentText();
 
   studyListComponent->find( firstNameText.toStdString(), lastNameText.toStdString(),
                             patientIDText.toStdString(), fromDateText.toStdString(),
-                            toDateText.toStdString(), modalitiesVect, referringMD.toStdString(), 
-                            description.toStdString() );	
+                            toDateText.toStdString(), modalitiesVect, referringMD.toStdString(),
+                            description.toStdString() );
 }
 
 
@@ -254,19 +254,19 @@ void StManagerFilterComp::clear ()
 
 
 void StManagerFilterComp::from ()
-{ 
+{
   fromDateDateEdit->setEnabled( !fromDateDateEdit->isEnabled() );
 }
 
 
 void StManagerFilterComp::to ()
-{ 
+{
   toDateDateEdit->setEnabled( !toDateDateEdit->isEnabled() );
 }
 
 
 void StManagerFilterComp::all ()
-{ 
+{
   for ( int i = 0; i < MODALITY_NUMBER; i++ ) {
     modalityCheckBoxes[i]->setChecked( allCheckBox->isChecked() );
   }
@@ -274,17 +274,17 @@ void StManagerFilterComp::all ()
 
 
 void StManagerFilterComp::modality ()
-{ 
+{
   int checkedNum = 0;
 
-  for ( int i = 0; i < MODALITY_NUMBER; i++ ) 
+  for ( int i = 0; i < MODALITY_NUMBER; i++ )
   {
     if ( modalityCheckBoxes[i]->isChecked() ) {
       checkedNum++;
     }
   }
 
-  if ( checkedNum == MODALITY_NUMBER || checkedNum == 0 ) 
+  if ( checkedNum == MODALITY_NUMBER || checkedNum == 0 )
   {
     allCheckBox->setChecked( checkedNum );
     allCheckBox->setEnabled( true );
@@ -315,7 +315,7 @@ QComboBox *StManagerFilterComp::createComboBox ( const QString &text )
   comboBox->addItem( text );
   comboBox->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
   comboBox->setMinimumWidth( 100 );
-    
+
   return comboBox;
 }
 

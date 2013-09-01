@@ -47,11 +47,11 @@ SET( CG_SHADER_LIBRARY_DIRS "" )
 SET( CG_SHADER_INCLUDE_DIRS ${CG_INCLUDE_PATH} )
 
 #**************************************************************
-SET( QtComponentList "QtCore" "QtGui" "qtmain" "QtOpenGL" )
-SET(QT_USE_QTMAIN 1)
-SET(QT_USE_QTOPENGL 1)
-FIND_PACKAGE(Qt4 REQUIRED COMPONENTS ${ComponentList})
-INCLUDE(${QT_USE_FILE})
+#SET( QtComponentList "QtCore" "QtGui" "qtmain" "QtOpenGL" )
+#SET(QT_USE_QTMAIN 1)
+#SET(QT_USE_QTOPENGL 1)
+#FIND_PACKAGE(Qt4 REQUIRED COMPONENTS ${ComponentList})
+#INCLUDE(${QT_USE_FILE})
 #**************************************************************
 IF( ${DEVIL_ENABLED} MATCHES "ON" )
 	#Do some checking

@@ -1,7 +1,7 @@
-#ifndef VIEWER_DESKTOP_H
-#define VIEWER_DESKTOP_H
+#pragma once
 
-#include <QtGui>
+#include <QtCore>
+#include <QtWidgets>
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 #include <boost/bind/bind.hpp>
 #include "MedV4D/Imaging/ConnectionInterface.h"
@@ -65,7 +65,7 @@ signals:
 protected:
 	AGLViewer *
 	createViewer();
-	
+
 	struct ViewerInfo
 	{
 		AGLViewer *viewer;
@@ -95,4 +95,3 @@ ViewerDesktop::forEachViewer( TFunctor ftor )
 } /*namespace M4D*/
 
 
-#endif /*VIEWER_DESKTOP_H*/

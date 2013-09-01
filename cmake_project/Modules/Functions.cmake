@@ -1,20 +1,28 @@
 INCLUDE(${CMAKE_ROOT}/Modules/CMakeParseArguments.cmake)
 
-MACRO (M4D_QT4_WRAP_UI outfiles )
-  QT4_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})
+function(M4D_QT5_WRAP_UI outfiles )
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs OPTIONS)
 
-  FOREACH (it ${ui_files})
-    GET_FILENAME_COMPONENT(outfile ${it} NAME_WE)
-    GET_FILENAME_COMPONENT(infile ${it} ABSOLUTE)
-    SET(outfile ${MEDV4D_GENERATED_HEADERS_DIR}/ui_${outfile}.h)
-    ADD_CUSTOM_COMMAND(OUTPUT ${outfile}
-      COMMAND ${QT_UIC_EXECUTABLE}
-      ARGS ${ui_options} -o ${outfile} ${infile}
-      MAIN_DEPENDENCY ${infile})
-    SET(${outfiles} ${${outfiles}} ${outfile})
-  ENDFOREACH (it)
+    cmake_parse_arguments(_WRAP_UI "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-ENDMACRO (M4D_QT4_WRAP_UI)
+    set(ui_files ${_WRAP_UI_UNPARSED_ARGUMENTS})
+    set(ui_options ${_WRAP_UI_OPTIONS})
+
+    foreach(it ${ui_files})
+        get_filename_component(outfile ${it} NAME_WE)
+        get_filename_component(infile ${it} ABSOLUTE)
+        set(outfile ${MEDV4D_GENERATED_HEADERS_DIR}/ui_${outfile}.h)
+        add_custom_command(OUTPUT ${outfile}
+          COMMAND ${Qt5Widgets_UIC_EXECUTABLE}
+          ARGS ${ui_options} -o ${outfile} ${infile}
+          MAIN_DEPENDENCY ${infile} VERBATIM)
+        list(APPEND ${outfiles} ${outfile})
+    endforeach()
+    set(${outfiles} ${${outfiles}} PARENT_SCOPE)
+endfunction()
+
 
 FUNCTION(FILTER_HEADERS_FOR_MOC inputlist outputlist)
 	#SET(${outputlist} "" PARENT_SCOPE)
@@ -224,9 +232,10 @@ FUNCTION(ADD_MEDV4D_EXECUTABLE prog_name)
 	#MESSAGE( STATUS "${prog_name} sources : ${MEDV4D_EXECUTABLE_SOURCES}" )
 	#MESSAGE( STATUS "${prog_name} headers : ${MEDV4D_EXECUTABLE_HEADERS}" )
 
-	FILTER_HEADERS_FOR_MOC( "${MEDV4D_EXECUTABLE_HEADERS}" mocinput )
-	QT4_WRAP_CPP(mocoutput ${mocinput}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED ) #Define is workaround for moc bug
-	QT4_ADD_RESOURCES(rccoutput ${MEDV4D_EXECUTABLE_RESOURCES} )
-	QT4_WRAP_UI(uioutput ${MEDV4D_EXECUTABLE_UIS} )
-	ADD_EXECUTABLE( ${prog_name} ${MEDV4D_EXECUTABLE_SOURCES} ${uioutput} ${MEDV4D_EXECUTABLE_HEADERS} ${tcc_files} ${mocoutput} ${rccoutput} )
+	#FILTER_HEADERS_FOR_MOC( "${MEDV4D_EXECUTABLE_HEADERS}" mocinput )
+	#QT4_WRAP_CPP(mocoutput ${mocinput}  OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED ) #Define is workaround for moc bug
+	#QT4_ADD_RESOURCES(rccoutput ${MEDV4D_EXECUTABLE_RESOURCES} )
+	M4D_QT5_WRAP_UI(uioutput ${MEDV4D_EXECUTABLE_UIS} )
+	ADD_EXECUTABLE( ${prog_name} ${MEDV4D_EXECUTABLE_SOURCES} ${uioutput} ${MEDV4D_EXECUTABLE_HEADERS} )
+	qt5_use_modules(${prog_name} Widgets OpenGL)
 ENDFUNCTION(ADD_MEDV4D_EXECUTABLE prog_name)
