@@ -196,7 +196,7 @@ ViewerWindow::ViewerWindow()
 		//Reposition console window
 		QRect myRegion=frameGeometry();
 		QPoint putAt=myRegion.topRight();
-		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
+		SetWindowPos(GetConsoleWindow(),(HWND)winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
 
 

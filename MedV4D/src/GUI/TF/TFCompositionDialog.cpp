@@ -54,7 +54,7 @@ void TFCompositionDialog::updateSelection(const std::map<TF::Size, TFEditor*>& e
 			bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(button_triggered(TF::Size)));
 			tfAssert(buttonConnected);
 
-			newButtons.insert(std::make_pair<TF::Size, TFPaletteCheckButton*>(it->second->getIndex(), button));
+			newButtons.insert(std::pair<TF::Size, TFPaletteCheckButton*>(it->second->getIndex(), button));
 		}
 		else
 		{

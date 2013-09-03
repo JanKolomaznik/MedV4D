@@ -141,7 +141,7 @@ void TFCompositeModifier::updateComposition_(){
 		if(found == composition_.end())
 		{
 			editor = new Editor(editors_.find(*it)->second);
-			newComposition.insert(std::make_pair<TF::Size, Editor*>(
+			newComposition.insert(std::pair<TF::Size, Editor*>(
 				*it,
 				editor)
 			);

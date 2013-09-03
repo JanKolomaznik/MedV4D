@@ -275,7 +275,7 @@ TFPalette::addToPalette_(TFEditor* editor, bool visible )
 	bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(buttonConnected);
 	
-	palette_.insert(std::make_pair<TF::Size, Editor*>(addedIndex, new Editor(editor, button)));
+	palette_.insert(std::pair<TF::Size, Editor*>(addedIndex, new Editor(editor, button)));
 	
 	QDockWidget* dockHolder = editor->getDockWidget();
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);

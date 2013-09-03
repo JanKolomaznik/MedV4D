@@ -1,5 +1,5 @@
 #pragma once
-
+#include <GL/glew.h>
 #include <MedV4D/Imaging/Imaging.h>
 #include <soglu/GLTextureImage.hpp>
 #include <soglu/GLMUtils.hpp>
