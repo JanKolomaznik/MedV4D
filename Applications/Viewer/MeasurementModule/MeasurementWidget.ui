@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MeasurementWidget</class>
+ <widget class="QWidget" name="MeasurementWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>398</width>
+        <height>298</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="tabHumeralHead">
+          <attribute name="title">
+           <string>Humeral Head</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QPushButton" name="definePointsButton">
+             <property name="text">
+              <string>Define points ...</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableView" name="pointsView">
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>60</number>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="analyseHumeralHeadButton">
+             <property name="text">
+              <string>Analyse</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabProximalShaftofHumerus">
+          <attribute name="title">
+           <string>Proximal Shaft of Humerus</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="definePointsButton_2">
+             <property name="text">
+              <string>Define points ...</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableView" name="proximalShaftPointsView"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="analyseProximalShaftOfHumerusButton">
+             <property name="text">
+              <string>Analyse</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>definePointsButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MeasurementWidget</receiver>
+   <slot>startHumeralHeadPointDefining(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>64</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>401</x>
+     <y>11</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>analyseHumeralHeadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MeasurementWidget</receiver>
+   <slot>analyseHumeralHead()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>213</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>definePointsButton_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MeasurementWidget</receiver>
+   <slot>startProximalShaftPointDefining(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>180</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>analyseProximalShaftOfHumerusButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MeasurementWidget</receiver>
+   <slot>analyseProximalShaftOfHumerus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>303</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>startHumeralHeadPointDefining(bool)</slot>
+  <slot>analyseHumeralHead()</slot>
+  <slot>analyseProximalShaftOfHumerus()</slot>
+  <slot>startProximalShaftPointDefining(bool)</slot>
+ </slots>
+</ui>
