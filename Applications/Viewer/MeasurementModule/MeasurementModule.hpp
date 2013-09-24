@@ -44,7 +44,7 @@ class StartMeasurementAction: public QAction
 	Q_OBJECT;
 public:
 	StartMeasurementAction( MeasurementModule &aModule, QObject *parent )
-		: QAction( "Measurement tool", parent ), mModule( aModule )
+		: QAction( "Measurement", parent ), mModule( aModule )
 	{
 		setCheckable( true );
 		setChecked( false );

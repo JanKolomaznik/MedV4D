@@ -14,7 +14,7 @@ MeasurementModule::loadModule()
 
 
 	//QList<QAction*> &annotationActions = mViewerController->getActions();
-	QToolBar *toolbar = new QToolBar( "Measurement Tool toolbar button" );
+	QToolBar *toolbar = new QToolBar( "Measurement Toolbar" );
 	toolbar->addAction( new StartMeasurementAction( *this, NULL ) );
 	appManager->addToolBar( toolbar );
 
