@@ -64,7 +64,7 @@ protected:
 
 
 
-MeasurementController::MeasurementController()
+MeasurementController::MeasurementController(): mVectorEditorInteractionButton( Qt::NoButton ), mOverlay( false ), mMeasurementMode( mmNONE ), mModeId( 0 )
 {
 	mMeasurementHandlers[mmHUMERAL_HEAD] = APrimitiveCreationEventController::Ptr( new PointGroupPrimitiveController(mHumeralHeadPoints, 6) );
 

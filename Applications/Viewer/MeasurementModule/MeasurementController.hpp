@@ -45,6 +45,7 @@ public:
 	void
 	setModeId( M4D::Common::IDNumber aId )
 	{
+	    ASSERT( aId > 0 );
 		mModeId = aId;
 	}
 

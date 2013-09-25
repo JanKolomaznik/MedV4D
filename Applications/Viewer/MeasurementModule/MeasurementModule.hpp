@@ -16,7 +16,7 @@ class MeasurementModule: public AModule
 {
 public:
 
-	MeasurementModule(): AModule( "Measurement Module" )
+	MeasurementModule(): AModule( "Measurement Module" ), mModeId( 0 )
 	{}
 
 	bool

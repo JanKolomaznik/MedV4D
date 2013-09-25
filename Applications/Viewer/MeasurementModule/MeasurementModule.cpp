@@ -39,6 +39,7 @@ MeasurementModule::startMeasurement()
 	ApplicationManager * appManager = ApplicationManager::getInstance();
 	appManager->createDockWidget( "Measurement Tool", Qt::RightDockWidgetArea, new MeasurementWidget( mViewerController ) );
 
+	ASSERT( mModeId > 0 );
 	appManager->activateMode( mModeId );
 }
 
