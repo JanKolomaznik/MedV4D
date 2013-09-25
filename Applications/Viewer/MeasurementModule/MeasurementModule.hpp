@@ -23,10 +23,10 @@ public:
 	isUnloadable();
 
 	void
-	startMeasurement();
+	startMeasurementTool();
 
 	void
-	stopMeasurement();
+	stopMeasurementTool();
 protected:
 	void
 	loadModule();
@@ -55,9 +55,9 @@ public slots:
 	toggleMeasurement( bool aToggle )
 	{
 		if( aToggle ) {
-			mModule.startMeasurement();
+			mModule.startMeasurementTool();
 		} else {
-			mModule.stopMeasurement();
+			mModule.stopMeasurementTool();
 		}
 	}
 

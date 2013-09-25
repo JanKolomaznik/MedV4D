@@ -34,7 +34,7 @@ MeasurementModule::isUnloadable()
 }
 
 void
-MeasurementModule::startMeasurement()
+MeasurementModule::startMeasurementTool()
 {
 	ApplicationManager * appManager = ApplicationManager::getInstance();
 	appManager->createDockWidget( "Measurement Tool", Qt::RightDockWidgetArea, new MeasurementWidget( mViewerController ) );
@@ -44,7 +44,7 @@ MeasurementModule::startMeasurement()
 }
 
 void
-MeasurementModule::stopMeasurement()
+MeasurementModule::stopMeasurementTool()
 {
 
 }
