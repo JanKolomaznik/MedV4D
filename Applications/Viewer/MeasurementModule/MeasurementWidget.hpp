@@ -14,7 +14,7 @@ class MeasurementWidget: public QWidget, public Ui::MeasurementWidget
 public:
 	MeasurementWidget( MeasurementController::Ptr aController ): mController( aController )
 	{
-		ASSERT( aController );
+		ASSERT( aController.get() != 0 );
 		setupUi( this );
 
 		pointsView->setModel( &(aController->getPointModel()) );
