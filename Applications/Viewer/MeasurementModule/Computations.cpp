@@ -7,6 +7,14 @@
 
 #include <eigen2/Eigen/Dense>
 
+
+/** \brief Generate a random vector (bounded per component).
+ *
+ * \param aMin Lower bounds.
+ * \param aMax Upper bounds.
+ * \return The generated random vector.
+ *
+ */
 template< typename TNumType, size_t tDim >
 Vector< TNumType, tDim >
 getRandomVector( const Vector< TNumType, tDim > &aMin, const Vector< TNumType, tDim > &aMax )
@@ -45,6 +53,15 @@ public:
 	}*/
 
 
+    /** \brief Find a vector of input values which minimizes a given function between the given bounds.
+     *
+     * \param aMin Lower bounds for the result vector.
+     * \param aMax Upper bounds for the result vector.
+     * \param aInitialValue Start the search from this initial value.
+     * \param aFunction Function to minimize.
+     * \return The vector giving the lowest function value which has been found.
+     *
+     */
 	Vector< TNumType, tDim >
 	optimize( const Vector< TNumType, tDim > &aMin, const Vector< TNumType, tDim > &aMax, Vector< TNumType, tDim > aInitialValue, TFunction aFunction )
 	{
@@ -105,6 +122,12 @@ struct CylinderMaximumFillFtor
 	CylinderMaximumFillFtor( const PointSet &aPoints ): mPoints( aPoints )
 	{ }
 
+    /** \brief Functor operator to find the minimum distance of a line to a set of points in 3D.
+     *
+     * \param aCoord Defines the line to consider (the first 3 values define a point on the line, the last 3 define a vector giving the direction of the line).
+     * \return The distance of the nearest point to the line.
+     *
+     */
 	float
 	operator()( const Vector< float, 6 > &aCoord )
 	{
@@ -152,6 +175,14 @@ computeCovarianceMatrixFromPointSet( const PointSet &aPoints, Vector3f &aCenter,
 	}
 }
 
+/** \brief Finds the nearest plane to a set of points, its normal, and the center of the point-set.
+ *
+ * The resulting plane is produced by finding the center of the set, and the 2 vectors giving the 2 most varying directions of the set (linearly independent eigenvectors).
+ *
+ * \param aPoints Point set to consider.
+ * \param aHeadMeasurementData Structure to fill the results in (".point" is the center of the point-set, ".normal" is the normalized normal of the plane and ".vDirection" and ".wDirection" are the direction vectors).
+ *
+ */
 void
 getHeadMeasurementData( const PointSet &aPoints, HeadMeasurementData &aHeadMeasurementData )
 {
@@ -170,7 +201,7 @@ getHeadMeasurementData( const PointSet &aPoints, HeadMeasurementData &aHeadMeasu
 	D_PRINT( "Eigen values :\n" << eigenVals );
 	D_PRINT( "Eigen vectors :\n" << eigenVectors );
 
-
+	// Get the 2 most varying directions.
 	Vector3f v1( eigenVectors(0,2), eigenVectors(1,2), eigenVectors(2,2) );
 	Vector3f v2( eigenVectors(0,1), eigenVectors(1,1), eigenVectors(2,1) );
 
@@ -183,14 +214,20 @@ getHeadMeasurementData( const PointSet &aPoints, HeadMeasurementData &aHeadMeasu
 	/*v2 = VectorProduct( v1, normal );
 	VectorNormalization( v2 );*/
 
-	aHeadMeasurementData.point = center;
-	aHeadMeasurementData.normal = normal;
-	aHeadMeasurementData.vDirection = v1;
-	aHeadMeasurementData.wDirection = v2;
-	aHeadMeasurementData.available = true;
+	aHeadMeasurementData.point = center;	// The center of the point-set.
+	aHeadMeasurementData.normal = normal;	// Normal to the plane defined by the center-point and the 2 most varying directions of the point-set.
+	aHeadMeasurementData.vDirection = v1;	// The most varying direction of the point-set.
+	aHeadMeasurementData.wDirection = v2;	// The second most varying direction of the point-set.
+	aHeadMeasurementData.available = true;	// The data structure is filled with meaningful data.
 }
 
 
+/** \brief
+ *
+ * \param aPoints Point set to consider.
+ * \param aProximalShaftMeasurementData Structure to fill the results in ().
+ *
+ */
 void
 getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasurementData &aProximalShaftMeasurementData )
 {
@@ -199,6 +236,7 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 	Eigen::Matrix3f covarianceMatrix;
 
 
+	// Get the minimum and maximum bounds of the point set.
 	Vector3f minimum = aPoints[0];
 	Vector3f maximum = aPoints[0];
 	for ( size_t i = 1; i < aPoints.size(); ++i ) {
@@ -209,6 +247,7 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 		D_PRINT( "max : " << maximum << "\n" );*/
 	}
 
+	// Find the center of the point-set and its most varying direction, or use the values from a previous computation if available.
 	if ( !aProximalShaftMeasurementData.available ) {
 		computeCovarianceMatrixFromPointSet( aPoints, center, covarianceMatrix );
 		typedef Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> Solver;
@@ -226,6 +265,10 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 		v1 = aProximalShaftMeasurementData.direction;
 	}
 	//********************************************************************
+	// Try to find (fine-tune) the "axis" of the point-set by searching for the line nearest to all points in the set,
+	// starting from the line given by the center-point and the direction of the most significant variance.
+	// Do this by testing the line's distance to the set after moving the line in the x and y directions between the bounds of +/- d2
+	// and changing the line's direction vector to point somewhere in its 3D "neighborhood" (inside a box with sides of 2*d around its original direction).
 	float d = 0.15f;
 	float d2 = 5.0f;
 	NumericOptimizer< float, 6, CylinderMaximumFillFtor > optimizer;
@@ -246,7 +289,7 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 
 	//********************************************************************
 
-
+	// Find the "endpoints" of the "axis" so it would exactly fit inside the smallest AABB containing the whole point-set.
 	Vector3f intersection1;
 	Vector3f intersection2;
 	M4D::lineAABBIntersections( minimum, maximum,
@@ -254,33 +297,33 @@ getProximalShaftMeasurementData( const PointSet &aPoints, ProximalShaftMeasureme
 			intersection1, intersection2
 			);
 
+	// Set the direction vector of the "axis" to point toward its "upper" end.
 	v1 = intersection2 - intersection1;
 	VectorNormalization( v1 );
 
-
-	/*D_PRINT( "minT = " << minT );
-	D_PRINT( "maxT = " << maxT );
-	D_PRINT( "diffT = " << diffT );*/
+	// Find the distance of the nearest point from the point-set to the "axis".
 	float minDistance = M4D::PointLineDistance( static_cast< Vector3f >( aPoints[0] ), center, v1 );
 	for ( size_t i = 1; i < aPoints.size(); ++i ) {
 		float tmp = M4D::PointLineDistance( static_cast< Vector3f >( aPoints[i] ), center, v1 );
 		minDistance = M4D::min( minDistance, tmp );
 	}
 
+	// Get the length of the "axis" (fitting inside the smallest AABB containing the whole point-set).
 	float height = VectorSize( intersection2 - intersection1 );
 
-	aProximalShaftMeasurementData.point = intersection1 - v1 * (0.1f * height);//center + minT * v1;
-	aProximalShaftMeasurementData.bboxP1 = intersection1;
-	aProximalShaftMeasurementData.bboxP2 = intersection2;
+	// Fill in the findings to the result data structure.
+	aProximalShaftMeasurementData.point = intersection1 - v1 * (0.1f * height);	// The lower end of the "axis" elongated by 10% of the axis' length.
+	aProximalShaftMeasurementData.bboxP1 = intersection1;	// The lower end of the axis.
+	aProximalShaftMeasurementData.bboxP2 = intersection2;	// The upper end of the axis.
 
 
-	aProximalShaftMeasurementData.centerPoint = center;
-	aProximalShaftMeasurementData.direction = v1;
-	aProximalShaftMeasurementData.height = height * 1.2;
-	aProximalShaftMeasurementData.radius = minDistance;
-	aProximalShaftMeasurementData.available = true;
-	aProximalShaftMeasurementData.minimum = minimum;
-	aProximalShaftMeasurementData.maximum = maximum;
+	aProximalShaftMeasurementData.centerPoint = center;		// Center of the axis.
+	aProximalShaftMeasurementData.direction = v1;			// Direction of the axis (pointing toward its upper end).
+	aProximalShaftMeasurementData.height = height * 1.2;	// Length of the axis elongated by 20% (for 10% on the upper and the lower end respectively).
+	aProximalShaftMeasurementData.radius = minDistance;		// Distance of the axis to the nearest point of the set.
+	aProximalShaftMeasurementData.available = true;			// The data structure is filled with meaningful data.
+	aProximalShaftMeasurementData.minimum = minimum;		// Minimum bounds to the point-set (the vertex of the minimal AABB to the set nearest to the origin).
+	aProximalShaftMeasurementData.maximum = maximum;		// Maximum bounds to the point-set (the vertex of the minimal AABB to the set farthest from the origin).
 }
 
 
