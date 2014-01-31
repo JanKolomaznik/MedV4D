@@ -2,7 +2,7 @@
 #define APPLICATION_MANAGER_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
 
 #include "MedV4D/GUI/managers/OpenGLManager.h"
 #include "MedV4D/GUI/managers/ViewerManager.h"
@@ -87,10 +87,7 @@ public:
 	}
 
 	void
-	setMainWindow( M4D::GUI::MainWindow &aMainWindow )
-	{
-		mMainWindow = &aMainWindow;
-	}
+	setMainWindow( M4D::GUI::MainWindow &aMainWindow );
 
 	M4D::Common::IDNumber
 	addNewMode(ModeViewerController::Ptr aViewerController, M4D::GUI::Viewer::RenderingExtension::Ptr aRenderingExtension )
@@ -123,7 +120,7 @@ public:
 		LOG( "Mode ID = " << aId << " activated" );
 		return true;
 	}
-		
+
 	void
 	createDockWidget( const QString &aName, Qt::DockWidgetArea aArea, QWidget * aWidget )
 	{
@@ -147,20 +144,20 @@ public:
 		return mSettings;
 	}
 
-	QIcon 
+	QIcon
 	getIcon( QString name )const;
-	
+
 	void
 	setIconsDirectory( boost::filesystem::path aIconsDirName )
 	{
 		mIconsDirName = aIconsDirName;
 	}
-	
+
 	typedef boost::shared_future<void> BackgroundTaskFuture;
-	
+
 	BackgroundTaskFuture
 	executeBackgroundTask( const boost::function< void () > &aFtor, const QString &aDescription );
-	
+
 	template < typename TFunctor >
 	BackgroundTaskFuture
 	executeBackgroundTask( const TFunctor &aFtor, const QString &aDescription )
@@ -168,8 +165,8 @@ public:
 		boost::function< void () > func = aFtor;
 		return executeBackgroundTask( func, aDescription );
 	}
-	
-	
+
+
 public slots:
 	void
 	updateGUIRequest()

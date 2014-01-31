@@ -3,6 +3,7 @@
 #include "MedV4D/Common/RAII.h"
 #include <soglu/OGLTools.hpp>
 #include <MedV4D/GUI/utils/TextureUtils.h>
+#include <QShowEvent>
 
 class DummyOGLWidget: public QGLWidget
 {
@@ -14,6 +15,14 @@ public:
 		doneCurrent();
 	}
 protected:
+	virtual void
+	showEvent(QShowEvent *event) override {
+		event->accept();
+		setVisible(false);
+		hide();
+		return;
+	}
+
 	void
 	initializeGL()
 	{
@@ -64,9 +73,10 @@ OpenGLManager::initialize()
 	mPimpl = new OpenGLManagerPimpl;
 
 	QGLFormat glformat = QGLFormat::defaultFormat();
-	glformat.setVersion( 3, 1 );
+	glformat.setVersion( 3, 3 );
 
 	mPimpl->widget = new DummyOGLWidget(glformat);
+	mPimpl->widget->setVisible(false);
 	glformat = mPimpl->widget->format();
 	LOG( "OpenGL version : " << glformat.majorVersion() << "." << glformat.minorVersion() );
 
@@ -101,7 +111,7 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 
 	soglu::GLTextureImage::Ptr result;
 	result = getActualizedTextureFromImage( aImage );
-
+soglu::checkForGLError("Actualized");
 	if ( result ) {
 		return result;
 	}
@@ -151,11 +161,13 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
-
-	M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
+soglu::checkForGLError("Before make current 0");
+	//M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
+	soglu::checkForGLError("Before make current");
 	makeCurrent();
 	{
+		soglu::checkForGLError("After make current");
 		try {
 			rec.texture = M4D::createTextureFromImage( *(aImage.GetAImageRegion()), true ) ;
 		} catch ( std::exception &e) {
@@ -175,7 +187,7 @@ void
 OpenGLManager::makeCurrent()
 {
 	//TODO handle in better way
-	mPimpl->context->makeCurrent();
+	GL_ERROR_CLEAR_AFTER_CALL(mPimpl->context->makeCurrent());
 }
 
 void
