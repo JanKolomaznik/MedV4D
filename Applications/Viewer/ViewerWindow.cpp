@@ -109,7 +109,7 @@ protected:
 } /*namespace M4D*/
 
 
-bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillBufferFromTF(M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
@@ -135,7 +135,7 @@ bool fillBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vorgl::Tran
 	return true;
 }
 
-bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillIntegralBufferFromTF(M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
@@ -166,7 +166,7 @@ bool fillIntegralBufferFromTF(M4D::GUI::TFFunctionInterface::Const function, vor
 }
 
 void
-loadAllSavedTFEditorsIntoPalette( M4D::GUI::TFPalette &palette, boost::filesystem::path dirName )
+loadAllSavedTFEditorsIntoPalette( M4D::GUI::Palette &palette, boost::filesystem::path dirName )
 {
 	if (!boost::filesystem::exists(dirName)) {
 		LOG( "Directory \'" << dirName << "\' doesn't exist!" );
@@ -182,7 +182,7 @@ loadAllSavedTFEditorsIntoPalette( M4D::GUI::TFPalette &palette, boost::filesyste
 	for ( ;dirIt != end; ++dirIt ) {
 		LOG( "Found TFE file :" << *dirIt );
 		boost::filesystem::path p = dirIt->path();
-		palette.loadTFFromFile( QString( p.string().data() ), false );
+		palette.loadFromFile( QString( p.string().data() ), false );
 	}
 }
 
@@ -209,7 +209,7 @@ ViewerWindow::ViewerWindow()
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
 //***********************************************************
 	std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
-	mTFEditingSystem = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this, dataCT1D));
+	mTFEditingSystem = M4D::GUI::Palette::Ptr(new M4D::GUI::Palette(this, dataCT1D));
 	mTFEditingSystem->setupDefault();
 
 	createDockWidget( tr("Transfer Function Palette"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
@@ -532,7 +532,7 @@ struct CreateGLTFBuffer
 };
 
 bool
-fillTransferFunctionInfo( M4D::GUI::TFFunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
+fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
 {
 	if( fillBufferFromTF( function, info.tfBuffer ) ) {
 		//std::ofstream file( "TF.txt" );

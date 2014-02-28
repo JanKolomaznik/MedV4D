@@ -19,8 +19,8 @@
 #include "JoyInput.h"
 #endif
 
-#include "MedV4D/GUI/TF/TFPalette.h"
-#include "MedV4D/GUI/TF/TFFunctionInterface.h"
+#include "MedV4D/GUI/TF/Palette.h"
+#include "MedV4D/GUI/TF/FunctionInterface.h"
 
 typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord
@@ -142,7 +142,7 @@ protected:
 	QTimer mJoyTimer;
 #endif
 
-	M4D::GUI::TFPalette::Ptr mTFEditingSystem;
+	M4D::GUI::Palette::Ptr mTFEditingSystem;
 	TransferBufferUsageMap mTFUsageMap;
 
 	QFileDialog	*mOpenDialog;
