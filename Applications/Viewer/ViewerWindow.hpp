@@ -11,6 +11,7 @@
 #include "MedV4D/GUI/widgets/TransferFunction1DEditor.h"
 #include "MedV4D/GUI/widgets/ProgressInfoDialog.h"
 #include "MedV4D/GUI/widgets/MainWindow.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
 
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 
@@ -48,7 +49,7 @@ public:
 
 	void
 	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController );
-	
+
 public slots:
 
 	void
@@ -57,10 +58,10 @@ public slots:
 	void
 	openFile();
 
-	void 
+	void
 	openFile( const QString &aPath );
 
-	void 
+	void
 	openDicom( const QString &aPath );
 
 	void
@@ -110,12 +111,13 @@ public slots:
 	computeHistogram( M4D::Imaging::AImage::Ptr aImage );
 
 	//TMP
-	void 
+	void
 	denoiseImage();
 signals:
 	void
 	callInitAfterLoopStart();
 protected:
+
 	M4D::GUI::TransferFunction1DEditor *mTransferFunctionEditor;
 
 	QTimer	mTransFuncTimer;
@@ -126,7 +128,7 @@ protected:
 	ProxyViewerController::Ptr mViewerController;
 	ProxyRenderingExtension::Ptr mRenderingExtension;
 	QMainWindow *mMainWin2;
-	
+
 	QLabel *mInfoLabel;
 
 
@@ -138,7 +140,7 @@ protected:
 	// OIS
 	JoyInput mJoyInput;
 	QTimer mJoyTimer;
-#endif 
+#endif
 
 	M4D::GUI::TFPalette::Ptr mTFEditingSystem;
 	TransferBufferUsageMap mTFUsageMap;

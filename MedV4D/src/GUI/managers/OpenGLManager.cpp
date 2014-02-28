@@ -4,25 +4,18 @@
 #include <soglu/OGLTools.hpp>
 #include <MedV4D/GUI/utils/TextureUtils.h>
 #include <QShowEvent>
+#include <memory>
 
 class DummyOGLWidget: public QGLWidget
 {
 public:
-	DummyOGLWidget(const QGLFormat & format ):QGLWidget( format )
+	DummyOGLWidget(const QGLFormat & format, QWidget *parent = nullptr):QGLWidget( format, parent, nullptr, Qt::Tool )
 	{
 		makeCurrent();
 		soglu::initOpenGL();
 		doneCurrent();
 	}
 protected:
-	virtual void
-	showEvent(QShowEvent *event) override {
-		event->accept();
-		setVisible(false);
-		hide();
-		return;
-	}
-
 	void
 	initializeGL()
 	{
@@ -76,7 +69,6 @@ OpenGLManager::initialize()
 	glformat.setVersion( 3, 3 );
 
 	mPimpl->widget = new DummyOGLWidget(glformat);
-	mPimpl->widget->setVisible(false);
 	glformat = mPimpl->widget->format();
 	LOG( "OpenGL version : " << glformat.majorVersion() << "." << glformat.minorVersion() );
 
@@ -161,7 +153,6 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
-soglu::checkForGLError("Before make current 0");
 	//M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
 	soglu::checkForGLError("Before make current");

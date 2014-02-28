@@ -9,6 +9,7 @@
 
 #include <soglu/OGLDrawing.hpp>
 #include <soglu/Camera.hpp>
+#include <vorgl/SliceGeneration.hpp>
 //#include <soglu/FrameBufferObject.hpp>
 
 namespace M4D

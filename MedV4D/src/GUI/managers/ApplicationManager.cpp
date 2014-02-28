@@ -64,9 +64,6 @@ void
 ApplicationManager::setMainWindow( M4D::GUI::MainWindow &aMainWindow )
 {
 	mMainWindow = &aMainWindow;
-
-	//OpenGLManager::getSharedGLWidget()->setParent(&aMainWindow);
-	OpenGLManager::getSharedGLWidget()->hide();
 }
 
 QIcon

@@ -4,5 +4,5 @@
 
 
 GLWidget::GLWidget( QWidget * parent):
-	QGLWidget( parent, OpenGLManager::getInstance()->getSharedGLWidget() )
+	QGLWidget(OpenGLManager::getInstance()->getSharedGLWidget()->format(), parent, OpenGLManager::getInstance()->getSharedGLWidget() )
 {}
