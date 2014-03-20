@@ -61,7 +61,7 @@ public slots:
 			Vector2u grid = pGenViewer->getTiling();
 			viewportTilesRows->setValue( grid[0] );
 			viewportTilesCols->setValue( grid[1] );
-			sliceStep->setValue( pGenViewer->getTilingSliceStep() );
+			sliceStep->setValue(int(pGenViewer->getTilingSliceStep()));
 		} else {
 			setEnabled( false );
 		}

@@ -10,7 +10,7 @@
 #include <soglu/OGLDrawing.hpp>
 #include <soglu/Camera.hpp>
 #include <vorgl/SliceGeneration.hpp>
-//#include <soglu/FrameBufferObject.hpp>
+
 
 namespace M4D
 {
@@ -76,13 +76,13 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 }
 
 void
-GeneralViewer::setTiling( unsigned aRows, unsigned aCols )
+GeneralViewer::setTiling(int aRows, int aCols)
 {
 	setTiling( aRows, aCols, getViewerState().m2DMultiSliceStep );
 }
 
 void
-GeneralViewer::setTiling( unsigned aRows, unsigned aCols, unsigned aSliceStep )
+GeneralViewer::setTiling(int aRows, int aCols, int aSliceStep)
 {
 	ASSERT( aCols > 0 && aRows > 0 && aSliceStep > 0 );
 	getViewerState().m2DMultiSliceGrid[0] = aRows;
@@ -92,7 +92,7 @@ GeneralViewer::setTiling( unsigned aRows, unsigned aCols, unsigned aSliceStep )
 	update();
 }
 
-Vector2u
+Vector2i
 GeneralViewer::getTiling() const
 {
 	return getViewerState().m2DMultiSliceGrid;
@@ -341,7 +341,7 @@ GeneralViewer::getColorTransformName()
 	default:
 		ASSERT( false );
 	}
-	ASSERT( idList && idList->size() > 0 );
+	//ASSERT( idList && idList->size() > 0 );
 	for( unsigned i = 0; i < idList->size(); ++i ) {
 		if ( (*idList)[ i ].id == getViewerState().colorTransform ) {
 			//return QString::fromStdWString( (*idList)[ i ].name );
@@ -500,7 +500,7 @@ GeneralViewer::getAvailableColorTransformationNames()
 	default:
 		ASSERT( false );
 	}
-	ASSERT( idList && idList->size() > 0 );
+	//ASSERT( idList && idList->size() > 0 );
 	for( unsigned i = 0; i < idList->size(); ++i ) {
 		//strList << QString::fromStdWString( (*idList)[ i ].name );
 		strList << (*idList)[ i ].name;
@@ -703,8 +703,12 @@ GeneralViewer::initializeRenderingEnvironment()
 	getViewerState().mVolumeRenderer.initialize();
 
 	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
-	getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
-	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );
+	/*getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
+	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );*/
+	
+	getViewerState().mBasicShaderProgram = soglu::createGLSLProgramFromVertexAndFragmentShader(
+		dataDirName / "shaders" / "basic_vertex.glsl",
+		dataDirName / "shaders" / "basic_fragment.glsl");
 }
 
 bool
@@ -783,26 +787,57 @@ GeneralViewer::prepareForRenderingStep()
 
 void
 GeneralViewer::render()
-{
+{	
+	
+	//switch ( getViewerState().viewType ) {
+	//case vt3D:
+	//	{
+	//		glViewport(0, 0, width(), height());
+	//		getViewerState().mBasicShaderProgram.setUniform( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
+	//		soglu::testRender(getViewerState().mBasicShaderProgram, (float)width() / (float)height());
+	//		/*GL_ERROR_CLEAR_AFTER_CALL();
+	//		soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
+	//		soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
+	//		//GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
+	//		//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
+	//		getViewerState().mBasicShaderProgram.setUniform( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
+
+	//		//glColor3f( 1.0f, 0.0f, 0.0f );
+	//		getViewerState().mBasicShaderProgram.use();
+	//		soglu::drawBoundingBox(bbox);	*/
+	//	}
+	//	break;
+	//case vt2DAlignedSlices:
+	//	break;
+	//default:
+	//	ASSERT( false );
+	//}
+
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
+			GL_CHECKED_CALL(glEnable(GL_BLEND));
+			GL_CHECKED_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+			int vertexLocation = getViewerState().mBasicShaderProgram.getAttributeLocation("vertex");
 			glViewport(0, 0, width(), height());
 
+			getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
 
 			soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
 			soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
 			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
 			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-			getViewerState().mBasicCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );
+			/*getViewerState().mBasicCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );*/
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
-				glColor3f( 1.0f, 0.0f, 0.0f );
-				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &soglu::drawBoundingBox, bbox ) );
+				getViewerState().mBasicShaderProgram.use([&bbox, vertexLocation]()
+				{
+					soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_LINE_STRIP,	vertexLocation);
+				});
 			}
 			//Draw cut plane if enabled TODO - set color
-			getViewerState().mBasicCgEffect.executeTechniquePass(
+			/*getViewerState().mBasicCgEffect.executeTechniquePass(
 				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) )
-				);
+				);*/
 
 			/*GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
 			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
@@ -811,22 +846,24 @@ GeneralViewer::render()
 			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );*/
 
 			//LOG( getViewerState().glViewSetup );
-			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+			/*if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::preRender3D, mRenderingExtension ) );
 				//mRenderingExtension->preRender3D();
-			}
+			}*/
 
 			try {
+				getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
+				soglu::testRender(getViewerState().mBasicShaderProgram, (float)width() / (float)height());
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
-			}catch( std::exception &e ) {
+			} catch( std::exception &e ) {
 				LOG( e.what() );
 			}
 
 			GL_CHECKED_CALL( glClear( GL_DEPTH_BUFFER_BIT ) );//TODO disable depth storing during volume rendering
-			if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
+			/*if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
 				getViewerState().mBasicCgEffect.executeTechniquePass( "Basic", boost::bind( &M4D::GUI::Viewer::RenderingExtension::postRender3D, mRenderingExtension ) );
 				//mRenderingExtension->postRender3D();
-			}
+			}*/
 		}
 		break;
 	case vt2DAlignedSlices:
@@ -837,8 +874,8 @@ GeneralViewer::render()
 
 			//size_t sliceOffset = 0;
 			Renderer::SliceRenderer::RenderingConfiguration config = getViewerState().mSliceRenderConfig;
-			for ( unsigned j = 0; j < getViewerState().m2DMultiSliceGrid[0]; ++j ) {
-				for ( unsigned i = 0; i < getViewerState().m2DMultiSliceGrid[1]; ++i ) {
+			for (int j = 0; j < getViewerState().m2DMultiSliceGrid[0]; ++j ) {
+				for (int i = 0; i < getViewerState().m2DMultiSliceGrid[1]; ++i ) {
 
 					GL_CHECKED_CALL( glViewport( i * subVPortW, j * subVPortH, subVPortW, subVPortH ) );
 					try {
@@ -853,7 +890,7 @@ GeneralViewer::render()
 						CartesianPlanes plane = config.plane;
 						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
 						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
-						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
+						/*getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneWidth", 2*hextents[plane] );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );
@@ -864,7 +901,7 @@ GeneralViewer::render()
 									config.currentSlice[ config.plane ],
 									Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ),
 									config.plane
-									) );
+									) );*/
 						/*mRenderingExtension->render2DAlignedSlices( config.currentSlice[ config.plane ],
 								Vector2f( realSlices[plane] - hextents[plane], realSlices[plane] + hextents[plane] ),
 								config.plane
@@ -978,7 +1015,7 @@ GeneralViewer::PrepareData()
 		if( TryGetAndLockAllAvailableInputs() == 0 ){
 			return false;
 		};
-	} catch (...) {
+	} catch (std::exception &) {
 		return false;
 	}
 

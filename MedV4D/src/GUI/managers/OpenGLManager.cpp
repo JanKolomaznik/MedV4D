@@ -103,7 +103,7 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 
 	soglu::GLTextureImage::Ptr result;
 	result = getActualizedTextureFromImage( aImage );
-soglu::checkForGLError("Actualized");
+
 	if ( result ) {
 		return result;
 	}

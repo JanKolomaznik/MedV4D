@@ -5,9 +5,13 @@
 
 #include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/GUI/utils/ViewerController.h"
+
+#include <soglu/GLSLShader.hpp>
 #include <soglu/GLTextureImage.hpp>
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
+
+
 
 ///#include "MedV4D/GUI/utils/ViewConfiguration.h"
 //#include "MedV4D/GUI/utils/IUserEvents.h"
@@ -112,8 +116,8 @@ public:
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
-	Vector2u				m2DMultiSliceGrid;
-	size_t					m2DMultiSliceStep;
+	Vector2i				m2DMultiSliceGrid;
+	int					m2DMultiSliceStep;
 
 	M4D::GUI::Renderer::VolumeRenderer	mVolumeRenderer;
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
@@ -123,6 +127,8 @@ public:
 
 	soglu::CgFXShader mSceneSlicingCgEffect;
 	soglu::CgFXShader mBasicCgEffect;
+
+	soglu::GLSLProgram mBasicShaderProgram;
 };
 
 class RenderingExtension
@@ -159,12 +165,12 @@ public:
 	GeneralViewer( QWidget *parent = NULL );
 
 	void
-	setTiling( unsigned aRows, unsigned aCols );
+	setTiling(int aRows, int aCols);
 
 	void
-	setTiling( unsigned aRows, unsigned aCols, unsigned aSliceStep );
+	setTiling(int aRows, int aCols, int aSliceStep);
 
-	Vector2u
+	Vector2i
 	getTiling() const;
 
 	size_t

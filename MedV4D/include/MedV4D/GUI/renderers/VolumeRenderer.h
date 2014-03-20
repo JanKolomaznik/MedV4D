@@ -78,7 +78,7 @@ public:
 	void
 	initialize()
 	{
-		vorgl::VolumeRenderer::initialize(gVolumeRendererShaderPath);
+		vorgl::VolumeRenderer::initialize(gVolumeRendererShaderPath.parent_path());
 		
 		mAvailableColorTransforms.clear();
 		//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );

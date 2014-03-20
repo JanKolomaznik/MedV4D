@@ -43,6 +43,7 @@ AGLViewer::~AGLViewer()
 	makeCurrent();
 	mFrameBufferObject.Finalize();
 	//mPickManager.finalize();
+	mViewerState.reset();
 	doneCurrent();
 
 	deselect();
@@ -90,9 +91,9 @@ AGLViewer::initializeGL()
 {
 	soglu::initOpenGL();
 	soglu::initializeCg();
-	glClearColor( mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF() );
+	GL_CHECKED_CALL(glClearColor(mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF()));
 
-	mFrameBufferObject.Initialize( width(), height() );
+	//mFrameBufferObject.Initialize( width(), height() );
 
 	//mPickManager.initialize( 150 );D_PRINT("REMOVE THIS" );
 
@@ -108,15 +109,15 @@ AGLViewer::initializeOverlayGL()
 void
 AGLViewer::paintGL()
 {
+	GL_ERROR_CLEAR_AFTER_CALL();
 	M4D::Common::Clock timer;
 
 	//boost::timer::auto_cpu_timer t;
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_CHECKED_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	if ( preparedForRendering() ) {
 
-		mFrameBufferObject.Bind();
+		//mFrameBufferObject.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//****************************************
@@ -133,19 +134,18 @@ AGLViewer::paintGL()
 
 		soglu::checkForGLError( "OGL error occured during rendering: " );
 
-		mFrameBufferObject.Unbind();
+		//mFrameBufferObject.Unbind();
 
 		GL_CHECKED_CALL( glViewport(0, 0, width(), height()) );
-		mFrameBufferObject.Render();
+		//mFrameBufferObject.Render();
 	} else {
 		//D_PRINT( "Rendering not possible at the moment" );
 	}
 
-
-	if( mSelected ) {
+	/*if( mSelected ) {
 		GL_CHECKED_CALL( glDisable(GL_DEPTH_TEST ) );
-		GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-		//****************************************************
+		//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
+		// ****************************************************
 		glClear( GL_DEPTH_BUFFER_BIT );
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -163,9 +163,9 @@ AGLViewer::paintGL()
 
 		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
 		soglu::drawRectangle(glm::fvec2(5.0f, 5.0f), glm::fvec2(width()-5.0f, height()-5.0f));
-	}
+	}*/
 
-	if( mEnableFPS ) {
+	/*if( mEnableFPS ) {
 		glFlush();
 		mTimeMeasurements[mLastMeasurement++] = timer.secondsPassed();
 		mLastMeasurement = mLastMeasurement % MEASUREMENT_SAMPLE_COUNT;
@@ -175,7 +175,7 @@ AGLViewer::paintGL()
 		}
 		sum /= double(MEASUREMENT_SAMPLE_COUNT);
 		LOG( "FPS = " << 1.0 / sum );
-	}
+	}*/
 	glFinish();
 }
 
@@ -200,7 +200,7 @@ void
 AGLViewer::resizeGL( int width, int height )
 {
 	glViewport(0, 0, width, height);
-	mFrameBufferObject.Resize( width, height );
+	//mFrameBufferObject.Resize( width, height );
 
 	mViewerState->mWindowSize[0] = static_cast< unsigned >( width );
 	mViewerState->mWindowSize[1] = static_cast< unsigned >( height );

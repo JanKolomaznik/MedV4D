@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
 PROJECT( M4DViewer )
 
 #On windows
-#SET(CMAKE_PREFIX_PATH "D:/Libs/Qt/Qt5.1.1/5.1.1/msvc2012_64_opengl" "c:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64/")
+SET(CMAKE_PREFIX_PATH "C:/Libs/Qt/Qt5.2.1/5.2.1/msvc2012_64_opengl" "c:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64/")
 
 IF(NOT MEDV4D_ROOT_DIRECTORY)
 	SET(MEDV4D_ROOT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/MedV4D" )
