@@ -201,8 +201,8 @@ ViewerWindow::ViewerWindow()
 
 
 	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
-	M4D::GUI::Renderer::gSliceRendererShaderPath = dataDirName / "shaders" / "ImageRender.cgfx";
-	M4D::GUI::Renderer::gVolumeRendererShaderPath = dataDirName / "shaders" / "ImageRender.cgfx";
+	M4D::GUI::Renderer::gSliceRendererShaderPath = dataDirName / "shaders";
+	M4D::GUI::Renderer::gVolumeRendererShaderPath = dataDirName / "shaders";
 	//M4D::gPickingShaderPath = dataDirName / "shaders" / "PickingShader.cgfx";
 
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );

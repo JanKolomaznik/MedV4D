@@ -12,7 +12,6 @@ struct ViewSetup
 uniform ViewSetup gViewSetup;
 
 in vec3 vertex;
-
 out vec3 positionInImage;
 
 void main(void) {

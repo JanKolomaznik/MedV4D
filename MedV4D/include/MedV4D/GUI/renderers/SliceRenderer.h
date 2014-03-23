@@ -1,5 +1,4 @@
-#ifndef SLICE_RENDERER_H
-#define SLICE_RENDERER_H
+#pragma once
 
 #include "MedV4D/Common/Common.h"
 
@@ -36,13 +35,13 @@ public:
 	struct RenderingConfiguration;
 	
 	void
-	Initialize();
+	initialize();
 
 	void
-	Finalize();
+	finalize();
 
 	virtual void
-	Render( RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup );
+	render( RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup );
 
 	const ColorTransformNameIDList&
 	GetAvailableColorTransforms()const
@@ -50,8 +49,7 @@ public:
 		return mAvailableColorTransforms;
 	}
 protected:
-	CGcontext   				mCgContext;
-	soglu::CgFXShader			mCgEffect;
+
 
 	ColorTransformNameIDList		mAvailableColorTransforms;
 };
@@ -102,5 +100,3 @@ struct SliceRenderer::RenderingConfiguration
 }//Renderer
 }//GUI
 }//M4D
-
-#endif /*SLICE_RENDERER_H*/

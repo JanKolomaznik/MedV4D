@@ -10,7 +10,7 @@ namespace Renderer
 boost::filesystem::path gSliceRendererShaderPath;
 
 void
-SliceRenderer::Initialize()
+SliceRenderer::initialize()
 {
 	vorgl::SliceRenderer::initialize(gSliceRendererShaderPath);
 	
@@ -24,7 +24,7 @@ SliceRenderer::Initialize()
 }
 
 void
-SliceRenderer::Finalize()
+SliceRenderer::finalize()
 {
 	vorgl::SliceRenderer::finalize();
 	//TODO
@@ -32,7 +32,7 @@ SliceRenderer::Finalize()
 
 
 void
-SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup )
+SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup )
 {
 	soglu::GLTextureImageTyped<3>::Ptr primaryData = aConfig.primaryImageData.lock();
 	if ( !primaryData ) {

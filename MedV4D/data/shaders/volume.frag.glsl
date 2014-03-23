@@ -42,13 +42,7 @@ vec3
 texCoordsFromPosition(vec3 pos, ImageData3D image)
 {
 	vec3 relPos = pos - image.realMinimum;
-
-	vec3 texCoord =  vec3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
-	//if (gEnableInterpolation) {
-	//	return texCoord;
-	//}
-	vec3 elementSize = 1.0f / image.size;
-	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
+	return vec3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
 }
 
 vec3

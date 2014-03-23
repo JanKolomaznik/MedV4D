@@ -699,7 +699,7 @@ GeneralViewer::enableBoundingBox( bool aEnable )
 void
 GeneralViewer::initializeRenderingEnvironment()
 {
-	getViewerState().mSliceRenderer.Initialize();
+	getViewerState().mSliceRenderer.initialize();
 	getViewerState().mVolumeRenderer.initialize();
 
 	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
@@ -788,31 +788,6 @@ GeneralViewer::prepareForRenderingStep()
 void
 GeneralViewer::render()
 {	
-	
-	//switch ( getViewerState().viewType ) {
-	//case vt3D:
-	//	{
-	//		glViewport(0, 0, width(), height());
-	//		getViewerState().mBasicShaderProgram.setUniform( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
-	//		soglu::testRender(getViewerState().mBasicShaderProgram, (float)width() / (float)height());
-	//		/*GL_ERROR_CLEAR_AFTER_CALL();
-	//		soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
-	//		soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
-	//		//GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
-	//		//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-	//		getViewerState().mBasicShaderProgram.setUniform( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
-
-	//		//glColor3f( 1.0f, 0.0f, 0.0f );
-	//		getViewerState().mBasicShaderProgram.use();
-	//		soglu::drawBoundingBox(bbox);	*/
-	//	}
-	//	break;
-	//case vt2DAlignedSlices:
-	//	break;
-	//default:
-	//	ASSERT( false );
-	//}
-
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
@@ -821,7 +796,8 @@ GeneralViewer::render()
 			int vertexLocation = getViewerState().mBasicShaderProgram.getAttributeLocation("vertex");
 			glViewport(0, 0, width(), height());
 
-			getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
+			//getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
+			getViewerState().mBasicShaderProgram.setUniformByName("gViewSetup", getViewerState().glViewSetup);
 
 			soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
 			soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
@@ -852,8 +828,6 @@ GeneralViewer::render()
 			}*/
 
 			try {
-				getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
-				soglu::testRender(getViewerState().mBasicShaderProgram, (float)width() / (float)height());
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
 			} catch( std::exception &e ) {
 				LOG( e.what() );
@@ -879,7 +853,24 @@ GeneralViewer::render()
 
 					GL_CHECKED_CALL( glViewport( i * subVPortW, j * subVPortH, subVPortW, subVPortH ) );
 					try {
-						getViewerState().mSliceRenderer.Render( config, getViewerState().glViewSetup );
+						/*int vertexLocation = getViewerState().mBasicShaderProgram.getAttributeLocation("vertex");
+						getViewerState().mBasicShaderProgram.setUniformByName("gViewSetup", getViewerState().glViewSetup);
+
+						soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
+						soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
+							getViewerState().mBasicShaderProgram.use([&, this]()
+							{
+								//soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_LINE_STRIP,	vertexLocation);
+								soglu::drawVertexBuffer(
+									vorgl::generateVolumeSlice(extents.realMinimum, extents.realMaximum, 0.5f,
+									//this->getViewerState().mSliceRenderConfig.currentSlice, 
+									(soglu::CartesianPlanes)this->getViewerState().mSliceRenderConfig.plane),
+									GL_LINE_LOOP,
+								vertexLocation
+								);
+							});*/
+
+						getViewerState().mSliceRenderer.render(config, getViewerState().glViewSetup);
 					}catch( std::exception &e ) {
 						LOG( e.what() );
 					}

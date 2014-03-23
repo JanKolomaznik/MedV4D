@@ -59,9 +59,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	}
 	
 	soglu::GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
-	if( secondaryData ) {
-		mCgEffect.setParameter( "gSecondaryImageData3D", *secondaryData );
-	}
 	
 	size_t sliceCount = aConfig.sampleCount;
 	soglu::BoundingBox3D bbox(primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum);
@@ -83,9 +80,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			}
 
 			integralTransferFunction = aConfig.integralTransferFunction.lock();
-			if( integralTransferFunction ) {
-				//mCgEffect.setParameter( "gIntegralTransferFunction1D", *integralTransferFunction );
-			}
 			
 			flags |= aConfig.integralTFEnabled ? rf_PREINTEGRATED : 0;
 			flags |= aConfig.shadingEnabled ? rf_SHADING : 0;
