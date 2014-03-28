@@ -2,6 +2,12 @@
 //precision highp float;
 
 #define THRESHOLD (0.1)
+#define DELTA (0.01)
+#define COMPUTE_GRADIENT( GRADIENT, CENTRAL_VALUE, TEX_DATA, COORDINATES )\
+	GRADIENT.x = texture( TEX_DATA, COORDINATES - vec3( DELTA, 0.0, 0.0 ) ).x - texture( TEX_DATA, COORDINATES + vec3( DELTA, 0.0, 0.0 ) ).x;\
+	GRADIENT.y = texture( TEX_DATA, COORDINATES - vec3( 0.0, DELTA, 0.0 ) ).x - texture( TEX_DATA, COORDINATES + vec3( 0.0, DELTA, 0.0 ) ).x;\
+	GRADIENT.z = texture( TEX_DATA, COORDINATES - vec3( 0.0, 0.0, DELTA ) ).x - texture( TEX_DATA, COORDINATES + vec3( 0.0, 0.0, DELTA ) ).x;
+
 
 struct ImageData3D
 {
@@ -57,7 +63,13 @@ uniform Camera gCamera;
 uniform TransferFunction1D gTransferFunction1D;
 uniform float gRenderingSliceThickness;
 
-/*vec3 blinnPhongShading(vec3 N, vec3 V, vec3 L, Material material, Light light)
+vec4 lit(float NdotL, float NdotH, float m) 
+{
+  float specular = (NdotL > 0) ? pow(max(0.0, NdotH), m) : 0.0;
+  return vec4(1.0, max(0.0, NdotL), specular, 1.0);
+}
+
+vec3 blinnPhongShading(vec3 N, vec3 V, vec3 L, Material material, Light light)
 {
 	//half way vector
 	vec3 H = normalize( L + V );
@@ -65,12 +77,12 @@ uniform float gRenderingSliceThickness;
 	//compute ambient term
 	vec3 ambient = material.Ka * light.ambient;
 
-	vec4 koef = lit(dot(N,L), dot(N, H), material.shininess);
+	vec4 koef = lit(dot(N, L), dot(N, H), material.shininess);
 	vec3 diffuse = material.Kd * light.color * koef.y;
 	vec3 specular = material.Ks * light.color * koef.z;
 
 	return ambient + diffuse + specular;
-}*/
+}
 
 vec4
 applyTransferFunction1D(float value, TransferFunction1D aTransferFunction1D)
@@ -99,35 +111,7 @@ applyIntegralTransferFunction1D(
 	return color;
 }
 
-/*vec4
-doShading(
-	vec3 coordinates,
-	vec4 color,
-	ImageData3D aTextureData,
-	Light aLight,
-	vec3 aEyePosition
-	)
-{
-	if (color.a > THRESHOLD) {
-		vec3 gradient;
-		COMPUTE_GRADIENT(gradient, value, aTextureData.data, coordinates); 
-		vec3 N = normalize( gradient );
 
-		vec3 L = normalize( aLight.position - position );
-		vec3 V = normalize( aEyePosition - position );
-
-		Material material;
-		material.Ka = vec3(0.1,0.1,0.1);
-		material.Kd = vec3(0.6,0.6,0.6);
-		material.Ks = vec3(0.2,0.2,0.2);
-		material.shininess = 100;
-		
-		OUT.color.rgb += BlinnPhongShading( N, V, L, material, aLight );
-	}
-	OUT.color = clamp( OUT.color, 0.0f.xxxx, 1.0f.xxxx);
-	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
-	return OUT;
-}*/
 
 
 vec3
@@ -184,6 +168,36 @@ transferFunction1D(
 	return outputColor;
 }
 
+vec4
+doShading(
+	vec3 aPosition,
+	vec4 color,
+	ImageData3D aTextureData,
+	Light aLight,
+	vec3 aEyePosition
+	)
+{
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	vec4 result = color;
+	if (color.a > THRESHOLD) {
+		vec3 gradient;
+		COMPUTE_GRADIENT(gradient, value, aTextureData.data, coordinates);
+		vec3 N = normalize( gradient );
+
+		vec3 L = normalize( aLight.position - aPosition );
+		vec3 V = normalize( aEyePosition - aPosition );
+
+		Material material;
+		material.Ka = vec3(0.1,0.1,0.1);
+		material.Kd = vec3(0.6,0.6,0.6);
+		material.Ks = vec3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		result.rgb += blinnPhongShading(N, V, L, material, aLight);
+	}
+	return result;
+}
+
 in vec3 positionInImage;
 out vec4 fragmentColor;
 
@@ -211,6 +225,16 @@ void main(void)
 				gPrimaryImageData3D,
 				gTransferFunction1D,
 				gMappedIntervalBands);
+#endif
+
+#ifdef ENABLE_SHADING
+	color = doShading(
+		coordinates,
+		color,
+		gPrimaryImageData3D,
+		gLight,
+		gCamera.eyePosition
+		);
 #endif
 	color.a = 1.0f - pow(1.0f - color.a, gRenderingSliceThickness);
 	fragmentColor = color;
