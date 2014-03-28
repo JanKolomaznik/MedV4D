@@ -11,14 +11,14 @@ namespace Renderer
 {
 
 boost::filesystem::path gVolumeRendererShaderPath;
-  
+
 void
 applyVolumeRestrictionsOnBoundingBox( soglu::BoundingBox3D &aBBox, const VolumeRestrictions &aVolumeRestrictions )
 {
 	glm::fvec3 corner1 = aBBox.getMin();
 	glm::fvec3 corner2 = aBBox.getMax();
 	glm::fvec3 size = corner2 - corner1;
-	
+
 	Vector3f i1Tmp, i2Tmp;
 	aVolumeRestrictions.get3D(i1Tmp, i2Tmp);
 
@@ -32,9 +32,9 @@ applyVolumeRestrictionsOnBoundingBox( soglu::BoundingBox3D &aBBox, const VolumeR
 }
 
 namespace detail {
-	
+
 static const uint64 FLAGS_TO_NAME_SUFFIXES_MASK = rf_SHADING | rf_JITTERING | rf_PREINTEGRATED;
-static const std::string gFlagsToNameSuffixes[] = 
+static const std::string gFlagsToNameSuffixes[] =
 	{
 		std::string("Simple"),
 		std::string("Shading"),
@@ -44,10 +44,10 @@ static const std::string gFlagsToNameSuffixes[] =
 		std::string("PreintegratedShading"),
 		std::string("PreintegratedJittering"),
 		std::string("PreintegratedJitteringShading"),
-		
+
 		std::string("UNDEFINED_COMBINATION")
 	};
-	
+
 }
 
 void
@@ -57,18 +57,18 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	if ( !primaryData ) {
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
-	
+
 	soglu::GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
-	
+
 	size_t sliceCount = aConfig.sampleCount;
 	soglu::BoundingBox3D bbox(primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum);
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
-	
+
 	uint64 flags = 0;
 	flags |= aConfig.jitterEnabled ? rf_JITTERING : 0;
-	
+
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
@@ -80,17 +80,24 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 			}
 
 			integralTransferFunction = aConfig.integralTransferFunction.lock();
-			
-			flags |= aConfig.integralTFEnabled ? rf_PREINTEGRATED : 0;
-			flags |= aConfig.shadingEnabled ? rf_SHADING : 0;
 
-			transferFunctionRendering( 
-				aConfig.camera, 
-				*primaryData, 
-				bbox, 
+			vorgl::VolumeRenderer::TransferFunctionRenderFlags flags;
+			if (aConfig.jitterEnabled) {
+				flags.set(vorgl::VolumeRenderer::TFRenderFlags::JITTERING);
+			}
+			if (aConfig.integralTFEnabled) {
+				flags.set(vorgl::VolumeRenderer::TFRenderFlags::PREINTEGRATED_TF);
+			}
+			if (aConfig.shadingEnabled) {
+				flags.set(vorgl::VolumeRenderer::TFRenderFlags::SHADING);
+			}
+
+			transferFunctionRendering(
+				aConfig.camera,
+				*primaryData,
+				bbox,
 				sliceCount,
-				aConfig.jitterEnabled,
-				aConfig.jitterStrength, 
+				aConfig.jitterStrength,
 				aConfig.enableCutPlane,
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
@@ -99,19 +106,19 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				aConfig.lightPosition,
 				flags
 				);
-			
+
 		}
 		break;
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			basicRendering( 
-				aConfig.camera, 
-				*primaryData, 
-				bbox, 
+			basicRendering(
+				aConfig.camera,
+				*primaryData,
+				bbox,
 				sliceCount,
 				aConfig.jitterEnabled,
-				aConfig.jitterStrength, 
+				aConfig.jitterStrength,
 				aConfig.enableCutPlane,
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
