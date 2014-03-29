@@ -13,7 +13,7 @@ PickManager::initialize( unsigned aPickingRadius )
 	ASSERT(soglu::isGLContextActive());
 	mPickingRadius = aPickingRadius;
 	mCgEffect.initialize( gPickingShaderPath );
-	mFrameBuffer.Initialize( 2*mPickingRadius, 2*mPickingRadius, SELECTION_BUFFER_COLOR_DEPTH );
+	mFrameBuffer.initialize( 2*mPickingRadius, 2*mPickingRadius, SELECTION_BUFFER_COLOR_DEPTH );
 	
 	mBuffer = BufferArray( new uint16[4*2*mPickingRadius*2*mPickingRadius] );
 }
@@ -23,7 +23,7 @@ PickManager::finalize()
 {
 	ASSERT((!mCgEffect.isInitialized() && !mFrameBuffer.isInitialized()) || soglu::isGLContextActive());
 	mCgEffect.finalize();
-	mFrameBuffer.Finalize();
+	mFrameBuffer.finalize();
 }
 
 void

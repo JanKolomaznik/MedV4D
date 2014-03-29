@@ -41,7 +41,7 @@ AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false ),
 AGLViewer::~AGLViewer()
 {
 	makeCurrent();
-	mFrameBufferObject.Finalize();
+	mFrameBufferObject.finalize();
 	//mPickManager.finalize();
 	mViewerState.reset();
 	doneCurrent();
@@ -93,7 +93,7 @@ AGLViewer::initializeGL()
 	soglu::initializeCg();
 	GL_CHECKED_CALL(glClearColor(mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF()));
 
-	mFrameBufferObject.Initialize( width(), height() );
+	mFrameBufferObject.initialize(width(), height());
 
 	//mPickManager.initialize( 150 );D_PRINT("REMOVE THIS" );
 
@@ -200,7 +200,7 @@ void
 AGLViewer::resizeGL( int width, int height )
 {
 	glViewport(0, 0, width, height);
-	mFrameBufferObject.Resize( width, height );
+	mFrameBufferObject.resize( width, height );
 
 	mViewerState->mWindowSize[0] = static_cast< unsigned >( width );
 	mViewerState->mWindowSize[1] = static_cast< unsigned >( height );
