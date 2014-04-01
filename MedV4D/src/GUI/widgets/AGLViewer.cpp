@@ -117,7 +117,7 @@ AGLViewer::paintGL()
 
 	if ( preparedForRendering() ) {
 
-		//mFrameBufferObject.Bind();
+		mFrameBufferObject.bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//****************************************
@@ -134,10 +134,10 @@ AGLViewer::paintGL()
 
 		soglu::checkForGLError( "OGL error occured during rendering: " );
 
-		//mFrameBufferObject.Unbind();
+		mFrameBufferObject.unbind();
 
-		GL_CHECKED_CALL( glViewport(0, 0, width(), height()) );
-		//mFrameBufferObject.Render();
+		GL_CHECKED_CALL(glViewport(0, 0, width(), height()));
+		mFrameBufferObject.render();
 	} else {
 		//D_PRINT( "Rendering not possible at the moment" );
 	}
@@ -199,7 +199,7 @@ AGLViewer::paintOverlayGL()
 void
 AGLViewer::resizeGL( int width, int height )
 {
-	glViewport(0, 0, width, height);
+	GL_CHECKED_CALL(glViewport(0, 0, width, height));
 	mFrameBufferObject.resize( width, height );
 
 	mViewerState->mWindowSize[0] = static_cast< unsigned >( width );

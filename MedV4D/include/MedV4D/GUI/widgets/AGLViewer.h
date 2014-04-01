@@ -169,7 +169,7 @@ protected:
 	wheelEvent ( QWheelEvent * event );
 
 
-	soglu::FrameBufferObject	mFrameBufferObject;
+	soglu::Framebuffer	mFrameBufferObject;
 	BaseViewerState::Ptr	mViewerState;
 	AViewerController::Ptr	mViewerController;
 

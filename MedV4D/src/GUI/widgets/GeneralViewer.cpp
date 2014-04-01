@@ -705,7 +705,7 @@ GeneralViewer::initializeRenderingEnvironment()
 	boost::filesystem::path dataDirName = GET_SETTINGS_NODEFAULT( "application.data_directory", std::string );
 	/*getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
 	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );*/
-	
+
 	getViewerState().mBasicShaderProgram = soglu::createGLSLProgramFromVertexAndFragmentShader(
 		dataDirName / "shaders" / "basic_vertex.glsl",
 		dataDirName / "shaders" / "basic_fragment.glsl");
@@ -787,7 +787,7 @@ GeneralViewer::prepareForRenderingStep()
 
 void
 GeneralViewer::render()
-{	
+{
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
@@ -807,19 +807,14 @@ GeneralViewer::render()
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				getViewerState().mBasicShaderProgram.use([&bbox, vertexLocation]()
 				{
-					soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_LINE_STRIP,	vertexLocation);
+					//soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_TRIANGLE_STRIP, vertexLocation);
+					soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffersWireframe(bbox), GL_LINE_STRIP, vertexLocation);
 				});
 			}
 			//Draw cut plane if enabled TODO - set color
 			/*getViewerState().mBasicCgEffect.executeTechniquePass(
 				"Basic", boost::bind( &M4D::GUI::Viewer::handleCutPlane, getViewerState().mVolumeRenderConfig.enableCutPlane, bbox, getViewerState().mVolumeRenderConfig.cutPlane, M4D::RGBAf( 0.0f, 1.0f, 0.0f, 1.0f ) )
 				);*/
-
-			/*GL_CHECKED_CALL( glEnable( GL_LIGHTING ) );
-			GL_CHECKED_CALL( glEnable( GL_LIGHT0 ) );
-			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_AMBIENT, Vector4f( 0.25f, 0.25f, 0.25f, 1.0f ).GetData() ) );
-			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_DIFFUSE, Vector4f( 1.0f, 1.0f, 1.0f, 1.0f ).GetData() ) );
-			GL_CHECKED_CALL( glLightfv( GL_LIGHT0, GL_POSITION, Vector4f( getViewerState().mVolumeRenderConfig.lightPosition, 1.0f ).GetData() ) );*/
 
 			//LOG( getViewerState().glViewSetup );
 			/*if ( mRenderingExtension && (vt3D | mRenderingExtension->getAvailableViewTypes()) ) {
@@ -863,7 +858,7 @@ GeneralViewer::render()
 								//soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_LINE_STRIP,	vertexLocation);
 								soglu::drawVertexBuffer(
 									vorgl::generateVolumeSlice(extents.realMinimum, extents.realMaximum, 0.5f,
-									//this->getViewerState().mSliceRenderConfig.currentSlice, 
+									//this->getViewerState().mSliceRenderConfig.currentSlice,
 									(soglu::CartesianPlanes)this->getViewerState().mSliceRenderConfig.plane),
 									GL_LINE_LOOP,
 								vertexLocation
@@ -955,7 +950,7 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 						);
 			//LOG( event->localPos().x() << ";  " << event->localPos().y() );
 			Vector3f intersection;
-			IntersectionResult res = AxisPlaneIntersection(
+			/*IntersectionResult res =*/ AxisPlaneIntersection(
 					Vector3f(pom.x, pom.y, pom.z),
 					Vector3f(dir.x, dir.y, dir.z),
 					slicePoint,

@@ -70,7 +70,7 @@ protected:
 	getBufferFromGPU();
 
 	unsigned mPickingRadius;
-	soglu::FrameBufferObject mFrameBuffer;
+	soglu::Framebuffer mFrameBuffer;
 	soglu::CgFXShader mCgEffect;
 	BufferArray mBuffer;
 };
