@@ -67,6 +67,7 @@ OpenGLManager::initialize()
 
 	QGLFormat glformat = QGLFormat::defaultFormat();
 	glformat.setVersion( 3, 3 );
+	glformat.setProfile(QGLFormat::CoreProfile);
 
 	mPimpl->widget = new DummyOGLWidget(glformat);
 	glformat = mPimpl->widget->format();

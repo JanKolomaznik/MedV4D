@@ -723,10 +723,10 @@ GeneralViewer::preparedForRendering()
 void
 GeneralViewer::prepareForRenderingStep()
 {
-	glMatrixMode(GL_PROJECTION);
+	/*glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glLoadIdentity();*/
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
@@ -770,12 +770,9 @@ GeneralViewer::prepareForRenderingStep()
 			default:
 				ASSERT( false );
 			}
-			getViewerState().mSliceRenderConfig.camera.setEyePosition( eye, up );
-
+			getViewerState().mSliceRenderConfig.camera.setEyePosition(eye, up);
 			getViewerState().mSliceRenderConfig.sliceNormal = glm::normalize(getViewerState().mSliceRenderConfig.camera.targetDirection());
-
 			getViewerState().glViewSetup = soglu::getViewSetupFromOrthoCamera( getViewerState().mSliceRenderConfig.camera );
-
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, subVPortW, subVPortH );
 
 		}
@@ -801,8 +798,8 @@ GeneralViewer::render()
 
 			soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
 			soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
-			GL_CHECKED_CALL( glEnable( GL_DEPTH_TEST ) );
-			GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
+			GL_CHECKED_CALL(glEnable(GL_DEPTH_TEST));
+			//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			/*getViewerState().mBasicCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );*/
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
 				getViewerState().mBasicShaderProgram.use([&bbox, vertexLocation]()

@@ -90,7 +90,7 @@ void
 AGLViewer::initializeGL()
 {
 	soglu::initOpenGL();
-	soglu::initializeCg();
+	//soglu::initializeCg();
 	GL_CHECKED_CALL(glClearColor(mViewerState->backgroundColor.redF(), mViewerState->backgroundColor.greenF(), mViewerState->backgroundColor.blueF(), mViewerState->backgroundColor.alphaF()));
 
 	mFrameBufferObject.initialize(width(), height());
