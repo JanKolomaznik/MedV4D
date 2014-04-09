@@ -66,9 +66,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
 
-	uint64 flags = 0;
-	flags |= aConfig.jitterEnabled ? rf_JITTERING : 0;
-
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
@@ -83,26 +80,25 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 
 			vorgl::VolumeRenderer::TransferFunctionRenderFlags flags;
 			if (aConfig.jitterEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFRenderFlags::JITTERING);
+				flags.set(vorgl::VolumeRenderer::TFFlags::JITTERING);
 			}
 			if (aConfig.integralTFEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFRenderFlags::PREINTEGRATED_TF);
+				flags.set(vorgl::VolumeRenderer::TFFlags::PREINTEGRATED_TF);
 			}
 			if (aConfig.shadingEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFRenderFlags::SHADING);
+				flags.set(vorgl::VolumeRenderer::TFFlags::SHADING);
 			}
 
 			transferFunctionRendering(
 				aConfig.camera,
+				aViewSetup,
 				*primaryData,
 				bbox,
+				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
 				sliceCount,
-				aConfig.jitterStrength,
 				aConfig.enableCutPlane,
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
-				aViewSetup,
-				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
 				aConfig.lightPosition,
 				flags
 				);
@@ -112,19 +108,23 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			basicRendering(
+			vorgl::VolumeRenderer::DensityRenderFlags flags;
+			if (aConfig.jitterEnabled) {
+				flags.set(vorgl::VolumeRenderer::DensityFlags::JITTERING);
+			}
+			if (aConfig.colorTransform == ctMaxIntensityProjection) {
+				flags.set(vorgl::VolumeRenderer::DensityFlags::MIP);
+			}
+			densityRendering(
 				aConfig.camera,
+				aViewSetup,
 				*primaryData,
 				bbox,
+				aConfig.lutWindow,
 				sliceCount,
-				aConfig.jitterEnabled,
-				aConfig.jitterStrength,
 				aConfig.enableCutPlane,
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
-				aConfig.lutWindow,
-				aViewSetup,
-				aConfig.colorTransform == ctMaxIntensityProjection,
 				flags
      			);
 			return;

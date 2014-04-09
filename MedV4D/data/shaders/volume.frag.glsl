@@ -56,6 +56,7 @@ uniform ImageData3D gPrimaryImageData3D;
 
 //int3 gImageDataResolution3D = {0, 0, 0};
 uniform vec2 gMappedIntervalBands;
+uniform vec2 gWLWindow;
 
 uniform Light gLight;
 uniform Camera gCamera;
@@ -198,6 +199,27 @@ doShading(
 	return result;
 }
 
+vec4 
+applyWLWindow( 
+		vec3 aPosition, 
+		ImageData3D aTextureData, 
+		vec3 aWLWindow
+		)
+{
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = aWLWindow.z;
+
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float value = clamp(
+			(texture(aTextureData.data, coordinates).x - lowBand) * multiplier,
+			0.0f,
+			1.0f
+			);
+		
+	return vec4( 0.9f, 0.9f, 0.9f, 0.5f * value);//(value, value, value, 1.0f );
+}
+
 in vec3 positionInImage;
 out vec4 fragmentColor;
 
@@ -209,8 +231,9 @@ void main(void)
 #ifdef ENABLE_JITTERING
 	float offset = texture(gNoiseMap, gl_FragCoord.xy / gNoiseMapSize.xy ).r * gJitterStrength * gRenderingSliceThickness;
 	coordinates = coordinates + offset * gCamera.viewDirection;
-#endif
+#endif //ENABLE_JITTERING
 
+#ifdef TRANSFER_FUNCTION_RENDERING
 #ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 	vec4 color = preintegratedTransferFunction1D(
 				coordinates,
@@ -225,7 +248,7 @@ void main(void)
 				gPrimaryImageData3D,
 				gTransferFunction1D,
 				gMappedIntervalBands);
-#endif
+#endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 
 #ifdef ENABLE_SHADING
 	color = doShading(
@@ -235,7 +258,20 @@ void main(void)
 		gLight,
 		gCamera.eyePosition
 		);
-#endif
+#endif //ENABLE_SHADING
+#endif //TRANSFER_FUNCTION_RENDERING
+
+#ifdef DENSITY_RENDERING
+	vec4 color = applyWLWindow(
+				positionInImage,
+				gPrimaryImageData3D,
+				vec3( 
+					gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+					gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+					(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x 
+					)
+				);
+#endif //DENSITY_RENDERING
 	color.a = 1.0f - pow(1.0f - color.a, gRenderingSliceThickness);
 	fragmentColor = color;
 }
