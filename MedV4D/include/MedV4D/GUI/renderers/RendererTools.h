@@ -18,7 +18,9 @@ enum ColorTransform
 	ctTransferFunction1D,
 	ctMaxIntensityProjection,
 	ctBasic,
-	ctSimpleColorMap
+	ctSimpleColorMap,
+
+	ctTestColorTransform // TODO - remove
 };
 
 enum MultiDatasetRenderingStyle

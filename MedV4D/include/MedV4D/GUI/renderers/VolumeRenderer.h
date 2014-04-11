@@ -21,28 +21,28 @@ namespace GUI
 {
 namespace Renderer
 {
-	
+
 enum RenderingFlags
 {
 	rf_NONE        = 0,
-	
+
 	rf_SHADING     = 1,
 	rf_JITTERING     = 1 << 1,
-	
+
 	rf_PREINTEGRATED     = 1 << 2,
 	rf_INTERPOLATION     = 1 << 3
 };
-	
+
 
 extern boost::filesystem::path gVolumeRendererShaderPath;
-	
+
 struct VolumeRestrictions
 {
 	VolumeRestrictions(): resX( 0.0f, 1.0f ), resY( 0.0f, 1.0f ), resZ( 0.0f, 1.0f )
 	{}
 	VolumeRestrictions( const Vector2f &aX, const Vector2f &aY, const Vector2f &aZ ): resX( aX ), resY( aY ), resZ( aZ )
 	{}
-	
+
 	void
 	get( Vector2f &aX, Vector2f &aY, Vector2f &aZ )const
 	{
@@ -79,24 +79,25 @@ public:
 	initialize()
 	{
 		vorgl::VolumeRenderer::initialize(gVolumeRendererShaderPath);
-		
+
 		mAvailableColorTransforms.clear();
 		//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
 		//mAvailableColorTransforms.push_back( WideNameIdPair( L"MIP", ctMaxIntensityProjection ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Test", ctTestColorTransform ) );
 	}
 
 	void
 	reloadShaders()
 	{
-		vorgl::VolumeRenderer::loadShaders(gVolumeRendererShaderPath);		
+		vorgl::VolumeRenderer::loadShaders(gVolumeRendererShaderPath);
 	}
 
 	/*void
 	Finalize();*/
-	
+
 	virtual void
 	Render( RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup );
 
@@ -106,31 +107,31 @@ public:
 		return mAvailableColorTransforms;
 	}
 protected:
-	
-	
+
+
 	ColorTransformNameIDList		mAvailableColorTransforms;
 };
 
 struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
-		: //primaryImageData( NULL ), 
-		//secondaryImageData( NULL ), 
-		colorTransform( ctMaxIntensityProjection ), 
-		jitterEnabled( true ), 
-		jitterStrength( 1.0f ), 
-		shadingEnabled( true ), 
-		integralTFEnabled( false ), 
-		sampleCount( 150 ), 
-		enableInterpolation(true ), 
-		enableVolumeRestrictions( false ), 
-		enableCutPlane( false ), 
+		: //primaryImageData( NULL ),
+		//secondaryImageData( NULL ),
+		colorTransform( ctMaxIntensityProjection ),
+		jitterEnabled( true ),
+		jitterStrength( 1.0f ),
+		shadingEnabled( true ),
+		integralTFEnabled( false ),
+		sampleCount( 150 ),
+		enableInterpolation(true ),
+		enableVolumeRestrictions( false ),
+		enableCutPlane( false ),
 		cutPlaneCameraTargetOffset( 0.0f ),
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
 	{ }
 	soglu::GLTextureImage3D::WPtr		primaryImageData;
 	soglu::GLTextureImage3D::WPtr		secondaryImageData;
-	
+
 	int					colorTransform;
 	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
 	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
@@ -151,7 +152,7 @@ struct VolumeRenderer::RenderingConfiguration
 	bool					enableCutPlane;
 	soglu::Planef				cutPlane;
 	float					cutPlaneCameraTargetOffset;
-	
+
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 };
 

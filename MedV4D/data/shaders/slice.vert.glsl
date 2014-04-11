@@ -1,5 +1,4 @@
- 
-#version 130
+#version 150
 
 struct ViewSetup
 {

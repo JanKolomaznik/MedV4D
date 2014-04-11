@@ -127,7 +127,23 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				aConfig.enableInterpolation,
 				flags
      			);
-			return;
+		}
+		break;
+	case ctTestColorTransform:
+		{
+			vorgl::VolumeRenderer::TransferFunctionRenderFlags flags;
+			rayCasting(
+				aConfig.camera,
+				aViewSetup,
+				*primaryData,
+				bbox,
+				aConfig.lutWindow,
+				sliceCount,
+				aConfig.enableCutPlane,
+				aConfig.cutPlane,
+				aConfig.enableInterpolation,
+				flags
+     				);
 		}
 		break;
 	default:
