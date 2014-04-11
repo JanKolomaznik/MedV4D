@@ -386,6 +386,9 @@ public slots:
 	void
 	setZoom( const QString &aZoom );
 
+	void
+	reloadShaders();
+
 signals:
 	void
 	settingsChanged();

@@ -385,9 +385,9 @@ ViewerWindow::testSlot()
 	pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
 	if(pViewer != NULL) {
-		pViewer->toggleFPS();
+		//pViewer->toggleFPS();
+		static_cast<M4D::GUI::Viewer::GeneralViewer *>(pViewer)->reloadShaders();
 	}
-
 }
 
 void

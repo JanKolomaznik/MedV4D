@@ -1118,6 +1118,16 @@ GeneralViewer::setZoom( const QString &aZoom )
 }
 
 
+void
+GeneralViewer::reloadShaders()
+{
+	makeCurrent();
+	// TODO exception safety
+	getViewerState().mVolumeRenderer.reloadShaders();
+	getViewerState().mSliceRenderer.reloadShaders();
+	doneCurrent();
+}
+
 } /*namespace Viewer*/
 } /*namespace GUI*/
 } /*namespace M4D*/

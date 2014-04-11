@@ -88,6 +88,12 @@ public:
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
 	}
 
+	void
+	reloadShaders()
+	{
+		vorgl::VolumeRenderer::loadShaders(gVolumeRendererShaderPath);		
+	}
+
 	/*void
 	Finalize();*/
 	

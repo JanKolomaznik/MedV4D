@@ -38,6 +38,12 @@ public:
 	initialize();
 
 	void
+	reloadShaders()
+	{
+		vorgl::SliceRenderer::loadShaders(gSliceRendererShaderPath);	
+	}
+
+	void
 	finalize();
 
 	virtual void
