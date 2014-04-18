@@ -154,6 +154,8 @@ struct VolumeRenderer::RenderingConfiguration
 	float					cutPlaneCameraTargetOffset;
 
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
+
+	soglu::TextureId depthBuffer;
 };
 
 

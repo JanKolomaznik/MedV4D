@@ -47,6 +47,7 @@ struct Material
 	float	shininess;
 };
 
+uniform sampler2D gDepthBuffer;
 uniform sampler2D gNoiseMap;
 uniform float gJitterStrength = 1.0f;
 uniform vec2 gNoiseMapSize;
@@ -200,7 +201,7 @@ doShading(
 }
 
 vec4 
-applyWLWindow( 
+applyWLWindow2( 
 		vec3 aPosition, 
 		ImageData3D aTextureData, 
 		vec3 aWLWindow
@@ -220,6 +221,27 @@ applyWLWindow(
 	return vec4( 0.9f, 0.9f, 0.9f, 0.5f * value);//(value, value, value, 1.0f );
 }
 
+float 
+applyWLWindow( 
+		vec3 aPosition, 
+		ImageData3D aTextureData, 
+		vec3 aWLWindow
+		)
+{
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = aWLWindow.z;
+
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float value = clamp(
+			(texture(aTextureData.data, coordinates).x - lowBand) * multiplier,
+			0.0f,
+			1.0f
+			);
+		
+	return value;
+}
+
 in vec3 positionInImage;
 out vec4 fragmentColor;
 
@@ -231,10 +253,22 @@ void main(void)
 	vec3 coordinates = positionInImage;
 
 	vec3 dir = normalize(coordinates - gCamera.eyePosition);
-	fragmentColor = vec4(0.5, 0.0, 1.0, 0.0);
-	for (int i = 0; i < 1000; ++i) {
+	float value = 0.0;
+	for (int i = 0; i < 100; ++i) {
 		vec3 point = coordinates + i * dir;
-		float d = distance(point, vec3(100,100,100));
+
+		float value2 = applyWLWindow(
+				point,
+				gPrimaryImageData3D,
+				vec3( 
+					gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+					gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+					(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x 
+					)
+				);
+		value = max(value, value2);
+
+		/*float d = distance(point, vec3(100,100,100));
 		if (d < 100) {
 			fragmentColor = vec4(0.5, 0.0, 1.0, 1.0);
 			break;
@@ -244,7 +278,8 @@ void main(void)
 		if (d < 100) {
 			fragmentColor = vec4(0.0, 1.0, 0.0, 1.0);
 			break;
-		}
+		}*/
 
 	}
+	fragmentColor = vec4(value, value, value, 1.0);
 }

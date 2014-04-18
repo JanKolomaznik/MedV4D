@@ -51,7 +51,7 @@ static const std::string gFlagsToNameSuffixes[] =
 }
 
 void
-VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup )
+VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const soglu::GLViewSetup &aViewSetup)
 {
 	soglu::GLTextureImageTyped<3>::Ptr primaryData = aConfig.primaryImageData.lock();
 	if ( !primaryData ) {
@@ -142,7 +142,8 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, const 
 				aConfig.enableCutPlane,
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
-				flags
+				flags,
+				aConfig.depthBuffer
      				);
 		}
 		break;

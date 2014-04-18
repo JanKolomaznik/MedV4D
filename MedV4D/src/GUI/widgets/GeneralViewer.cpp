@@ -820,6 +820,7 @@ GeneralViewer::render()
 			}*/
 
 			try {
+				getViewerState().mVolumeRenderConfig.depthBuffer = mFrameBufferObject.mDepthAttachment;
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
 			} catch( std::exception &e ) {
 				LOG( e.what() );
