@@ -115,7 +115,19 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 			if (aConfig.colorTransform == ctMaxIntensityProjection) {
 				flags.set(vorgl::VolumeRenderer::DensityFlags::MIP);
 			}
+			vorgl::VolumeRenderingConfiguration viewConfiguration = { aConfig.camera, aViewSetup, bbox, aConfig.windowSize, aConfig.depthBuffer };
+			vorgl::RenderingQuality renderingQuality = { sliceCount, aConfig.enableInterpolation, aConfig.jitterEnabled };
+			vorgl::DensityRenderingOptions densityRenderingOptions = { aConfig.lutWindow };
+
 			densityRendering(
+					viewConfiguration,
+					*primaryData,
+					renderingQuality,
+					vorgl::ClipPlanes(),
+					densityRenderingOptions
+					);
+
+			/*densityRendering(
 				aConfig.camera,
 				aViewSetup,
 				*primaryData,
@@ -126,7 +138,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
 				flags
-     			);
+     			);*/
 		}
 		break;
 	case ctTestColorTransform:
@@ -143,8 +155,9 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
 				flags,
-				aConfig.depthBuffer
-     				);
+				aConfig.depthBuffer,
+				aConfig.windowSize
+				);
 		}
 		break;
 	default:

@@ -821,6 +821,7 @@ GeneralViewer::render()
 
 			try {
 				getViewerState().mVolumeRenderConfig.depthBuffer = mFrameBufferObject.mDepthAttachment;
+				getViewerState().mVolumeRenderConfig.windowSize = glm::ivec2(width(), height());
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
 			} catch( std::exception &e ) {
 				LOG( e.what() );

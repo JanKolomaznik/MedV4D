@@ -156,6 +156,7 @@ struct VolumeRenderer::RenderingConfiguration
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 
 	soglu::TextureId depthBuffer;
+	glm::ivec2 windowSize;
 };
 
 
