@@ -15,7 +15,8 @@ uniform Camera gCamera;
 uniform TransferFunction1D gTransferFunction1D;
 uniform float gRenderingSliceThickness;
 
-
+uniform ViewSetup gViewSetup;
+uniform vec2 gWindowSize;
 /*vec4 
 applyWLWindow2( 
 		vec3 aPosition, 
@@ -69,10 +70,16 @@ void main(void)
 	vec3 coordinates = positionInImage;
 
 	vec3 dir = normalize(coordinates - gCamera.eyePosition);
-	float value = 0.0;
-	for (int i = 0; i < 100; ++i) {
+	float value = -1.0;
+	for (int i = 0; i < 1000; ++i) {
 		vec3 point = coordinates + i * dir;
 
+		vec4 depth_vec = gViewSetup.modelViewProj * vec4(point, 1.0);
+		float currentDepth = (depth_vec.z / depth_vec.w + 1.0) * 0.5;
+		float depth = texture(gDepthBuffer, gl_FragCoord.st / gWindowSize).x;
+		if (depth < currentDepth) {
+			break;
+		}
 		float value2 = applyWLWindow2(
 				point,
 				gPrimaryImageData3D,
@@ -83,19 +90,6 @@ void main(void)
 					)
 				);
 		value = max(value, value2);
-
-		/*float d = distance(point, vec3(100,100,100));
-		if (d < 100) {
-			fragmentColor = vec4(0.5, 0.0, 1.0, 1.0);
-			break;
-		}
-
-		d = distance(point, vec3(250,250,250));
-		if (d < 100) {
-			fragmentColor = vec4(0.0, 1.0, 0.0, 1.0);
-			break;
-		}*/
-
 	}
-	fragmentColor = vec4(value, value, value, 1.0);
+	fragmentColor = value < 0.0 ? vec4(0.0, 1.0, 0.0, 1.0) : vec4(value, value, value, 1.0);
 }
