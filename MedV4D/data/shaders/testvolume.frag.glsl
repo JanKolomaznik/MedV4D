@@ -91,5 +91,5 @@ void main(void)
 				);
 		value = max(value, value2);
 	}
-	fragmentColor = value < 0.0 ? vec4(0.0, 1.0, 0.0, 1.0) : vec4(value, value, value, 1.0);
+	fragmentColor = value <= 0.0 ? vec4(0.0, 0.0, 0.0, 0.0) : vec4(value, value, value, 1.0);
 }

@@ -37,9 +37,8 @@ processCommandLine( int argc, char** argv )
 void
 createModules()
 {
+#ifdef EXTENSION_MODULES_ENABLED
 	ApplicationManager *appManager = ApplicationManager::getInstance();
-
-#ifdef EXTENSION_MODULES_ENABLED	
 //	appManager->addModule( createModule< AnnotationModule >() );
 	appManager->addModule( createModule< ShoulderMeasurementModule >() );
 //	appManager->addModule( createModule< OrganSegmentationModule >() );
@@ -50,10 +49,10 @@ int
 main( int argc, char** argv )
 {
 	//std::ofstream logFile( "Log.txt" );
-        //SET_LOUT( logFile );
+	//SET_LOUT( logFile );
 
-        //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
-        //SET_DOUT( debugFile );
+	//D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+	//SET_DOUT( debugFile );
 
 	//XInitThreads();
 	ApplicationManager appManager;
@@ -103,11 +102,11 @@ main( int argc, char** argv )
 	} catch ( std::exception &e )
 	{
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
-	} 
+	}
 	catch (...) {
 		QMessageBox::critical ( NULL, "Exception", "Unknown error" );
 	}
-	
+
 	return 1;
 }
 

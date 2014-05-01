@@ -30,15 +30,15 @@ void
 PickManager::getIDs( SelectedIDsSet &aIDs )
 {
 	for( size_t i = 0; i < 2*mPickingRadius*2*mPickingRadius; ++i ) {
-		uint16 r, g, b, a;
-		r = mBuffer[3*i];
+//		uint16 r, g, b, a;
+//		r = mBuffer[3*i];
 		/*g = mBuffer[3*i+1];
 		b = mBuffer[3*i+2];
 		a = mBuffer[3*i+3];*/
 
-		if( r > 0 ) {
+		/*if( r > 0 ) {
 			aIDs.insert( r );
-		}
+		}*/
 	}
 }
 	

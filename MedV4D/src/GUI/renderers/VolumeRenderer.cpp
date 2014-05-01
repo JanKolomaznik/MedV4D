@@ -65,6 +65,8 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
+	vorgl::VolumeRenderingConfiguration viewConfiguration = { aConfig.camera, aViewSetup, bbox, aConfig.windowSize, aConfig.depthBuffer };
+	vorgl::RenderingQuality renderingQuality = { sliceCount, aConfig.enableInterpolation, aConfig.jitterEnabled };
 
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
@@ -89,7 +91,22 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				flags.set(vorgl::VolumeRenderer::TFFlags::SHADING);
 			}
 
+			vorgl::TransferFunctionRenderingOptions tfRenderingOptions = {
+				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
+				aConfig.lightPosition,
+				aConfig.shadingEnabled,
+				aConfig.integralTFEnabled
+				};
+
 			transferFunctionRendering(
+					viewConfiguration,
+					*primaryData,
+					renderingQuality,
+					vorgl::ClipPlanes(),
+					tfRenderingOptions
+					);
+
+			/*transferFunctionRendering(
 				aConfig.camera,
 				aViewSetup,
 				*primaryData,
@@ -101,7 +118,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				aConfig.enableInterpolation,
 				aConfig.lightPosition,
 				flags
-				);
+				);*/
 
 		}
 		break;
@@ -115,8 +132,6 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 			if (aConfig.colorTransform == ctMaxIntensityProjection) {
 				flags.set(vorgl::VolumeRenderer::DensityFlags::MIP);
 			}
-			vorgl::VolumeRenderingConfiguration viewConfiguration = { aConfig.camera, aViewSetup, bbox, aConfig.windowSize, aConfig.depthBuffer };
-			vorgl::RenderingQuality renderingQuality = { sliceCount, aConfig.enableInterpolation, aConfig.jitterEnabled };
 			vorgl::DensityRenderingOptions densityRenderingOptions = { aConfig.lutWindow };
 
 			densityRendering(
@@ -138,7 +153,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				aConfig.cutPlane,
 				aConfig.enableInterpolation,
 				flags
-     			);*/
+			);*/
 		}
 		break;
 	case ctTestColorTransform:
