@@ -152,11 +152,13 @@ GeneralViewer::setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr a
 void
 GeneralViewer::setTransferFunctionBufferInfo( vorgl::TransferFunctionBufferInfo aTFunctionBufferInfo )
 {
+	makeCurrent(); //TODO - RAII
 	getViewerState().mTransferFunctionBufferInfo = aTFunctionBufferInfo;
 
 	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
 	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
 	getViewerState().mVolumeRenderConfig.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;
+	doneCurrent();
 
 	notifyAboutSettingsChange();
 	update();

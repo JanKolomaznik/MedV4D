@@ -125,14 +125,14 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			vorgl::VolumeRenderer::DensityRenderFlags flags;
+			/*vorgl::VolumeRenderer::DensityRenderFlags flags;
 			if (aConfig.jitterEnabled) {
 				flags.set(vorgl::VolumeRenderer::DensityFlags::JITTERING);
 			}
 			if (aConfig.colorTransform == ctMaxIntensityProjection) {
 				flags.set(vorgl::VolumeRenderer::DensityFlags::MIP);
-			}
-			vorgl::DensityRenderingOptions densityRenderingOptions = { aConfig.lutWindow };
+			}*/
+			vorgl::DensityRenderingOptions densityRenderingOptions = { aConfig.lutWindow, aConfig.colorTransform == ctMaxIntensityProjection };
 
 			densityRendering(
 					viewConfiguration,

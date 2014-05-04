@@ -188,7 +188,7 @@ doShading(
 	return result;
 }
 
-vec4 
+float 
 applyWLWindow( 
 		vec3 aPosition, 
 		ImageData3D aTextureData, 
@@ -200,11 +200,9 @@ applyWLWindow(
 	float multiplier = aWLWindow.z;
 
 	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	float value = clamp(
+	return clamp(
 			(texture(aTextureData.data, coordinates).x - lowBand) * multiplier,
 			0.0f,
 			1.0f
 			);
-		
-	return vec4( 0.9f, 0.9f, 0.9f, 0.5f * value);//(value, value, value, 1.0f );
 }

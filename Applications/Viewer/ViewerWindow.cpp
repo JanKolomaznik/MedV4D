@@ -519,7 +519,7 @@ ViewerWindow::changedViewerSelection()
 	//LOG( __FUNCTION__ );
 }
 
-struct CreateGLTFBuffer
+/*struct CreateGLTFBuffer
 {
 	vorgl::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
 	vorgl::TransferFunctionBuffer1D::Ptr tfBuffer;
@@ -529,7 +529,7 @@ struct CreateGLTFBuffer
 	{
 		 tfGLBuffer = createGLTransferFunctionBuffer1D( *tfBuffer );
 	}
-};
+};*/
 
 bool
 fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
@@ -539,21 +539,30 @@ fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::Tr
 		//D_PRINT( "Printing TF" );
 		//std::copy( info.tfBuffer->Begin(), info.tfBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
 
-		CreateGLTFBuffer ftor;
-		ftor.tfBuffer = info.tfBuffer;
-		ftor = OpenGLManager::getInstance()->doGL( ftor );
-		info.tfGLBuffer = ftor.tfGLBuffer;
+		//CreateGLTFBuffer ftor;
+		//ftor.tfBuffer = info.tfBuffer;
+		//ftor = OpenGLManager::getInstance()->doGL( ftor );
+		//info.tfGLBuffer = ftor.tfGLBuffer;
+
+		OpenGLManager::getInstance()->doGL([&info]() { 
+				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
+			});
 
 		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) )
 		{
 			//file << std::endl;
 			//std::copy( info.tfIntegralBuffer->Begin(), info.tfIntegralBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
 
-			ftor.tfBuffer = info.tfIntegralBuffer;
+			/*ftor.tfBuffer = info.tfIntegralBuffer;
 			ftor = OpenGLManager::getInstance()->doGL( ftor );
-			info.tfGLIntegralBuffer = ftor.tfGLBuffer;
+			info.tfGLIntegralBuffer = ftor.tfGLBuffer;*/
+			OpenGLManager::getInstance()->doGL([&info]() { 
+				info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D( *info.tfIntegralBuffer );
+			});
 		} else {
-			info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
+			OpenGLManager::getInstance()->doGL([&info]() {
+				info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
+			});
 		}
 		//file.close();
 	} else {

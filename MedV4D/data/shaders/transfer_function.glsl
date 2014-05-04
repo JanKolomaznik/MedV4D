@@ -20,29 +20,44 @@ StepInfo initInfo(vec3 aCoordinates)
 
 StepInfo doStep(StepInfo aInfo, vec3 aCoordinates)
 {
+#ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+	vec4 sampleColor = preintegratedTransferFunction1D(
+				aCoordinates,
+				gPrimaryImageData3D,
+				gTransferFunction1D,
+				gRenderingSliceThickness,
+				gMappedIntervalBands,
+				gCamera.viewDirection);
+#else	
 	vec4 sampleColor = transferFunction1D(
-			aCoordinates,
-			gPrimaryImageData3D,
-			gTransferFunction1D,
-			gMappedIntervalBands);
-	//sampleColor = vec4(0.0, 0.5, 0.0, 0.5);
+				aCoordinates,
+				gPrimaryImageData3D,
+				gTransferFunction1D,
+				gMappedIntervalBands);
+#endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+
+#ifdef ENABLE_SHADING
+	sampleColor = doShading(
+				aCoordinates,
+				sampleColor,
+				gPrimaryImageData3D,
+				gLight,
+				gCamera.eyePosition
+				);
+#endif //ENABLE_SHADING
+
+	sampleColor.a = 1.0f - pow(1.0f - sampleColor.a, gRenderingSliceThickness);
+
 	float alpha = aInfo.color.a;
+	vec3 outColor = aInfo.color.rgb/* * alpha*/ + sampleColor.rgb * sampleColor.a * (1 - alpha);
+	alpha = alpha + sampleColor.a * (1 - alpha);
+	aInfo.color = vec4(outColor, alpha);
 
-	if (alpha < sampleColor.a) {
-		aInfo.color = sampleColor;
-	}
-
-	//vec3 outColor = aInfo.color.rgb * alpha + sampleColor.rgb * sampleColor.a * (1 - alpha);
-	//alpha = alpha + sampleColor.a * (1 - alpha);
-	//aInfo.color = vec4(outColor, alpha);
-
-	//aInfo.color = sampleColor;
-	//aInfo.color = vec4(0.0, 0.5, 0.0, 0.5);
 	return aInfo;
 }
 
 vec4 colorFromStepInfo(StepInfo aInfo)
 {
-	return vec4(aInfo.color.rgb, 0.8);
+	return aInfo.color;
 }
 
