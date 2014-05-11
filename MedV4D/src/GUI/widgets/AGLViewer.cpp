@@ -142,28 +142,24 @@ AGLViewer::paintGL()
 		//D_PRINT( "Rendering not possible at the moment" );
 	}
 
-	/*if( mSelected ) {
-		GL_CHECKED_CALL( glDisable(GL_DEPTH_TEST ) );
-		//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
-		// ****************************************************
-		glClear( GL_DEPTH_BUFFER_BIT );
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(
-			(double)0,
-			(double)width(),
-			(double)0,
-			(double)height(),
-			-1.0,
-			1.0
-			);
+	if( mSelected ) {
+		auto depthTestDisabler = soglu::disable(GL_DEPTH_TEST);
+		GL_CHECKED_CALL(glClear( GL_DEPTH_BUFFER_BIT ));
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		auto glViewSetup = soglu::getViewSetupForViewportOrthoView(glm::ivec2(0, 0), glm::ivec2(width(), height()));
+		mViewerState->basicShaderProgram.setUniformByName("gViewSetup", glViewSetup);
 
-		glColor4f( 0.0f, 0.0f, 1.0f, 1.0f );
-		soglu::drawRectangle(glm::fvec2(5.0f, 5.0f), glm::fvec2(width()-5.0f, height()-5.0f));
-	}*/
+		int vertexLocation = mViewerState->basicShaderProgram.getAttributeLocation("vertex");
+		mViewerState->basicShaderProgram.setUniformByName("fragmentColor", glm::fvec4(0, 0, 1, 1));
+		mViewerState->basicShaderProgram.use([this, vertexLocation]()
+		{
+			soglu::drawVertices(
+				soglu::generateRectangle(glm::fvec2(5.0f, 5.0f), glm::fvec2(width()-5.0f, height()-5.0f)),
+				GL_LINE_LOOP,
+				vertexLocation
+				);
+		});
+	}
 
 	/*if( mEnableFPS ) {
 		glFlush();

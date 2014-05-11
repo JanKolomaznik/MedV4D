@@ -12,6 +12,7 @@
 #include <glm/ext.hpp>
 
 #include <soglu/GLViewSetup.hpp>
+#include <soglu/GLSLShader.hpp>
 
 namespace M4D
 {
@@ -57,6 +58,7 @@ public:
 	{
 		return *boost::polymorphic_cast< TViewerType *>( viewerWindow );//TODO exceptions
 	}
+	soglu::GLSLProgram basicShaderProgram;
 };
 
 class AViewerController: public QObject

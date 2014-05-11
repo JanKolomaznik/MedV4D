@@ -5,29 +5,36 @@ uniform TransferFunction1D gTransferFunction1D;
 
 struct StepInfo {
 	vec4 color;
+	float previousValue;
 };
 
 StepInfo initInfo(vec3 aCoordinates)
 {
 	StepInfo info;
-	info.color = transferFunction1D(
-			aCoordinates,
-			gPrimaryImageData3D,
-			gTransferFunction1D,
-			gMappedIntervalBands);
+	info.color = vec4(0.0, 0.0, 0.0, 0.0);
+	info.previousValue = getUnmappedValue(
+				aCoordinates,
+				gPrimaryImageData3D,
+				gMappedIntervalBands
+				);
 	return info;
 }
 
 StepInfo doStep(StepInfo aInfo, vec3 aCoordinates)
 {
 #ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
-	vec4 sampleColor = preintegratedTransferFunction1D(
+	float currentValue = getUnmappedValue(
 				aCoordinates,
 				gPrimaryImageData3D,
-				gTransferFunction1D,
-				gRenderingSliceThickness,
-				gMappedIntervalBands,
-				gCamera.viewDirection);
+				gMappedIntervalBands
+				);
+
+	vec4 sampleColor = applyIntegralTransferFunction1D( 
+				vec2(aInfo.previousValue, currentValue),
+				gPrimaryImageData3D,
+				gTransferFunction1D
+				);
+	aInfo.previousValue = currentValue;
 #else	
 	vec4 sampleColor = transferFunction1D(
 				aCoordinates,

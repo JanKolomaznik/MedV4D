@@ -57,122 +57,46 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 	if ( !primaryData ) {
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
-
 	soglu::GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
 
-	size_t sliceCount = aConfig.sampleCount;
 	soglu::BoundingBox3D bbox(primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum);
 	if ( aConfig.enableVolumeRestrictions ) {
 		applyVolumeRestrictionsOnBoundingBox( bbox, aConfig.volumeRestrictions );
 	}
-	vorgl::VolumeRenderingConfiguration viewConfiguration = { aConfig.camera, aViewSetup, bbox, aConfig.windowSize, aConfig.depthBuffer };
-	vorgl::RenderingQuality renderingQuality = { sliceCount, aConfig.enableInterpolation, aConfig.jitterEnabled };
-
+	aConfig.renderingConfiguration.boundingBox = bbox;
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
-			vorgl::GLTransferFunctionBuffer1D::ConstPtr transferFunction;
-			vorgl::GLTransferFunctionBuffer1D::ConstPtr integralTransferFunction;
-			transferFunction = aConfig.transferFunction.lock();
-			if ( !transferFunction ) {
-				_THROW_ M4D::ErrorHandling::EObjectUnavailable( "Transfer function no available" );
-			}
-
-			integralTransferFunction = aConfig.integralTransferFunction.lock();
-
-			vorgl::VolumeRenderer::TransferFunctionRenderFlags flags;
-			if (aConfig.jitterEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFFlags::JITTERING);
-			}
-			if (aConfig.integralTFEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFFlags::PREINTEGRATED_TF);
-			}
-			if (aConfig.shadingEnabled) {
-				flags.set(vorgl::VolumeRenderer::TFFlags::SHADING);
-			}
-
-			vorgl::TransferFunctionRenderingOptions tfRenderingOptions = {
-				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
-				aConfig.lightPosition,
-				aConfig.shadingEnabled,
-				aConfig.integralTFEnabled
-				};
-
 			transferFunctionRendering(
-					viewConfiguration,
+					aConfig.renderingConfiguration,
 					*primaryData,
-					renderingQuality,
-					vorgl::ClipPlanes(),
-					tfRenderingOptions
+					aConfig.renderingQuality,
+					aConfig.clipPlanes,
+					aConfig.transferFunctionOptions
 					);
-
-			/*transferFunctionRendering(
-				aConfig.camera,
-				aViewSetup,
-				*primaryData,
-				bbox,
-				(aConfig.integralTFEnabled ? *integralTransferFunction : *transferFunction),
-				sliceCount,
-				aConfig.enableCutPlane,
-				aConfig.cutPlane,
-				aConfig.enableInterpolation,
-				aConfig.lightPosition,
-				flags
-				);*/
-
 		}
 		break;
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			/*vorgl::VolumeRenderer::DensityRenderFlags flags;
-			if (aConfig.jitterEnabled) {
-				flags.set(vorgl::VolumeRenderer::DensityFlags::JITTERING);
-			}
-			if (aConfig.colorTransform == ctMaxIntensityProjection) {
-				flags.set(vorgl::VolumeRenderer::DensityFlags::MIP);
-			}*/
-			vorgl::DensityRenderingOptions densityRenderingOptions = { aConfig.lutWindow, aConfig.colorTransform == ctMaxIntensityProjection };
-
 			densityRendering(
-					viewConfiguration,
+					aConfig.renderingConfiguration,
 					*primaryData,
-					renderingQuality,
-					vorgl::ClipPlanes(),
-					densityRenderingOptions
+					aConfig.renderingQuality,
+					aConfig.clipPlanes,
+					aConfig.densityOptions
 					);
-
-			/*densityRendering(
-				aConfig.camera,
-				aViewSetup,
-				*primaryData,
-				bbox,
-				aConfig.lutWindow,
-				sliceCount,
-				aConfig.enableCutPlane,
-				aConfig.cutPlane,
-				aConfig.enableInterpolation,
-				flags
-			);*/
 		}
 		break;
 	case ctTestColorTransform:
 		{
-			vorgl::VolumeRenderer::TransferFunctionRenderFlags flags;
-			rayCasting(
-				aConfig.camera,
-				aViewSetup,
-				*primaryData,
-				bbox,
-				aConfig.lutWindow,
-				sliceCount,
-				aConfig.enableCutPlane,
-				aConfig.cutPlane,
-				aConfig.enableInterpolation,
-				flags,
-				aConfig.depthBuffer,
-				aConfig.windowSize
-				);
+			isosurfaceRendering(
+					aConfig.renderingConfiguration,
+					*primaryData,
+					aConfig.renderingQuality,
+					aConfig.clipPlanes,
+					aConfig.isoSurfaceOptions
+					);
 		}
 		break;
 	default:

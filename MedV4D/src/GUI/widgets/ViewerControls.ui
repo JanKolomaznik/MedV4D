@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>231</height>
+    <width>394</width>
+    <height>461</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,247 +15,384 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBoxTilingSetup">
-     <property name="title">
-      <string>Viewport tiling</string>
+    <widget class="QTabWidget" name="mViewTypeTabWidget">
+     <property name="tabPosition">
+      <enum>QTabWidget::West</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="margin">
-       <number>0</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Rows</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="viewportTilesRows">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>15</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Columns</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="viewportTilesCols">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>15</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Slice step</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="sliceStep">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>200</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBoxLUTWindow">
-     <property name="title">
-      <string>Window</string>
+     <property name="currentIndex">
+      <number>1</number>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="margin">
-       <number>0</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Center</string>
-          </property>
+     <widget class="QWidget" name="m2DTab">
+      <attribute name="title">
+       <string>2D</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QTabWidget" name="tabWidget_2">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab_3">
+          <attribute name="title">
+           <string>Density</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QGroupBox" name="groupBoxLUTWindow">
+             <property name="title">
+              <string>Window</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Center</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="windowCenterSpinBox">
+                  <property name="minimum">
+                   <number>-4000</number>
+                  </property>
+                  <property name="maximum">
+                   <number>4000</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>Width</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="windowWidthSpinBox">
+                  <property name="minimum">
+                   <number>-4000</number>
+                  </property>
+                  <property name="maximum">
+                   <number>4000</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="windowCenterSpinBox">
-          <property name="minimum">
-           <number>-4000</number>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxTilingSetup">
+         <property name="title">
+          <string>Viewport tiling</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="spacing">
+           <number>0</number>
           </property>
-          <property name="maximum">
-           <number>4000</number>
+          <property name="leftMargin">
+           <number>0</number>
           </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Rows</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="viewportTilesRows">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Columns</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="viewportTilesCols">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>15</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Slice step</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="sliceStep">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>200</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="m3DTab">
+      <attribute name="title">
+       <string>3D</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QTabWidget" name="tabWidget_3">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab_4">
+          <attribute name="title">
+           <string>Transfer function</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="s">
+             <property name="text">
+              <string>Preintegrated transfer  function</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Width</string>
-          </property>
+         <widget class="QWidget" name="tab_5">
+          <attribute name="title">
+           <string>MIP</string>
+          </attribute>
          </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="windowWidthSpinBox">
-          <property name="minimum">
-           <number>-4000</number>
-          </property>
-          <property name="maximum">
-           <number>4000</number>
-          </property>
+         <widget class="QWidget" name="tab_6">
+          <attribute name="title">
+           <string>Density</string>
+          </attribute>
          </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="volumeRestrictionsGroupBox">
-     <property name="title">
-      <string>View volume restrictions</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>X interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="xIntervalASpinBox">
-        <property name="minimum">
-         <double>-2.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="xIntervalBSpinBox">
-        <property name="maximum">
-         <double>3.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Y interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="yIntervalASpinBox">
-        <property name="minimum">
-         <double>-2.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="yIntervalBSpinBox">
-        <property name="maximum">
-         <double>3.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Z interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="zIntervalASpinBox">
-        <property name="minimum">
-         <double>-2.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QDoubleSpinBox" name="zIntervalBSpinBox">
-        <property name="maximum">
-         <double>3.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.050000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QPushButton" name="volumeRestrictionsResetButton">
-        <property name="text">
-         <string>Reset</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+         <widget class="QWidget" name="tab_7">
+          <attribute name="title">
+           <string>Isosurface</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Isovalue:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSlider">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="volumeRestrictionsGroupBox">
+         <property name="title">
+          <string>View volume restrictions</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>X interval</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="xIntervalASpinBox">
+            <property name="minimum">
+             <double>-2.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="xIntervalBSpinBox">
+            <property name="maximum">
+             <double>3.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Y interval</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="yIntervalASpinBox">
+            <property name="minimum">
+             <double>-2.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="yIntervalBSpinBox">
+            <property name="maximum">
+             <double>3.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Z interval</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="zIntervalASpinBox">
+            <property name="minimum">
+             <double>-2.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QDoubleSpinBox" name="zIntervalBSpinBox">
+            <property name="maximum">
+             <double>3.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="QPushButton" name="volumeRestrictionsResetButton">
+            <property name="text">
+             <string>Reset</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Cut planes</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -279,11 +416,11 @@
    <sender>xIntervalASpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>145</y>
+     <x>256</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>168</x>
@@ -295,11 +432,11 @@
    <sender>yIntervalASpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>165</y>
+     <x>256</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>191</x>
@@ -311,11 +448,11 @@
    <sender>zIntervalASpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>185</y>
+     <x>256</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>219</x>
@@ -327,11 +464,11 @@
    <sender>xIntervalBSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>145</y>
+     <x>364</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -343,11 +480,11 @@
    <sender>yIntervalBSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>165</y>
+     <x>364</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -359,11 +496,11 @@
    <sender>zIntervalBSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>185</y>
+     <x>364</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -375,11 +512,11 @@
    <sender>windowCenterSpinBox</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>windowChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>174</x>
-     <y>97</y>
+     <x>205</x>
+     <y>91</y>
     </hint>
     <hint type="destinationlabel">
      <x>136</x>
@@ -391,11 +528,11 @@
    <sender>windowWidthSpinBox</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>windowChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>336</x>
-     <y>97</y>
+     <x>364</x>
+     <y>91</y>
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
@@ -407,11 +544,11 @@
    <sender>volumeRestrictionsGroupBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>volumeRestrictionsChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>177</y>
+     <x>104</x>
+     <y>91</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -426,8 +563,8 @@
    <slot>resetVolumeRestrictions()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>206</x>
-     <y>194</y>
+     <x>256</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>100</x>
@@ -439,11 +576,11 @@
    <sender>viewportTilesRows</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>viewportTilingChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>38</y>
+     <x>149</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -455,11 +592,11 @@
    <sender>viewportTilesCols</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>viewportTilingChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>41</y>
+     <x>261</x>
+     <y>223</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -471,11 +608,11 @@
    <sender>sliceStep</sender>
    <signal>valueChanged(int)</signal>
    <receiver>ViewerControls</receiver>
-   <slot>viewportTilingChanged()</slot>
+   <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>311</x>
-     <y>38</y>
+     <x>373</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>345</x>
@@ -483,11 +620,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mViewTypeTabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>settingsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>12</x>
+     <y>147</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>439</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>windowChanged()</slot>
-  <slot>volumeRestrictionsChanged()</slot>
+  <slot>settingsChanged()</slot>
   <slot>resetVolumeRestrictions()</slot>
-  <slot>viewportTilingChanged()</slot>
  </slots>
 </ui>

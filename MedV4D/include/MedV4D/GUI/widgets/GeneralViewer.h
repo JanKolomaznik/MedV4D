@@ -102,14 +102,6 @@ public:
 	soglu::GLTextureImage::WPtr mSecondaryImageTexture;
 	M4D::Common::TimeStamp mSecondaryEditTimestamp;
 
-	/*Vector< float, 3 > 			_regionRealMin;
-	Vector< float, 3 >			_regionRealMax;
-	Vector< float, 3 >			_elementExtents;
-	Vector< int32, 3 > 			_regionMin;
-	Vector< int32, 3 >			_regionMax;*/
-
-	//TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
-	//GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
 //	IDMappingBufferInfo			mMappingBufferInfo;
@@ -123,12 +115,6 @@ public:
 	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
 	bool 					mEnableVolumeBoundingBox;
 	QualityMode				mQualityMode;
-
-
-	soglu::CgFXShader mSceneSlicingCgEffect;
-	soglu::CgFXShader mBasicCgEffect;
-
-	soglu::GLSLProgram mBasicShaderProgram;
 };
 
 class RenderingExtension
@@ -305,15 +291,15 @@ public:
 
 	glm::fvec3
 	getCameraPosition()const
-	{ return getViewerState().mVolumeRenderConfig.camera.eyePosition(); }
+	{ return getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.eyePosition(); }
 
 	glm::fvec3
 	getCameraTargetPosition()const
-	{ return getViewerState().mVolumeRenderConfig.camera.targetPosition(); }
+	{ return getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition(); }
 
 	glm::fvec3
 	getCameraTargetDirection()const
-	{ return getViewerState().mVolumeRenderConfig.camera.targetDirection(); }
+	{ return getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetDirection(); }
 
 	void
 	setSliceCountForRenderingQualities( int aLow, int aNormal, int aHigh, int aFinest );

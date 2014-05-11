@@ -86,7 +86,6 @@ applyTransferFunction1D(float value, TransferFunction1D aTransferFunction1D)
 vec4
 applyIntegralTransferFunction1D( 
 		vec2 values,
-		vec3 position,
 		ImageData3D aTextureData,
 		TransferFunction1D aIntegralTransferFunction1D
 		)
@@ -120,6 +119,17 @@ texCoordsFromPositionNoInterpolation(vec3 pos, ImageData3D image)
 	vec3 texCoord = vec3( relPos.x / image.realSize.x, relPos.y / image.realSize.y, relPos.z / image.realSize.z );
 	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
 }
+
+float getUnmappedValue(
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		vec2 aMappedIntervalBands
+		)
+{
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	vec3 coordinates = texCoordsFromPosition(aPosition, aTextureData);
+	return (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
+}
  
 vec4 
 preintegratedTransferFunction1D( 
@@ -138,7 +148,6 @@ preintegratedTransferFunction1D(
 
 	return applyIntegralTransferFunction1D( 
 		vec2(value1, value2),
-		aPosition,
 		aTextureData,
 		aIntegralTransferFunction1D);
 }

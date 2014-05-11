@@ -244,7 +244,14 @@ ViewerWindow::ViewerWindow()
 #endif //USE_PYTHON
 
 	ViewerControls *mViewerControls = new ViewerControls;
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), mViewerControls, SLOT( updateControls() ) );
+	QObject::connect(
+			ApplicationManager::getInstance(),
+			&ApplicationManager::viewerSelectionChanged,
+			[mViewerControls] () {
+				auto viewer = ViewerManager::getInstance()->getSelectedViewer();
+				auto genViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (viewer);
+				mViewerControls->setViewer(genViewer);
+			});
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls );
 	LOG( "Viewer controls GUI initialized" );
@@ -544,7 +551,7 @@ fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::Tr
 		//ftor = OpenGLManager::getInstance()->doGL( ftor );
 		//info.tfGLBuffer = ftor.tfGLBuffer;
 
-		OpenGLManager::getInstance()->doGL([&info]() { 
+		OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
 			});
 
@@ -556,7 +563,7 @@ fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::Tr
 			/*ftor.tfBuffer = info.tfIntegralBuffer;
 			ftor = OpenGLManager::getInstance()->doGL( ftor );
 			info.tfGLIntegralBuffer = ftor.tfGLBuffer;*/
-			OpenGLManager::getInstance()->doGL([&info]() { 
+			OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D( *info.tfIntegralBuffer );
 			});
 		} else {

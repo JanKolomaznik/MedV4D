@@ -31,23 +31,27 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.2f, diff.y() * -0.2f ) );
 		return true;
 	}
+	/*
+	// TODO - handle cut planes
 	if ( state.viewType == vt3D && mInteractionMode == imCUT_PLANE ) {
 		state.getViewerWindow< GeneralViewer >().cameraOrbit( Vector2f( diff.x() * -0.2f, diff.y() * -0.2f ) );
 		glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
-		glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+		glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset;
 		state.getViewerWindow< GeneralViewer >().setCutPlane( soglu::Planef( pos, dir ) );
 		return true;
-	}
+	}*/
 	if ( mInteractionMode == imLUT_SETTING ) {
 		glm::fvec2 oldVal = state.getViewerWindow< GeneralViewer >().getLUTWindow();
 		state.getViewerWindow< GeneralViewer >().setLUTWindow( oldVal + glm::fvec2(diff.x(), diff.y()));
 		return true;
 	}
+	/*
+	// TODO - handle cut planes
 	if ( mInteractionMode == imCUT_PLANE_OFFSET ) {
 		float oldVal = state.mVolumeRenderConfig.cutPlaneCameraTargetOffset;
 		state.getViewerWindow< GeneralViewer >().setCutPlaneCameraTargetOffset( oldVal + 0.3*(diff.x() + diff.y()) );
 		return true;
-	}
+	}*/
 	if ( mInteractionMode == imFAST_SLICE_CHANGE ) {
 		int speed = mTrackInfo.mStartLocalPosition.y() - aEventInfo.event->pos().y();
 		mTmpViewer = &(state.getViewerWindow< GeneralViewer >());
@@ -69,7 +73,7 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	return false;
 }
 
-bool	
+bool
 ViewerController::mouseDoubleClickEvent ( BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
@@ -94,10 +98,12 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			//LOG( aEventInfo.event->modifiers() );
 			if ( aEventInfo.event->modifiers() & mCutPlaneKeyboardModifiers /*&& state.mVolumeRenderConfig.enableCutPlane*/ ) {
 				mInteractionMode = imCUT_PLANE;
-				glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
-				glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset; 
+				// TODO - handle cut planes
+				/*glm::fvec3 dir = -1.0f*state.getViewerWindow< GeneralViewer >().getCameraTargetDirection();
+				glm::fvec3 pos = state.getViewerWindow< GeneralViewer >().getCameraTargetPosition() + dir * state.mVolumeRenderConfig.cutPlaneCameraTargetOffset;
 				state.getViewerWindow< GeneralViewer >().setCutPlane( soglu::Planef( pos, dir ) );
 				state.getViewerWindow< GeneralViewer >().enableCutPlane( true );
+				*/
 				//LOG( "ENABLING CUTPLANE" );
 			} else {
 				mInteractionMode = imORBIT_CAMERA;
@@ -115,9 +121,9 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 			return true;
 		}
 	}
-	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow 
-		|| state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection 
-		|| state.colorTransform == M4D::GUI::Renderer::ctBasic ) 
+	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow
+		|| state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection
+		|| state.colorTransform == M4D::GUI::Renderer::ctBasic )
 	{
 		if( aEventInfo.event->button() == mLUTSetMouseButton ) {
 			mInteractionMode = imLUT_SETTING;
@@ -135,7 +141,7 @@ ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const M
 	if ( (mInteractionMode == imORBIT_CAMERA && aEventInfo.event->button() == mCameraOrbitButton)
 	  || (mInteractionMode == imCUT_PLANE && aEventInfo.event->button() == mCameraOrbitButton)
 	  || (mInteractionMode == imCUT_PLANE_OFFSET && aEventInfo.event->button() == mCutPlaneOffsetButton)
-	  || (mInteractionMode == imLUT_SETTING && aEventInfo.event->button() == mLUTSetMouseButton) ) 
+	  || (mInteractionMode == imLUT_SETTING && aEventInfo.event->button() == mLUTSetMouseButton) )
 	{
 		mInteractionMode = imNONE;
 		return true;

@@ -118,22 +118,22 @@ struct VolumeRenderer::RenderingConfiguration
 		: //primaryImageData( NULL ),
 		//secondaryImageData( NULL ),
 		colorTransform( ctMaxIntensityProjection ),
-		jitterEnabled( true ),
+		/*jitterEnabled( true ),
 		jitterStrength( 1.0f ),
 		shadingEnabled( true ),
 		integralTFEnabled( false ),
 		sampleCount( 150 ),
-		enableInterpolation(true ),
-		enableVolumeRestrictions( false ),
+		enableInterpolation(true ),*/
+		enableVolumeRestrictions( false )/*,
 		enableCutPlane( false ),
 		cutPlaneCameraTargetOffset( 0.0f ),
-		multiDatasetRenderingStyle( mdrsOnlyPrimary )
+		multiDatasetRenderingStyle( mdrsOnlyPrimary )*/
 	{ }
 	soglu::GLTextureImage3D::WPtr		primaryImageData;
 	soglu::GLTextureImage3D::WPtr		secondaryImageData;
 
 	int					colorTransform;
-	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
+	/*vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
 	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
 	glm::fvec2				lutWindow;
 	soglu::Camera				camera;
@@ -142,21 +142,32 @@ struct VolumeRenderer::RenderingConfiguration
 	bool					shadingEnabled;
 	bool					integralTFEnabled;
 	size_t					sampleCount;
-	bool					enableInterpolation;
+	bool					enableInterpolation;*/
 
-	glm::fvec3				lightPosition;
+	//glm::fvec3				lightPosition;
 
 	bool					enableVolumeRestrictions;
 	VolumeRestrictions			volumeRestrictions;
 
-	bool					enableCutPlane;
+	/*bool					enableCutPlane;
 	soglu::Planef				cutPlane;
-	float					cutPlaneCameraTargetOffset;
+	float					cutPlaneCameraTargetOffset;*/
 
-	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
+	//MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 
-	soglu::TextureId depthBuffer;
-	glm::ivec2 windowSize;
+	//float 					isoValue;
+
+	/*soglu::TextureId depthBuffer;
+	glm::ivec2 windowSize;*/
+
+	vorgl::VolumeRenderingConfiguration renderingConfiguration;
+
+	vorgl::ClipPlanes clipPlanes;
+	vorgl::RenderingQuality renderingQuality;
+
+	vorgl::DensityRenderingOptions densityOptions;
+	vorgl::TransferFunctionRenderingOptions transferFunctionOptions;
+	vorgl::IsoSurfaceRenderingOptions isoSurfaceOptions;
 };
 
 

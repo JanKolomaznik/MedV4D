@@ -90,6 +90,44 @@ QToolBar *
 createToolbarFromActions( const QString &aName, QList<QAction *> &actions );
 
 
+/**
+ * Emitting signals from QObject can be temporarily disabled
+ * and the previous state must be properly restored - task for RAII pattern.
+ *
+ * Example:
+ * {
+ * 	QtSignalBlocker blocker(some_widget); // signals from 'some_widget' are blocked
+ *	// Call methods of 'some_widget' which would normally emit signals
+ * 	...
+ * }  // blocker is destroyed - signal blockage state is restored
+ **/
+class QtSignalBlocker : public boost::noncopyable {
+public:
+	explicit QtSignalBlocker(QObject *obj) :
+		mObj(obj),
+		mOld(obj->blockSignals(true))
+	{
+	}
+
+	~QtSignalBlocker() {
+		mObj->blockSignals(mOld);
+	}
+
+private:
+	QObject *mObj;
+	bool mOld;
+};
+
+template<typename TType>
+QString ToQString(const TType &vec) {
+	std::ostringstream ss;
+	ss << vec;
+	return QString::fromStdString(ss.str());
+}
+
+
+
+
 }//namespace GUI
 }//namespace M4D
 

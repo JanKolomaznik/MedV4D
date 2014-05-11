@@ -49,9 +49,9 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
 	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
-	state->mVolumeRenderConfig.shadingEnabled = true;
-	state->mVolumeRenderConfig.jitterEnabled = true;
-	state->mVolumeRenderConfig.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
+	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
+	state->mVolumeRenderConfig.renderingQuality.enableJittering = true;
+	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
 	state->mEnableVolumeBoundingBox = true;
 
@@ -114,7 +114,7 @@ void
 GeneralViewer::setLUTWindow(glm::fvec2 window)
 {
 	getViewerState().mSliceRenderConfig.lutWindow = window;
-	getViewerState().mVolumeRenderConfig.lutWindow = window;
+	getViewerState().mVolumeRenderConfig.densityOptions.lutWindow = window;
 
 	notifyAboutSettingsChange();
 	update();
@@ -143,7 +143,7 @@ GeneralViewer::setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr a
 	doneCurrent();
 
 	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
-	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
 
 	notifyAboutSettingsChange();
 	update();
@@ -156,8 +156,8 @@ GeneralViewer::setTransferFunctionBufferInfo( vorgl::TransferFunctionBufferInfo 
 	getViewerState().mTransferFunctionBufferInfo = aTFunctionBufferInfo;
 
 	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
-	getViewerState().mVolumeRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
-	getViewerState().mVolumeRenderConfig.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;
 	doneCurrent();
 
 	notifyAboutSettingsChange();
@@ -238,6 +238,8 @@ GeneralViewer::changeCurrentSlice( int32 diff )
 void
 GeneralViewer::setCutPlane( const soglu::Planef &aCutPlane )
 {
+	// TODO - handle cut planes
+	/*
 	getViewerState().mVolumeRenderConfig.cutPlane = aCutPlane;
 	glm::fvec3 point = glm::fvec3(aCutPlane.point()[0], aCutPlane.point()[1], aCutPlane.point()[2]);
 	glm::fvec3 normal = glm::fvec3(aCutPlane.normal()[0], aCutPlane.normal()[1], aCutPlane.normal()[2]);
@@ -246,7 +248,7 @@ GeneralViewer::setCutPlane( const soglu::Planef &aCutPlane )
 	if( glm::dot(dir, normal) < 0.0f ) {
 		offset *= -1.0f;
 	}
-	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = offset;
+	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = offset;*/
 
 	notifyAboutSettingsChange();
 	update();
@@ -255,18 +257,20 @@ GeneralViewer::setCutPlane( const soglu::Planef &aCutPlane )
 soglu::Planef
 GeneralViewer::getCutPlane()const
 {
-	return getViewerState().mVolumeRenderConfig.cutPlane;
+	// TODO - handle cut planes
+	return soglu::Planef(); //getViewerState().mVolumeRenderConfig.cutPlane;
 }
 
 void
 GeneralViewer::setCutPlaneCameraTargetOffset( float aOffset )
 {
-	glm::fvec3 normal = getViewerState().mVolumeRenderConfig.cutPlane.normal();
+	// TODO - handle cut planes
+	/*glm::fvec3 normal = getViewerState().mVolumeRenderConfig.cutPlane.normal();
 	glm::fvec3 point = getCameraTargetPosition() + aOffset * glm::fvec3(normal[0], normal[1], normal[2]);
 	soglu::Planef plane(glm::fvec3(point.x, point.y, point.z), normal );
 	getViewerState().mVolumeRenderConfig.cutPlane = plane;
 	getViewerState().mVolumeRenderConfig.cutPlaneCameraTargetOffset = aOffset;
-
+*/
 	notifyAboutSettingsChange();
 	update();
 }
@@ -368,25 +372,25 @@ GeneralViewer::ReceiveMessage(
 bool
 GeneralViewer::isShadingEnabled() const
 {
-	return getViewerState().mVolumeRenderConfig.shadingEnabled;
+	return getViewerState().mVolumeRenderConfig.transferFunctionOptions.enableLight;
 }
 
 bool
 GeneralViewer::isJitteringEnabled() const
 {
-	return getViewerState().mVolumeRenderConfig.jitterEnabled;
+	return getViewerState().mVolumeRenderConfig.renderingQuality.enableJittering;
 }
 
 bool
 GeneralViewer::isIntegratedTransferFunctionEnabled() const
 {
-	return getViewerState().mVolumeRenderConfig.integralTFEnabled;
+	return getViewerState().mVolumeRenderConfig.transferFunctionOptions.preintegratedTransferFunction;
 }
 
 void
 GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
 {
-	getViewerState().mVolumeRenderConfig.integralTFEnabled = aEnable;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.preintegratedTransferFunction = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }
@@ -430,13 +434,15 @@ GeneralViewer::setVolumeRestrictions( bool aEnable, const Vector2f &aX, const Ve
 bool
 GeneralViewer::isCutPlaneEnabled() const
 {
-	return getViewerState().mVolumeRenderConfig.enableCutPlane;
+	// TODO - handle cut planes
+	return false; //getViewerState().mVolumeRenderConfig.enableCutPlane;
 }
 
 void
 GeneralViewer::enableCutPlane( bool aEnable )
 {
-	getViewerState().mVolumeRenderConfig.enableCutPlane = aEnable;
+	// TODO - handle cut planes
+	//getViewerState().mVolumeRenderConfig.enableCutPlane = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }
@@ -444,13 +450,13 @@ GeneralViewer::enableCutPlane( bool aEnable )
 bool
 GeneralViewer::isInterpolationEnabled() const
 {
-	return getViewerState().mVolumeRenderConfig.enableInterpolation;
+	return getViewerState().mVolumeRenderConfig.renderingQuality.enableInterpolation;
 }
 
 void
 GeneralViewer::enableInterpolation( bool aEnable )
 {
-	getViewerState().mVolumeRenderConfig.enableInterpolation = aEnable;
+	getViewerState().mVolumeRenderConfig.renderingQuality.enableInterpolation = aEnable;
 	getViewerState().mSliceRenderConfig.enableInterpolation = aEnable;
 	notifyAboutSettingsChange();
 	update();
@@ -460,26 +466,26 @@ GeneralViewer::enableInterpolation( bool aEnable )
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
 {
-	soglu::cameraYawPitchAroundPoint(getViewerState().mVolumeRenderConfig.camera,
+	soglu::cameraYawPitchAroundPoint(getViewerState().mVolumeRenderConfig.renderingConfiguration.camera,
 					glm::fvec2(aAngles[0], aAngles[1]),
-					getViewerState().mVolumeRenderConfig.camera.targetPosition()
+					getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition()
 					);
-	//getViewerState().mVolumeRenderConfig.camera.yawPitchAround( aAngles[0], aAngles[1] );
+	//getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.yawPitchAround( aAngles[0], aAngles[1] );
 	update();
 }
 
 /*void
 GeneralViewer::cameraOrbitAbsolute( Vector2f aAngles )
 {
-	getViewerState().mVolumeRenderConfig.camera.yawPitchAbsolute( aAngles[0], aAngles[1] );
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.yawPitchAbsolute( aAngles[0], aAngles[1] );
 	update();
 }*/
 
 void
 GeneralViewer::cameraDolly(float aDollyRatio)
 {
-	glm::fvec3 moveVector = (1.0f - aDollyRatio) * (getViewerState().mVolumeRenderConfig.camera.targetPosition() - getViewerState().mVolumeRenderConfig.camera.eyePosition());
-	soglu::dollyCamera(getViewerState().mVolumeRenderConfig.camera, moveVector);
+	glm::fvec3 moveVector = (1.0f - aDollyRatio) * (getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition() - getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.eyePosition());
+	soglu::dollyCamera(getViewerState().mVolumeRenderConfig.renderingConfiguration.camera, moveVector);
 	update();
 }
 
@@ -607,7 +613,7 @@ GeneralViewer::fineRender()
 void
 GeneralViewer::enableShading( bool aEnable )
 {
-	getViewerState().mVolumeRenderConfig.shadingEnabled = aEnable;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.enableLight = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }
@@ -615,7 +621,7 @@ GeneralViewer::enableShading( bool aEnable )
 void
 GeneralViewer::enableJittering( bool aEnable )
 {
-	getViewerState().mVolumeRenderConfig.jitterEnabled = aEnable;
+	getViewerState().mVolumeRenderConfig.renderingQuality.enableJittering = aEnable;
 	notifyAboutSettingsChange();
 	update();
 }
@@ -624,7 +630,7 @@ GeneralViewer::enableJittering( bool aEnable )
 void
 GeneralViewer::setJitterStrength( float aValue )
 {
-	getViewerState().mVolumeRenderConfig.jitterStrength = abs(aValue);
+	getViewerState().mVolumeRenderConfig.renderingQuality.jitterStrength = abs(aValue);
 	notifyAboutSettingsChange();
 	update();
 }
@@ -633,9 +639,9 @@ GeneralViewer::setJitterStrength( float aValue )
 void
 GeneralViewer::resetView()
 {
-	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.camera.targetPosition();
+	glm::fvec3 pos = getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition();
 	pos[1] += -550;
-	getViewerState().mVolumeRenderConfig.camera.setEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setEyePosition( pos, glm::fvec3( 0.0f, 0.0f, 1.0f ) );
 
 	update();
 }
@@ -662,22 +668,7 @@ GeneralViewer::setRenderingQuality( int aQualityMode )
 	//TODO check
 	getViewerState().mQualityMode = static_cast< QualityMode >( aQualityMode );
 
-	getViewerState().mVolumeRenderConfig.sampleCount = mSliceCountForRenderingQualities[aQualityMode];
-
-	/*switch ( getViewerState().mQualityMode ) {
-	case qmLow:
-		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_low_quality", int, 90 );
-		break;
-	case qmNormal:
-		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_normal_quality", int, 180 );
-		break;
-	case qmHigh:
-		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_high_quality", int, 450 );
-		break;
-	case qmFinest:
-		getViewerState().mVolumeRenderConfig.sampleCount = GET_SETTINGS( "gui.viewer.volume_rendering.sample_count_finest_quality", int, 1000 );
-		break;
-	}*/
+	getViewerState().mVolumeRenderConfig.renderingQuality.sliceCount = mSliceCountForRenderingQualities[aQualityMode];
 	notifyAboutSettingsChange();
 	update();
 }
@@ -708,7 +699,7 @@ GeneralViewer::initializeRenderingEnvironment()
 	/*getViewerState().mSceneSlicingCgEffect.initialize( dataDirName / "shaders" / "SceneSlicing.cgfx" );
 	getViewerState().mBasicCgEffect.initialize( dataDirName / "shaders" / "BasicShader.cgfx" );*/
 
-	getViewerState().mBasicShaderProgram = soglu::createGLSLProgramFromVertexAndFragmentShader(
+	getViewerState().basicShaderProgram = soglu::createGLSLProgramFromVertexAndFragmentShader(
 		dataDirName / "shaders" / "basic_vertex.glsl",
 		dataDirName / "shaders" / "basic_fragment.glsl");
 }
@@ -725,28 +716,21 @@ GeneralViewer::preparedForRendering()
 void
 GeneralViewer::prepareForRenderingStep()
 {
-	/*glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();*/
 	switch ( getViewerState().viewType ) {
 	case vt3D:
 		{
-			getViewerState().mVolumeRenderConfig.camera.setAspectRatio( getViewerState().aspectRatio );
+			getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setAspectRatio( getViewerState().aspectRatio );
 			//Set viewing parameters
-			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.camera );
+			getViewerState().glViewSetup = getViewSetupFromCamera( getViewerState().mVolumeRenderConfig.renderingConfiguration.camera );
 			getViewerState().glViewSetup.viewport = glm::ivec4( 0, 0, width(), height() );
+			getViewerState().mVolumeRenderConfig.renderingConfiguration.viewSetup = getViewerState().glViewSetup;
 		}
 		break;
 	case vt2DAlignedSlices:
 		{
-			//SetToViewConfiguration2D( getViewerState().mSliceRenderConfig.viewConfig );
-
 			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
 			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
 			CartesianPlanes plane = getViewerState().mSliceRenderConfig.plane;
-			/*Vector2f regMin = VectorPurgeDimension( getViewerState()._regionRealMin, plane );
-			Vector2f regMax = VectorPurgeDimension( getViewerState()._regionRealMax, plane );*/
 			Vector2f size = VectorPurgeDimension( getViewerState().getRealSize(), plane );
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
 
@@ -792,11 +776,10 @@ GeneralViewer::render()
 		{
 			GL_CHECKED_CALL(glEnable(GL_BLEND));
 			GL_CHECKED_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-			int vertexLocation = getViewerState().mBasicShaderProgram.getAttributeLocation("vertex");
+			int vertexLocation = getViewerState().basicShaderProgram.getAttributeLocation("vertex");
 			glViewport(0, 0, width(), height());
 
-			//getViewerState().mBasicShaderProgram.setUniformByName( "modelViewProj", glm::mat4(getViewerState().glViewSetup.modelViewProj));
-			getViewerState().mBasicShaderProgram.setUniformByName("gViewSetup", getViewerState().glViewSetup);
+			getViewerState().basicShaderProgram.setUniformByName("gViewSetup", getViewerState().glViewSetup);
 
 			soglu::ExtentsRecord<3> extents = getViewerState().mVolumeRenderConfig.primaryImageData.lock()->getExtents();
 			soglu::BoundingBox3D bbox(extents.realMaximum, extents.realMinimum);
@@ -804,7 +787,8 @@ GeneralViewer::render()
 			//GL_CHECKED_CALL( glDisable( GL_LIGHTING ) );
 			/*getViewerState().mBasicCgEffect.setParameter( "gViewSetup", getViewerState().glViewSetup );*/
 			if ( getViewerState().mEnableVolumeBoundingBox ) {
-				getViewerState().mBasicShaderProgram.use([&bbox, vertexLocation]()
+				getViewerState().basicShaderProgram.setUniformByName("fragmentColor", glm::fvec4(1, 0, 0, 1));
+				getViewerState().basicShaderProgram.use([&bbox, vertexLocation]()
 				{
 					//soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffers(bbox), GL_TRIANGLE_STRIP, vertexLocation);
 					soglu::drawVertexIndexBuffers(soglu::generateBoundingBoxBuffersWireframe(bbox), GL_LINE_STRIP, vertexLocation);
@@ -822,8 +806,11 @@ GeneralViewer::render()
 			}*/
 
 			try {
-				getViewerState().mVolumeRenderConfig.depthBuffer = mFrameBufferObject.mDepthAttachment;
-				getViewerState().mVolumeRenderConfig.windowSize = glm::ivec2(width(), height());
+				getViewerState().mVolumeRenderConfig.renderingConfiguration.depthBuffer = mFrameBufferObject.mDepthAttachment;
+				getViewerState().mVolumeRenderConfig.renderingConfiguration.windowSize = glm::ivec2(width(), height());
+				//getViewerState().mVolumeRenderConfig.renderingConfiguration.viewSetup = getViewerState().glViewSetup;
+				//getViewerState().mVolumeRenderConfig.renderingConfiguration.camera = getViewerState().camera;
+
 				getViewerState().mVolumeRenderer.Render( getViewerState().mVolumeRenderConfig, getViewerState().glViewSetup );
 			} catch( std::exception &e ) {
 				LOG( e.what() );
@@ -922,7 +909,7 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			//LOG( mViewerState->glViewSetup );
 			try{
 				direction = soglu::getDirectionFromScreenCoordinatesAndCameraPosition(
-				       	glm::fvec2( event->localPos().x(), mViewerState->glViewSetup.viewport[3] - event->localPos().y() ),
+					glm::fvec2( event->localPos().x(), mViewerState->glViewSetup.viewport[3] - event->localPos().y() ),
 					mViewerState->glViewSetup,
 					getCameraPosition()
 					);
@@ -1042,9 +1029,9 @@ GeneralViewer::PrepareData()
 	}
 
 	Vector3f tmp = getViewerState().getRealCenter();
-	getViewerState().mVolumeRenderConfig.camera.setTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
-	getViewerState().mVolumeRenderConfig.camera.setFieldOfView( 45.0f );
-	getViewerState().mVolumeRenderConfig.camera.moveTo(glm::fvec3( 0.0f, 0.0f, 750.0f ));
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setFieldOfView( 45.0f );
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.moveTo(glm::fvec3( 0.0f, 0.0f, 750.0f ));
 	resetView();
 
 	_prepared = true;

@@ -15,11 +15,12 @@
 //#pragma include "cellular2x2x2.glsl" //  for cellular2x2x2(vec3 P)
 //#pragma include "cellular3D.glsl" //  cellular(vec3 P)
 
-out vec4 fragmentColor;
+uniform vec4 fragmentColor;
+out vec4 outColor;
 
 void main(void)
 {
     //vec3 eyeSpaceLigthDirection = vec3(0.0,-1.0,10.0);
     //float diffuse = max(0.0,dot(normalize(n),eyeSpaceLigthDirection));
-	fragmentColor = vec4(1.0, 0.0, 0.0, 1.0);
+	outColor = fragmentColor;
 }
