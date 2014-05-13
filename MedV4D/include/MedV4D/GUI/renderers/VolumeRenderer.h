@@ -115,51 +115,15 @@ protected:
 struct VolumeRenderer::RenderingConfiguration
 {
 	RenderingConfiguration()
-		: //primaryImageData( NULL ),
-		//secondaryImageData( NULL ),
-		colorTransform( ctMaxIntensityProjection ),
-		/*jitterEnabled( true ),
-		jitterStrength( 1.0f ),
-		shadingEnabled( true ),
-		integralTFEnabled( false ),
-		sampleCount( 150 ),
-		enableInterpolation(true ),*/
-		enableVolumeRestrictions( false )/*,
-		enableCutPlane( false ),
-		cutPlaneCameraTargetOffset( 0.0f ),
-		multiDatasetRenderingStyle( mdrsOnlyPrimary )*/
+		: colorTransform( ctMaxIntensityProjection )
+		, enableVolumeRestrictions( false )
 	{ }
 	soglu::GLTextureImage3D::WPtr		primaryImageData;
 	soglu::GLTextureImage3D::WPtr		secondaryImageData;
 
 	int					colorTransform;
-	/*vorgl::GLTransferFunctionBuffer1D::ConstWPtr	transferFunction;
-	vorgl::GLTransferFunctionBuffer1D::ConstWPtr	integralTransferFunction;
-	glm::fvec2				lutWindow;
-	soglu::Camera				camera;
-	bool					jitterEnabled;
-	float					jitterStrength;
-	bool					shadingEnabled;
-	bool					integralTFEnabled;
-	size_t					sampleCount;
-	bool					enableInterpolation;*/
-
-	//glm::fvec3				lightPosition;
-
 	bool					enableVolumeRestrictions;
 	VolumeRestrictions			volumeRestrictions;
-
-	/*bool					enableCutPlane;
-	soglu::Planef				cutPlane;
-	float					cutPlaneCameraTargetOffset;*/
-
-	//MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
-
-	//float 					isoValue;
-
-	/*soglu::TextureId depthBuffer;
-	glm::ivec2 windowSize;*/
-
 	vorgl::VolumeRenderingConfiguration renderingConfiguration;
 
 	vorgl::ClipPlanes clipPlanes;

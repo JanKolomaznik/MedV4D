@@ -205,7 +205,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="tab_4">
           <attribute name="title">
@@ -213,7 +213,7 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
-            <widget class="QCheckBox" name="s">
+            <widget class="QCheckBox" name="mEnablePreintegratedTFCheckBox">
              <property name="text">
               <string>Preintegrated transfer  function</string>
              </property>
@@ -244,14 +244,21 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSlider" name="horizontalSlider">
+            <widget class="QSlider" name="mIsoValueSlider">
+             <property name="maximum">
+              <number>5000</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+            <widget class="QDoubleSpinBox" name="mIsoValueSpinBox">
+             <property name="maximum">
+              <double>5000.000000000000000</double>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -531,8 +538,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>364</x>
-     <y>91</y>
+     <x>361</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
@@ -547,8 +554,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>91</y>
+     <x>138</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -579,8 +586,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>221</y>
+     <x>148</x>
+     <y>267</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -595,8 +602,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>223</y>
+     <x>255</x>
+     <y>267</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -611,8 +618,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>373</x>
-     <y>221</y>
+     <x>371</x>
+     <y>267</y>
     </hint>
     <hint type="destinationlabel">
      <x>345</x>
@@ -633,6 +640,22 @@
     <hint type="destinationlabel">
      <x>6</x>
      <y>439</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mIsoValueSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewerControls</receiver>
+   <slot>settingsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>309</y>
     </hint>
    </hints>
   </connection>

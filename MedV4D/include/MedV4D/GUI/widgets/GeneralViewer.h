@@ -60,39 +60,16 @@ class ViewerState : public BaseViewerState
 {
 public:
 	typedef boost::shared_ptr< ViewerState > Ptr;
-
-	//GLTextureImage::Ptr	_textureData;
-
-	unsigned colorTransform;
-
 	Vector3i
-	getMaxSlice()const
-	{
-		return mPrimaryImageExtents.maximum;
-	}
-
+	getMaxSlice()const { return mPrimaryImageExtents.maximum; }
 	Vector3i
-	getMinSlice()const
-	{
-		return mPrimaryImageExtents.minimum;
-	}
-
+	getMinSlice()const { return mPrimaryImageExtents.minimum; }
 	Vector3f
-	getRealSize()const
-	{
-		return mPrimaryImageExtents.realMaximum - mPrimaryImageExtents.realMinimum;
-	}
-
+	getRealSize()const { return mPrimaryImageExtents.realMaximum - mPrimaryImageExtents.realMinimum; }
 	Vector3f
-	getRealCenter()const
-	{
-		return 0.5f * (mPrimaryImageExtents.realMaximum + mPrimaryImageExtents.realMinimum);
-	}
+	getRealCenter()const { return 0.5f * (mPrimaryImageExtents.realMaximum + mPrimaryImageExtents.realMinimum); }
 	Vector3f
-	getMinimalElementExtents()const
-	{
-		return mPrimaryImageExtents.elementExtents;
-	}
+	getMinimalElementExtents()const {	return mPrimaryImageExtents.elementExtents; }
 
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
 	soglu::GLTextureImage::WPtr mPrimaryImageTexture;
@@ -105,6 +82,8 @@ public:
 	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
 //	IDMappingBufferInfo			mMappingBufferInfo;
+
+	unsigned colorTransform;
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
@@ -316,7 +295,16 @@ public:
 	QString
 	getZoomValueName()const;
 
+	float
+	isoSurfaceValue() const {
+		return getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue;
+	}
 
+	void
+	setIsoSurfaceValue(float aValue) {
+		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue = aValue;
+		emit settingsChanged();
+	}
 public slots:
 	void
 	setViewType( int aViewType );

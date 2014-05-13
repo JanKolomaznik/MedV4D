@@ -13,8 +13,8 @@ class ViewerControls: public QWidget, public Ui::ViewerControls
 public:
 	ViewerControls(QWidget *parent = nullptr)
 		: QWidget( parent )
-		, mUpdating( false )
 		, mCurrentViewer(nullptr)
+		, mUpdating( false )
 	{
 		setupUi( this );
 		updateControls();
@@ -79,6 +79,11 @@ public slots:
 		viewportTilesCols->setValue( grid[1] );
 		sliceStep->setValue(int(mCurrentViewer->getTilingSliceStep()));
 
+		mEnablePreintegratedTFCheckBox->setChecked(mCurrentViewer->isIntegratedTransferFunctionEnabled());
+
+		//mIsoValueSlider;
+		mIsoValueSpinBox->setValue(mCurrentViewer->isoSurfaceValue());
+
 		mUpdating = false;
 	}
 
@@ -93,9 +98,13 @@ protected slots:
 		mUpdating = true;
 
 		if (mViewTypeTabWidget->currentIndex() == 1) {
-			mCurrentViewer->setViewType(M4D::GUI::Viewer::vt3D);
+			if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt3D) {
+				mCurrentViewer->setViewType(M4D::GUI::Viewer::vt3D);
+			}
 		} else {
-			mCurrentViewer->setViewType(M4D::GUI::Viewer::vt2DAlignedSlices);
+			if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt2DAlignedSlices) {
+				mCurrentViewer->setViewType(M4D::GUI::Viewer::vt2DAlignedSlices);
+			}
 		}
 
 		mCurrentViewer->setLUTWindow( static_cast< float >( windowCenterSpinBox->value() ), static_cast< float >( windowWidthSpinBox->value() ) );
@@ -108,6 +117,10 @@ protected slots:
 				);
 
 		mCurrentViewer->setTiling( viewportTilesRows->value(), viewportTilesCols->value(), sliceStep->value() );
+
+		mCurrentViewer->enableIntegratedTransferFunction(mEnablePreintegratedTFCheckBox->isChecked());
+
+		mCurrentViewer->setIsoSurfaceValue(mIsoValueSpinBox->value());
 
 		mUpdating = false;
 		updateControls();
