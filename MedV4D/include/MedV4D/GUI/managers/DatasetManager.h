@@ -13,7 +13,7 @@
 typedef M4D::Common::IDNumber DatasetID;
 struct ADatasetRecord
 {
-	typedef boost::shared_ptr< ADatasetRecord > Ptr;
+	typedef std::shared_ptr< ADatasetRecord > Ptr;
 	
 	DatasetID id;
 
@@ -24,7 +24,7 @@ struct ADatasetRecord
 
 struct ImageRecord: public ADatasetRecord 
 {
-	typedef boost::shared_ptr< ImageRecord > Ptr;
+	typedef std::shared_ptr< ImageRecord > Ptr;
 	
 	boost::filesystem::path	filePath;
 

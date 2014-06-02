@@ -18,7 +18,7 @@ class ViewModifier: public AbstractModifier{
 
 public:
 
-	typedef boost::shared_ptr<ViewModifier> Ptr;
+	typedef std::shared_ptr<ViewModifier> Ptr;
 
 	~ViewModifier();
 

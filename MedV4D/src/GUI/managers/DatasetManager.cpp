@@ -53,9 +53,9 @@ DatasetManager::getImageInfo( DatasetID aDatasetId )
 {
 	ADatasetRecord::Ptr rec = getDatasetInfo( aDatasetId );
 	if ( rec ) {
-		return boost::dynamic_pointer_cast< ImageRecord >( rec );
+		return std::dynamic_pointer_cast< ImageRecord >( rec );
 	}
-	
+
 	return ImageRecord::Ptr();
 }
 
@@ -66,12 +66,12 @@ DatasetManager::openFileNonBlocking( boost::filesystem::path aPath, ProgressNoti
 		_THROW_ EBadParameter( "Invalid progress notifier passed as parameter!" );
 	}
 	DatasetID id = mIdGenerator.NewID();
-	
-	boost::thread th = boost::thread( 
+
+	boost::thread th = boost::thread(
 			boost::bind(
-			&DatasetManager::openFileHelper,  
+			&DatasetManager::openFileHelper,
 			this,
-			aPath, 
+			aPath,
 			aProgressNotifier,
 			id,
 			aUseAsCurrent
@@ -125,11 +125,11 @@ DatasetManager::registerImage( DatasetID aDatasetId, boost::filesystem::path aPa
 	rec->filePath = aPath;
 	rec->image = aImage;
 	mDatasetInfos[ aDatasetId ] = p;
-	
+
 	if ( aUseAsCurrent ) {
 		setCurrentDatasetInfo( aDatasetId );
 	}
-	
+
 	D_PRINT( "Dataset info added, id = " << aDatasetId << ", dataset count = " << mDatasetInfos.size() );
 }
 
@@ -144,8 +144,8 @@ void
 DatasetManager::clearAll()
 {
 	boost::recursive_mutex::scoped_lock lock( mDatasetInfoAccessLock );
-	
-	//mPrimaryProdconn.PutDataset( 
+
+	//mPrimaryProdconn.PutDataset(
 	mCurrentDatasetId = 0;
 	mDatasetInfos.clear();
 }

@@ -2,7 +2,7 @@
 #define ADESKTOP_CONTAINER_H
 
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace M4D
 {

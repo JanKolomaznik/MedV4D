@@ -5,7 +5,7 @@
 #include <vector>
 #include <ostream>
 #include <iomanip>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 namespace M4D
@@ -29,7 +29,7 @@ template< typename CellType >
 class Histogram
 {
 public :
-	typedef boost::shared_ptr< Histogram< CellType > > Ptr;
+	typedef std::shared_ptr< Histogram< CellType > > Ptr;
 
 	typedef CellType* Iterator;
 	typedef Iterator iterator;

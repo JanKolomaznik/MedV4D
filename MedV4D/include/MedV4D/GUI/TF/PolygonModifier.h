@@ -14,7 +14,7 @@ class PolygonModifier: public Modifier1D{
 
 public:
 
-	typedef boost::shared_ptr<PolygonModifier> Ptr;
+	typedef std::shared_ptr<PolygonModifier> Ptr;
 
 	PolygonModifier(
 		TransferFunctionInterface::Ptr function,

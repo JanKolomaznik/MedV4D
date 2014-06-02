@@ -4,7 +4,7 @@
 #include "MedV4D/Imaging/GeometricalObjectTypeOperations.h"
 #include "MedV4D/Imaging/VertexInfo.h"
 #include "MedV4D/Common/Common.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace M4D
 {
@@ -28,7 +28,7 @@ public:
                 return GTID_AGEOMETRICAL_OBJECT;
         }
 
-        typedef	boost::shared_ptr< AGeometricalObject >	Ptr;
+        typedef	std::shared_ptr< AGeometricalObject >	Ptr;
 
         virtual
         ~AGeometricalObject() {}
@@ -48,7 +48,7 @@ template< size_t Dim >
 class AGeometricalObjectDim: public AGeometricalObject
 {
 public:
-        typedef	boost::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
+        typedef	std::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
         static const size_t Dimension = Dim;
 };
 
@@ -56,7 +56,7 @@ template< typename VectorType >
 class AGeometricalObjectDimPrec: public AGeometricalObjectDim< VectorType::Dimension >
 {
 public:
-        typedef	boost::shared_ptr< AGeometricalObjectDimPrec< VectorType > >	Ptr;
+        typedef	std::shared_ptr< AGeometricalObjectDimPrec< VectorType > >	Ptr;
 
         typedef typename VectorType::CoordinateType	Type;
         static const unsigned 				Dimension = VectorType::Dimension;

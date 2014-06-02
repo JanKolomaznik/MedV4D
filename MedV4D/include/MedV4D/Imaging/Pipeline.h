@@ -11,7 +11,7 @@
 
 #include "MedV4D/Imaging/APipeline.h"
 #include "MedV4D/Imaging/ConnectionInterface.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 /**

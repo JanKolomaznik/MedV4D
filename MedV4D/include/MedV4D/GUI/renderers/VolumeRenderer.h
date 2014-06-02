@@ -4,7 +4,6 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 //#include "MedV4D/GUI/utils/CgShaderTools.h"
-#include <soglu/CgFXShader.hpp>
 
 //#include "MedV4D/GUI/utils/GLTextureImage.h"
 #include <soglu/GLTextureImage.hpp>

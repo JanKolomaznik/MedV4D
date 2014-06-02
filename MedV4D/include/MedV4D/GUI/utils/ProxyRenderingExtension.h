@@ -11,7 +11,7 @@
 class ProxyRenderingExtension: public M4D::GUI::Viewer::RenderingExtension
 {
 public:
-	typedef boost::shared_ptr< ProxyRenderingExtension > Ptr;
+	typedef std::shared_ptr< ProxyRenderingExtension > Ptr;
 
 	unsigned
 	getAvailableViewTypes()const

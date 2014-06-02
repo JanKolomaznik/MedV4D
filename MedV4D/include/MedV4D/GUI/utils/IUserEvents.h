@@ -7,7 +7,7 @@
 class IUserEvents
 {
 public:
-	typedef boost::shared_ptr< IUserEvents > Ptr;
+	typedef std::shared_ptr< IUserEvents > Ptr;
 
 	virtual
 	~IUserEvents()

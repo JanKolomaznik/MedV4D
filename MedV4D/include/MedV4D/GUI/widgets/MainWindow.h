@@ -2,7 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "MedV4D/GUI/widgets/MultiDockWidget.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"

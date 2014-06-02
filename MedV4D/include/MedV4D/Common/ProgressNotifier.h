@@ -4,7 +4,7 @@
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 #include "MedV4D/Common/Debug.h"
@@ -14,7 +14,7 @@
 class ProgressNotifier
 {
 public:
-	typedef boost::shared_ptr< ProgressNotifier > Ptr;
+	typedef std::shared_ptr< ProgressNotifier > Ptr;
 
 	virtual void
 	init( size_t aPhaseCount )

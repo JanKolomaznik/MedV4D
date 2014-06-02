@@ -3,7 +3,7 @@
 
 #include "MedV4D/Imaging/AImage.h"
 #include "MedV4D/Imaging/ImageDataTemplate.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Imaging/ModificationManager.h"
 #include "MedV4D/Imaging/ADataset.h"
 #include "MedV4D/Imaging/ImageIterator.h"
@@ -189,7 +189,7 @@ public:
                         _THROW_ ErrorHandling::ExceptionCastProblem();
                 }
 
-                return boost::static_pointer_cast< Image< ElementType, Dimension > > ( image );
+                return std::static_pointer_cast< Image< ElementType, Dimension > > ( image );
         }
 
         /**
@@ -202,7 +202,7 @@ public:
                         _THROW_ ErrorHandling::ExceptionCastProblem();
                 }
 
-                return boost::static_pointer_cast< const Image< ElementType, Dimension > > ( image );
+                return std::static_pointer_cast< const Image< ElementType, Dimension > > ( image );
         }
 
 

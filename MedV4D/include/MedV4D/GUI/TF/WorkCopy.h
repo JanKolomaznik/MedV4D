@@ -14,7 +14,7 @@ class WorkCopy{
 
 public:
 
-	typedef boost::shared_ptr<WorkCopy> Ptr;
+	typedef std::shared_ptr<WorkCopy> Ptr;
 
 	static const TF::Size noZoom = -1;
 	

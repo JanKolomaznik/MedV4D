@@ -11,7 +11,7 @@
 #include "MedV4D/Imaging/Image.h"
 #include "MedV4D/Common/Vector.h"
 #include "MedV4D/Imaging/ImageRegion.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Imaging/ImageRegionAccessors.h"
 
 /**

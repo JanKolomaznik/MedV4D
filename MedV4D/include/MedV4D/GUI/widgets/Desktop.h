@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/GUI/widgets/ADesktop.h"
 #include "MedV4D/GUI/widgets/ADesktopContainer.h"
 #include "MedV4D/GUI/widgets/utils/ADesktopContainerFactory.h"

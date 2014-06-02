@@ -9,7 +9,7 @@
 #define CONVOLUTION_H
 
 #include "MedV4D/Imaging/ImageRegion.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "MedV4D/Imaging/FilterComputation.h"
 
@@ -24,7 +24,7 @@ namespace Imaging {
 
 template< size_t Dim, typename MatrixElement = float32 >
 struct ConvolutionMask {
-        typedef boost::shared_ptr<ConvolutionMask<Dim,MatrixElement> > Ptr;
+        typedef std::shared_ptr<ConvolutionMask<Dim,MatrixElement> > Ptr;
 
         ConvolutionMask ( MatrixElement *m, Vector< uint32, Dim > s )
                         : length ( 1 ), mask ( m ) {

@@ -19,14 +19,14 @@ class MultiDVector{
 
 public:
 
-	typedef boost::shared_ptr<MyType> Ptr;
+	typedef std::shared_ptr<MyType> Ptr;
 
 	typedef MultiDVector<Value, dim - 1> value_type;
 
 	typedef typename InnerVector::iterator iterator;
 	typedef typename InnerVector::const_iterator const_iterator;
 
-	MultiDVector(std::vector<Size> dimensionSizes){	
+	MultiDVector(std::vector<Size> dimensionSizes){
 
 		tfAssert(dimensionSizes.size() == dim);
 
@@ -53,7 +53,7 @@ public:
 		{
 			vector_.push_back(*it);
 		}
-		
+
 		dimensionSizes_ = vector.dimensionSizes_;
 	}
 
@@ -67,7 +67,7 @@ public:
 		{
 			vector_.push_back(*it);
 		}
-		
+
 		dimensionSizes_ = vector.dimensionSizes_;
 	}
 
@@ -122,7 +122,7 @@ private:
 	MultiDVector(){}
 
 	Value& getValue_(const TF::Coordinates& coords, Size realDim){
-		
+
 		Size myIndex = coords[realDim - dim];
 		return vector_[coords[myIndex]].getValue_(coords, realDim);
 	}
@@ -143,14 +143,14 @@ class MultiDVector<Value, 1>{
 
 public:
 
-	typedef boost::shared_ptr<MyType> Ptr;
+	typedef std::shared_ptr<MyType> Ptr;
 
 	typedef Value value_type;
 
 	typedef typename InnerVector::iterator iterator;
 	typedef typename InnerVector::const_iterator const_iterator;
 
-	MultiDVector(std::vector<Size> dimensionSizes){	
+	MultiDVector(std::vector<Size> dimensionSizes){
 
 		tfAssert(dimensionSizes.size() == 1);
 
@@ -236,7 +236,7 @@ protected:
 	MultiDVector(){}
 
 	Value& getValue_(const TF::Coordinates& coords, Size realDim){
-		
+
 		Size myIndex = coords[realDim - 1];
 		return vector_[coords[myIndex]];
 	}

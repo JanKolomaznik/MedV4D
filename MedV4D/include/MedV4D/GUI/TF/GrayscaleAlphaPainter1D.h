@@ -10,7 +10,7 @@ class GrayscaleAlphaPainter1D: public Painter1D{
 
 public:
 
-	typedef boost::shared_ptr<GrayscaleAlphaPainter1D> Ptr;
+	typedef std::shared_ptr<GrayscaleAlphaPainter1D> Ptr;
 
 	GrayscaleAlphaPainter1D();
 	GrayscaleAlphaPainter1D(

@@ -5,7 +5,7 @@
 #include "MedV4D/GUI/widgets/GLWidget.h"
 #include <QtWidgets>
 #include "soglu/FrameBufferObject.hpp"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/shared_array.hpp>
 #include <boost/cast.hpp>
 

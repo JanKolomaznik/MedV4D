@@ -12,7 +12,7 @@
 #include "MedV4D/Imaging/AFilter.h"
 #include "MedV4D/Imaging/ConnectionInterface.h"
 #include "MedV4D/Imaging/ADataset.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 /**

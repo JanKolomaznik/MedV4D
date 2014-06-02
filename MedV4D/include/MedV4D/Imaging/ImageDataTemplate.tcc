@@ -162,7 +162,7 @@ ImageDataTemplate< ElementType >::CastAbstractPointer ( AImageData::APtr aptr )
                 //TODO _THROW_ exception
         }
 
-        return boost::static_pointer_cast< ImageDataTemplate< ElementType > > ( aptr );
+        return std::static_pointer_cast< ImageDataTemplate< ElementType > > ( aptr );
 }
 
 } /*namespace Imaging*/

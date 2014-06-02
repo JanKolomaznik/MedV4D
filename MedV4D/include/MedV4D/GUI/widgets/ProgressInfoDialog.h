@@ -12,7 +12,7 @@ class ProgressInfoDialog: public QDialog, public Ui::ProgressInfoDialog, public 
 {
 	Q_OBJECT;
 public:
-	typedef boost::shared_ptr< ProgressInfoDialog > Ptr;
+	typedef std::shared_ptr< ProgressInfoDialog > Ptr;
 
 	ProgressInfoDialog( QWidget * parent = 0 ): QDialog( parent )
 	{

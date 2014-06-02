@@ -3,7 +3,7 @@
 
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace M4D
 {

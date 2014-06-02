@@ -9,7 +9,7 @@
 #define _DATASET_SERIALIZATION_TOOLS_H
 
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Imaging/DatasetClassEnum.h"
 #include "MedV4D/Common/FStreams.h"

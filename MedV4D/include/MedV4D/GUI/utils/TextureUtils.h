@@ -4,7 +4,7 @@
 #include <soglu/GLTextureImage.hpp>
 #include <soglu/GLMUtils.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/weak_ptr.hpp>
 #include <boost/cast.hpp>
 #include <MedV4D/Common/Common.h>

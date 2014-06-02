@@ -39,7 +39,7 @@ public:
         typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
         typedef InputPortTyped< ClassName > 	InputPort;
         typedef OutputPortTyped< ClassName > 	OutputPort;
-        typedef boost::shared_ptr< ClassName >	Ptr;
+        typedef std::shared_ptr< ClassName >	Ptr;
 };
 
 template< size_t Dim >
@@ -55,7 +55,7 @@ public:
         typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
         typedef InputPortTyped< ClassName > 	InputPort;
         typedef OutputPortTyped< ClassName > 	OutputPort;
-        typedef boost::shared_ptr< ClassName >	Ptr;
+        typedef std::shared_ptr< ClassName >	Ptr;
 };
 
 template< typename EType, size_t Dim >
@@ -70,7 +70,7 @@ public:
         typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
         typedef InputPortTyped< ClassName > 	InputPort;
         typedef OutputPortTyped< ClassName > 	OutputPort;
-        typedef boost::shared_ptr< ClassName >	Ptr;
+        typedef std::shared_ptr< ClassName >	Ptr;
 };
 
 }/*namespace Imaging*/

@@ -2,7 +2,7 @@
 #ifndef A_IMAGE_H
 #define A_IMAGE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Imaging/ModificationManager.h"
 #include "MedV4D/Imaging/ADataset.h"
 #include "MedV4D/Common/Vector.h"

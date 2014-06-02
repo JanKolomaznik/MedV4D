@@ -4,7 +4,7 @@
 #ifndef Q_MOC_RUN
 #include "MedV4D/GUI/widgets/AGUIViewer.h"
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #endif
 namespace M4D
 {

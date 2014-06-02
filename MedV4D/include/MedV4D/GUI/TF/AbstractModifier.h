@@ -23,7 +23,7 @@ class AbstractModifier: public QWidget{
 
 public:
 
-	typedef boost::shared_ptr<AbstractModifier> Ptr;
+	typedef std::shared_ptr<AbstractModifier> Ptr;
 
 	virtual
 	~AbstractModifier(){}

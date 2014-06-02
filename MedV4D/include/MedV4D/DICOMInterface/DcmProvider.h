@@ -61,7 +61,7 @@ namespace M4D
 namespace Dicom 
 {
 
-typedef boost::shared_ptr<DcmDicomDir> DcmDicomDirPtr;
+typedef std::shared_ptr<DcmDicomDir> DcmDicomDirPtr;
 	
 /// This class is gate to DICOM world.
 /**

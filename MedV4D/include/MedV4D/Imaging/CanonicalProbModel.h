@@ -5,7 +5,7 @@
 #include <cmath>
 #include "MedV4D/Imaging/Histogram.h"
 #include <fstream>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 namespace M4D
@@ -132,7 +132,7 @@ public:
 
         typedef Vector< float32, 3 > Vector3F;
         typedef Vector< uint32, 3 > Vector3UI;
-        typedef boost::shared_ptr< ProbabilityGrid > Ptr;
+        typedef std::shared_ptr< ProbabilityGrid > Ptr;
 
         ProbabilityGrid ( Vector< float32, 3 > origin, Vector< uint32, 3 > gridSize, Vector< float32, 3 > step ) :
                         _gridStep ( step ), _originCoordiantes ( origin ), _gridSize ( gridSize ), _strides ( 1, gridSize[0], gridSize[0]*gridSize[1] ) {
@@ -322,7 +322,7 @@ public:
         typedef int32	IntensityType;
         typedef Vector< float32, 3 > Coordinates;
 
-        typedef boost::shared_ptr< CanonicalProbModel > Ptr;
+        typedef std::shared_ptr< CanonicalProbModel > Ptr;
 
         CanonicalProbModel ( ProbabilityGrid::Ptr grid, Histogram< float32 >::Ptr inHistogram, Histogram< float32 >::Ptr outHistogram, Histogram< float32 >::Ptr logRatioHistogram ) :
                         _inIntensity ( inHistogram ),

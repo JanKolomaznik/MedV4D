@@ -13,7 +13,7 @@ class TransferFunctionInterface {
 
 public:
 
-	typedef boost::shared_ptr<TransferFunctionInterface> Ptr;
+	typedef std::shared_ptr<TransferFunctionInterface> Ptr;
 	typedef TransferFunctionConstAccessor Const;
 
 	virtual ~TransferFunctionInterface(){}

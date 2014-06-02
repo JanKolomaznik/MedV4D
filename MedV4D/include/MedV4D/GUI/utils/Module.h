@@ -3,13 +3,13 @@
 
 #include "MedV4D/Common/Common.h"
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 class AModule
 {
 public:
-	typedef boost::shared_ptr< AModule > Ptr;
+	typedef std::shared_ptr< AModule > Ptr;
 
 	AModule( std::string aName ): mLoaded( false ), mName( aName )
 	{

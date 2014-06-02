@@ -10,7 +10,7 @@ class HSVaPainter1D: public Painter1D{
 
 public:
 
-	typedef boost::shared_ptr<HSVaPainter1D> Ptr;
+	typedef std::shared_ptr<HSVaPainter1D> Ptr;
 
 	HSVaPainter1D();
 	HSVaPainter1D(

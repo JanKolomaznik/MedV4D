@@ -3,7 +3,7 @@
 
 #include <boost/function.hpp>
 #include <boost/utility.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 
@@ -121,10 +121,10 @@ protected:
 };
 
 template< typename TResource >
-boost::shared_ptr< ResourceGuard< TResource > >
+std::shared_ptr< ResourceGuard< TResource > >
 makeResourceGuardPtr( boost::function< TResource() > aAcquisition, boost::function< void(TResource &) > aRelease, bool aAcquire = true )
 {
-	return boost::shared_ptr< ResourceGuard< TResource > >( new ResourceGuard< TResource >( aAcquisition, aRelease, aAcquire ) );
+	return std::shared_ptr< ResourceGuard< TResource > >( new ResourceGuard< TResource >( aAcquisition, aRelease, aAcquire ) );
 }
 
 } //M4D

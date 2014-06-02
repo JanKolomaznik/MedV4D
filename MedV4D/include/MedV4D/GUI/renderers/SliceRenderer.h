@@ -3,7 +3,6 @@
 #include "MedV4D/Common/Common.h"
 
 #include <soglu/Camera.hpp>
-#include <soglu/CgFXShader.hpp>
 #include <soglu/GLTextureImage.hpp>
 #include <vorgl/TransferFunctionBuffer.hpp>
 
@@ -33,14 +32,14 @@ class SliceRenderer: public vorgl::SliceRenderer
 {
 public:
 	struct RenderingConfiguration;
-	
+
 	void
 	initialize();
 
 	void
 	reloadShaders()
 	{
-		vorgl::SliceRenderer::loadShaders(gSliceRendererShaderPath);	
+		vorgl::SliceRenderer::loadShaders(gSliceRendererShaderPath);
 	}
 
 	void
@@ -62,11 +61,11 @@ protected:
 
 struct SliceRenderer::RenderingConfiguration
 {
-	RenderingConfiguration(): 
-		//primaryImageData( NULL ), 
-		//secondaryImageData( NULL ), 
-		plane( XY_PLANE ), 
-		currentSlice( 0 ), 
+	RenderingConfiguration():
+		//primaryImageData( NULL ),
+		//secondaryImageData( NULL ),
+		plane( XY_PLANE ),
+		currentSlice( 0 ),
 		colorTransform( ctLUTWindow ),
 		enableInterpolation( true ),
 		multiDatasetRenderingStyle( mdrsOnlyPrimary )
@@ -76,7 +75,7 @@ struct SliceRenderer::RenderingConfiguration
 	soglu::GLTextureImage3D::WPtr			secondaryImageData;
 	CartesianPlanes				plane;
 	glm::ivec3				currentSlice;
-	
+
 	soglu::OrthoCamera				camera;
 	glm::fvec3 sliceCenter;
 	glm::fvec3 sliceNormal;
@@ -85,7 +84,7 @@ struct SliceRenderer::RenderingConfiguration
 	getCurrentRealSlice()const
 	{
 		soglu::GLTextureImageTyped<3>::Ptr primaryData = primaryImageData.lock();
-		
+
 		if ( primaryData ) {
 			return primaryData->getExtents().realMinimum + /*VectorMemberProduct*/( glm::fvec3(currentSlice) * primaryData->getExtents().elementExtents );
 		} else {
@@ -98,7 +97,7 @@ struct SliceRenderer::RenderingConfiguration
 	glm::fvec2					lutWindow;
 	soglu::ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
-	
+
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 };
 

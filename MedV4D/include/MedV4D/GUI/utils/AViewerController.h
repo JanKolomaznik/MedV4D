@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QColor>
 #include <QWheelEvent>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/cast.hpp>
 
 #include <glm/glm.hpp>
@@ -37,7 +37,7 @@ enum ViewType
 class BaseViewerState
 {
 public:
-	typedef boost::shared_ptr< BaseViewerState > Ptr;
+	typedef std::shared_ptr< BaseViewerState > Ptr;
 	virtual ~BaseViewerState(){}
 
 	glm::uvec2	mWindowSize;
@@ -64,7 +64,7 @@ public:
 class AViewerController: public QObject
 {
 public:
-	typedef boost::shared_ptr< AViewerController > Ptr;
+	typedef std::shared_ptr< AViewerController > Ptr;
 
 	virtual bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;

@@ -34,7 +34,7 @@ class Palette : public QMainWindow
     Q_OBJECT;
 public:
 
-	typedef boost::shared_ptr<Palette> Ptr;
+	typedef std::shared_ptr<Palette> Ptr;
 	typedef std::map<TF::Size, Editor*> Editors;
 
 	Palette(QMainWindow* parent, const std::vector<TF::Size>& dataStructure);

@@ -11,7 +11,7 @@
 #include "MedV4D/Imaging/AFilter.h"
 #include "MedV4D/Imaging/ConnectionInterface.h"
 #include "MedV4D/Imaging/Ports.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /**
  *  @addtogroup imaging Imaging Library

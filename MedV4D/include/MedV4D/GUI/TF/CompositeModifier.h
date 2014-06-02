@@ -20,7 +20,7 @@ class CompositeModifier: public Modifier1D{
 
 public:
 
-	typedef boost::shared_ptr<CompositeModifier> Ptr;
+	typedef std::shared_ptr<CompositeModifier> Ptr;
 
 	CompositeModifier(
 		TransferFunctionInterface::Ptr function,

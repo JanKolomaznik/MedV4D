@@ -28,7 +28,7 @@ class Editor: public QMainWindow{
 
 public:
 
-	typedef boost::shared_ptr<Editor> Ptr;
+	typedef std::shared_ptr<Editor> Ptr;
 
 	enum Attribute{
 		Composition

@@ -13,12 +13,12 @@ namespace TF {
 
 template<Size dim>
 class ColorVector: public MultiDVector<Color, dim>{
-	
+
 	typedef ColorVector<dim> MyType;
 
 public:
 
-	typedef boost::shared_ptr<MyType> Ptr;
+	typedef std::shared_ptr<MyType> Ptr;
 
 	ColorVector(std::vector<Size> dimensionSizes):
 		MultiDVector<Color, dim>(dimensionSizes){
@@ -194,12 +194,12 @@ private:
 
 template<>
 class ColorVector<1>: public MultiDVector<Color, 1>{
-	
+
 	typedef ColorVector<1> MyType;
 
 public:
 
-	typedef boost::shared_ptr<MyType> Ptr;
+	typedef std::shared_ptr<MyType> Ptr;
 
 	ColorVector(std::vector<Size> dimensionSizes):
 		MultiDVector<Color, 1>(dimensionSizes){

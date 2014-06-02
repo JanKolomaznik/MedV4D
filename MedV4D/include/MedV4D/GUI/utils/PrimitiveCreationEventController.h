@@ -13,7 +13,7 @@ class APrimitiveCreationEventController: public M4D::GUI::Viewer::AViewerControl
 {
 	Q_OBJECT;
 public:
-	typedef boost::shared_ptr< APrimitiveCreationEventController > Ptr;
+	typedef std::shared_ptr< APrimitiveCreationEventController > Ptr;
 	
 	Qt::MouseButton	mVectorEditorInteractionButton;
 

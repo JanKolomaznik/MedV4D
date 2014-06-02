@@ -5,14 +5,14 @@
 #include "MedV4D/GUI/TF/MultiDVector.h"
 
 namespace M4D {
-namespace GUI {	
+namespace GUI {
 namespace TF {
 
 class HistogramInterface{
 
 public:
 
-	typedef boost::shared_ptr<HistogramInterface> Ptr;
+	typedef std::shared_ptr<HistogramInterface> Ptr;
 
 	typedef Size value_type;
 
@@ -45,7 +45,7 @@ class Histogram: public HistogramInterface{
 
 public:
 
-	typedef boost::shared_ptr< Histogram<dim> > Ptr;
+	typedef std::shared_ptr< Histogram<dim> > Ptr;
 
 	typedef typename MultiDVector<Size, dim>::const_iterator const_iterator;
 

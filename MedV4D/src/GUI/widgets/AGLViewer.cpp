@@ -2,7 +2,6 @@
 #include <soglu/OGLDrawing.hpp>
 #include <soglu/TextureUtils.hpp>
 #include <soglu/ErrorHandling.hpp>
-#include <soglu/CgFXShader.hpp>
 #include <soglu/Init.hpp>
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 //#include "MedV4D/GUI/utils/OGLDrawing.h"

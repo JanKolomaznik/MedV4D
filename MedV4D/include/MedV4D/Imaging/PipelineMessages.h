@@ -8,7 +8,7 @@
 #ifndef _PIPELINE_MESSAGES_H
 #define _PIPELINE_MESSAGES_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -55,7 +55,7 @@ public:
                 MSS_BROADCAST
         };
 
-        typedef boost::shared_ptr< PipelineMessage > Ptr;
+        typedef std::shared_ptr< PipelineMessage > Ptr;
 
         PipelineMessage ( PipelineMsgID messageID )
                         : senderID ( 0 ), msgID ( messageID ) {}
@@ -222,7 +222,7 @@ public:
 class MessageReceiverInterface
 {
 public:
-        typedef boost::shared_ptr< MessageReceiverInterface > Ptr;
+        typedef std::shared_ptr< MessageReceiverInterface > Ptr;
 
         virtual
         ~MessageReceiverInterface() {}

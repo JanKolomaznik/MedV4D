@@ -3,7 +3,7 @@
 
 #include "MedV4D/GUI/widgets/AViewer.h"
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace M4D
 {
@@ -29,7 +29,7 @@ enum{
 class AEventHandler
 {
 public:
-	typedef boost::shared_ptr< AEventHandler >	Ptr;
+	typedef std::shared_ptr< AEventHandler >	Ptr;
 
 	AEventHandler()
 	{ for( unsigned i = 0; i < EID_LIMIT; ++i ) _handleFlags[i] = false; }

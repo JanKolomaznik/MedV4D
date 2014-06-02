@@ -16,7 +16,7 @@ namespace Viewer
 class AViewerFactory
 {
 public:
-	typedef boost::shared_ptr< AViewerFactory > Ptr;
+	typedef std::shared_ptr< AViewerFactory > Ptr;
 	virtual AGLViewer *
 	createViewer() = 0;
 };

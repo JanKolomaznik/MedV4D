@@ -18,7 +18,7 @@ class AbstractFunction: public TransferFunctionInterface{
 
 public:
 
-	typedef boost::shared_ptr< AbstractFunction<dim> > Ptr;
+	typedef std::shared_ptr< AbstractFunction<dim> > Ptr;
 
 	virtual ~AbstractFunction(){}
 

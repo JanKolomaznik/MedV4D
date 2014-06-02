@@ -309,7 +309,7 @@ public:
                 if ( !_dataset ) {
                         _THROW_ ConnectionInterface::ENoDatasetAssociated();
                 }
-                return boost::static_pointer_cast< ADataset > ( _dataset );
+                return std::static_pointer_cast< ADataset > ( _dataset );
         }
 
         const ADataset &
@@ -325,7 +325,7 @@ public:
                 if ( !_dataset ) {
                         _THROW_ ConnectionInterface::ENoDatasetAssociated();
                 }
-                return boost::static_pointer_cast< const ADataset > ( _dataset );
+                return std::static_pointer_cast< const ADataset > ( _dataset );
         }
 
         bool

@@ -10,7 +10,7 @@ class RGBaPainter1D: public Painter1D{
 
 public:
 
-	typedef boost::shared_ptr<RGBaPainter1D> Ptr;
+	typedef std::shared_ptr<RGBaPainter1D> Ptr;
 
 	RGBaPainter1D();
 	RGBaPainter1D(

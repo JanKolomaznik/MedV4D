@@ -24,16 +24,13 @@
 //#include <vorgl/TransferFunctionBuffer.hpp>
 //#include "MedV4D/GUI/utils/IDMappingBuffer.h"
 
-#include <soglu/CgFXShader.hpp>
-
-
 #include "MedV4D/GUI/renderers/RendererTools.h"
 #include "MedV4D/GUI/renderers/SliceRenderer.h"
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
 #include <QtWidgets>
 //#include <QtOpenGL>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/cast.hpp>
 #include <map>
 
@@ -59,7 +56,7 @@ enum QualityMode {
 class ViewerState : public BaseViewerState
 {
 public:
-	typedef boost::shared_ptr< ViewerState > Ptr;
+	typedef std::shared_ptr< ViewerState > Ptr;
 	Vector3i
 	getMaxSlice()const { return mPrimaryImageExtents.maximum; }
 	Vector3i
@@ -99,7 +96,7 @@ public:
 class RenderingExtension
 {
 public:
-	typedef boost::shared_ptr< RenderingExtension > Ptr;
+	typedef std::shared_ptr< RenderingExtension > Ptr;
 
 	virtual unsigned
 	getAvailableViewTypes()const = 0;

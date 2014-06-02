@@ -8,7 +8,7 @@
 #ifndef _PORTS_H
 #define _PORTS_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Imaging/ADataset.h"
 #include <vector>
 #include "MedV4D/Imaging/PipelineMessages.h"

@@ -206,7 +206,7 @@ ImageFactory::CreateEmptyImage2D (
                 ImageFactory::CreateEmptyImage2DTyped< ElementType > ( width, height, elementWidth, elementHeight );
 
         AImage::Ptr aptr =
-                boost::static_pointer_cast
+                std::static_pointer_cast
                 < AImage, Image<ElementType, 2 > > ( ptr );
         return aptr;
 }
@@ -276,7 +276,7 @@ ImageFactory::CreateEmptyImage3D (
                 ImageFactory::CreateEmptyImage3DTyped< ElementType > ( width, height, depth, elementWidth, elementHeight, elementDepth );
 
         AImage::Ptr aptr =
-                boost::static_pointer_cast
+                std::static_pointer_cast
                 < AImage, Image<ElementType, 3 > > ( ptr );
         return aptr;
 }
@@ -351,7 +351,7 @@ ImageFactory::CreateEmptyImageData2D (
                 ImageFactory::CreateEmptyImageData2DTyped< ElementType > ( width, height, elementWidth, elementHeight );
 
         AImageData::APtr aptr =
-                boost::static_pointer_cast
+                std::static_pointer_cast
                 < AImageData, ImageDataTemplate<ElementType> > ( ptr );
 
         return aptr;
@@ -405,7 +405,7 @@ ImageFactory::CreateEmptyImageData3D (
                 ImageFactory::CreateEmptyImageData3DTyped< ElementType > ( width, height, depth, elementWidth, elementHeight, elementDepth );
 
         AImageData::APtr aptr =
-                boost::static_pointer_cast
+                std::static_pointer_cast
                 < AImageData, ImageDataTemplate<ElementType> > ( ptr );
 
         return aptr;

@@ -8,7 +8,7 @@
  */
 #include "MedV4D/Common/Common.h"
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 class DcmDataset;
@@ -195,7 +195,7 @@ private:
 typedef std::vector<DicomObj> DicomObjSet;
 
 /// shared pointer to DicomObjSet type
-typedef boost::shared_ptr< DicomObjSet> DicomObjSetPtr;
+typedef std::shared_ptr< DicomObjSet> DicomObjSetPtr;
 
 }
 }

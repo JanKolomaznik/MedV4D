@@ -9,7 +9,7 @@
 #define _DATA_SET_DEFINITION_TOOLS_H
 
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/weak_ptr.hpp>
 #include "MedV4D/Common/Common.h"
 /**
@@ -24,10 +24,10 @@ namespace Imaging {
 #define STANDARD_DECLARATIONS_MACRO( ... ) \
 	typedef __VA_ARGS__				ThisClass; \
 	typedef const ThisClass				ConstThisClass; \
-	typedef boost::shared_ptr< __VA_ARGS__ >	Ptr; \
-	typedef boost::shared_ptr< const __VA_ARGS__ >	ConstPtr; \
-	typedef boost::weak_ptr< __VA_ARGS__ >		WPtr; \
-	typedef boost::weak_ptr< const __VA_ARGS__ >	ConstWPtr; \
+	typedef std::shared_ptr< __VA_ARGS__ >	Ptr; \
+	typedef std::shared_ptr< const __VA_ARGS__ >	ConstPtr; \
+	typedef std::weak_ptr< __VA_ARGS__ >		WPtr; \
+	typedef std::weak_ptr< const __VA_ARGS__ >	ConstWPtr; \
 	typedef ThisClass &				Reference;\
 	typedef const ThisClass &			ConstReference;\
 	typedef ThisClass *				SimplePointer;\
@@ -39,7 +39,7 @@ namespace Imaging {
 
 #define MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( ... ) \
 	STANDARD_DECLARATIONS_MACRO( __VA_ARGS__ ) \
-	
+
 
 #define MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ... ) \
 	typedef __VA_ARGS__	PredecessorType; \
@@ -65,7 +65,7 @@ namespace Imaging {
 	{	if( dynamic_cast< ThisClass * >( dataset.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< ThisClass >( dataset ); \
+		return std::static_pointer_cast< ThisClass >( dataset ); \
 	}
 #define PREPARE_CAST_CONST_SMART_POINTER_MACRO	\
 	static ConstPtr \
@@ -73,7 +73,7 @@ namespace Imaging {
 	{	if( dynamic_cast< const ThisClass * >( dataset.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< const ThisClass >( dataset ); \
+		return std::static_pointer_cast< const ThisClass >( dataset ); \
 	}
 #define PREPARE_CAST_WEAK_POINTER_MACRO	\
 	static WPtr \
@@ -127,7 +127,7 @@ namespace Imaging {
 	{	if( dynamic_cast< RETURN_TYPE::SimplePointer >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< RETURN_TYPE::ThisClass >( input ); \
+		return std::static_pointer_cast< RETURN_TYPE::ThisClass >( input ); \
 	}
 
 #define CONFIGURABLE_PREPARE_CAST_CONST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
@@ -136,7 +136,7 @@ namespace Imaging {
 	{	if( dynamic_cast< RETURN_TYPE::ConstSimplePointer >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< RETURN_TYPE::ConstThisClass >( input ); \
+		return std::static_pointer_cast< RETURN_TYPE::ConstThisClass >( input ); \
 	}
 
 #define CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\

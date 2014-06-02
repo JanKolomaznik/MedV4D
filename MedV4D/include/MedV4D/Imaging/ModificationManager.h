@@ -12,7 +12,7 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Common/TimeStamp.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <list>
 #include "MedV4D/Common/Vector.h"
 
@@ -37,7 +37,7 @@ class ModificationManager;
 class ReaderBBoxInterface
 {
 public:
-        typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
+        typedef std::shared_ptr< ReaderBBoxInterface > Ptr;
 
 
         ReaderBBoxInterface ( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )

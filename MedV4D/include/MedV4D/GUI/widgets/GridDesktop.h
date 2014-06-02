@@ -2,7 +2,7 @@
 #define GRID_DESKTOP_H
 
 #include <QtWidgets>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/GUI/widgets/Desktop.h"
 
 namespace M4D

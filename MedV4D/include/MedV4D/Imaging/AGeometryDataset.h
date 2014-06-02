@@ -8,7 +8,7 @@
 #ifndef _AGEOMETRY_DATA_SET_H
 #define _AGEOMETRY_DATA_SET_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Imaging/ADataset.h"
 #include "MedV4D/Imaging/GeometryDatasetFactory.h"
 

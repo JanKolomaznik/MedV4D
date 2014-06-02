@@ -12,7 +12,7 @@ class ADrawingMouseController: public M4D::GUI::Viewer::AViewerController
 {
 	Q_OBJECT;
 public:
-	typedef boost::shared_ptr< ADrawingMouseController > Ptr;
+	typedef std::shared_ptr< ADrawingMouseController > Ptr;
 	
 	Qt::MouseButton	mEditorInteractionButton;
 

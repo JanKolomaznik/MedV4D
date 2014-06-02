@@ -25,8 +25,8 @@
 	operator=( const ClassName& ); 
 
 #define SMART_POINTER_TYPEDEFS( TYPE ) \
-	typedef boost::shared_ptr< TYPE > Ptr; \
-	typedef boost::shared_ptr< const TYPE > ConstPtr; \
+	typedef std::shared_ptr< TYPE > Ptr; \
+	typedef std::shared_ptr< const TYPE > ConstPtr; \
 	typedef boost::weak_ptr< TYPE > WPtr; \
 	typedef boost::weak_ptr< const TYPE > ConstWPtr;
 

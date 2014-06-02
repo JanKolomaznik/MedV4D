@@ -18,7 +18,7 @@ class AbstractPainter{
 
 public:
 
-	typedef boost::shared_ptr<AbstractPainter> Ptr;
+	typedef std::shared_ptr<AbstractPainter> Ptr;
 
 	virtual void setArea(QRect area) = 0;
 	virtual QRect getInputArea() = 0;

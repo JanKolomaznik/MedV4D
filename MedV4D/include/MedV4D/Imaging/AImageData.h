@@ -11,7 +11,7 @@
 #include "MedV4D/Common/Common.h"
 #include "MedV4D/Common/ExceptionBase.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -76,7 +76,7 @@ public:
         /**
          * Smart pointer type for accesing AImageData instance (child).
          **/
-        typedef boost::shared_ptr< AImageData > APtr;
+        typedef std::shared_ptr< AImageData > APtr;
 
         /**
          * Constructor used for initialization by successors.

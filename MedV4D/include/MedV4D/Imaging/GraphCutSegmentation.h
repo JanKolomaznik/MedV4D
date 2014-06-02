@@ -11,7 +11,7 @@
 #include "MedV4D/Imaging/cuda/GraphOperations.h"
 #include "MedV4D/Imaging/cuda/SimpleFilters.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 class GraphCutSegmentationWrapper
@@ -144,8 +144,8 @@ public:
 	size_t mSourceID;
 	size_t mSinkID;
 	
-	boost::shared_ptr< MarkerSet > mForegroundMarkers;
-	boost::shared_ptr< MarkerSet > mBackgroundMarkers;
+	std::shared_ptr< MarkerSet > mForegroundMarkers;
+	std::shared_ptr< MarkerSet > mBackgroundMarkers;
 };
 
 

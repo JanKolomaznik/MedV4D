@@ -7,7 +7,7 @@
 class ModeViewerController: public M4D::GUI::Viewer::ViewerController
 {
 public:
-	typedef boost::shared_ptr< ModeViewerController > Ptr;
+	typedef std::shared_ptr< ModeViewerController > Ptr;
 	
 	virtual void
 	activated() = 0;
@@ -20,7 +20,7 @@ template< typename TPredecessor >
 class ProxyViewerControllerMixin: public TPredecessor
 {
 public:
-	typedef boost::shared_ptr< ProxyViewerControllerMixin< TPredecessor > > Ptr;
+	typedef std::shared_ptr< ProxyViewerControllerMixin< TPredecessor > > Ptr;
 
 
 	bool

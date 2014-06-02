@@ -36,7 +36,7 @@ class GeneralViewerFactory: public AViewerFactory
 public:
 	GeneralViewerFactory() :mPrimaryConnection( NULL ), mSecondaryConnection( NULL )
 	{}
-	typedef boost::shared_ptr< GeneralViewerFactory > Ptr;
+	typedef std::shared_ptr< GeneralViewerFactory > Ptr;
 
 	AGLViewer *
 	createViewer()

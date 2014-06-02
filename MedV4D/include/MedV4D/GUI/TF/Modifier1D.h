@@ -16,7 +16,7 @@ class Modifier1D: public ViewModifier{
 
 public:
 
-	typedef boost::shared_ptr<Modifier1D> Ptr;
+	typedef std::shared_ptr<Modifier1D> Ptr;
 
 	Modifier1D(
 		TransferFunctionInterface::Ptr function,

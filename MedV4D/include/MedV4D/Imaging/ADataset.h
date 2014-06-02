@@ -8,7 +8,7 @@
 #ifndef _ABSTRACT_DATA_SET_H
 #define _ABSTRACT_DATA_SET_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Common/TimeStamp.h"
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Imaging/DatasetClassEnum.h"
@@ -147,12 +147,12 @@ public:
 
         template< typename DatasetType >
         static typename ADataset::Ptr
-        CastDataset ( boost::shared_ptr< DatasetType > & dataset ) {
+        CastDataset ( std::shared_ptr< DatasetType > & dataset ) {
                 if ( dynamic_cast< DatasetType * > ( dataset.get() ) == NULL ) {
                         _THROW_ EADatasetCastProblem();
                 }
 
-                return boost::static_pointer_cast< ADataset > ( dataset );
+                return std::static_pointer_cast< ADataset > ( dataset );
         }
 
         /**

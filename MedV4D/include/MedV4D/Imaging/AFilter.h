@@ -16,7 +16,7 @@
 #include "MedV4D/Imaging/AProcessingUnit.h"
 #include "MedV4D/Imaging/Ports.h"
 #include "MedV4D/Imaging/ConnectionInterface.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MedV4D/Common/Thread.h"
 #include "MedV4D/Imaging/PipelineMessages.h"
 #include "filterIDsEnum.h"
@@ -200,8 +200,8 @@ public:
         /**
          * Smart pointer to filter with this interface.
          **/
-        typedef boost::shared_ptr< AFilter > AFilterPtr;
-        typedef boost::shared_ptr< AFilter > Ptr;
+        typedef std::shared_ptr< AFilter > AFilterPtr;
+        typedef std::shared_ptr< AFilter > Ptr;
 
         /**
          * Destructor - virtual - can be polymorphically destroyed.
@@ -285,7 +285,7 @@ public:
         /**
          * Smart pointer to filter with this interface.
          **/
-        typedef boost::shared_ptr< APipeFilter > APipeFilterPtr;
+        typedef std::shared_ptr< APipeFilter > APipeFilterPtr;
 
 
         /**

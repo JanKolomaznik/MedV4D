@@ -20,7 +20,7 @@ class ViewerController: public AViewerController
 {
 	Q_OBJECT;
 public:
-	typedef boost::shared_ptr< ViewerController > Ptr;
+	typedef std::shared_ptr< ViewerController > Ptr;
 
 	enum InteractionMode {
 		imNONE,

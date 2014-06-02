@@ -10,7 +10,7 @@ class Painter1D: public AbstractPainter{
 
 public:
 
-	typedef boost::shared_ptr<Painter1D> Ptr;
+	typedef std::shared_ptr<Painter1D> Ptr;
 	~Painter1D();
 
 	virtual std::vector<std::string> getComponentNames();

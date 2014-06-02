@@ -10,7 +10,7 @@
 
 struct Printer
 {
-	typedef boost::shared_ptr< Printer > Ptr;
+	typedef std::shared_ptr< Printer > Ptr;
 
 	virtual void
 	operator()( const std::string &aText ) = 0;

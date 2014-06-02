@@ -8,7 +8,7 @@
 #ifndef _ABSTRACT_PROCESSING_UNIT_H
 #define _ABSTRACT_PROCESSING_UNIT_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /**
  *  @addtogroup imaging Imaging Library

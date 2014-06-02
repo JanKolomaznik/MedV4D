@@ -2,7 +2,6 @@
 #define OGL_SELECTION_H
 
 #include <soglu/OGLTools.hpp>
-#include <soglu/CgFXShader.hpp>
 
 #include <soglu/FrameBufferObject.hpp>
 #include <glm/glm.hpp>
@@ -40,6 +39,7 @@ struct CurentObjectID< false >
 	{ /*empty*/ }
 };
 
+#if 0
 class PickManager
 {
 public:
@@ -74,6 +74,8 @@ protected:
 	soglu::CgFXShader mCgEffect;
 	BufferArray mBuffer;
 };
+
+#endif
 
 /*
 template< typename TFunctor >

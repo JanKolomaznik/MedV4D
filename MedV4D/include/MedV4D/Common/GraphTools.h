@@ -3,7 +3,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_traits.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "MedV4D/Common/Types.h"
 
@@ -30,7 +30,7 @@ typedef boost::graph_traits < WeightedBidirectionalGraph > WeightedBidirectional
 
 struct WeightedEdgeListGraph
 {
-	typedef boost::shared_ptr< WeightedEdgeListGraph > Ptr;
+	typedef std::shared_ptr< WeightedEdgeListGraph > Ptr;
 	struct EdgeRecord
 	{
 		EdgeRecord( uint32 aFirst, uint32 aSecond )

@@ -45,7 +45,7 @@ public:
         /**
          * Smart pointer to instance of this class.
          **/
-        typedef typename boost::shared_ptr< ThisClass > Ptr;
+        typedef typename std::shared_ptr< ThisClass > Ptr;
 
         /**
          * Type of elements contained in this dataset.

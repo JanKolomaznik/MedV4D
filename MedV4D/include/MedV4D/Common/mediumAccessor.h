@@ -1,7 +1,7 @@
 #ifndef MEDIUMACCESSOR_H_
 #define MEDIUMACCESSOR_H_
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/make_shared.hpp>
 
 namespace M4D
@@ -12,7 +12,7 @@ namespace IO
 class MediumAccessor
 {
 public:
-	typedef boost::shared_ptr< MediumAccessor > Ptr;
+	typedef std::shared_ptr< MediumAccessor > Ptr;
 	
 	virtual ~MediumAccessor() {}
 	
