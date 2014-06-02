@@ -14,7 +14,7 @@ namespace M4D {
 namespace GUI {
 
 template<TF::Size dim>
-class AbstractFunction: public FunctionInterface{
+class AbstractFunction: public TransferFunctionInterface{
 
 public:
 
@@ -22,7 +22,7 @@ public:
 
 	virtual ~AbstractFunction(){}
 
-	FunctionInterface::Ptr clone() = 0;
+	TransferFunctionInterface::Ptr clone() = 0;
 
 	TF::Color& color(const TF::Coordinates& coords){
 

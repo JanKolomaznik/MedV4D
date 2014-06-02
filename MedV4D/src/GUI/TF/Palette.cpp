@@ -146,7 +146,7 @@ Palette::detectChanges()
 	}
 }
 
-FunctionInterface::Const
+TransferFunctionInterface::Const
 Palette::getTransferFunction(const int index)
 {
 
@@ -162,7 +162,7 @@ Palette::getTransferFunction(const int index)
 	if(activeEditor_ == emptyPalette ||
 		activeEditor_ == noFunctionAvailable)
 	{
-		return FunctionInterface::Const();
+		return TransferFunctionInterface::Const();
 	}
 
 	HolderMapIt editor = palette_.find(editorIndex);

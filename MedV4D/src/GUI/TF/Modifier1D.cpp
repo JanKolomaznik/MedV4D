@@ -4,7 +4,7 @@ namespace M4D {
 namespace GUI {
 
 Modifier1D::Modifier1D(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter):
 	ViewModifier(function, painter),
 	simpleTools_(new Ui::Modifier1D),

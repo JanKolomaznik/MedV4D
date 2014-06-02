@@ -11,7 +11,7 @@ namespace M4D {
 namespace GUI {
 
 CompositeModifier::CompositeModifier(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter,
 		Palette* palette
 		):
@@ -240,7 +240,7 @@ void CompositeModifier::change_check(){
 
 void CompositeModifier::computeResultFunction_(){
 
-	FunctionInterface::Ptr function = workCopy_->getFunction();
+	TransferFunctionInterface::Ptr function = workCopy_->getFunction();
 	TF::Size domain = function->getDomain(TF_DIMENSION_1);
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 	{	//check if dimension change is in process

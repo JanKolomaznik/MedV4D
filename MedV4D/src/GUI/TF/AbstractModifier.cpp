@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-AbstractModifier::AbstractModifier(FunctionInterface::Ptr function, AbstractPainter::Ptr painter):
+AbstractModifier::AbstractModifier(TransferFunctionInterface::Ptr function, AbstractPainter::Ptr painter):
 	painter_(painter),
 	workCopy_(WorkCopy::Ptr(new WorkCopy(function))),
 	coords_(function->getDimension()),
@@ -23,7 +23,7 @@ TF::Size AbstractModifier::getDimension(){
 	return workCopy_->getDimension();
 }
 
-FunctionInterface::Const AbstractModifier::getFunction(){
+TransferFunctionInterface::Const AbstractModifier::getFunction(){
 
 	return workCopy_->getFunction();
 }

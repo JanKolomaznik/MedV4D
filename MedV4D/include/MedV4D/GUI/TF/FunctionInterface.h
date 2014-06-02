@@ -7,21 +7,21 @@
 namespace M4D {
 namespace GUI {
 
-class FunctionConstAccessor;
+class TransferFunctionConstAccessor;
 
-class FunctionInterface{
+class TransferFunctionInterface {
 
 public:
 
-	typedef boost::shared_ptr<FunctionInterface> Ptr;
-	typedef FunctionConstAccessor Const;
+	typedef boost::shared_ptr<TransferFunctionInterface> Ptr;
+	typedef TransferFunctionConstAccessor Const;
 
-	virtual ~FunctionInterface(){}
+	virtual ~TransferFunctionInterface(){}
 
 	static const TF::Size defaultDomain = 4096;	//CT
 
 	virtual Ptr clone() = 0;
-	
+
 	virtual TF::Color& color(const TF::Coordinates& coords) = 0;
 
 	virtual TF::Color getRGBfColor(const TF::Coordinates& coords) = 0;
@@ -37,36 +37,36 @@ public:
 
 protected:
 
-	FunctionInterface(){}
+	TransferFunctionInterface(){}
 };
 
-class FunctionConstAccessor{
+class TransferFunctionConstAccessor {
 
-	friend class FunctionInterface;
+	friend class TransferFunctionInterface;
 
 public:
 
 	const TF::Color nullColor;
 
-	FunctionConstAccessor():
+	TransferFunctionConstAccessor():
 		nullColor(-1,-1,-1,-1),
 		null_(true){
 	}
 
-	FunctionConstAccessor(FunctionInterface::Ptr function):
+	TransferFunctionConstAccessor(TransferFunctionInterface::Ptr function):
 		nullColor(-1,-1,-1,-1),
 		function_(function),
 		null_(false){
 	}
-		
-	FunctionConstAccessor(FunctionInterface* function):
+
+	TransferFunctionConstAccessor(TransferFunctionInterface* function):
 		nullColor(-1,-1,-1,-1),
-		function_(FunctionInterface::Ptr(function)),
+		function_(TransferFunctionInterface::Ptr(function)),
 		null_(false){
 	}
-	~FunctionConstAccessor(){}
+	~TransferFunctionConstAccessor(){}
 
-	void operator=(const FunctionConstAccessor &constPtr){
+	void operator=(const TransferFunctionConstAccessor &constPtr){
 
 		function_ = constPtr.function_;
 		null_ = constPtr.null_;
@@ -86,7 +86,7 @@ public:
 
 		return !null_;
 	}
-	
+
 	const TF::Color& color(const TF::Coordinates& coords){
 
 		if(null_) return nullColor;
@@ -113,7 +113,7 @@ public:
 
 private:
 
-	FunctionInterface::Ptr function_;
+	TransferFunctionInterface::Ptr function_;
 	bool null_;
 };
 

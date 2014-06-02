@@ -120,7 +120,8 @@ texCoordsFromPositionNoInterpolation(vec3 pos, ImageData3D image)
 	return 0.5f * elementSize + floor( texCoord / elementSize ) * elementSize;
 }
 
-float getUnmappedValue(
+float 
+getUnmappedValue(
 		vec3 aPosition, 
 		ImageData3D aTextureData,
 		vec2 aMappedIntervalBands
@@ -129,6 +130,19 @@ float getUnmappedValue(
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	vec3 coordinates = texCoordsFromPosition(aPosition, aTextureData);
 	return (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
+}
+
+vec3 
+computeGradient(ImageData3D aImage, vec2 aMappedIntervalBands, float aCentralValue, vec3 aPosition)
+{
+	vec3 gradient;
+	/*gradient.x = (aCentralValue - getUnmappedValue(vec3(aPosition.x - DELTA, aPosition.yz), aImage, aMappedIntervalBands)) / DELTA;
+	gradient.y = (aCentralValue - getUnmappedValue(vec3(aPosition.x, aPosition.y - DELTA, aPosition.z), aImage, aMappedIntervalBands)) / DELTA;
+	gradient.z = (aCentralValue - getUnmappedValue(vec3(aPosition.xy, aPosition.z - DELTA), aImage, aMappedIntervalBands)) / DELTA;*/
+	gradient.x = (getUnmappedValue(vec3(aPosition.x + DELTA, aPosition.yz), aImage, aMappedIntervalBands) - getUnmappedValue(vec3(aPosition.x - DELTA, aPosition.yz), aImage, aMappedIntervalBands)) / (2*DELTA);
+	gradient.y = (getUnmappedValue(vec3(aPosition.x, aPosition.y + DELTA, aPosition.z), aImage, aMappedIntervalBands) - getUnmappedValue(vec3(aPosition.x, aPosition.y - DELTA, aPosition.z), aImage, aMappedIntervalBands)) / (2*DELTA);
+	gradient.z = (getUnmappedValue(vec3(aPosition.xy, aPosition.z + DELTA), aImage, aMappedIntervalBands) - getUnmappedValue(vec3(aPosition.xy, aPosition.z - DELTA), aImage, aMappedIntervalBands)) / (2*DELTA);
+	return gradient;
 }
  
 vec4 

@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <ostream>
+#include <cassert>
 #include <boost/shared_ptr.hpp>
 
 #include <QColor>
@@ -31,7 +32,7 @@ inline To convert(const From &s){
     ss << s;
     if(ss >> d)
 	{
-        return d;
+	return d;
 	}
     return To();
 }
@@ -100,8 +101,8 @@ inline void abort( const char * s, const char * f, int l)
 // if TF_NDEBUG macro is defined, switch off debugging support
 #ifndef TF_NDEBUG
 
-#define tfAssert(e) ((void)((!!(e))||(M4D::GUI::TF::abort((#e),__FILE__,__LINE__),0)))
-
+//#define tfAssert(e) ((void)((!!(e))||(M4D::GUI::TF::abort((#e),__FILE__,__LINE__),0)))
+#define tfAssert(expr) assert(expr)
 #else
 
 #define tfAssert(ignore) ((void)0)

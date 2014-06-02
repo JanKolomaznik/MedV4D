@@ -81,7 +81,7 @@ public:
 	TF::Size
 	getDimension();
 
-	FunctionInterface::Const
+	TransferFunctionInterface::Const
 	getFunction();
 
 	QDockWidget*

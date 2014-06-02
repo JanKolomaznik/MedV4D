@@ -31,7 +31,7 @@ protected slots:
 
 protected:
 
-	ViewModifier(FunctionInterface::Ptr function, AbstractPainter::Ptr painter);
+	ViewModifier(TransferFunctionInterface::Ptr function, AbstractPainter::Ptr painter);
 
 	Ui::ViewModifier* viewTools_;
 	std::vector<Ui::DimensionZoom*> dimensionsUi_;

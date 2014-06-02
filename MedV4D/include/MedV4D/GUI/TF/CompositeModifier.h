@@ -23,7 +23,7 @@ public:
 	typedef boost::shared_ptr<CompositeModifier> Ptr;
 
 	CompositeModifier(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter,
 		Palette* palette);
 

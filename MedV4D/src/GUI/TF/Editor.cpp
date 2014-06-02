@@ -256,9 +256,9 @@ TF::Size Editor::getDimension(){
 	return modifier_->getDimension();
 }
 
-FunctionInterface::Const Editor::getFunction(){
+TransferFunctionInterface::Const Editor::getFunction(){
 
-	return FunctionInterface::Const(modifier_->getFunction());
+	return TransferFunctionInterface::Const(modifier_->getFunction());
 }
 
 QDockWidget* Editor::getDockWidget() const{

@@ -20,7 +20,7 @@ StepInfo initInfo(vec3 aCoordinates)
 	return info;
 }
 
-StepInfo doStep(StepInfo aInfo, vec3 aCoordinates)
+StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 {
 #ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 	float currentValue = getUnmappedValue(

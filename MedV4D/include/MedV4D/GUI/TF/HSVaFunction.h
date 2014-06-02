@@ -49,9 +49,9 @@ public:
 		this->color(coords) = TF::Color(qColor.hueF(), qColor.saturationF(), qColor.valueF(), qColor.alphaF());
 	}
 
-	FunctionInterface::Ptr clone(){
+	TransferFunctionInterface::Ptr clone(){
 
-		return FunctionInterface::Ptr(new HSVaFunction<dim>(*this));
+		return TransferFunctionInterface::Ptr(new HSVaFunction<dim>(*this));
 	}
 };
 

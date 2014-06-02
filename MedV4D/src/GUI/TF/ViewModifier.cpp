@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-ViewModifier::ViewModifier(FunctionInterface::Ptr function, AbstractPainter::Ptr painter):
+ViewModifier::ViewModifier(TransferFunctionInterface::Ptr function, AbstractPainter::Ptr painter):
 	AbstractModifier(function, painter),
 	viewTools_(new Ui::ViewModifier),
 	viewWidget_(new QWidget),

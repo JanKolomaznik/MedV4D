@@ -40,7 +40,7 @@ public:
 	TF::Size
 	getDimension();
 
-	FunctionInterface::Const
+	TransferFunctionInterface::Const
 	getFunction();
 
 	bool
@@ -76,7 +76,7 @@ protected:
 	QRect inputArea_;
 	const TF::PaintingPoint ignorePoint_;
 
-	AbstractModifier(FunctionInterface::Ptr function, AbstractPainter::Ptr painter);
+	AbstractModifier(TransferFunctionInterface::Ptr function, AbstractPainter::Ptr painter);
 
 	virtual void createTools_() = 0;
 

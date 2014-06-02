@@ -63,7 +63,7 @@ public:
 	Editors
 	getEditors();
 
-	FunctionInterface::Const
+	TransferFunctionInterface::Const
 	getTransferFunction(const int index = -1);
 
 	Common::IDNumber

@@ -4,7 +4,7 @@ namespace M4D {
 namespace GUI {
 
 PolygonModifier::PolygonModifier(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter):
 	Modifier1D(function, painter),
 	polygonTools_(new Ui::PolygonModifier),

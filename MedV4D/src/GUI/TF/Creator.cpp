@@ -76,7 +76,7 @@ AbstractModifier* Creator::createModifier_(Editor::Attributes& attributes)
 		{
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			return new Modifier1D(
-				FunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+				TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 				Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
 			);
 		}
@@ -84,7 +84,7 @@ AbstractModifier* Creator::createModifier_(Editor::Attributes& attributes)
 		{
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			return new PolygonModifier(
-				FunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+				TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 				Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
 			);
 		}
@@ -92,7 +92,7 @@ AbstractModifier* Creator::createModifier_(Editor::Attributes& attributes)
 		{
 			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
 			attributes.insert(Editor::Composition);
-			FunctionInterface::Ptr func = FunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>());
+			TransferFunctionInterface::Ptr func = TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>());
 			Painter1D::Ptr painter = Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)));
 			CompositeModifier *modifier = new CompositeModifier( func, painter, palette_ );
 			return modifier; 
@@ -101,7 +101,7 @@ AbstractModifier* Creator::createModifier_(Editor::Attributes& attributes)
 
 	tfAssert(!"Unknown modifier!");	
 	return new Modifier1D(
-		FunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+		TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
 		Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
 	);	//default
 

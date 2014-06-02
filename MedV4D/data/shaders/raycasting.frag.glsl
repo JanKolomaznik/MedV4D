@@ -27,7 +27,7 @@ void main(void)
 			break;
 		}
 
-		info = doStep(info, point);
+		info = doStep(info, point, dir);
 	}
 	fragmentColor = colorFromStepInfo(info);
 }

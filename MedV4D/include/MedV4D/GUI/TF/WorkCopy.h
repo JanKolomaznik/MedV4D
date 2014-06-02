@@ -18,7 +18,7 @@ public:
 
 	static const TF::Size noZoom = -1;
 	
-	WorkCopy(FunctionInterface::Ptr function);
+	WorkCopy(TransferFunctionInterface::Ptr function);
 	~WorkCopy();
 
 	void save(TF::XmlWriterInterface* writer);
@@ -26,7 +26,7 @@ public:
 	bool load(TF::XmlReaderInterface* reader, bool& sideError);
 	bool loadFunction(TF::XmlReaderInterface* reader);
 	
-	FunctionInterface::Ptr getFunction();
+	TransferFunctionInterface::Ptr getFunction();
 	
 	TF::Size getDimension();
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
@@ -143,7 +143,7 @@ private:
 		Alpha
 	};
 
-	FunctionInterface::Ptr data_;
+	TransferFunctionInterface::Ptr data_;
 	TF::HistogramInterface::Ptr histogram_;
 
 	TF::Coordinates coords_;

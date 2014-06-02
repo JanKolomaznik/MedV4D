@@ -19,7 +19,7 @@ public:
 	typedef boost::shared_ptr<Modifier1D> Ptr;
 
 	Modifier1D(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter);
 
 	~Modifier1D();

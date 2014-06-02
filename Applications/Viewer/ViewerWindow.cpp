@@ -109,7 +109,7 @@ protected:
 } /*namespace M4D*/
 
 
-bool fillBufferFromTF(M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
@@ -135,7 +135,7 @@ bool fillBufferFromTF(M4D::GUI::FunctionInterface::Const function, vorgl::Transf
 	return true;
 }
 
-bool fillIntegralBufferFromTF(M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
+bool fillIntegralBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
 
 	if(!function) return false;
 
@@ -539,7 +539,7 @@ ViewerWindow::changedViewerSelection()
 };*/
 
 bool
-fillTransferFunctionInfo( M4D::GUI::FunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
+fillTransferFunctionInfo( M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
 {
 	if( fillBufferFromTF( function, info.tfBuffer ) ) {
 		//std::ofstream file( "TF.txt" );
@@ -733,7 +733,7 @@ ViewerWindow::openFile( const QString &aPath )
 
 	Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
@@ -850,7 +850,7 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 
 	Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
+		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
 	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);

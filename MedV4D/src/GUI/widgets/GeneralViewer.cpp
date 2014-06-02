@@ -49,9 +49,12 @@ GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _pre
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
 	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
-	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.renderingQuality.enableJittering = true;
+	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
+
+	state->mVolumeRenderConfig.isoSurfaceOptions.enableLight = true;
+	state->mVolumeRenderConfig.isoSurfaceOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
 	state->mEnableVolumeBoundingBox = true;
 

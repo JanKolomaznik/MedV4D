@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 	
-WorkCopy::WorkCopy(FunctionInterface::Ptr function):
+WorkCopy::WorkCopy(TransferFunctionInterface::Ptr function):
 	data_(function),
 	coords_(function->getDimension()),
 	sizes_(function->getDimension()),
@@ -15,7 +15,7 @@ WorkCopy::WorkCopy(FunctionInterface::Ptr function):
 
 WorkCopy::~WorkCopy(){}
 
-FunctionInterface::Ptr WorkCopy::getFunction(){
+TransferFunctionInterface::Ptr WorkCopy::getFunction(){
 
 	return data_;
 }

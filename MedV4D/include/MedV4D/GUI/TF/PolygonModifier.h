@@ -17,7 +17,7 @@ public:
 	typedef boost::shared_ptr<PolygonModifier> Ptr;
 
 	PolygonModifier(
-		FunctionInterface::Ptr function,
+		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter);
 
 	~PolygonModifier();

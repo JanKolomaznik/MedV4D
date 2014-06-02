@@ -37,9 +37,9 @@ public:
 		this->color(coords) = value;
 	}
 
-	FunctionInterface::Ptr clone(){
+	TransferFunctionInterface::Ptr clone(){
 
-		return FunctionInterface::Ptr(new RGBaFunction<dim>(*this));
+		return TransferFunctionInterface::Ptr(new RGBaFunction<dim>(*this));
 	}
 };
 
