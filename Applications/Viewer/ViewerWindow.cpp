@@ -725,7 +725,7 @@ ViewerWindow::openFile( const QString &aPath )
 
 	//applyTransferFunction();
 	//
-	typedef M4D::Imaging::Histogram64 Histogram;
+	typedef M4D::Imaging::SimpleHistogram64 Histogram;
 	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
 	statusbar->showMessage("Computing histogram...");
@@ -736,12 +736,17 @@ ViewerWindow::openFile( const QString &aPath )
 		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
+	M4D::Imaging::Histogram1D<int> histogram2;
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
+		histogram2 = M4D::Imaging::createHistogramForImageRegion2<M4D::Imaging::Histogram1D<int>, IMAGE_TYPE>(IMAGE_TYPE::Cast(*image));
+	);
+
 	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
 
 	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
 
-	M4D::GUI::TF::Coordinates coords(1, histogram->GetMin());
-	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
+	M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
+	for(Histogram::iterator it = histogram->begin(); it != histogram->end(); ++it)	//values
 	{
 		tfHistogram->set(coords, *it);
 		++coords[0];
@@ -842,7 +847,7 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	if( !aImage ) {
 		return;
 	}
-	typedef M4D::Imaging::Histogram64 Histogram;
+	typedef M4D::Imaging::SimpleHistogram64 Histogram;
 	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
 	statusbar->showMessage("Computing histogram...");
@@ -857,8 +862,8 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 
 	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
 
-	M4D::GUI::TF::Coordinates coords(1, histogram->GetMin());
-	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)	//values
+	M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
+	for(Histogram::iterator it = histogram->begin(); it != histogram->end(); ++it)	//values
 	{
 		tfHistogram->set(coords, *it);
 		++coords[0];

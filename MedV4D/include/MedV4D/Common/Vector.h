@@ -65,19 +65,19 @@ public:
 
 	explicit Vector( CoordType x )
 		{
-			for( size_t i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = x; } 
+			for( size_t i=0; i<Dimension; ++i )
+			{ _coordinates[i] = x; }
 		}
 	template< typename CType >
 	Vector( CType x, CType y )
 		{
-			/*if( Dimension != 2 ) { 
+			/*if( Dimension != 2 ) {
 				_THROW_ M4D::ErrorHandling::EBadDimension();
 			}*/
 			BOOST_STATIC_ASSERT( Dim == 2 );
 
-			_coordinates[0] = static_cast< CoordType >( x ); 
-			_coordinates[1] = static_cast< CoordType >( y ); 
+			_coordinates[0] = static_cast< CoordType >( x );
+			_coordinates[1] = static_cast< CoordType >( y );
 		}
 
 	Vector( CoordType x, CoordType y, CoordType z )
@@ -87,9 +87,9 @@ public:
 			}*/
 			BOOST_STATIC_ASSERT( Dim == 3 );
 
-			_coordinates[0] = x; 
-			_coordinates[1] = y; 
-			_coordinates[2] = z; 
+			_coordinates[0] = x;
+			_coordinates[1] = y;
+			_coordinates[2] = z;
 		}
 
 	Vector( CoordType x, CoordType y, CoordType z , CoordType w )
@@ -99,74 +99,74 @@ public:
 			}*/
 			BOOST_STATIC_ASSERT( Dim == 4 );
 
-			_coordinates[0] = x; 
-			_coordinates[1] = y; 
-			_coordinates[2] = z; 
-			_coordinates[3] = w; 
+			_coordinates[0] = x;
+			_coordinates[1] = y;
+			_coordinates[2] = z;
+			_coordinates[3] = w;
 		}
 
 	Vector( CoordType p0, CoordType p1, CoordType p2, CoordType p3, CoordType p4 )
 		{
 			BOOST_STATIC_ASSERT( Dim == 5 );
 
-			_coordinates[0] = p0; 
-			_coordinates[1] = p1; 
-			_coordinates[2] = p2; 
-			_coordinates[3] = p3; 
-			_coordinates[4] = p4; 
+			_coordinates[0] = p0;
+			_coordinates[1] = p1;
+			_coordinates[2] = p2;
+			_coordinates[3] = p3;
+			_coordinates[4] = p4;
 		}
 
 	Vector( CoordType p0, CoordType p1, CoordType p2, CoordType p3, CoordType p4, CoordType p5 )
 		{
 			BOOST_STATIC_ASSERT( Dim == 6 );
 
-			_coordinates[0] = p0; 
-			_coordinates[1] = p1; 
-			_coordinates[2] = p2; 
-			_coordinates[3] = p3; 
-			_coordinates[4] = p4; 
-			_coordinates[5] = p5; 
-		}
-	
-
-	template< typename CType >
-	Vector( const Vector< CType, Dimension > &coord ) 
-		{ 
-			for( size_t i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+			_coordinates[0] = p0;
+			_coordinates[1] = p1;
+			_coordinates[2] = p2;
+			_coordinates[3] = p3;
+			_coordinates[4] = p4;
+			_coordinates[5] = p5;
 		}
 
+
 	template< typename CType >
-	Vector( const Vector< CType, Dimension-1 > &coord, CType value ) 
-		{ 
-			for( size_t i=0; i<Dimension-1; ++i ) 
-			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+	Vector( const Vector< CType, Dimension > &coord )
+		{
+			for( size_t i=0; i<Dimension; ++i )
+			{ _coordinates[i] = static_cast<CoordType>(coord[i]); }
+		}
+
+	template< typename CType >
+	Vector( const Vector< CType, Dimension-1 > &coord, CType value )
+		{
+			for( size_t i=0; i<Dimension-1; ++i )
+			{ _coordinates[i] = static_cast<CoordType>(coord[i]); }
 			_coordinates[Dimension-1] = value;
 		}
 
-	Vector( const CoordType coords[] ) 
-		{ 
-			for( size_t i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coords[i]; } 
+	Vector( const CoordType coords[] )
+		{
+			for( size_t i=0; i<Dimension; ++i )
+			{ _coordinates[i] = coords[i]; }
 		}
 
 	CoordinateType &
 	operator[]( size_t idx )
-		{ 
-			return Get( idx );
+		{
+			return get( idx );
 		}
 
 	CoordinateType
 	operator[]( size_t idx )const
-		{ 
-			return Get( idx );
+		{
+			return get( idx );
 		}
 
 
 	template< size_t tIdx >
 	CoordinateType &
-	StaticGet()
-		{ 
+	staticGet()
+		{
 			BOOST_STATIC_ASSERT( tIdx < Dimension );
 			return _coordinates[ tIdx ];
 		}
@@ -174,15 +174,15 @@ public:
 
 	template< size_t tIdx >
 	CoordinateType
-	StaticGet()const
-		{ 
+	staticGet()const
+		{
 			BOOST_STATIC_ASSERT( tIdx < Dimension );
 			return _coordinates[ tIdx ];
 		}
 
 	template< size_t tBegin, size_t tEnd >
 	Vector< CoordinateType, tEnd - tBegin >
-	GetSubVector() const
+	getSubVector() const
 	{
 		BOOST_STATIC_ASSERT( tBegin < tEnd );
 		BOOST_STATIC_ASSERT( Dimension >= tEnd );
@@ -194,10 +194,10 @@ public:
 	}
 
 	CoordinateType &
-	Get( size_t idx )
-		{ 
+	get( size_t idx )
+		{
 #ifdef CHECK_INDICES_ENABLED
-			if ( idx >= Dim ) { 
+			if ( idx >= Dim ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex();
 			}
 #endif /*CHECK_INDICES_ENABLED*/
@@ -206,10 +206,10 @@ public:
 		}
 
 	CoordinateType
-	Get( size_t idx )const
-		{ 
+	get( size_t idx )const
+		{
 #ifdef CHECK_INDICES_ENABLED
-			if ( idx >= Dim ) { 
+			if ( idx >= Dim ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex();
 			}
 #endif /*CHECK_INDICES_ENABLED*/
@@ -220,20 +220,20 @@ public:
 	template< typename CType >
 	Vector< CoordType, Dimension > &
 	operator=( const Vector< CType, Dimension > &coord )
-		{ 
-			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+		{
+			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); }
 			return *this;
 		}
 
 	Vector< CoordType, Dimension > &
 	operator=( const CoordType coord[] )
-		{ 
-			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; } 
+		{
+			for( size_t i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; }
 			return *this;
 		}
 
 	const CoordinateType*
-	GetData()const
+	data()const
 		{
 			return _coordinates;
 		}
@@ -242,7 +242,7 @@ public:
 	ToBinStream( std::ostream &stream )
 	{
 		CoordinateType tmp;
-		for( size_t i=0; i<Dimension; ++i ) { 
+		for( size_t i=0; i<Dimension; ++i ) {
 			tmp = _coordinates[i];
 			//BINSTREAM_WRITE_MACRO( stream, tmp );
 			stream.write( (char*)&tmp, sizeof(tmp) );
@@ -252,7 +252,7 @@ public:
 	FromBinStream( std::istream &stream )
 	{
 		CoordinateType tmp;
-		for( size_t i=0; i<Dimension; ++i ) { 
+		for( size_t i=0; i<Dimension; ++i ) {
 			//BINSTREAM_READ_MACRO( stream, tmp );
 			stream.read( (char*)&tmp, sizeof(tmp) );
 			_coordinates[i] = tmp;
@@ -444,7 +444,7 @@ template< typename CoordType, size_t Dim >
 CoordType
 operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
 {
-	CoordType result = TypeTraits< CoordType >::Zero; 
+	CoordType result = TypeTraits< CoordType >::Zero;
 	for( size_t i=0; i < Dim; ++i ) {
 		result += a[i] * b[i];
 	}
@@ -513,7 +513,7 @@ CreateVector( CoordType x, CoordType y, CoordType z, CoordType w )
 }
 
 /**
- * Will shift coordinate in every dimension to dimesion on right, 
+ * Will shift coordinate in every dimension to dimesion on right,
  * last coordinate will become first.
  **/
 template< typename CoordType, size_t Dim >
@@ -530,7 +530,7 @@ VectorDimensionsShiftRight( const Vector< CoordType, Dim > &v )
 }
 
 /**
- * Will shift coordinate in every dimension to dimesion on left, 
+ * Will shift coordinate in every dimension to dimesion on left,
  * first coordinate will become last.
  **/
 template< typename CoordType, size_t Dim >
@@ -595,7 +595,7 @@ void
 Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
 {
 	CoordType product = (a * b) /  (a * a);
-	
+
 	b -= product * a ;
 }
 
@@ -694,7 +694,7 @@ VectorProjectionToInterval( Vector< CoordType, Dim > &v, const Vector< CoordType
 			result |= true;
 			v[i] = max[i];
 		}
-	} 
+	}
 	return result;
 }
 

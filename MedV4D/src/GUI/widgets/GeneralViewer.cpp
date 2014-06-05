@@ -24,7 +24,7 @@ handleCutPlane( bool aEnabled, const soglu::BoundingBox3D &aBBox, const soglu::P
 {
 	if( !aEnabled ) return;
 
-	glColor4fv(aColor.GetData());
+	glColor4fv(aColor.data());
 	//GLColorVector( aColor );
 	glm::fvec3 vertices[6];
 

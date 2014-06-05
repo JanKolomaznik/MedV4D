@@ -29,7 +29,7 @@ public:
 	}
 	
 	void
-	SetBackgroundHistogram( M4D::Imaging::Histogram64::Ptr aHistogram )
+	SetBackgroundHistogram( M4D::Imaging::SimpleHistogram64::Ptr aHistogram )
 	{
 		mBackgroundHistogram = aHistogram;
 		if ( mBackgroundHistogram ) {
@@ -41,11 +41,11 @@ public:
 protected:
 	
 	static void
-	RenderHistogram( QPainter &aPainter, M4D::Imaging::Histogram64 &aHistogram )
+	RenderHistogram( QPainter &aPainter, M4D::Imaging::SimpleHistogram64 &aHistogram )
 	{
-		float lastX = aHistogram.GetMin()-1;
+		float lastX = aHistogram.getMin()-1;
 		float lastY = (float) aHistogram[ lastX ];
-		for( int32 i = aHistogram.GetMin(); i <= aHistogram.GetMax(); ++i ) {
+		for( int32 i = aHistogram.getMin(); i <= aHistogram.getMax(); ++i ) {
 			float tmpY = float(aHistogram[i]);
 			aPainter.drawLine( lastX, lastY, float(i), tmpY );
 			lastX = i;
@@ -87,7 +87,7 @@ protected:
 
 	bool			mIsLineEditing;
 
-	M4D::Imaging::Histogram64::Ptr	mBackgroundHistogram;
+	M4D::Imaging::SimpleHistogram64::Ptr	mBackgroundHistogram;
 	int64			mHistogramMaximum;
 	float			mHistogramScaling;
 	QTransform		mBackgroundTransform;

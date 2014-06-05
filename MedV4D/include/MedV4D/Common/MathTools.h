@@ -255,10 +255,10 @@ inline int32
 sgn( NType a ) {
 	if( a < 0 ) {
 		return -1;
-	} 
+	}
 	if( a > 0 ) {
 		return 1;
-	} 
+	}
 
 	return 0;
 }
@@ -316,14 +316,24 @@ floor( const Vector< float32, tDim > &a ) {
 
 template< typename NType >
 inline NType
-clampToInterval( NType a, NType b, NType val ) {
+clamp( NType a, NType b, NType val ) {
 	if( val < a ) {
 		return a;
-	} 
+	}
 	if( val > b ) {
 		return b;
-	} 
+	}
 
+	return val;
+}
+
+
+template<typename NType, int tDim>
+inline Vector<NType, tDim>
+clamp(Vector<NType, tDim> a, Vector<NType, tDim> b, Vector<NType, tDim> val) {
+	for (int i = 0; i < tDim; ++i) {
+		val[i] = clamp(a[i], b[i], val[i]);
+	}
 	return val;
 }
 
@@ -332,10 +342,10 @@ inline bool
 intervalTest( NType a, NType b, NType val ) {
 	if( val < a ) {
 		return false;
-	} 
+	}
 	if( val > b ) {
 		return false;
-	} 
+	}
 
 	return true;
 }

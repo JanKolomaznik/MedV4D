@@ -81,11 +81,11 @@ createTextureFromImageTyped(const M4D::Imaging::AImageRegionDim<Dim> &image, boo
 	D_PRINT("Obtained texture : " << textureID);
 
 	soglu::ExtentsRecord< Dim > ext;
-	soglu::set(ext.realMinimum, extents.realMinimum.GetData());
-	soglu::set(ext.realMaximum, extents.realMaximum.GetData());
-	soglu::set(ext.minimum, extents.minimum.GetData());
-	soglu::set(ext.maximum, extents.maximum.GetData());
-	soglu::set(ext.elementExtents, extents.elementExtents.GetData());
+	soglu::set(ext.realMinimum, extents.realMinimum.data());
+	soglu::set(ext.realMaximum, extents.realMaximum.data());
+	soglu::set(ext.minimum, extents.minimum.data());
+	soglu::set(ext.maximum, extents.maximum.data());
+	soglu::set(ext.elementExtents, extents.elementExtents.data());
 
 	typename soglu::GLMDimension<Dim>::fvec elementExtents;
 
@@ -104,11 +104,11 @@ recreateTextureFromImageTyped(soglu::GLTextureImageTyped< Dim > &aTexImage, cons
 
 	M4D::Imaging::ImageExtentsRecord< Dim > extents = image.GetImageExtentsRecord();
 	soglu::ExtentsRecord< Dim > ext;
-	soglu::set(ext.realMinimum, extents.realMinimum.GetData());
-	soglu::set(ext.realMaximum, extents.realMaximum.GetData());
-	soglu::set(ext.minimum, extents.minimum.GetData());
-	soglu::set(ext.maximum, extents.maximum.GetData());
-	soglu::set(ext.elementExtents, extents.elementExtents.GetData());
+	soglu::set(ext.realMinimum, extents.realMinimum.data());
+	soglu::set(ext.realMaximum, extents.realMaximum.data());
+	soglu::set(ext.minimum, extents.minimum.data());
+	soglu::set(ext.maximum, extents.maximum.data());
+	soglu::set(ext.elementExtents, extents.elementExtents.data());
 
 	GLuint textureID = GLPrepareTextureFromImageData( image, aTexImage.linearInterpolation() ); //TODO prevent loosing texture during exception
 	aTexImage.updateTexture(textureID, ext);

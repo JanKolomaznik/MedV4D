@@ -109,7 +109,7 @@ public:
 
         PointType
         GetMaximum() const {
-                return _origin + PointType ( ( int32* ) _size.GetData() );
+                return _origin + PointType ( ( int32* ) _size.data() );
         }
 
         Vector< float, Dimension >

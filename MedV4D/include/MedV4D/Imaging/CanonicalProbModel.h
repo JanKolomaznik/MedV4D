@@ -93,9 +93,9 @@ struct GridPointRecord {
                 BINSTREAM_WRITE_MACRO ( stream, outProbabilityPos );
                 BINSTREAM_WRITE_MACRO ( stream, logRatioPos );
 
-                inHistogram.Save ( stream );
-                outHistogram.Save ( stream );
-                logHistogram.Save ( stream );
+                inHistogram.save ( stream );
+                outHistogram.save ( stream );
+                logHistogram.save ( stream );
         }
 
         void
@@ -104,18 +104,18 @@ struct GridPointRecord {
                 BINSTREAM_READ_MACRO ( stream, outProbabilityPos );
                 BINSTREAM_READ_MACRO ( stream, logRatioPos );
 
-                inHistogram.LoadTo ( stream );
-                outHistogram.LoadTo ( stream );
-                logHistogram.LoadTo ( stream );
+                inHistogram.loadTo ( stream );
+                outHistogram.loadTo ( stream );
+                logHistogram.loadTo ( stream );
         }
 
         float32	inProbabilityPos;
         float32	outProbabilityPos;
         float32	logRatioPos;
 
-        Histogram< float32 >	inHistogram;
-        Histogram< float32 >	outHistogram;
-        Histogram< float32 >	logHistogram;
+        SimpleHistogram< float32 >	inHistogram;
+        SimpleHistogram< float32 >	outHistogram;
+        SimpleHistogram< float32 >	logHistogram;
 };
 
 struct LayerStats {
@@ -324,7 +324,7 @@ public:
 
         typedef std::shared_ptr< CanonicalProbModel > Ptr;
 
-        CanonicalProbModel ( ProbabilityGrid::Ptr grid, Histogram< float32 >::Ptr inHistogram, Histogram< float32 >::Ptr outHistogram, Histogram< float32 >::Ptr logRatioHistogram ) :
+        CanonicalProbModel ( ProbabilityGrid::Ptr grid, SimpleHistogram< float32 >::Ptr inHistogram, SimpleHistogram< float32 >::Ptr outHistogram, SimpleHistogram< float32 >::Ptr logRatioHistogram ) :
                         _inIntensity ( inHistogram ),
                         _outIntensity ( outHistogram ),
                         _logRatioIntensity ( logRatioHistogram ),
@@ -338,7 +338,7 @@ public:
 
         float32
         LogRatioProbabilityIntesity ( IntensityType intensity ) {
-                return _logRatioIntensity->Get ( intensity );
+                return _logRatioIntensity->get ( intensity );
         }
         //***********************************************************************
 
@@ -351,7 +351,7 @@ public:
 
         float32
         LogRatioProbabilityIntesityPosition ( IntensityType intensity, const Coordinates &pos, float32 balance = 0.5 ) {
-                return balance * _logRatioIntensity->Get ( intensity )
+                return balance * _logRatioIntensity->get ( intensity )
                        + ( 1.0f-balance ) * _grid->LogRatioProbabilityPosition ( pos );
         }
 
@@ -375,7 +375,7 @@ public:
 
         float32
         LogRatioCombination ( const Coordinates &pos, IntensityType intensity, float32 distributionBalance, float32 shapeBalance, float32 generalBalance ) {
-                return distributionBalance * _logRatioIntensity->Get ( intensity ) + _grid->LogRatioCombination ( pos, intensity, shapeBalance, generalBalance );
+                return distributionBalance * _logRatioIntensity->get ( intensity ) + _grid->LogRatioCombination ( pos, intensity, shapeBalance, generalBalance );
         }
 
         Vector< float32, 3 >
@@ -393,17 +393,17 @@ public:
                 return *_grid;
         }
 
-        const Histogram< float32 > &
+        const SimpleHistogram< float32 > &
         GetInIntesity() const {
                 return *_inIntensity;
         }
 
-        const Histogram< float32 > &
+        const SimpleHistogram< float32 > &
         GetOutIntesity() const {
                 return *_outIntensity;
         }
 
-        const Histogram< float32 > &
+        const SimpleHistogram< float32 > &
         GetLogRatioIntesity() const {
                 return *_logRatioIntensity;
         }
@@ -412,9 +412,9 @@ public:
         SaveToFile ( std::string filename ) const {
                 std::ofstream output ( filename.data(), std::ios::out | std::ios::binary );
 
-                _inIntensity->Save ( output );
-                _outIntensity->Save ( output );
-                _logRatioIntensity->Save ( output );
+                _inIntensity->save ( output );
+                _outIntensity->save ( output );
+                _logRatioIntensity->save ( output );
 
                 _grid->Save ( output );
         }
@@ -426,9 +426,9 @@ public:
                         _THROW_ ExceptionBase ( TO_STRING ( "Could't open file " << filename ) );
                 }
 
-                Histogram< float32 >::Ptr inIntensity = Histogram< float32 >::Load ( input );
-                Histogram< float32 >::Ptr outIntensity = Histogram< float32 >::Load ( input );
-                Histogram< float32 >::Ptr logRatioIntensity = Histogram< float32 >::Load ( input );
+                SimpleHistogram< float32 >::Ptr inIntensity = SimpleHistogram< float32 >::load ( input );
+                SimpleHistogram< float32 >::Ptr outIntensity = SimpleHistogram< float32 >::load ( input );
+                SimpleHistogram< float32 >::Ptr logRatioIntensity = SimpleHistogram< float32 >::load ( input );
 
                 ProbabilityGrid::Ptr grid = ProbabilityGrid::Load ( input );
 
@@ -439,9 +439,9 @@ public:
 protected:
 
 
-        Histogram< float32 >::Ptr	_inIntensity;
-        Histogram< float32 >::Ptr	_outIntensity;
-        Histogram< float32 >::Ptr	_logRatioIntensity;
+        SimpleHistogram< float32 >::Ptr	_inIntensity;
+        SimpleHistogram< float32 >::Ptr	_outIntensity;
+        SimpleHistogram< float32 >::Ptr	_logRatioIntensity;
 
         ProbabilityGrid::Ptr		_grid;
 private:
@@ -468,7 +468,7 @@ MakeImageFromProbabilityGrid ( const ProbabilityGrid &grid, Accessor accessor )
         Vector< uint32, 3 > size = grid.GetSize();
 
         Image< int16, 3 >::Ptr image = ImageFactory::CreateEmptyImageFromExtents< int16, 3 > (
-                                               Vector<int32,3>(), Vector<int32,3> ( ( int32* ) size.GetData() ), Vector< float32, 3 > ( 1.0f ) );
+                                               Vector<int32,3>(), Vector<int32,3> ( ( int32* ) size.data() ), Vector< float32, 3 > ( 1.0f ) );
 
         Vector< uint32, 3 > idx;
         for ( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {

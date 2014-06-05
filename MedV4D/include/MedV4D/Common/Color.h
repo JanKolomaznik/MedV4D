@@ -41,24 +41,24 @@ public:
 
 	TChannelType &
 	Red()
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 	TChannelType
 	Red()const
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 
 	TChannelType &
 	Green()
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 	TChannelType
 	Green()const
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 
 	TChannelType &
 	Blue()
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 	TChannelType
 	Blue()const
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 
 };
 
@@ -81,7 +81,7 @@ public:
 			return aData.template StaticGet< tCoord >();
 		}
 	};
-	
+
 	RGBA( const Predecessor &p ): Predecessor ( p )
 	{}
 
@@ -149,24 +149,24 @@ public:
 
 	TChannelType &
 	Hue()
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 	TChannelType
 	Hue()const
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 
 	TChannelType &
 	Saturation()
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 	TChannelType
 	Saturation()const
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 
 	TChannelType &
 	Value()
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 	TChannelType
 	Value()const
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 
 };
 
@@ -200,31 +200,31 @@ public:
 
 	TChannelType &
 	Hue()
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 	TChannelType
 	Hue()const
-		{ return this->template StaticGet< 0 >(); }
+		{ return this->template staticGet< 0 >(); }
 
 	TChannelType &
 	Saturation()
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 	TChannelType
 	Saturation()const
-		{ return this->template StaticGet< 1 >(); }
+		{ return this->template staticGet< 1 >(); }
 
 	TChannelType &
 	Value()
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 	TChannelType
 	Value()const
-		{ return this->template StaticGet< 2 >(); }
+		{ return this->template staticGet< 2 >(); }
 
 	TChannelType &
 	Alpha()
-		{ return this->template StaticGet< 3 >(); }
+		{ return this->template staticGet< 3 >(); }
 	TChannelType
 	Alpha()const
-		{ return this->template StaticGet< 3 >(); }
+		{ return this->template staticGet< 3 >(); }
 };
 
 typedef RGB< uint8 > RGB_byte;
@@ -257,7 +257,7 @@ ValidateColor( const TColor &aColor )
 inline HSVf
 RgbToHsv( const RGBf &aRgb )
 {
-	ASSERT( ValidateColor( aRgb ) ); 
+	ASSERT( ValidateColor( aRgb ) );
 
 	HSVf hsv;
 	float maxRgb = max< float, 3>( aRgb );
@@ -266,7 +266,7 @@ RgbToHsv( const RGBf &aRgb )
 	if ( epsilonTest( maxRgb ) ) {
 		hsv.Hue() = hsv.Saturation() = hsv.Value() = 0.0f;
 	return hsv;
-	} 
+	}
 
 	hsv.Value() = maxRgb;
 
@@ -282,7 +282,7 @@ RgbToHsv( const RGBf &aRgb )
 		hsv.Saturation() = 0.0f;
 		hsv.Hue() = 0.0f;
 		return hsv;
-	} 
+	}
 	hsv.Saturation() = diffRgb;
 
 	/* Normalize saturation to 1 */

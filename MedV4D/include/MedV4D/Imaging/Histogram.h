@@ -2,6 +2,7 @@
 #define HISTOGRAM_H
 
 #include "MedV4D/Common/Common.h"
+#include "MedV4D/Common/Vector.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>
@@ -12,6 +13,143 @@ namespace M4D
 {
 namespace Imaging {
 
+template<typename TValue, typename TCell>
+struct Histogram1DTraits
+{
+	typedef TCell Cell;
+	typedef TValue Value;
+	typedef TValue ScalarValue;
+	static const int cDimension = 1;
+	static const bool cIsScalar = true;
+
+	template<int tDimIndex>
+	static ScalarValue& get(Value &aVal)
+	{
+		return aVal;
+	}
+
+	template<int tDimIndex>
+	static const ScalarValue& get(const Value &aVal)
+	{
+		return aVal;
+	}
+};
+namespace detail {
+
+template<typename TTraits, int tDimIndex>
+struct FillCellCoordinates
+{
+	typedef typename TTraits::Value Value;
+	typedef typename TTraits::ScalarValue ScalarValue;
+	static const int cDimension = TTraits::cDimension;
+	typedef Vector<int, cDimension> CellCoordinates;
+
+	static void
+	apply(CellCoordinates &aCoords, const Value &aValue, const Value &aMin, const Value &aRange, CellCoordinates &aResolution)
+	{
+		ScalarValue scalarMin = TTraits::template get<tDimIndex>(aMin);
+		ScalarValue scalarRangeSize = TTraits::template get<tDimIndex>(aRange);
+		ScalarValue value = TTraits::template get<tDimIndex>(aValue);
+		aCoords[tDimIndex] = round(((value - scalarMin) / double(scalarRangeSize)) * aResolution[tDimIndex]);
+		FillCellCoordinates<TTraits, tDimIndex - 1>::apply(aCoords, aValue, aMin, aRange, aResolution);
+	}
+};
+
+template<typename TTraits>
+struct FillCellCoordinates<TTraits, 0>
+{
+	typedef typename TTraits::Value Value;
+	typedef typename TTraits::ScalarValue ScalarValue;
+	static const int cDimension = TTraits::cDimension;
+	typedef Vector<int, cDimension> CellCoordinates;
+
+	static void
+	apply(CellCoordinates &aCoords, const Value &aValue, const Value &aMin, const Value &aRange, const CellCoordinates &aResolution)
+	{
+		ScalarValue scalarMin = TTraits::template get<0>(aMin);
+		ScalarValue scalarRangeSize = TTraits::template get<0>(aRange);
+		ScalarValue value = TTraits::template get<0>(aValue);
+		aCoords[0] = round(((value - scalarMin) / double(scalarRangeSize)) * aResolution[0]);
+	}
+};
+
+} // namespace detail
+
+template <typename TTraits>
+class HistogramBase
+{
+public:
+	typedef typename TTraits::Value Value;
+	typedef typename TTraits::ScalarValue ScalarValue;
+	typedef typename TTraits::Cell Cell;
+	static const int cDimension = TTraits::cDimension;
+	typedef Vector<int, cDimension> CellCoordinates;
+
+	HistogramBase() = default;
+	HistogramBase(Value aMin, Value aMax, CellCoordinates aResolution)
+		: mMin(aMin)
+		, mMax(aMax)
+		, mResolution(aResolution)
+		, mRangeSize(aMax - aMin)
+	{
+		mStrides[0] = 1;
+		int stride = 1;
+		for (int i = 1; i < cDimension; ++i) {
+			stride *= mResolution[i - 1];
+			mStrides[i] = stride;
+		}
+	}
+
+
+protected:
+
+	CellCoordinates
+	valueToCell(Value aVal) const
+	{
+		aVal = clamp(mMin, mMax, aVal);
+		CellCoordinates coords;
+		detail::FillCellCoordinates<TTraits, cDimension - 1>::apply(coords, aVal, mMin, mRangeSize, mResolution);
+		return coords;
+	}
+
+	Cell &
+	getCell(const Value &aValue)
+	{
+		return mData[valueToCell(aValue) * mStrides];
+	}
+
+	Value mMin;
+	Value mMax;
+	CellCoordinates mResolution;
+	std::vector<Cell> mData;
+
+	Value mRangeSize;
+	CellCoordinates mStrides;
+};
+
+template<typename TValue, typename TCell = int64_t>
+class Histogram1D : HistogramBase<Histogram1DTraits<TValue, TCell>>
+{
+public:
+	typedef HistogramBase<Histogram1DTraits<TValue, TCell>> Predecessor;
+	typedef typename Predecessor::Value Value;
+	typedef typename Predecessor::ScalarValue ScalarValue;
+	typedef typename Predecessor::Cell Cell;
+	static const int cDimension = Predecessor::cDimension;
+	typedef typename Predecessor::CellCoordinates CellCoordinates;
+
+	Histogram1D(Value aMin, Value aMax, int aResolution)
+		: Predecessor(aMin, aMax, CellCoordinates(aResolution))
+	{}
+
+	Histogram1D() = default;
+
+	void
+	put(const Value &aValue) {
+		this->getCell(aValue) += 1;
+	}
+};
+
 class EIncompatibleHistograms: public ErrorHandling::ExceptionBase
 {
 public:
@@ -19,42 +157,42 @@ public:
 };
 
 template< typename CellType >
-class Histogram;
+class SimpleHistogram;
 
 template< typename CellType >
 void
-swap ( Histogram< CellType > &histA, Histogram< CellType > &histB );
+swap ( SimpleHistogram< CellType > &histA, SimpleHistogram< CellType > &histB );
 
 template< typename CellType >
-class Histogram
+class SimpleHistogram
 {
 public :
-	typedef std::shared_ptr< Histogram< CellType > > Ptr;
+	typedef std::shared_ptr< SimpleHistogram< CellType > > Ptr;
 
 	typedef CellType* Iterator;
 	typedef Iterator iterator;
 
-	friend void swap< CellType > ( Histogram< CellType > &histA, Histogram< CellType > &histB );
+	friend void swap< CellType > ( SimpleHistogram< CellType > &histA, SimpleHistogram< CellType > &histB );
 
-	Histogram ( int32 min, int32 max, bool storeOutliers = true ) : _cells ( NULL ),
+	SimpleHistogram ( int32 min, int32 max, bool storeOutliers = true ) : _cells ( NULL ),
 			_minCell ( min ), _maxCell ( max ), _storeOutliers ( storeOutliers ), _sum ( 0 ) {
-		Resize ( min, max );
+		resize ( min, max );
 	}
 
-	Histogram ( const Histogram &histogram ) :
+	SimpleHistogram ( const SimpleHistogram &histogram ) :
 			_cells ( NULL ), _minCell ( histogram._minCell ),
 			_maxCell ( histogram._maxCell ), _storeOutliers ( histogram._storeOutliers ), _sum ( histogram._sum ) {
-		Resize ( _minCell, _maxCell );
+		resize ( _minCell, _maxCell );
 		//_cells = histogram._cells;
 		std::copy ( histogram._cells, histogram._size, _cells );
 	}
 
 
-	~Histogram() {
+	~SimpleHistogram() {
 		delete [] _cells;
 	}
 	void
-	Resize ( int32 min, int32 max ) {
+	resize ( int32 min, int32 max ) {
 		_minCell = min;
 		_maxCell = max;
 		if ( _cells ) {
@@ -62,29 +200,29 @@ public :
 		}
 		_size = _maxCell - _minCell + 2;
 		_cells = new CellType[_size];
-		Reset();
+		reset();
 		//_cells.resize( _maxCell - _minCell + 2 );
 	}
 
 	CellType
 	operator[] ( int32 cell ) const {
-		return Get ( cell );
+		return get ( cell );
 	}
 
-	const Histogram&
-	operator= ( const Histogram &histogram ) {
+	const SimpleHistogram&
+	operator= ( const SimpleHistogram &histogram ) {
 		_minCell = histogram._minCell;
 		_maxCell = histogram._maxCell;
 		_storeOutliers = histogram._storeOutliers;
 		_sum = histogram._sum;
-		Resize ( _minCell, _maxCell );
+		resize ( _minCell, _maxCell );
 		//_cells = histogram._cells;
 		std::copy ( histogram._cells, histogram._size, _cells );
 		return *this;
 	}
 
 	void
-	operator+= ( const Histogram &histogram ) {
+	operator+= ( const SimpleHistogram &histogram ) {
 		if ( _minCell != histogram._minCell || _maxCell != histogram._maxCell ) {
 			_THROW_	EIncompatibleHistograms();
 		}
@@ -100,7 +238,7 @@ public :
 	}
 
 	CellType
-	Get ( int32 cell ) const {
+	get ( int32 cell ) const {
 		if ( cell < _minCell ) {
 			return _cells[ 0 ];
 		}
@@ -110,7 +248,7 @@ public :
 		return _cells[ cell - _minCell + 1 ];
 	}
 	void
-	SetValueCell ( int32 cell, CellType value ) {
+	setValueCell( int32 cell, CellType value ) {
 		int32 idx = cell - _minCell + 1;;
 		if ( cell < _minCell ) {
 			if ( _storeOutliers ) {
@@ -129,53 +267,53 @@ public :
 	}
 
 	void
-	IncCell ( int32 cell ) {
-		SetValueCell ( cell, Get ( cell ) + 1 );
+	incCell ( int32 cell ) {
+		setValueCell ( cell, get ( cell ) + 1 );
 	}
 
 	/**
 	 * Faster incrementation without bands checking.
 	 **/
 	void
-	FastIncCell ( int32 cell ) {
+	fastIncCell ( int32 cell ) {
 		_cells[ cell - _minCell + 1 ] += 1;
 		_sum+=1;
 	}
 
 	CellType
-	GetSum() const {
+	getSum() const {
 		return _sum;
 	}
 
 	int32
-	GetMin() const {
+	getMin() const {
 		return _minCell;
 	}
 
 	int32
-	GetMax() const {
+	getMax() const {
 		return _maxCell;
 	}
 
 	Iterator
-	Begin() {
+	begin() {
 		return _cells + 1;
 	}
 
 	Iterator
-	End() {
+	end() {
 		return _cells + _size - 1;
 	}
 
 	void
-	Reset() {
+	reset() {
 		uint32 i;
 		for ( i = 0; i < _size; ++i ) _cells[ i ] = 0;
 	}
 
 
 	void
-	Save ( std::ostream &stream ) {
+	save ( std::ostream &stream ) {
 		BINSTREAM_WRITE_MACRO ( stream, _minCell );
 		BINSTREAM_WRITE_MACRO ( stream, _maxCell );
 		BINSTREAM_WRITE_MACRO ( stream, _storeOutliers );
@@ -189,14 +327,14 @@ public :
 	}
 
 	static Ptr
-	Create ( int32 min, int32 max, bool storeOutliers = true ) {
-		Histogram *result = new Histogram ( min, max, storeOutliers );
+	create ( int32 min, int32 max, bool storeOutliers = true ) {
+		SimpleHistogram *result = new SimpleHistogram ( min, max, storeOutliers );
 		D_PRINT ( "Histogram created : < " << min << "; " << max << " >" );
-		return typename Histogram::Ptr ( result );
+		return typename SimpleHistogram::Ptr ( result );
 	}
 
 	static Ptr
-	Load ( std::istream &stream ) {
+	load ( std::istream &stream ) {
 		int32		minCell;
 		int32		maxCell;
 		bool		storeOutliers;
@@ -207,7 +345,7 @@ public :
 		BINSTREAM_READ_MACRO ( stream, storeOutliers );
 		BINSTREAM_READ_MACRO ( stream, sum );
 
-		typename Histogram::Ptr result = Histogram::Create ( minCell, maxCell, storeOutliers );
+		typename SimpleHistogram::Ptr result = SimpleHistogram::create ( minCell, maxCell, storeOutliers );
 
 		CellType tmp;
 		for ( unsigned i = 0; i < result->_size; ++i ) {
@@ -221,7 +359,7 @@ public :
 	}
 
 	void
-	LoadTo ( std::istream &stream ) {
+	loadTo ( std::istream &stream ) {
 		//int32		minCell;
 		//int32		maxCell;
 		//bool		storeOutliers;
@@ -232,7 +370,7 @@ public :
 		BINSTREAM_READ_MACRO ( stream, _storeOutliers );
 		BINSTREAM_READ_MACRO ( stream, _sum );
 
-		Resize ( _minCell, _maxCell );
+		resize ( _minCell, _maxCell );
 
 		CellType tmp;
 		for ( unsigned i = 0; i < _size; ++i ) {
@@ -241,7 +379,7 @@ public :
 		}
 	}
 protected:
-	template< typename TCellType > friend TCellType HistogramGetMaxCount ( const Histogram< TCellType > &aHistogram );
+	template< typename TCellType > friend TCellType HistogramGetMaxCount ( const SimpleHistogram< TCellType > &aHistogram );
 
 	typedef CellType* /*std::vector<CellType>*/ CellVector;
 
@@ -257,7 +395,7 @@ protected:
 
 template< typename CellType >
 void
-swap ( Histogram< CellType > &histA, Histogram< CellType > &histB )
+swap ( SimpleHistogram< CellType > &histA, SimpleHistogram< CellType > &histB )
 {
 	std::swap ( histA._cells,  histB._cells );
 	std::swap ( histA._minCell,  histB._minCell );
@@ -268,12 +406,12 @@ swap ( Histogram< CellType > &histA, Histogram< CellType > &histB )
 }
 
 
-typedef Histogram< uint32 > Histogram32;
-typedef Histogram< uint64 > Histogram64;
+typedef SimpleHistogram< uint32 > SimpleHistogram32;
+typedef SimpleHistogram< uint64 > SimpleHistogram64;
 
 template< typename CellType >
 CellType
-HistogramGetMaxCount ( const Histogram< CellType > &aHistogram )
+histogramGetMaxCount( const SimpleHistogram< CellType > &aHistogram )
 {
 	if ( aHistogram._size == 0 ) {
 		return static_cast< CellType > ( 0 );
@@ -287,10 +425,10 @@ HistogramGetMaxCount ( const Histogram< CellType > &aHistogram )
 
 template< typename CellType >
 std::ostream &
-operator<< ( std::ostream &stream, const Histogram< CellType > &histogram )
+operator<< ( std::ostream &stream, const SimpleHistogram< CellType > &histogram )
 {
-	stream << "Sum = " << histogram.GetSum() << std::endl;
-	for ( int32 i = histogram.GetMin() - 1; i <= histogram.GetMax(); ++i ) {
+	stream << "Sum = " << histogram.getSum() << std::endl;
+	for ( int32 i = histogram.getMin() - 1; i <= histogram.getMax(); ++i ) {
 		stream << histogram[i] << std::endl;
 	}
 	return stream;
@@ -298,7 +436,7 @@ operator<< ( std::ostream &stream, const Histogram< CellType > &histogram )
 
 template< typename CellType >
 CellType
-ComputeSmoothedValue ( const Histogram< CellType > &histogram, std::vector< float32 > &weights, int32 cell, unsigned radius )
+ComputeSmoothedValue ( const SimpleHistogram< CellType > &histogram, std::vector< float32 > &weights, int32 cell, unsigned radius )
 {
 	double tmp = 0.0;
 
@@ -310,22 +448,22 @@ ComputeSmoothedValue ( const Histogram< CellType > &histogram, std::vector< floa
 }
 
 template< typename CellType >
-Histogram< CellType >
-HistogramPyramidSmooth ( const Histogram< CellType > &histogram, unsigned radius )
+SimpleHistogram< CellType >
+HistogramPyramidSmooth ( const SimpleHistogram< CellType > &histogram, unsigned radius )
 {
 	std::vector< float32 > weights;
-	Histogram< CellType > result ( histogram );
+	SimpleHistogram< CellType > result ( histogram );
 	//float32 sum = 0;
 
 	for ( unsigned i = 0; i <= 2*radius; ++i ) {
 		weights.push_back ( 1.0f / ( 2*radius +1 ) );
 	}
 	//TODO - pyramid weigths
-	int32 min = histogram.GetMin();
-	int32 max = histogram.GetMax();
+	int32 min = histogram.getMin();
+	int32 max = histogram.getMax();
 
 	for ( int32 i = min; i < max; ++i ) {
-		result.SetValueCell ( i, ComputeSmoothedValue ( histogram, weights, i, radius ) );
+		result.setValueCell ( i, ComputeSmoothedValue ( histogram, weights, i, radius ) );
 	}
 
 	return result;

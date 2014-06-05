@@ -405,7 +405,7 @@ CreateImageRegion (
                        elementExtents,
                        dimOrder,
                        SourceDimension,
-                       pointerCoordinatesInSource.GetData()
+                       pointerCoordinatesInSource.data()
                );
 }
 

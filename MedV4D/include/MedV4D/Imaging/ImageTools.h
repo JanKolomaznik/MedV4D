@@ -25,7 +25,7 @@ addRegionToHistogram ( THistogram &aHistogram, const TImageRegion &aRegion )
 	int32 max = aHistogram.GetMax();
 	typename TImageRegion::Iterator it = aRegion.GetIterator();
 	while ( !it.IsEnd() ) {
-		aHistogram.FastIncCell ( clampToInterval ( min, max, ( int32 ) *it ) );
+		aHistogram.FastIncCell ( clamp( min, max, ( int32 ) *it ) );
 		++it;
 	}
 }
@@ -48,7 +48,7 @@ struct HistogramFromArrayFtor {
 		const TElementType *a = mArray;
 		size_t end = r.end();
 		for ( size_t i = r.begin(); i!=end; ++i ) {
-			mHistogram.FastIncCell ( clampToInterval ( mMinimum, mMaximum, static_cast<int32> ( a[i] ) ) );
+			mHistogram.FastIncCell ( clamp( mMinimum, mMaximum, static_cast<int32> ( a[i] ) ) );
 		}
 	}
 
@@ -68,7 +68,7 @@ addArrayToHistogram ( THistogram &aHistogram, const TElementType *aArray, size_t
 	int32 max = aHistogram.GetMax();
 	const TElementType *end = aArray + aSize;
 	while ( aArray < end ) {
-		aHistogram.FastIncCell( clampToInterval( min, max, (int32)*aArray ) );
+		aHistogram.FastIncCell( clamp( min, max, (int32)*aArray ) );
 		++aArray;
 	}*/
 
@@ -140,11 +140,11 @@ void
 addArrayToHistogram ( THistogram &aHistogram, const TElementType *aArray, size_t aSize )
 {
 	//TODO - test TImageRegion type
-	int32 min = aHistogram.GetMin() - 1;
-	int32 max = aHistogram.GetMax();
+	int32 min = aHistogram.getMin() - 1;
+	int32 max = aHistogram.getMax();
 	const TElementType *end = aArray + aSize;
 	while ( aArray < end ) {
-		aHistogram.FastIncCell ( clampToInterval ( min, max, ( int32 ) *aArray ) );
+		aHistogram.fastIncCell ( clamp( min, max, ( int32 ) *aArray ) );
 		++aArray;
 	}
 }
@@ -164,7 +164,7 @@ prepareHistogramForArray ( const TElementType *aArray, size_t aSize )
 		++ptr;
 	}
 
-	return THistogram::Create ( int32 ( minimum ), int32 ( maximum ), true );
+	return THistogram::create ( int32 ( minimum ), int32 ( maximum ), true );
 }
 #endif
 
@@ -178,6 +178,19 @@ createHistogramForImageRegion ( const TRegion &aRegion )
 
 	addArrayToHistogram< THistogram, typename TRegion::Element > ( *histogram, array, VectorCoordinateProduct ( aRegion.GetSize() ) );
 
+	return histogram;
+}
+
+template< typename THistogram, typename TRegion >
+THistogram
+createHistogramForImageRegion2(const TRegion &aRegion)
+{
+	THistogram histogram(0, 2000, 500);
+	auto it = aRegion.GetIterator();
+	while ( !it.IsEnd() ) {
+		histogram.put(*it);
+		++it;
+	}
 	return histogram;
 }
 

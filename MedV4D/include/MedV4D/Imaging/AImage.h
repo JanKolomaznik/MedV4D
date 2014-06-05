@@ -24,22 +24,22 @@ namespace Imaging {
  *
  **/
 struct DimensionExtents {
-        DimensionExtents() :minimum ( 0 ),maximum ( 0 ),elementExtent ( 1.0f ) {}
+	DimensionExtents() :minimum ( 0 ),maximum ( 0 ),elementExtent ( 1.0f ) {}
 
-        int32	minimum;
-        int32	maximum;
-        float32	elementExtent;
+	int32	minimum;
+	int32	maximum;
+	float32	elementExtent;
 
-        bool
-        operator== ( const DimensionExtents &dimExt ) const {
-                return minimum == dimExt.minimum &&
-                       maximum == dimExt.maximum &&
-                       elementExtent == dimExt.elementExtent;
-        }
-        bool
-        operator!= ( const DimensionExtents &dimExt ) const {
-                return ! ( this->operator== ( dimExt ) );
-        }
+	bool
+	operator== ( const DimensionExtents &dimExt ) const {
+		return minimum == dimExt.minimum &&
+		       maximum == dimExt.maximum &&
+		       elementExtent == dimExt.elementExtent;
+	}
+	bool
+	operator!= ( const DimensionExtents &dimExt ) const {
+		return ! ( this->operator== ( dimExt ) );
+	}
 };
 
 #define IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_REF, ... ) \
@@ -57,101 +57,101 @@ struct DimensionExtents {
 class AImage : public ADataset
 {
 public:
-        MANDATORY_DATASET_DEFINITIONS_THIS_MACRO ( AImage )
-        MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO ( ADataset )
-        PREPARE_CAST_METHODS_MACRO;
-        IS_NOT_CONSTRUCTABLE_MACRO;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO ( AImage )
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO ( ADataset )
+	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
-        class EBadDimension;
+	class EBadDimension;
 
-        AImage ( uint16 dim, DimensionExtents *dimExtents );
+	AImage ( uint16 dim, DimensionExtents *dimExtents );
 
-        virtual
-        ~AImage() =0;
+	virtual
+	~AImage() =0;
 
-        const DimensionExtents &
-        GetDimensionExtents ( unsigned dimension ) const;
+	const DimensionExtents &
+	GetDimensionExtents ( unsigned dimension ) const;
 
 
-        uint16
-        GetDimension() const {
-                return _dimCount;
-        }
+	uint16
+	GetDimension() const {
+		return _dimCount;
+	}
 
-        virtual const int32*
-        GetMinimumP() const = 0;
+	virtual const int32*
+	GetMinimumP() const = 0;
 
-        virtual const int32*
-        GetMaximumP() const = 0 ;
+	virtual const int32*
+	GetMaximumP() const = 0 ;
 
-        virtual const uint32*
-        GetSizeP() const = 0 ;
+	virtual const uint32*
+	GetSizeP() const = 0 ;
 
-        virtual const float32*
-        GetElementExtentsP() const = 0 ;
+	virtual const float32*
+	GetElementExtentsP() const = 0 ;
 
-        /**
-         * @return ID of element type.
-         **/
-        virtual int16
-        GetElementTypeID() const=0;
+	/**
+	 * @return ID of element type.
+	 **/
+	virtual int16
+	GetElementTypeID() const=0;
 
-        virtual WriterBBoxInterface &
-        SetWholeDirtyBBox() = 0;
+	virtual WriterBBoxInterface &
+	SetWholeDirtyBBox() = 0;
 
-        virtual ReaderBBoxInterface::Ptr
-        GetWholeDirtyBBox() const = 0;
+	virtual ReaderBBoxInterface::Ptr
+	GetWholeDirtyBBox() const = 0;
 
-        virtual const ModificationManager &
-        GetModificationManager() const = 0;
+	virtual const ModificationManager &
+	GetModificationManager() const = 0;
 
-        M4D::Common::TimeStamp
-        GetEditTimestamp() const {
-                return GetModificationManager().GetActualTimestamp();
-        }
+	M4D::Common::TimeStamp
+	GetEditTimestamp() const {
+		return GetModificationManager().GetActualTimestamp();
+	}
 
-        virtual AImageRegion::Ptr
-        GetAImageRegion() = 0;
+	virtual AImageRegion::Ptr
+	GetAImageRegion() = 0;
 
-        virtual AImageRegion::ConstPtr
-        GetAImageRegion() const = 0;
+	virtual AImageRegion::ConstPtr
+	GetAImageRegion() const = 0;
 protected:
-        uint16			_dimCount;
-        DimensionExtents	*_dimensionExtents;
+	uint16			_dimCount;
+	DimensionExtents	*_dimensionExtents;
 private:
 
 };
 
 class AImage::EBadDimension
 {
-        //TODO
+	//TODO
 };
 
 template< size_t Dim >
 class AImageDim : public AImage
 {
 public:
-        static const unsigned 		Dimension = Dim;
-        MANDATORY_DATASET_DEFINITIONS_THIS_MACRO ( AImageDim< Dimension > )
-        MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO ( AImage )
-        PREPARE_CAST_METHODS_MACRO;
-        IS_NOT_CONSTRUCTABLE_MACRO;
+	static const unsigned 		Dimension = Dim;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO ( AImageDim< Dimension > )
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO ( AImage )
+	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
-        typedef Vector< int32, Dimension >	PointType;
-        typedef Vector< uint32, Dimension >	SizeType;
-        typedef Vector< float32, Dimension >	ElementExtentsType;
+	typedef Vector< int32, Dimension >	PointType;
+	typedef Vector< uint32, Dimension >	SizeType;
+	typedef Vector< float32, Dimension >	ElementExtentsType;
 
-        AImageDim ( DimensionExtents *dimExtents ) : AImage ( Dimension, dimExtents ) {
-                for ( unsigned i = 0; i < Dimension; ++i ) {
-                        _minimum[i] = dimExtents[ i ].minimum;
-                        _maximum[i] = dimExtents[ i ].maximum;
-                        _size[i] = _maximum[i] - _minimum[i];
-                }
-        }
+	AImageDim ( DimensionExtents *dimExtents ) : AImage ( Dimension, dimExtents ) {
+		for ( unsigned i = 0; i < Dimension; ++i ) {
+			_minimum[i] = dimExtents[ i ].minimum;
+			_maximum[i] = dimExtents[ i ].maximum;
+			_size[i] = _maximum[i] - _minimum[i];
+		}
+	}
 
-        ImageExtentsRecord< Dimension >
-        GetImageExtentsRecord()const
-        {
+	ImageExtentsRecord< Dimension >
+	GetImageExtentsRecord()const
+	{
 		ImageExtentsRecord< Dimension > rec;
 		rec.elementExtents = GetElementExtents();
 		rec.minimum = GetMinimum();
@@ -161,80 +161,80 @@ public:
 		return rec;
 	}
 
-        PointType
-        GetMinimum() const {
-                return _minimum;
-        }
+	PointType
+	GetMinimum() const {
+		return _minimum;
+	}
 
-        PointType
-        GetMaximum() const {
-                return _maximum;
-        }
+	PointType
+	GetMaximum() const {
+		return _maximum;
+	}
 
-        Vector< float, Dimension >
-        GetRealMinimum() const {
-                return VectorMemberProduct ( _minimum, _elementExtents );
-        }
+	Vector< float, Dimension >
+	GetRealMinimum() const {
+		return VectorMemberProduct ( _minimum, _elementExtents );
+	}
 
-        Vector< float, Dimension >
-        GetRealMaximum() const {
-                return VectorMemberProduct ( _maximum, _elementExtents );
-        }
+	Vector< float, Dimension >
+	GetRealMaximum() const {
+		return VectorMemberProduct ( _maximum, _elementExtents );
+	}
 
-        SizeType
-        GetSize() const {
-                return _size;
-        }
+	SizeType
+	GetSize() const {
+		return _size;
+	}
 
-        ElementExtentsType
-        GetElementExtents() const {
-                return _elementExtents;
-        }
+	ElementExtentsType
+	GetElementExtents() const {
+		return _elementExtents;
+	}
 
-        const int32*
-        GetMinimumP() const {
-                return _minimum.GetData();
-        }
+	const int32*
+	GetMinimumP() const {
+		return _minimum.data();
+	}
 
-        const int32*
-        GetMaximumP() const {
-                return _maximum.GetData();
-        }
+	const int32*
+	GetMaximumP() const {
+		return _maximum.data();
+	}
 
-        const uint32*
-        GetSizeP() const {
-                return _size.GetData();
-        }
+	const uint32*
+	GetSizeP() const {
+		return _size.data();
+	}
 
-        const float32*
-        GetElementExtentsP() const {
-                return _elementExtents.GetData();
-        }
+	const float32*
+	GetElementExtentsP() const {
+		return _elementExtents.data();
+	}
 
-        AImageRegion::Ptr
-        GetAImageRegion() {
-                return GetAImageRegionDim();
-        }
+	AImageRegion::Ptr
+	GetAImageRegion() {
+		return GetAImageRegionDim();
+	}
 
-        virtual typename AImageRegionDim< Dimension >::Ptr
-        GetAImageRegionDim() = 0;
+	virtual typename AImageRegionDim< Dimension >::Ptr
+	GetAImageRegionDim() = 0;
 
-        AImageRegion::ConstPtr
-        GetAImageRegion() const {
-                return GetAImageRegionDim();
-        }
+	AImageRegion::ConstPtr
+	GetAImageRegion() const {
+		return GetAImageRegionDim();
+	}
 
-        virtual typename AImageRegionDim< Dimension >::ConstPtr
-        GetAImageRegionDim() const = 0;
-	
+	virtual typename AImageRegionDim< Dimension >::ConstPtr
+	GetAImageRegionDim() const = 0;
+
 	virtual void
 	getChangedRegionSinceTimestamp( PointType &aMinimum, PointType &aMaximum, const Common::TimeStamp &aTimestamp ) const = 0;
 
 protected:
-        PointType		_minimum;
-        PointType		_maximum;
-        SizeType		_size;
-        ElementExtentsType	_elementExtents;
+	PointType		_minimum;
+	PointType		_maximum;
+	SizeType		_size;
+	ElementExtentsType	_elementExtents;
 };
 
 

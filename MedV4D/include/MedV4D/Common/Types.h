@@ -13,39 +13,39 @@
  *
  *  Because project is planned to be multi platform. we must use
  *  architecture independent types - we achieved that by typedefs
- *  (int16, uint32, float32 etc. ), which must be rewritten for 
+ *  (int16, uint32, float32 etc. ), which must be rewritten for
  *  every incompatible platform.
  *
  *  Another issue we are dealing with in project is how to slightly
- *  move from static polymorphism (compile time - templates) and 
+ *  move from static polymorphism (compile time - templates) and
  *  dynamic polymorphism (runtime - object programming, RTTI).
  *  For this we have few tools to make that easier.
  *
- *  We have enumeration with values pertaining to basic numeric types. 
- *  These values are returned from templated function 
+ *  We have enumeration with values pertaining to basic numeric types.
+ *  These values are returned from templated function
  *  GetNumericTypeID<TYPE>().
- *  On the other side over these values macros like 
- *  NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO() decide which template instance call. 
+ *  On the other side over these values macros like
+ *  NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO() decide which template instance call.
  */
 
 #include <ostream>
 #include <boost/filesystem.hpp>
-
+#include <cstdint>
 typedef boost::filesystem::path	Path;
 
 /*
  * typedef of basic data types for simplier porting
  */
 // signed
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-typedef long long int int64;
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
 // unsigned
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned long long uint64;
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
 // floats
 typedef float float32;
 typedef double float64;
@@ -64,16 +64,16 @@ static const float32	MAX_FLOAT32 = 1E+37f;
 static const float64	MAX_FLOAT64 = 1E+37;
 
 /**
- * Basic space planes, each constant also defines index of axis perpendicular 
+ * Basic space planes, each constant also defines index of axis perpendicular
  * to given plane.
  **/
 enum CartesianPlanes{
 	YZ_PLANE = 0,
 	XZ_PLANE = 1,
 	XY_PLANE = 2
-};	
+};
 
-inline CartesianPlanes 
+inline CartesianPlanes
 NextCartesianPlane( CartesianPlanes plane )
 {
 	switch (plane) {
@@ -98,7 +98,7 @@ enum ZoomType
 
 //*****************************************************************************
 
-enum NumericTypeIDs{ 
+enum NumericTypeIDs{
 	//Simple numeric types IDs
 	NTID_SIMPLE_TYPE_MASK = 0x0F,
 	NTID_SIMPLE_TYPES = 0x0,
@@ -119,7 +119,7 @@ enum NumericTypeIDs{
 	NTID_FLOAT_64,
 
 	NTID_BOOL,
-	
+
 	NTID_VECTOR_DIM_STEP = 0x10,
 	//--------------------------
 	NTID_2D_VECTORS = 2 * NTID_VECTOR_DIM_STEP,
@@ -180,7 +180,7 @@ enum NumericTypeIDs{
 	NTID_4D_BOOL,
 	//--------------------------
 	NTID_RGB_COLORS = 6 * NTID_VECTOR_DIM_STEP,
-	
+
 	NTID_RGB_INT_8,
 	NTID_RGB_UINT_8,
 
@@ -198,7 +198,7 @@ enum NumericTypeIDs{
 
 	//--------------------------
 	NTID_RGBA_COLORS = 7 * NTID_VECTOR_DIM_STEP,
-	
+
 	NTID_RGBA_INT_8,
 	NTID_RGBA_UINT_8,
 
@@ -229,12 +229,12 @@ enum NumericTypeIDs{
 	NTID_COMPLEX_FLOAT_64,
 	*/
 	NTID_UNKNOWN,
-	NTID_VOID, 
+	NTID_VOID,
 };
 
 //*****************************************************************************
 /**
- * Macros defining type belonging 
+ * Macros defining type belonging
  * to numeric type ID.
  **/
 #define NTID_VOID_TYPE_DEFINE_MACRO			void
@@ -356,7 +356,7 @@ enum NumericTypeIDs{
  * in case templated command is called with apropriete type.
  * @param SWITCH Statement which will be placed in "switch( SWITCH )".
  * @param DEFAULT Code, which will be put in default branch.
- * @param ... Templated command. Must contain TTYPE, which will be replaced by 
+ * @param ... Templated command. Must contain TTYPE, which will be replaced by
  * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
  **/
 #define NUMERIC_TYPE_TEMPLATE_SWITCH_DEFAULT_MACRO( SWITCH, DEFAULT, ... ) \
@@ -383,7 +383,7 @@ enum NumericTypeIDs{
 /**
  * Same as previous, but only for integer types.
  * @param SWITCH Statement which will be placed in "switch( SWITCH )".
- * @param ... Templated command. Must contain TTYPE, which will be replaced by 
+ * @param ... Templated command. Must contain TTYPE, which will be replaced by
  * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
  **/
 #define INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
