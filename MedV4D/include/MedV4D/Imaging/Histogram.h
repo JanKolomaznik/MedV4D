@@ -90,6 +90,7 @@ public:
 		: mMin(aMin)
 		, mMax(aMax)
 		, mResolution(aResolution)
+		, mData(VectorCoordinateProduct(aResolution))
 		, mRangeSize(aMax - aMin)
 	{
 		mStrides[0] = 1;

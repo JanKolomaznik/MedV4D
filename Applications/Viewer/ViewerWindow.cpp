@@ -844,6 +844,7 @@ ViewerWindow::dataLoaded()
 void
 ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 {
+	using namespace M4D::Imaging;
 	if( !aImage ) {
 		return;
 	}
@@ -853,9 +854,11 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
+	Histogram1D<int> histogram1D;
 	Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
+		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
 	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
