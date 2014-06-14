@@ -27,7 +27,11 @@ namespace Viewer
 };*/
 
 
-AGLViewer::AGLViewer( QWidget *parent ): GLWidget( parent ), mSelected( false ), mLastMeasurement( 0 ), mEnableFPS( false )
+AGLViewer::AGLViewer( QWidget *parent )
+	: GLWidget( parent )
+	, mSelected( false )
+	, mLastMeasurement( 0 )
+	, mEnableFPS( false )
 {
 	setMouseTracking ( true );
 	setMinimumSize( 50, 50 );

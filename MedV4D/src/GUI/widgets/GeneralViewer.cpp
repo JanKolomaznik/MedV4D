@@ -41,7 +41,9 @@ handleCutPlane( bool aEnabled, const soglu::BoundingBox3D &aBBox, const soglu::P
 
 //********************************************************************************************
 
-GeneralViewer::GeneralViewer( QWidget *parent ): PredecessorType( parent ), _prepared( false )
+GeneralViewer::GeneralViewer( QWidget *parent )
+	: PredecessorType( parent )
+	, _prepared( false )
 {
 	ViewerState * state = new ViewerState;
 

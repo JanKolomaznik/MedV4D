@@ -14,10 +14,9 @@
 namespace M4D {
 namespace GUI {
 
-class AbstractPainter{
-
+class AbstractPainter
+{
 public:
-
 	typedef std::shared_ptr<AbstractPainter> Ptr;
 
 	virtual void setArea(QRect area) = 0;

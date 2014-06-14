@@ -28,14 +28,15 @@ namespace GUI {
 
 class Palette;
 
-class Creator: public QDialog{
+class TransferFunctionCreator : public QDialog, public Ui::Creator
+{
 
 	Q_OBJECT
 
 public:
 
-	Creator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF::Size>& dataStructure);
-	~Creator();
+	TransferFunctionCreator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF::Size>& dataStructure);
+	~TransferFunctionCreator();
 
 	Editor*
 	createEditor();
@@ -73,7 +74,6 @@ private:
 		CreateLoaded = 2
 	};
 
-	Ui::Creator* ui_;
 	QVBoxLayout* layout_;
 	QRadioButton* predefinedRadio_;
 	QRadioButton* customRadio_;

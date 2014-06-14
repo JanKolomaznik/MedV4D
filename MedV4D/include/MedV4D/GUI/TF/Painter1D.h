@@ -6,10 +6,9 @@
 namespace M4D {
 namespace GUI {
 
-class Painter1D: public AbstractPainter{
-
+class Painter1D: public AbstractPainter
+{
 public:
-
 	typedef std::shared_ptr<Painter1D> Ptr;
 	~Painter1D();
 
@@ -26,7 +25,7 @@ protected:
 		const QColor& component1,
 		const QColor& component2,
 		const QColor& component3,
-		const QColor& alpha = QColor(255,127,0));	
+		const QColor& alpha = QColor(255,127,0));
 
 	std::vector<std::string> componentNames_;
 
@@ -55,7 +54,7 @@ protected:
 	QPixmap viewFunctionBuffer_;
 	QPixmap viewBottomColorBarBuffer_;
 
-	void updateBackground_();	
+	void updateBackground_();
 	void updateHistogramView_(WorkCopy::Ptr workCopy);
 	virtual void updateFunctionView_(WorkCopy::Ptr workCopy);
 	void updateBottomColorBarView_(WorkCopy::Ptr workCopy);

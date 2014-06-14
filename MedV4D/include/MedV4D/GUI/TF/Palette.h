@@ -29,9 +29,9 @@
 namespace M4D {
 namespace GUI {
 
-class Palette : public QMainWindow
+class Palette : public QMainWindow, public Ui::Palette
 {
-    Q_OBJECT;
+	Q_OBJECT;
 public:
 
 	typedef std::shared_ptr<Palette> Ptr;
@@ -69,7 +69,7 @@ public:
 	Common::IDNumber
 	getActiveEditorId()const
 	{
-		return activeEditor_;
+		return mActiveEditor;
 	}
 
 	Common::TimeStamp
@@ -88,11 +88,11 @@ public slots:
 	void
 	loadFromFile( QString fileName, bool showGui = true )
 	{
-		Editor* created = creator_.loadEditorFromFile( fileName );
+		Editor* created = mEditorCreator.loadEditorFromFile( fileName );
 
 		if(!created) return;
 
-		addToPalette_(created, showGui);
+		addToPalette(created, showGui);
 	}
 
 signals:
@@ -115,7 +115,7 @@ private slots:
 	close_triggered(TF::Size index);
 
 	void
-	on_addButton_clicked();
+	onAddButtonClicked();
 
 	void
 	change_activeHolder(TF::Size index);
@@ -166,10 +166,9 @@ private:
 	static const int noFunctionAvailable = -1;
 	static const int emptyPalette = -2;
 
-	Ui::Palette* ui_;
-	QMainWindow* mainWindow_;
-	QGridLayout* layout_;
-	TF::Size colModulator_;
+	QMainWindow* mParentMainWindow;
+	QGridLayout* mLayout;
+	int mColModulator;
 
 	TF::HistogramInterface::Ptr histogram_;
 	std::vector<TF::Size> dataStructure_;
@@ -179,10 +178,10 @@ private:
 	bool activeChanged_;
 
 	M4D::Common::IDGenerator idGenerator_;
-	int activeEditor_;
-	HolderMap palette_;
+	int mActiveEditor;
+	HolderMap mPalette;
 
-	Creator creator_;
+	TransferFunctionCreator mEditorCreator;
 
 	QTimer previewUpdater_;
 	bool previewEnabled_;
@@ -190,19 +189,19 @@ private:
 	QTimer mChangeDetectionTimer;
 
 	void
-	addToPalette_(Editor* editor, bool visible = true );
+	addToPalette(Editor* editor, bool visible = true );
 
 	void
-	removeFromPalette_(const TF::Size index);
+	removeFromPalette(const TF::Size index);
 
 	void
-	reformLayout_(bool forceReform = false);
+	reformLayout(bool forceReform = false);
 
 	void
-	activateNext_(HolderMapIt it);
+	activateNext(HolderMapIt it);
 
 	void
-	changeDomain_(const TF::Size dimension);
+	changeDomain(const TF::Size dimension);
 };
 
 } // namespace GUI

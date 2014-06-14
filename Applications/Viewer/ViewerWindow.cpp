@@ -200,6 +200,12 @@ ViewerWindow::ViewerWindow()
 	#endif
 
 
+
+}
+
+void
+ViewerWindow::initialize()
+{
 	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::current_path() / "data").string() );
 	M4D::GUI::Renderer::gSliceRendererShaderPath = dataDirName / "shaders";
 	M4D::GUI::Renderer::gVolumeRendererShaderPath = dataDirName / "shaders";
@@ -318,6 +324,7 @@ ViewerWindow::ViewerWindow()
 	mOpenDialog = new QFileDialog( this, tr("Open Image") );
 	mOpenDialog->setFileMode(QFileDialog::ExistingFile);
 	//mOpenDialog->setOption(QFileDialog::DontUseNativeDialog, false);
+
 }
 
 void

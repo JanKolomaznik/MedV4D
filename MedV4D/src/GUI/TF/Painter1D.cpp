@@ -6,7 +6,7 @@ namespace GUI {
 Painter1D::Painter1D(const QColor& component1,
 								 const QColor& component2,
 								 const QColor& component3,
-								 const QColor& alpha):	
+								 const QColor& alpha):
 	margin_(5),
 	spacing_(5),
 	colorBarSize_(10),
@@ -23,7 +23,7 @@ Painter1D::Painter1D(const QColor& component1,
 Painter1D::~Painter1D(){}
 
 void Painter1D::setArea(QRect area){
-	
+
 	area_ = area;
 
 	backgroundArea_= QRect(
@@ -37,7 +37,7 @@ void Painter1D::setArea(QRect area){
 		backgroundArea_.y() + margin_,
 		backgroundArea_.width() - 2*margin_,
 		backgroundArea_.height() - 2*margin_);
-	
+
 	bottomBarArea_= QRect(
 		inputArea_.x() - 1,
 		area_.height() - colorBarSize_ - 1,
@@ -68,7 +68,7 @@ void Painter1D::updateBackground_(){
 }
 
 void Painter1D::updateHistogramView_(WorkCopy::Ptr workCopy){
-		
+
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
 
@@ -91,12 +91,12 @@ void Painter1D::updateHistogramView_(WorkCopy::Ptr workCopy){
 		x2 = origin.x + i;
 
 		drawer.setPen(hist_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 	}
 }
 
 void Painter1D::updateFunctionView_(WorkCopy::Ptr workCopy){
-		
+
 	viewFunctionBuffer_ = QPixmap(area_.width(), area_.height());
 	viewFunctionBuffer_.fill(noColor_);
 
@@ -129,22 +129,22 @@ void Painter1D::updateFunctionView_(WorkCopy::Ptr workCopy){
 		y1 = origin.y + (1 - colorBegin.component2)*inputArea_.height();
 		y2 = origin.y + (1 - colorEnd.component2)*inputArea_.height();
 		drawer.setPen(component2_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 
 		y1 = origin.y + (1 - colorBegin.component3)*inputArea_.height();
 		y2 = origin.y + (1 - colorEnd.component3)*inputArea_.height();
 		drawer.setPen(component3_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 
 		y1 = origin.y + (1 - colorBegin.alpha)*inputArea_.height();
 		y2 = origin.y + (1 - colorEnd.alpha)*inputArea_.height();
 		drawer.setPen(alpha_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 	}
 }
 /*
 void Painter1D::updateComponent2View_(WorkCopy::Ptr workCopy){
-		
+
 	viewComponent2Buffer_ = QPixmap(area_.width(), area_.height());
 	viewComponent2Buffer_.fill(noColor_);
 
@@ -163,12 +163,12 @@ void Painter1D::updateComponent2View_(WorkCopy::Ptr workCopy){
 		y2 = origin.y + (1 - workCopy->getComponent2(TF_DIMENSION_1, i + 1))*inputArea_.height();
 
 		drawer.setPen(component2_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 	}
 }
 
 void Painter1D::updateComponent3View_(WorkCopy::Ptr workCopy){
-		
+
 	viewComponent3Buffer_ = QPixmap(area_.width(), area_.height());
 	viewComponent3Buffer_.fill(noColor_);
 
@@ -187,12 +187,12 @@ void Painter1D::updateComponent3View_(WorkCopy::Ptr workCopy){
 		y2 = origin.y + (1 - workCopy->getComponent3(TF_DIMENSION_1, i + 1))*inputArea_.height();
 
 		drawer.setPen(component3_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 	}
 }
 
 void Painter1D::updateAlphaView_(WorkCopy::Ptr workCopy){
-		
+
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
 
@@ -211,12 +211,12 @@ void Painter1D::updateAlphaView_(WorkCopy::Ptr workCopy){
 		y2 = origin.y + (1 - workCopy->getAlpha(TF_DIMENSION_1, i + 1))*inputArea_.height();
 
 		drawer.setPen(alpha_);
-		drawer.drawLine(x1, y1,	x2, y2);	
+		drawer.drawLine(x1, y1,	x2, y2);
 	}
 }
 */
 void Painter1D::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
-		
+
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
 
@@ -235,7 +235,7 @@ void Painter1D::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 
 		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
 		drawer.setPen(qColor);
-		
+
 		x1 = bottomBarArea_.x() + i + 1;
 		y1 = bottomBarArea_.y();
 		x2 = bottomBarArea_.x() + i + 1;
@@ -245,31 +245,25 @@ void Painter1D::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 	}
 }
 
-QPixmap Painter1D::getView(WorkCopy::Ptr workCopy){
-
+QPixmap Painter1D::getView(WorkCopy::Ptr workCopy)
+{
 	bool change = false;
-	if(sizeChanged_)
-	{
+	if(sizeChanged_) {
 		updateBackground_();
 		updateHistogramView_(workCopy);
 		updateFunctionView_(workCopy);
 		change = true;
-	}
-	else
-	{
-		if(workCopy->histogramChanged())
-		{
+	} else {
+		if(workCopy->histogramChanged()) {
 			updateHistogramView_(workCopy);
 			change = true;
 		}
-		if(workCopy->changed())
-		{
+		if(workCopy->changed()) {
 			updateFunctionView_(workCopy);
 			change = true;
 		}
 	}
-	if(change)
-	{
+	if(change) {
 		updateBottomColorBarView_(workCopy);
 
 		viewBuffer_ = QPixmap(area_.width(), area_.height());

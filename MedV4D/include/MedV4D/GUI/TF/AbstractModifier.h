@@ -19,8 +19,8 @@
 namespace M4D {
 namespace GUI {
 
-class AbstractModifier: public QWidget{
-
+class AbstractModifier: public QWidget
+{
 public:
 
 	typedef std::shared_ptr<AbstractModifier> Ptr;

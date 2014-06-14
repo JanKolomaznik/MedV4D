@@ -14,11 +14,11 @@ CompositeModifier::CompositeModifier(
 		TransferFunctionInterface::Ptr function,
 		Painter1D::Ptr painter,
 		Palette* palette
-		):
-	Modifier1D(function, painter),
-	palette_(palette),
-	editors_(palette->getEditors()),
-	managing_(false)
+		)
+	: Modifier1D(function, painter)
+	, palette_(palette)
+	, editors_(palette->getEditors())
+	, managing_(false)
 {
 	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	compositeTools_ = new Ui::CompositeModifier;
@@ -59,18 +59,18 @@ CompositeModifier::CompositeModifier(
 	activeView_ = ActiveAlpha;
 }
 
-CompositeModifier::~CompositeModifier(){
-
+CompositeModifier::~CompositeModifier()
+{
 	delete compositeTools_;
 }
 
-void CompositeModifier::createTools_(){
-
+void CompositeModifier::createTools_()
+{
 	simpleWidget_->hide();
 
-    QFrame* separator = new QFrame();
-    separator->setFrameShape(QFrame::HLine);
-    separator->setFrameShadow(QFrame::Sunken);
+	QFrame* separator = new QFrame();
+	separator->setFrameShape(QFrame::HLine);
+	separator->setFrameShadow(QFrame::Sunken);
 
 	QVBoxLayout* layout = new QVBoxLayout();
 	layout->addItem(centerWidget_(compositeWidget_));
@@ -81,8 +81,8 @@ void CompositeModifier::createTools_(){
 	toolsWidget_->setLayout(layout);
 }
 
-void CompositeModifier::mousePressEvent(QMouseEvent *e){
-
+void CompositeModifier::mousePressEvent(QMouseEvent *e)
+{
 	TF::PaintingPoint relativePoint = getRelativePoint_(e->x(), e->y());
 	if(relativePoint == ignorePoint_) return;
 
@@ -95,13 +95,13 @@ void CompositeModifier::mousePressEvent(QMouseEvent *e){
 	ViewModifier::mousePressEvent(e);
 }
 
-void CompositeModifier::changeChecker_intervalChange(int value){
-
+void CompositeModifier::changeChecker_intervalChange(int value)
+{
 	changeChecker_.setInterval(value);
 }
 
-void CompositeModifier::clearLayout_(){
-
+void CompositeModifier::clearLayout_()
+{
 	layout_->removeItem(pushUpSpacer_);
 	QLayoutItem* layoutIt;
 	while(!layout_->isEmpty())
@@ -125,8 +125,8 @@ void CompositeModifier::manageComposition_clicked(){
 	updateComposition_();
 }
 
-void CompositeModifier::updateComposition_(){
-
+void CompositeModifier::updateComposition_()
+{
 	Selection selection = manager_.getComposition();
 	clearLayout_();
 
@@ -134,24 +134,15 @@ void CompositeModifier::updateComposition_(){
 	M4D::Common::TimeStamp lastChange;
 	EditorInstance* editor = nullptr;
 	Composition newComposition;
-	Composition::iterator found;
-	for(Selection::iterator it = selection.begin(); it != selection.end(); ++it)
-	{
-		found = composition_.find(*it);
-		if(found == composition_.end())
-		{
-			editor = new EditorInstance(editors_.find(*it)->second);
-			newComposition.insert(std::make_pair(
-				*it,
-				editor)
-			);
+	for(auto &item : selection) {
+		auto found = composition_.find(item);
+		if(found == composition_.end()) {
+			editor = new EditorInstance(editors_.find(item)->second);
+			newComposition.insert(std::make_pair(item, editor));
 			recalculate = true;
-		}
-		else
-		{
+		} else {
 			lastChange = found->second->editor->lastChange();
-			if(found->second->change != lastChange)
-			{
+			if (found->second->change != lastChange) {
 				recalculate = true;
 				found->second->change = lastChange;
 			}
@@ -166,7 +157,9 @@ void CompositeModifier::updateComposition_(){
 	}
 	layout_->addItem(pushUpSpacer_);
 
-	if(!composition_.empty()) recalculate = true;
+	if (!composition_.empty()) {
+		recalculate = true;
+	}
 	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
 	{
 		layout_->removeWidget(it->second->name);
@@ -177,10 +170,9 @@ void CompositeModifier::updateComposition_(){
 	if(recalculate) computeResultFunction_();
 }
 
-void CompositeModifier::change_check(){
-
-	if(managing_)
-	{
+void CompositeModifier::change_check()
+{
+	if(managing_) {
 		updateComposition_();
 		return;
 	}
@@ -188,54 +180,52 @@ void CompositeModifier::change_check(){
 	bool recalculate = false;
 
 	Common::TimeStamp lastChange = palette_->lastPaletteChange();
-	if(lastPaletteChange_ != lastChange)
-	{
+	if(lastPaletteChange_ != lastChange) {
 		lastPaletteChange_ = lastChange;
 		editors_ = palette_->getEditors();
 		//editors_.swap(palette_->getEditors());
 
 		bool compositionEnabled = false;
 		Composition newComposition;
-		Composition::iterator found;
-		for(Palette::Editors::iterator it = editors_.begin(); it != editors_.end(); ++it)
-		{
-			if(!it->second->hasAttribute(Editor::Composition) &&
-				it->second->getDimension() == TF_DIMENSION_1)
+		for(auto &editor : editors_) {
+			if(!editor.second->hasAttribute(Editor::Composition)
+				&& editor.second->getDimension() == TF_DIMENSION_1)
 			{
 				compositionEnabled = true;
 
-				found = composition_.find(it->first);
-				if(found != composition_.end())
-				{
+				auto found = composition_.find(editor.first);
+				if(found != composition_.end()) {
 					newComposition.insert(*found);
 					composition_.erase(found);
 				}
 			}
 		}
 
-		if(!composition_.empty()) recalculate = true;
-		for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
-		{
-			layout_->removeWidget(it->second->name);
-			delete it->second;
+		if (!composition_.empty()) {
+			recalculate = true;
+		}
+
+		for (auto &item : composition_) {
+			layout_->removeWidget(item.second->name);
+			delete item.second;
 		}
 		composition_.swap(newComposition);
 
 		compositeTools_->manageButton->setEnabled(compositionEnabled);
 	}
 
-	for(Composition::iterator it = composition_.begin(); it != composition_.end(); ++it)
-	{
-		lastChange = it->second->editor->lastChange();
-		if(it->second->change != lastChange)
-		{
+	for (auto &item : composition_) {
+		lastChange = item.second->editor->lastChange();
+		if(item.second->change != lastChange) {
 			recalculate = true;
-			it->second->change = lastChange;
+			item.second->change = lastChange;
 		}
-		it->second->updateName();
+		item.second->updateName();
 	}
 
-	if(recalculate) computeResultFunction_();
+	if (recalculate) {
+		computeResultFunction_();
+	}
 }
 
 void CompositeModifier::computeResultFunction_(){

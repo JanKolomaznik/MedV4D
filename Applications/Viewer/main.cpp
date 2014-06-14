@@ -93,6 +93,7 @@ main( int argc, char** argv )
 		//processCommandLine( argc, argv );
 		ViewerWindow viewer;
 		appManager.setMainWindow( viewer );
+		viewer.initialize();
 
 		createModules();
 

@@ -26,88 +26,68 @@ namespace GUI {
 //---creation-methods---
 
 template<TF::Size dim>
-AbstractFunction<dim>* Creator::createFunction_(){
-
-	switch(structure_[mode_].function)
-	{
-		case TF::Types::FunctionRGBa:
-		{
-			return new RGBaFunction<dim>(dataStructure_);
-		}
-		case TF::Types::FunctionHSVa:
-		{
-			return new HSVaFunction<dim>(dataStructure_);
-		}
+AbstractFunction<dim>* TransferFunctionCreator::createFunction_()
+{
+	switch(structure_[mode_].function) {
+	case TF::Types::FunctionRGBa:
+		return new RGBaFunction<dim>(dataStructure_);
+	case TF::Types::FunctionHSVa:
+		return new HSVaFunction<dim>(dataStructure_);
 	}
 
 	tfAssert(!"Unknown function");
 	return new RGBaFunction<dim>(dataStructure_);	//default
 }
 
-AbstractPainter* Creator::createPainter_(Editor::Attributes& attributes){
-
-	switch(structure_[mode_].painter)
-	{
-		case TF::Types::PainterGrayscaleAlpha1D:
-		{
-			return new GrayscaleAlphaPainter1D();
-		}
-		case TF::Types::PainterRGBa1D:
-		{
-			return new RGBaPainter1D();
-		}
-		case TF::Types::PainterHSVa1D:
-		{
-			return new HSVaPainter1D();
-		}
+AbstractPainter* TransferFunctionCreator::createPainter_(Editor::Attributes& attributes)
+{
+	switch(structure_[mode_].painter) {
+	case TF::Types::PainterGrayscaleAlpha1D:
+		return new GrayscaleAlphaPainter1D();
+	case TF::Types::PainterRGBa1D:
+		return new RGBaPainter1D();
+	case TF::Types::PainterHSVa1D:
+		return new HSVaPainter1D();
 	}
-	
+
 	tfAssert(!"Unknown painter!");
 	return new RGBaPainter1D();
 }
 
-AbstractModifier* Creator::createModifier_(Editor::Attributes& attributes)
+AbstractModifier* TransferFunctionCreator::createModifier_(Editor::Attributes& attributes)
 {
 	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
-	
-	switch(structure_[mode_].modifier)
-	{
-		case TF::Types::ModifierSimple1D:
-		{
-			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
-			return new Modifier1D(
-				TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
-			);
-		}
-		case TF::Types::ModifierPolygon1D:
-		{
-			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
-			return new PolygonModifier(
-				TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-				Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
-			);
-		}
-		case TF::Types::ModifierComposite1D:
-		{
-			tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
-			attributes.insert(Editor::Composition);
-			TransferFunctionInterface::Ptr func = TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>());
-			Painter1D::Ptr painter = Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)));
-			CompositeModifier *modifier = new CompositeModifier( func, painter, palette_ );
-			return modifier; 
-		}
+
+	switch(structure_[mode_].modifier) {
+	case TF::Types::ModifierSimple1D:
+		tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
+		return new Modifier1D(
+			TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+			Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
+		);
+	case TF::Types::ModifierPolygon1D:
+		tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
+		return new PolygonModifier(
+			TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+			Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
+		);
+	case TF::Types::ModifierComposite1D: {
+		tfAssert(structure_[mode_].dimension == TF::Types::Dimension1);
+		attributes.insert(Editor::Composition);
+		TransferFunctionInterface::Ptr func = TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>());
+		Painter1D::Ptr painter = Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)));
+		return new CompositeModifier( func, painter, palette_ );
 	}
-
-	tfAssert(!"Unknown modifier!");	
-	return new Modifier1D(
-		TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
-		Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
-	);	//default
-
+	default:
+		tfAssert(false && "Unknown modifier!");
+		return new Modifier1D(
+			TransferFunctionInterface::Ptr(createFunction_<TF_DIMENSION_1>()),
+			Painter1D::Ptr(dynamic_cast<Painter1D*>(createPainter_(attributes)))
+		);	//default
+	}
 }
 
-Editor* Creator::createEditor_()
+Editor* TransferFunctionCreator::createEditor_()
 {
 	//D_BLOCK_COMMENT( TO_STRING(__FUNCTION__ << " entered"), TO_STRING(__FUNCTION__ << " leaved") );
 	Editor::Attributes attributes;
@@ -118,9 +98,8 @@ Editor* Creator::createEditor_()
 
 //---creation-dialog---
 
-Creator::Creator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF::Size>& dataStructure):
+TransferFunctionCreator::TransferFunctionCreator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF::Size>& dataStructure):
 	QDialog(mainWindow),
-	ui_(new Ui::Creator),
 	layout_(new QVBoxLayout()),
 	reader_(new TF::QtXmlReader),
 	state_(ModeSelection),
@@ -137,13 +116,13 @@ Creator::Creator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF
 
 	structure_[CreateCustom].predefined = TF::Types::PredefinedCustom;
 
-	ui_->setupUi(this);
+	setupUi(this);
 
 	layout_->setContentsMargins(10,10,10,10);
-	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);	
-	ui_->scrollArea->setLayout(layout_);
+	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	scrollArea->setLayout(layout_);
 
-	predefinedRadio_ = new QRadioButton("Select predefined");	
+	predefinedRadio_ = new QRadioButton("Select predefined");
 	bool predefinedRadioConnected = QObject::connect(predefinedRadio_, SIGNAL(clicked()), this, SLOT(mode_clicked()));
 	tfAssert(predefinedRadioConnected);
 	predefinedRadio_->setChecked(true);
@@ -157,36 +136,40 @@ Creator::Creator(QMainWindow* mainWindow, Palette* palette, const std::vector<TF
 	tfAssert(loadRadioConnected);
 }
 
-Creator::~Creator(){
+TransferFunctionCreator::~TransferFunctionCreator(){
 
 	delete reader_;
-	delete ui_;
 }
 
-Editor* Creator::createEditor(){
+Editor* TransferFunctionCreator::createEditor() {
 
 	clearLayout_(state_ != ModeSelection);
 	setStateModeSelection_();
 
 	exec();
 
-	if(result() == QDialog::Rejected) return NULL;
-	
-	if(mode_ == CreateLoaded) return loadEditor_();
+	if(result() == QDialog::Rejected) {
+		return nullptr;
+	}
+
+	if(mode_ == CreateLoaded) {
+		return loadEditor_();
+	}
 
 	name_ = TF::convert<TF::Types::Predefined, std::string>(structure_[mode_].predefined);
-	return createEditor_();	
+	return createEditor_();
 }
 
 Editor*
-Creator::loadEditorFromFile( QString fileName )
+TransferFunctionCreator::loadEditorFromFile( QString fileName )
 {
 	Editor* loaded = NULL; //TODO improve
 
-	if(fileName.isEmpty()) return loaded;
+	if(fileName.isEmpty()) {
+		return loaded;
+	}
 
-	if(!reader_->begin(fileName.toLocal8Bit().data()))
-	{
+	if(!reader_->begin(fileName.toLocal8Bit().data())) {
 		LOG_ERR( reader_->errorMessage());
 		return loaded;
 	}
@@ -194,21 +177,19 @@ Creator::loadEditorFromFile( QString fileName )
 	bool error;
 	loaded = load_(reader_, error);
 
-	if(!loaded)
-	{ 
+	if(!loaded) {
 		LOG_ERR( "File \""<< fileName.toLocal8Bit().data() << " is corrupted." );
-	}else if(error)
-	{
+	} else if(error) {
 		LOG_ERR("Transfer Function Loading Error");
 		LOG_ERR("Error while reading additional data.\nSome settings are set to default.");
 	}
 	reader_->end();
 	return loaded;
 }
-	
-Editor* Creator::loadEditor_(){
 
-	Editor* loaded = NULL;
+Editor* TransferFunctionCreator::loadEditor_()
+{
+	Editor* loaded = nullptr;
 
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow_,
@@ -216,13 +197,14 @@ Editor* Creator::loadEditor_(){
 		QDir::currentPath(),
 		QObject::tr("TF Editor Files (*.tfe)"));
 
-	if(fileName.isEmpty()) return loaded;
+	if(fileName.isEmpty()) {
+		return loaded;
+	}
 
-	QMessageBox errorMessage(QMessageBox::Critical, "Transfer Function Loading Error", "", QMessageBox::Ok);
+	QMessageBox errorMessage(QMessageBox::Critical, tr("Transfer Function Loading Error"), "", QMessageBox::Ok);
 	errorMessage.setDefaultButton(QMessageBox::Ok);
 
-	if(!reader_->begin(fileName.toLocal8Bit().data()))
-	{
+	if(!reader_->begin(fileName.toLocal8Bit().data())) {
 		errorMessage.setText(QString::fromStdString(reader_->errorMessage()));
 		errorMessage.exec();
 		return loaded;
@@ -231,16 +213,15 @@ Editor* Creator::loadEditor_(){
 	bool error;
 	loaded = load_(reader_, error);
 
-	if(!loaded)
-	{ 
+	if(!loaded) {
 		errorMessage.setText(QObject::tr("File \"%1\" is corrupted.").arg(fileName));
 		errorMessage.exec();
-	}
-	else if(error)
-	{
-		QMessageBox::warning((QWidget*)mainWindow_,
-			QObject::tr("Transfer Function Loading Error"),
-			QObject::tr("Error while reading additional data.\nSome settings are set to default."));
+	} else {
+		if(error) {
+			QMessageBox::warning((QWidget*)mainWindow_,
+				QObject::tr("Transfer Function Loading Error"),
+				QObject::tr("Error while reading additional data.\nSome settings are set to default."));
+		}
 	}
 
 	#ifndef TF_NDEBUG
@@ -251,8 +232,8 @@ Editor* Creator::loadEditor_(){
 	return loaded;
 }
 
-Editor* Creator::load_(TF::XmlReaderInterface* reader, bool& sideError){
-
+Editor* TransferFunctionCreator::load_(TF::XmlReaderInterface* reader, bool& sideError)
+{
 	#ifndef TF_NDEBUG
 		std::cout << "Loading editor..." << std::endl;
 	#endif
@@ -260,8 +241,7 @@ Editor* Creator::load_(TF::XmlReaderInterface* reader, bool& sideError){
 	Editor* loaded = NULL;
 	std::string name;
 	bool ok = false;
-	if(reader->readElement("Editor"))
-	{		
+	if(reader->readElement("Editor")) {
 		name_ = reader->readAttribute("Name");
 
 		structure_[mode_].predefined = TF::convert<std::string, TF::Types::Predefined>(
@@ -282,121 +262,96 @@ Editor* Creator::load_(TF::XmlReaderInterface* reader, bool& sideError){
 		loaded = createEditor_();
 		if(loaded) ok = loaded->load(reader, sideError);
 	}
-	if(!ok)
-	{
+	if(!ok) {
 		if(loaded) delete loaded;
 		return NULL;
 	}
 	return loaded;
 }
 
-void Creator::setDataStructure(const std::vector<TF::Size>& dataStructure){
-
+void TransferFunctionCreator::setDataStructure(const std::vector<TF::Size>& dataStructure)
+{
 	dataStructure_ = dataStructure;
 }
 
-void Creator::on_nextButton_clicked(){
-
-	switch(state_)
-	{
-		case ModeSelection:
+void TransferFunctionCreator::on_nextButton_clicked()
+{
+	switch(state_) {
+	case ModeSelection:
+		switch(mode_)
 		{
-			switch(mode_)
+			case CreatePredefined:
 			{
-				case CreatePredefined:
-				{
-					clearLayout_(false);
-					setStatePredefined_();
-					break;
-				}
-				case CreateCustom:
-				{
-					clearLayout_(false);
-					setStateDimension_();
-					break;
-				}
-				case CreateLoaded:
-				{
-					accept();
-					break;
-				}
+				clearLayout_(false);
+				setStatePredefined_();
+				break;
 			}
-			break;
+			case CreateCustom:
+			{
+				clearLayout_(false);
+				setStateDimension_();
+				break;
+			}
+			case CreateLoaded:
+			{
+				accept();
+				break;
+			}
 		}
-		case Predefined:
-		{
-			accept();
-			break;
-		}
-		case Dimension:
-		{
-			clearLayout_();
-			setStateModifier_();
-			break;
-		}
-		case Modifier:
-		{
-			clearLayout_();
-			setStateFunction_();
-			break;
-		}
-		case Function:
-		{
-			clearLayout_();
-			setStatePainter_();
-			break;
-		}
-		case Painter:
-		{
-			accept();
-			break;
-		}
+		break;
+	case Predefined:
+		accept();
+		break;
+	case Dimension:
+		clearLayout_();
+		setStateModifier_();
+		break;
+	case Modifier:
+		clearLayout_();
+		setStateFunction_();
+		break;
+	case Function:
+		clearLayout_();
+		setStatePainter_();
+		break;
+	case Painter:
+		accept();
+		break;
+	default:
+		assert(false);
 	}
 }
 
-void Creator::on_backButton_clicked(){
+void TransferFunctionCreator::on_backButton_clicked(){
 
-	switch(state_)
-	{
-		case Painter:
-		{
-			clearLayout_();
-			setStateFunction_();
-			break;
-		}
-		case Function:
-		{
-			clearLayout_();
-			setStateModifier_();
-			break;
-		}
-		case Modifier:
-		{
-			clearLayout_();
-			setStateDimension_();
-			break;
-		}
-		case Dimension:
-		{
-			clearLayout_();
-			setStateModeSelection_();
-			break;
-		}
-		case Predefined:
-		{
-			clearLayout_();
-			setStateModeSelection_();
-			break;
-		}
-		case ModeSelection:
-		{
-			reject();
-			break;
-		}
+	switch(state_) {
+	case Painter:
+		clearLayout_();
+		setStateFunction_();
+		break;
+	case Function:
+		clearLayout_();
+		setStateModifier_();
+		break;
+	case Modifier:
+		clearLayout_();
+		setStateDimension_();
+		break;
+	case Dimension:
+		clearLayout_();
+		setStateModeSelection_();
+		break;
+	case Predefined:
+		clearLayout_();
+		setStateModeSelection_();
+		break;
+	case ModeSelection:
+		reject();
+		break;
 	}
 }
 
-void Creator::clearLayout_(bool deleteItems){
+void TransferFunctionCreator::clearLayout_(bool deleteItems){
 
 	QLayoutItem* layoutIt;
 	while(!layout_->isEmpty())
@@ -408,7 +363,7 @@ void Creator::clearLayout_(bool deleteItems){
 	}
 }
 
-void Creator::setStateModeSelection_(){
+void TransferFunctionCreator::setStateModeSelection_(){
 
 	layout_->addWidget(predefinedRadio_);
 	predefinedRadio_->show();
@@ -422,18 +377,18 @@ void Creator::setStateModeSelection_(){
 	loadRadio_->show();
 	loadRadio_->setChecked(mode_ == CreateLoaded);
 
-	ui_->description->setText(QObject::tr("Create Editor"));
-	ui_->backButton->setText(QObject::tr("Cancel"));
-	ui_->nextButton->setText(QObject::tr("Next"));
-	ui_->nextButton->setEnabled(true);
+	description->setText(QObject::tr("Create Editor"));
+	backButton->setText(QObject::tr("Cancel"));
+	nextButton->setText(QObject::tr("Next"));
+	nextButton->setEnabled(true);
 
 	state_ = ModeSelection;
 }
 
-void Creator::setStatePredefined_(){
-	
+void TransferFunctionCreator::setStatePredefined_(){
+
 	TF::Types::PredefinedTypes allPredefined = TF::Types::getPredefinedTypes();
-	
+
 	PredefinedDialogButton* toActivate = NULL;
 	TF::Types::PredefinedTypes::iterator begin = allPredefined.begin();
 	TF::Types::PredefinedTypes::iterator end = allPredefined.end();
@@ -449,19 +404,19 @@ void Creator::setStatePredefined_(){
 		layout_->addWidget(type);
 	}
 	if(toActivate) toActivate->setChecked(true);
-	
-	ui_->description->setText(QObject::tr("Predefined Editors"));
-	ui_->backButton->setText(QObject::tr("Back"));
-	ui_->nextButton->setText(QObject::tr("Finish"));
-	ui_->nextButton->setEnabled(predefinedSet_);
+
+	description->setText(QObject::tr("Predefined Editors"));
+	backButton->setText(QObject::tr("Back"));
+	nextButton->setText(QObject::tr("Finish"));
+	nextButton->setEnabled(predefinedSet_);
 
 	state_ = Predefined;
 }
 
-void Creator::setStateDimension_(){
-	
+void TransferFunctionCreator::setStateDimension_(){
+
 	TF::Types::Dimensions allDimensions = TF::Types::getSupportedDimensions();
-	
+
 	DimensionDialogButton* toActivate = NULL;
 	TF::Types::Dimensions::iterator begin = allDimensions.begin();
 	TF::Types::Dimensions::iterator end = allDimensions.end();
@@ -477,15 +432,15 @@ void Creator::setStateDimension_(){
 		layout_->addWidget(type);
 	}
 	if(toActivate) toActivate->setChecked(true);
-	
-	ui_->description->setText(QObject::tr("Available Dimensions"));
-	ui_->backButton->setText(QObject::tr("Back"));
-	ui_->nextButton->setEnabled(dimensionSet_);
+
+	description->setText(QObject::tr("Available Dimensions"));
+	backButton->setText(QObject::tr("Back"));
+	nextButton->setEnabled(dimensionSet_);
 
 	state_ = Dimension;
 }
 
-void Creator::setStateModifier_(){
+void TransferFunctionCreator::setStateModifier_(){
 
 	TF::Types::Modifiers allowedModifiers = TF::Types::getAllowedModifiers(structure_[mode_].dimension);
 
@@ -505,16 +460,16 @@ void Creator::setStateModifier_(){
 	}
 	if(toActivate) toActivate->setChecked(true);
 
-	ui_->description->setText(QObject::tr("Available Modifiers"));
-	ui_->nextButton->setEnabled(modifierSet_);
+	description->setText(QObject::tr("Available Modifiers"));
+	nextButton->setEnabled(modifierSet_);
 
 	state_ = Modifier;
 }
 
-void Creator::setStateFunction_(){
+void TransferFunctionCreator::setStateFunction_(){
 
 	TF::Types::Functions allowedFunctions = TF::Types::getAllowedFunctions(structure_[mode_].modifier);
-	
+
 	FunctionDialogButton* toActivate = NULL;
 	TF::Types::Functions::iterator begin = allowedFunctions.begin();
 	TF::Types::Functions::iterator end = allowedFunctions.end();
@@ -531,14 +486,14 @@ void Creator::setStateFunction_(){
 	}
 	if(toActivate) toActivate->setChecked(true);
 
-	ui_->description->setText(QObject::tr("Available Functions"));
-	ui_->nextButton->setText(QObject::tr("Next"));
-	ui_->nextButton->setEnabled(functionSet_);
+	description->setText(QObject::tr("Available Functions"));
+	nextButton->setText(QObject::tr("Next"));
+	nextButton->setEnabled(functionSet_);
 
 	state_ = Function;
 }
 
-void Creator::setStatePainter_(){
+void TransferFunctionCreator::setStatePainter_(){
 
 	TF::Types::Painters allowedPainters = TF::Types::getAllowedPainters(structure_[mode_].function);
 
@@ -558,184 +513,184 @@ void Creator::setStatePainter_(){
 	}
 	if(toActivate) toActivate->setChecked(true);
 
-	ui_->description->setText(QObject::tr("Available Painters"));
-	ui_->nextButton->setText(QObject::tr("Finish"));
-	ui_->nextButton->setEnabled(painterSet_);
+	description->setText(QObject::tr("Available Painters"));
+	nextButton->setText(QObject::tr("Finish"));
+	nextButton->setEnabled(painterSet_);
 
 	state_ = Painter;
 }
 
-void Creator::mode_clicked(){
+void TransferFunctionCreator::mode_clicked(){
 
 	if(predefinedRadio_->isChecked())
 	{
 		mode_ = CreatePredefined;
 		if(predefinedSet_)
 		{
-			ui_->predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
+			predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
 				structure_[mode_].predefined
 			)));
-			ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+			dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
 				structure_[mode_].dimension
 			)));
-			ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
+			modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 				structure_[mode_].modifier
 			)));
-			ui_->functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
+			functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
 				structure_[mode_].function
 			)));
-			ui_->painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
+			painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
 				structure_[mode_].painter
 			)));
 		}
 		else
 		{
-			ui_->predefinedValue->setText("Predefined");
-			ui_->dimensionValue->setText("");
-			ui_->modifierValue->setText("");
-			ui_->functionValue->setText("");
-			ui_->painterValue->setText("");
+			predefinedValue->setText("Predefined");
+			dimensionValue->setText("");
+			modifierValue->setText("");
+			functionValue->setText("");
+			painterValue->setText("");
 		}
-		
+
 	}
 	if(customRadio_->isChecked())
 	{
 		mode_ = CreateCustom;
-		ui_->predefinedValue->setText("Custom");
+		predefinedValue->setText("Custom");
 
 		if(dimensionSet_)
 		{
-			ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+			dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
 				structure_[mode_].dimension
 			)));
 		}
-		else ui_->dimensionValue->setText("");
+		else dimensionValue->setText("");
 
 		if(modifierSet_)
 		{
-			ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
+			modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 				structure_[mode_].modifier
 			)));
 		}
-		else ui_->modifierValue->setText("");
+		else modifierValue->setText("");
 
 		if(functionSet_)
 		{
-			ui_->functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
+			functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
 				structure_[mode_].function
 			)));
 		}
-		else ui_->functionValue->setText("");
+		else functionValue->setText("");
 
 		if(painterSet_)
 		{
-			ui_->painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
+			painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
 				structure_[mode_].painter
 			)));
 		}
-		else ui_->painterValue->setText("");
+		else painterValue->setText("");
 	}
 	if(loadRadio_->isChecked())
 	{
 		mode_ = CreateLoaded;
-		ui_->predefinedValue->setText("Loaded");
-		ui_->dimensionValue->setText("");
-		ui_->modifierValue->setText("");
-		ui_->functionValue->setText("");
-		ui_->painterValue->setText("");
-		ui_->nextButton->setText(QObject::tr("Finish"));
+		predefinedValue->setText("Loaded");
+		dimensionValue->setText("");
+		modifierValue->setText("");
+		functionValue->setText("");
+		painterValue->setText("");
+		nextButton->setText(QObject::tr("Finish"));
 	}
-	else ui_->nextButton->setText(QObject::tr("Next"));
+	else nextButton->setText(QObject::tr("Next"));
 }
 
-void Creator::predefinedButton_clicked(TF::Types::Predefined predefined){
+void TransferFunctionCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 
 	predefinedSet_ = true;
-	ui_->nextButton->setEnabled(true);
+	nextButton->setEnabled(true);
 
 	structure_[mode_] = TF::Types::getPredefinedStructure(predefined);
 
-	ui_->predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
+	predefinedValue->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(
 		structure_[mode_].predefined
 	)));
-	ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+	dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
 		structure_[mode_].dimension
 	)));
-	ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
+	modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 		structure_[mode_].modifier
 	)));
-	ui_->functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
+	functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
 		structure_[mode_].function
 	)));
-	ui_->painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
+	painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
 		structure_[mode_].painter
 	)));
 }
 
-void Creator::dimensionButton_clicked(TF::Types::Dimension dimension){
+void TransferFunctionCreator::dimensionButton_clicked(TF::Types::Dimension dimension){
 
-	dimensionSet_ = true;	
-	ui_->nextButton->setEnabled(true);
+	dimensionSet_ = true;
+	nextButton->setEnabled(true);
 
 	if(dimension != structure_[mode_].dimension)
 	{
 		modifierSet_ = false;
 		functionSet_ = false;
 		painterSet_ = false;
-		ui_->modifierValue->setText("");
-		ui_->functionValue->setText("");
-		ui_->painterValue->setText("");
+		modifierValue->setText("");
+		functionValue->setText("");
+		painterValue->setText("");
 	}
 
 	structure_[mode_].dimension = dimension;
-	ui_->dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
+	dimensionValue->setText(QString::fromStdString(TF::convert<TF::Types::Dimension, std::string>(
 		structure_[mode_].dimension
 	)));
 }
 
-void Creator::modifierButton_clicked(TF::Types::Modifier modifier){
+void TransferFunctionCreator::modifierButton_clicked(TF::Types::Modifier modifier){
 
 	modifierSet_ = true;
-	ui_->nextButton->setEnabled(true);
+	nextButton->setEnabled(true);
 
 	if(modifier != structure_[mode_].modifier)
 	{
 		functionSet_ = false;
 		painterSet_ = false;
-		ui_->functionValue->setText("");
-		ui_->painterValue->setText("");
+		functionValue->setText("");
+		painterValue->setText("");
 	}
 
 	structure_[mode_].modifier = modifier;
-	ui_->modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
+	modifierValue->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(
 		structure_[mode_].modifier
 	)));
 }
 
-void Creator::functionButton_clicked(TF::Types::Function function){
+void TransferFunctionCreator::functionButton_clicked(TF::Types::Function function){
 
-	functionSet_ = true;	
-	ui_->nextButton->setEnabled(true);
+	functionSet_ = true;
+	nextButton->setEnabled(true);
 
 	if(function != structure_[mode_].function)
 	{
 		painterSet_ = false;
-		ui_->painterValue->setText("");
+		painterValue->setText("");
 	}
 
 	structure_[mode_].function = function;
-	ui_->functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
+	functionValue->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(
 		structure_[mode_].function
 	)));
 }
 
-void Creator::painterButton_clicked(TF::Types::Painter painter){
+void TransferFunctionCreator::painterButton_clicked(TF::Types::Painter painter){
 
-	painterSet_ = true;	
-	ui_->nextButton->setEnabled(true);
-	
+	painterSet_ = true;
+	nextButton->setEnabled(true);
+
 	structure_[mode_].painter = painter;
-	ui_->painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
+	painterValue->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(
 		structure_[mode_].painter
 	)));
 }

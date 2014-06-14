@@ -41,6 +41,8 @@ public:
 
 	~ViewerWindow();
 
+	void initialize();
+
 	M4D::GUI::Viewer::GeneralViewer *
 	getSelectedViewer();
 
