@@ -19,6 +19,12 @@
 #include <iterator>
 #include <algorithm>
 
+#include "tfw/PaletteWidget.hpp"
+#include "tfw/data/ATransferFunction.hpp"
+#include "tfw/data/TransferFunctionLoading.hpp"
+#include "tfw/data/TransferFunctionPalette.hpp"
+
+
 #ifdef USE_CUDA
 #include "MedV4D/Imaging/cuda/MedianFilter.h"
 #endif
@@ -198,9 +204,6 @@ ViewerWindow::ViewerWindow()
 		QPoint putAt=myRegion.topRight();
 		SetWindowPos(GetConsoleWindow(),(HWND)winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
-
-
-
 }
 
 void
@@ -218,7 +221,7 @@ ViewerWindow::initialize()
 	mTFEditingSystem = M4D::GUI::Palette::Ptr(new M4D::GUI::Palette(this, dataCT1D));
 	mTFEditingSystem->setupDefault();
 
-	createDockWidget( tr("Transfer Function Palette"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
+	createDockWidget( tr("Transfer Function Palette Old"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
 	/*QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 
 	dockWidget->setWidget( &(*mTFEditingSystem) );
@@ -231,6 +234,13 @@ ViewerWindow::initialize()
 	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./data/TF" ) ) );
 
 	LOG( "TF framework initialized" );
+
+	auto paletteWidget = new tfw::PaletteWidget(this);
+	auto palette = std::make_shared<tfw::TransferFunctionPalette>();
+	palette->add(std::make_shared<tfw::ATransferFunction>());
+	palette->add(std::make_shared<tfw::ATransferFunction>());
+	paletteWidget->setPalette(palette);
+	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, paletteWidget, true );
 //*****************
 
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;

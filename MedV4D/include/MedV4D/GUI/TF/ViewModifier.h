@@ -12,10 +12,9 @@
 namespace M4D {
 namespace GUI {
 
-class ViewModifier: public AbstractModifier{
-
+class ViewModifier: public AbstractModifier
+{
 	Q_OBJECT
-
 public:
 
 	typedef std::shared_ptr<ViewModifier> Ptr;

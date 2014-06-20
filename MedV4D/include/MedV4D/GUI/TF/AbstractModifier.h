@@ -14,6 +14,8 @@
 #include "MedV4D/GUI/TF/AbstractPainter.h"
 #include "MedV4D/GUI/TF/AbstractFunction.h"
 
+#include"MedV4D/Imaging/Histogram.h"
+
 #include <QtWidgets/QWidget>
 
 namespace M4D {
@@ -33,6 +35,9 @@ public:
 
 	void
 	setHistogram(const TF::HistogramInterface::Ptr histogram);
+
+	void
+	setStatistics(M4D::Imaging::Statistics::Ptr aStatistics);
 
 	QWidget*
 	getTools();

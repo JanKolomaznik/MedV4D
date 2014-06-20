@@ -29,11 +29,11 @@ Editor::~Editor()
 	if(toolsDock_) toolsDock_->close();
 	delete writer_;
 }
-	
-bool 
+
+bool
 Editor::save()
 {
-	
+
 	if(fileName_.isEmpty())
 	{
 		fileName_ = QDir::currentPath().append(QString::fromStdString("/" + name_));
@@ -45,7 +45,7 @@ Editor::save()
 
 		if (fileName_.isEmpty()) return false;
 	}
-	
+
 	if (!writer_->begin(fileName_.toLocal8Bit().data()))
 	{
 		QMessageBox errorMessage(QMessageBox::Critical,
@@ -84,9 +84,9 @@ Editor::save()
 
 	return true;
 }
-	
+
 bool Editor::saveFunction(){
-	
+
 	if(fileNameFunction_.isEmpty())
 	{
 		fileNameFunction_ = QDir::currentPath().append(QString::fromStdString("/" + name_));
@@ -98,7 +98,7 @@ bool Editor::saveFunction(){
 
 		if (fileNameFunction_.isEmpty()) return false;
 	}
-	
+
 	if (!writer_->begin(fileNameFunction_.toLocal8Bit().data()))
 	{
 		QMessageBox errorMessage(QMessageBox::Critical,
@@ -130,14 +130,14 @@ bool Editor::saveFunction(){
 	return true;
 }
 
-bool Editor::load(TF::XmlReaderInterface* reader, bool& sideError){	
+bool Editor::load(TF::XmlReaderInterface* reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading editor..." << std::endl;
 	#endif
 
 	bool ok = modifier_->load(reader, sideError);
-	
+
 	bool error = !loadSettings_(reader);
 	sideError = sideError || error;
 
@@ -153,7 +153,7 @@ bool Editor::load(TF::XmlReaderInterface* reader, bool& sideError){
 bool Editor::loadFunction(TF::XmlReaderInterface* reader){
 
 	QMessageBox errorMessage(QMessageBox::Critical, "Transfer Function Loading Error", "", QMessageBox::Ok);
-	errorMessage.setDefaultButton(QMessageBox::Ok);	
+	errorMessage.setDefaultButton(QMessageBox::Ok);
 
 	std::string newName;
 	if(!reader->readElement("FunctionInfo"))
@@ -207,8 +207,8 @@ bool Editor::loadFunction(TF::XmlReaderInterface* reader){
 void Editor::saveSettings_(TF::XmlWriterInterface* writer){}
 
 bool Editor::loadSettings_(TF::XmlReaderInterface* reader){
-	
-	return true;	
+
+	return true;
 }
 
 bool Editor::close(){
@@ -279,6 +279,11 @@ void Editor::setHistogram(TF::HistogramInterface::Ptr histogram){
 	modifier_->setHistogram(histogram);
 
 	update();
+}
+
+void
+Editor::setStatistics(M4D::Imaging::Statistics::Ptr aStatistics) {
+	modifier_->setStatistics(aStatistics);
 }
 
 void Editor::setDataStructure(const std::vector<TF::Size>& dataStructure){

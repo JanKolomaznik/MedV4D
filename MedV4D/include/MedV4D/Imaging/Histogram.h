@@ -151,6 +151,14 @@ public:
 	}
 };
 
+
+class Statistics {
+public:
+	typedef std::shared_ptr<Statistics> Ptr;
+	typedef std::weak_ptr<Statistics> WPtr;
+
+};
+
 class EIncompatibleHistograms: public ErrorHandling::ExceptionBase
 {
 public:

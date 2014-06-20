@@ -22,7 +22,7 @@ public:
 	MultiDockWidget *
 	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget, bool aShow = true )
 	{
-		if ( aWidget == NULL ) {
+		if (aWidget == nullptr) {
 			_THROW_ M4D::ErrorHandling::ENULLPointer();
 		}
 		MultiDockWidget *dockwidget = new MultiDockWidget( aName, this );

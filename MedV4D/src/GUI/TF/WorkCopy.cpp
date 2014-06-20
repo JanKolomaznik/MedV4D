@@ -2,7 +2,7 @@
 
 namespace M4D {
 namespace GUI {
-	
+
 WorkCopy::WorkCopy(TransferFunctionInterface::Ptr function):
 	data_(function),
 	coords_(function->getDimension()),
@@ -26,7 +26,7 @@ TF::Size WorkCopy::getDimension(){
 }
 
 void WorkCopy::setDataStructure(const std::vector<TF::Size>& dataStructure){
-		
+
 	data_->resize(dataStructure);
 
 	for(TF::Size i = 1; i <= dataStructure.size(); ++i)	computeZoom_(i, zoom_.zoom[i-1], zoom_.center[i-1]);
@@ -37,7 +37,7 @@ void WorkCopy::setDataStructure(const std::vector<TF::Size>& dataStructure){
 void WorkCopy::save(TF::XmlWriterInterface* writer){
 
 	writer->writeStartElement("WorkCopy");
-			
+
 		writer->writeAttribute("MaxZoom", TF::convert<float, std::string>(zoom_.max));
 		writer->writeAttribute("HistLogBase", TF::convert<long double, std::string>(hist_.logBase()));
 
@@ -69,7 +69,7 @@ bool WorkCopy::load(TF::XmlReaderInterface* reader, bool& sideError){
 	sideError = false;
 
 	if(reader->readElement("WorkCopy"))
-	{				
+	{
 		float maxZoom = TF::convert<std::string, float>(reader->readAttribute("MaxZoom"));
 		if(maxZoom < 1.0f)
 		{
@@ -78,7 +78,7 @@ bool WorkCopy::load(TF::XmlReaderInterface* reader, bool& sideError){
 		}
 		zoom_.max = maxZoom;
 
-		long double logBase = TF::convert<std::string, long double>(reader->readAttribute("HistLogBase"));			
+		long double logBase = TF::convert<std::string, long double>(reader->readAttribute("HistLogBase"));
 		if(logBase <= 1.0f)
 		{
 			sideError = true;
@@ -176,12 +176,17 @@ void WorkCopy::decreaseHistogramLogBase(const long double increment){
 	}
 }
 
+void
+WorkCopy::setStatistics(M4D::Imaging::Statistics::Ptr aStatistics) {
+	mStatistics = aStatistics;
+}
+
 //---getters---
 
 TF::Color WorkCopy::getColor(const TF::Coordinates& coords){
 
 	tfAssert(coords.size() == data_->getDimension());
-	
+
 	TF::Size count = 0;
 	TF::Color areaColor = getColor_(coords, count, false);
 
@@ -191,7 +196,7 @@ TF::Color WorkCopy::getColor(const TF::Coordinates& coords){
 TF::Color WorkCopy::getRGBfColor(const TF::Coordinates& coords){
 
 	tfAssert(coords.size() == data_->getDimension());
-	
+
 	TF::Size count = 0;
 	TF::Color areaColor = getColor_(coords, count, true);
 	areaColor /= count;
@@ -204,7 +209,7 @@ TF::Color WorkCopy::getColor_(const TF::Coordinates& coords,
 								  TF::Size& count,
 								  const bool& RGBf,
 								  TF::Size dimension){
-	
+
 	tfAssert(coords[dimension - 1] >= 0 && coords[dimension - 1] < (int)sizes_[dimension-1]);
 
 	float ratio = data_->getDomain(dimension)/(sizes_[dimension-1]*zoom_.zoom[dimension-1]);
@@ -234,7 +239,7 @@ TF::Color WorkCopy::getColor_(const TF::Coordinates& coords,
 float WorkCopy::getHistogramValue(const TF::Coordinates& coords){
 
 	tfAssert(coords.size() == data_->getDimension());
-	
+
 	if(!histogramEnabled_ || !histogram_) return 0;
 
 	TF::Size count = 0;
@@ -260,7 +265,7 @@ float WorkCopy::getHistogramValue_(const TF::Coordinates& coords,
 	for(int i = bottom; i < top; ++i)
 	{
 		if(i < 0 || i >= (int)histogram_->getDomain(dimension)) continue;	//out of range
-		
+
 		coords_[dimension - 1] = i;	//fixing index for recurse
 		if(dimension == data_->getDimension())	//end of recursion
 		{
@@ -342,7 +347,7 @@ void WorkCopy::setComponent_(const TF::Coordinates& coords,
 	for(int i = bottom; i < top; ++i)	//zoomed area
 	{
 		if(i < 0 || i >= (int)data_->getDomain(dimension)) continue;	//out of range
-		
+
 		coords_[dimension - 1] = i;	//fixing index for recurse
 		if(dimension == data_->getDimension())	//end of recursion
 		{
@@ -377,7 +382,7 @@ void WorkCopy::setComponent_(const TF::Coordinates& coords,
 //---size---
 
 void WorkCopy::resize(const TF::Size dimension, const TF::Size size){
-	
+
 	tfAssert(dimension <= data_->getDimension());
 
 	sizes_[dimension-1] = size;
@@ -413,7 +418,7 @@ void WorkCopy::move(const std::vector<int>& increments){
 		if(zoom_.zoom[i-1] == 1) continue;
 
 		position = (sizes_[i-1]/2.0f + increments[i-1])/(float)sizes_[i-1];
-		computeZoom_(i, zoom_.zoom[i-1], position);	
+		computeZoom_(i, zoom_.zoom[i-1], position);
 	}
 }
 
@@ -426,7 +431,7 @@ void WorkCopy::computeZoom_(const TF::Size dimension, const float nextZoom, cons
 	float radius = (domain/nextZoom)/2.0f;
 	float offesetInc = zoom_.offset[dimension-1] + center*ratio - radius;
 
-	float maxOffset = domain - 2.0f*radius;		
+	float maxOffset = domain - 2.0f*radius;
 	if(offesetInc < 0.0f) offesetInc = 0.0f;
 	if(offesetInc > maxOffset) offesetInc = maxOffset;
 
@@ -434,7 +439,7 @@ void WorkCopy::computeZoom_(const TF::Size dimension, const float nextZoom, cons
 	zoom_.zoom[dimension-1] = nextZoom;
 
 	zoom_.center[dimension-1] = (radius + zoom_.offset[dimension-1])/domain;
-	
+
 	histogramChanged_ = true;
 	changed_ = true;
 }
@@ -455,7 +460,7 @@ float WorkCopy::getMaxZoom(){
 }
 
 void WorkCopy::setMaxZoom(const float zoom){
-	
+
 	zoom_.max = zoom;
 }
 

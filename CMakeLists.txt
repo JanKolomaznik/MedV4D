@@ -21,6 +21,12 @@ SET( MEDV4D_EXECUTABLES_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/executables
 
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/SetupOutputPrefixAndPostfix.cmake" )
 
+include_directories(
+	"../../extern/tfw"
+	"../../extern/soglu"
+	"../../extern/vorgl"
+	)
+
 ADD_SUBDIRECTORY( MedV4D )
 ADD_SUBDIRECTORY( Applications/Viewer )
 #ADD_SUBDIRECTORY( Applications/tools )

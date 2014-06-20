@@ -38,6 +38,11 @@ void AbstractModifier::setHistogram(const TF::HistogramInterface::Ptr histogram)
 	}
 }
 
+void
+AbstractModifier::setStatistics(M4D::Imaging::Statistics::Ptr aStatistics) {
+	workCopy_->setStatistics(aStatistics);
+}
+
 bool AbstractModifier::changed()
 {
 	if(changed_) {

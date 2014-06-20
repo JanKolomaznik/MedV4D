@@ -24,6 +24,8 @@
 #include "MedV4D/GUI/TF/Histogram.h"
 #include "MedV4D/GUI/TF/Editor.h"
 
+#include"MedV4D/Imaging/Histogram.h"
+
 #include "MedV4D/generated/ui_Palette.h"
 
 namespace M4D {
@@ -47,6 +49,9 @@ public:
 	setDataStructure(const std::vector<TF::Size>& dataStructure);
 	bool
 	setHistogram(const TF::HistogramInterface::Ptr histogram);
+
+	void
+	setStatistics(M4D::Imaging::Statistics::Ptr aStatistics);
 
 	void
 	setPreview(const QImage& preview, const int index = -1);
@@ -160,7 +165,7 @@ private:
 		}
 	};
 
-	typedef std::map<TF::Size, EditorInstance*> HolderMap;
+	typedef std::map<TF::Size, EditorInstance> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
 
 	static const int noFunctionAvailable = -1;
@@ -170,6 +175,7 @@ private:
 	QGridLayout* mLayout;
 	int mColModulator;
 
+	M4D::Imaging::Statistics::Ptr mStatistics;
 	TF::HistogramInterface::Ptr histogram_;
 	std::vector<TF::Size> dataStructure_;
 

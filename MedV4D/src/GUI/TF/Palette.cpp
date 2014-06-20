@@ -53,23 +53,51 @@ void Palette::setDataStructure(const std::vector<TF::Size>& dataStructure)
 		return;
 	}
 
-	bool findNewActive = (mPalette.find(mActiveEditor)->second->editor->getDimension() != dataStructure_.size());
-	HolderMapIt beginPalette = mPalette.begin();
-	HolderMapIt endPalette = mPalette.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it) {
-		if(it->second->editor->getDimension() != dataStructure_.size()) {
-			it->second->editor->setAvailable(false);
+	bool findNewActive = (mPalette.find(mActiveEditor)->second.editor->getDimension() != dataStructure_.size());
+	for (auto &editor : mPalette) {
+		if(editor.second.editor->getDimension() != dataStructure_.size()) {
+			editor.second.editor->setAvailable(false);
 		} else {
-			it->second->editor->setDataStructure(dataStructure_);
-			it->second->editor->setAvailable(true);
-			it->second->updatePreview();
+			editor.second.editor->setDataStructure(dataStructure_);
+			editor.second.editor->setAvailable(true);
+			editor.second.updatePreview();
 			if(findNewActive) {
-				mActiveEditor = it->first;
+				mActiveEditor = editor.first;
 			}
 		}
 	}
 	if(findNewActive) {
 		mActiveEditor = noFunctionAvailable;
+	}
+}
+
+bool
+Palette::setHistogram(const TF::HistogramInterface::Ptr histogram)
+{
+	TF::Size histDim = histogram->getDimension();
+	if(histDim != dataStructure_.size()) return false;
+	for(TF::Size i = 1; i <= histDim; ++i)
+	{
+		if(histogram->getDomain(i) != dataStructure_[i-1]) return false;
+	}
+
+	histogram_ = histogram;
+
+	HolderMapIt beginPalette = mPalette.begin();
+	HolderMapIt endPalette = mPalette.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		it->second.editor->setHistogram(histogram_);
+	}
+	return true;
+}
+
+void
+Palette::setStatistics(M4D::Imaging::Statistics::Ptr aStatistics) {
+	mStatistics = aStatistics;
+
+	for (auto &editor : mPalette) {
+		editor.second.editor->setStatistics(mStatistics);
 	}
 }
 
@@ -79,10 +107,12 @@ void Palette::setPreview(const QImage& preview, const int index)
 	if(index >= 0) editorIndex = index;
 
 	HolderMapIt editor = mPalette.find(editorIndex);
-	if(editor == mPalette.end()) return;
+	if(editor == mPalette.end()) {
+		return;
+	}
 
-	editor->second->button->setPreview(preview);
-	editor->second->previewUpdate = editor->second->editor->lastChange();
+	editor->second.button->setPreview(preview);
+	editor->second.previewUpdate = editor->second.editor->lastChange();
 }
 
 QImage
@@ -93,15 +123,16 @@ Palette::getPreview(const int index)
 	if(index >= 0) editorIndex = index;
 
 	HolderMapIt editor = mPalette.find(editorIndex);
-	if(editor == mPalette.end()) return QImage(getPreviewSize(), QImage::Format_RGB16);
+	if(editor == mPalette.end()) {
+		return QImage(getPreviewSize(), QImage::Format_RGB16);
+	}
 
-	return editor->second->button->getPreview();
+	return editor->second.button->getPreview();
 }
 
 QSize
 Palette::getPreviewSize()
 {
-
 	return QSize(PaletteButton::previewWidth, PaletteButton::previewHeight);
 }
 
@@ -113,15 +144,11 @@ Palette::update_previews()
 
 	bool updateRequestSent = false;
 	M4D::Common::TimeStamp lastChange;
-	HolderMapIt beginPalette = mPalette.begin();
-	HolderMapIt endPalette = mPalette.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-	{
-		it->second->button->setName(it->second->editor->getName());
-		lastChange = it->second->editor->lastChange();
-		if(!updateRequestSent && (it->first != mActiveEditor) && (it->second->previewUpdate != lastChange))
-		{
-			emit UpdatePreview(it->first);
+	for (auto &editor : mPalette) {
+		editor.second.button->setName(editor.second.editor->getName());
+		lastChange = editor.second.editor->lastChange();
+		if(!updateRequestSent && (editor.first != mActiveEditor) && (editor.second.previewUpdate != lastChange)) {
+			emit UpdatePreview(editor.first);
 			updateRequestSent = true;
 		}
 	}
@@ -130,14 +157,11 @@ Palette::update_previews()
 void
 Palette::detectChanges()
 {
-	HolderMapIt beginPalette = mPalette.begin();
-	HolderMapIt endPalette = mPalette.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-	{
-		M4D::Common::TimeStamp lastChange(it->second->editor->lastChange());
-		if( lastChange != it->second->lastDetectedChange ) {
-			it->second->lastDetectedChange = lastChange;
-			emit transferFunctionModified( it->second->editor->getIndex() );
+	for (auto &editor : mPalette) {
+		M4D::Common::TimeStamp lastChange(editor.second.editor->lastChange());
+		if( lastChange != editor.second.lastDetectedChange ) {
+			editor.second.lastDetectedChange = lastChange;
+			emit transferFunctionModified(editor.second.editor->getIndex() );
 		}
 	}
 }
@@ -161,7 +185,7 @@ Palette::getTransferFunction(const int index)
 	}
 
 	HolderMapIt editor = mPalette.find(editorIndex);
-	return mPalette.find(editorIndex)->second->editor->getFunction();
+	return mPalette.find(editorIndex)->second.editor->getFunction();
 }
 
 TF::Size
@@ -187,54 +211,28 @@ Palette::getEditors()
 
 	HolderMapIt beginPalette = mPalette.begin();
 	HolderMapIt endPalette = mPalette.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-	{
-		editors.insert(std::make_pair(it->first, it->second->editor));
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it) {
+		editors.insert(std::make_pair(it->first, it->second.editor));
 	}
 	return editors;
-}
-
-bool
-Palette::setHistogram(const TF::HistogramInterface::Ptr histogram)
-{
-
-	TF::Size histDim = histogram->getDimension();
-	if(histDim != dataStructure_.size()) return false;
-	for(TF::Size i = 1; i <= histDim; ++i)
-	{
-		if(histogram->getDomain(i) != dataStructure_[i-1]) return false;
-	}
-
-	histogram_ = histogram;
-
-	HolderMapIt beginPalette = mPalette.begin();
-	HolderMapIt endPalette = mPalette.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-	{
-		it->second->editor->setHistogram(histogram_);
-	}
-	return true;
 }
 
 M4D::Common::TimeStamp
 Palette::lastChange()
 {
 	ASSERT( false ) //TODO Modify for different usage
-	if(mActiveEditor == emptyPalette || mActiveEditor == noFunctionAvailable)
-	{
+	if(mActiveEditor == emptyPalette || mActiveEditor == noFunctionAvailable) {
 		if(activeChanged_) ++lastChange_;
 		activeChanged_ = false;
-	}
-	else
-	{
+	} else {
 		HolderMapIt active = mPalette.find(mActiveEditor);
-		Common::TimeStamp lastActiveChange = active->second->editor->lastChange();
+		Common::TimeStamp lastActiveChange = active->second.editor->lastChange();
 
-		if(activeChanged_ || lastActiveChange != active->second->change)
+		if(activeChanged_ || lastActiveChange != active->second.change)
 		{
 			++lastChange_;
 			activeChanged_ = false;
-			active->second->change = lastActiveChange;
+			active->second.change = lastActiveChange;
 		}
 	}
 
@@ -244,7 +242,6 @@ Palette::lastChange()
 M4D::Common::TimeStamp
 Palette::lastPaletteChange()
 {
-
 	return lastPaletteChange_;
 }
 
@@ -270,7 +267,7 @@ Palette::addToPalette(Editor* editor, bool visible )
 	bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(buttonConnected);
 
-	mPalette.insert(std::make_pair(addedIndex, new EditorInstance(editor, button)));
+	mPalette.insert(std::make_pair(addedIndex, EditorInstance(editor, button)));
 
 	QDockWidget* dockHolder = editor->getDockWidget();
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
@@ -303,12 +300,11 @@ Palette::removeFromPalette(const TF::Size index)
 	HolderMapIt toRemoveIt = mPalette.find(index);
 	if(index == mActiveEditor) activateNext(toRemoveIt);
 
-	mParentMainWindow->removeDockWidget(toRemoveIt->second->editor->getDockWidget());
-	mLayout->removeWidget(toRemoveIt->second->button);
+	mParentMainWindow->removeDockWidget(toRemoveIt->second.editor->getDockWidget());
+	mLayout->removeWidget(toRemoveIt->second.button);
 
-	delete toRemoveIt->second->button;
+	delete toRemoveIt->second.button;
 	//delete toRemoveIt->second->editor->close();
-	delete toRemoveIt->second;
 	mPalette.erase(toRemoveIt);
 
 	reformLayout(true);
@@ -328,11 +324,14 @@ Palette::activateNext(HolderMapIt it)
 		HolderMapIt next;
 		for(next = beginPalette; next != endPalette; ++next)
 		{
-			if(next != it && next->second->editor->getDimension() == dataStructure_.size()) break;
+			if(next != it && next->second.editor->getDimension() == dataStructure_.size()) break;
 		}
 
-		if(next != endPalette) change_activeHolder(next->second->editor->getIndex());
-		else mActiveEditor = noFunctionAvailable;
+		if(next != endPalette) {
+			change_activeHolder(next->second.editor->getIndex());
+		} else {
+			mActiveEditor = noFunctionAvailable;
+		}
 	}
 	activeChanged_ = true;
 }
@@ -349,7 +348,7 @@ void Palette::reformLayout(bool forceReform){
 		return;
 	}
 
-	int newColModulator = (scrollArea->width() - 25)/(mPalette.begin()->second->button->width() + 5);
+	int newColModulator = (scrollArea->width() - 25)/(mPalette.begin()->second.button->width() + 5);
 	if(newColModulator == 0) {
 		newColModulator = 1;
 	}
@@ -371,8 +370,8 @@ void Palette::reformLayout(bool forceReform){
 
 	int rowCounter = 0, colCounter = 0;
 	for (auto &item : mPalette) {
-		mLayout->addWidget(item.second->button, rowCounter, colCounter, Qt::AlignCenter);
-		item.second->button->show();
+		mLayout->addWidget(item.second.button, rowCounter, colCounter, Qt::AlignCenter);
+		item.second.button->show();
 		++colCounter;
 		if(colCounter == mColModulator) {
 			colCounter = 0;
@@ -400,7 +399,7 @@ void Palette::change_activeHolder(TF::Size index)
 			D_PRINT( "Couldn't find active TF editor - id = " << mActiveEditor );
 			return;
 		}
-		active = it->second;
+		active = &(it->second);
 		active->button->setActive(false);
 		active->editor->setActive(false);
 		mActiveEditor = -1;
@@ -412,7 +411,7 @@ void Palette::change_activeHolder(TF::Size index)
 		return;
 	}
 	mActiveEditor = index;
-	active = it->second;
+	active = &(it->second);
 	active->button->setActive(true);
 	active->editor->setActive(true);
 
@@ -434,16 +433,17 @@ void Palette::on_previewsCheck_toggled(bool enable){
 	previewEnabled_ = enable;
 
 	for (auto &item : mPalette) {
-		item.second->button->togglePreview(previewEnabled_);
-		item.second->updatePreview();
+		item.second.button->togglePreview(previewEnabled_);
+		item.second.updatePreview();
 	}
 }
 
 void Palette::closeEvent(QCloseEvent *e){
 
-	while(!mPalette.empty())
-	{
-		if(!mPalette.begin()->second->editor->close()) break;
+	while(!mPalette.empty()) {
+		if(!mPalette.begin()->second.editor->close()) {
+			break;
+		}
 	}
 	if(mPalette.empty()) e->accept();
 	else e->ignore();

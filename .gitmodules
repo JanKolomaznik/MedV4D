@@ -7,3 +7,6 @@
 [submodule "extern/cugip"]
 	path = extern/cugip
 	url = git@github.com:JanKolomaznik/cugip.git
+[submodule "extern/tfw"]
+	path = extern/tfw
+	url = git@github.com:JanKolomaznik/tfw.git

@@ -17,15 +17,16 @@
 
 #include "MedV4D/GUI/TF/Predefined.h"
 
+#include"MedV4D/Imaging/Histogram.h"
+
 #include <set>
 
 namespace M4D {
 namespace GUI {
 
-class Editor: public QMainWindow{
-
+class Editor: public QMainWindow
+{
 	Q_OBJECT
-
 public:
 
 	typedef std::shared_ptr<Editor> Ptr;
@@ -62,6 +63,9 @@ public:
 
 	void
 	setHistogram(TF::HistogramInterface::Ptr histogram);
+
+	void
+	setStatistics(M4D::Imaging::Statistics::Ptr aStatistics);
 
 	void
 	setDataStructure(const std::vector<TF::Size>& dataStructure);

@@ -5,19 +5,20 @@
 #include "MedV4D/GUI/TF/FunctionInterface.h"
 #include "MedV4D/GUI/TF/Histogram.h"
 
+#include"MedV4D/Imaging/Histogram.h"
+
 #include <cmath>
 
 namespace M4D {
 namespace GUI {
 
-class WorkCopy{
-
+class WorkCopy
+{
 public:
-
 	typedef std::shared_ptr<WorkCopy> Ptr;
 
 	static const TF::Size noZoom = -1;
-	
+
 	WorkCopy(TransferFunctionInterface::Ptr function);
 	~WorkCopy();
 
@@ -25,56 +26,58 @@ public:
 	void saveFunction(TF::XmlWriterInterface* writer);
 	bool load(TF::XmlReaderInterface* reader, bool& sideError);
 	bool loadFunction(TF::XmlReaderInterface* reader);
-	
+
 	TransferFunctionInterface::Ptr getFunction();
-	
+
 	TF::Size getDimension();
 	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
 	//---change---
-	
+
 	bool changed();
 	bool histogramChanged();
 
 	void forceUpdate(const bool updateHistogram = false);
 
 	//---histogram---
-	
-	void setHistogram(const TF::HistogramInterface::Ptr histogram);	
+
+	void setHistogram(const TF::HistogramInterface::Ptr histogram);
 	void setHistogramEnabled(bool value);
 	bool histogramEnabled();
 	void increaseHistogramLogBase(const long double increment = 1.0);
 	void decreaseHistogramLogBase(const long double increment = 1.0);
 
+	void
+	setStatistics(M4D::Imaging::Statistics::Ptr aStatistics);
 	//---getters---
-	
+
 	TF::Color getRGBfColor(const TF::Coordinates& coords);
 	TF::Color getColor(const TF::Coordinates& coords);
 	float getHistogramValue(const TF::Coordinates& coords);
 
 	//---setters---
-	
+
 	void setComponent1(const TF::Coordinates& coords, const float value);
 	void setComponent2(const TF::Coordinates& coords, const float value);
-	void setComponent3(const TF::Coordinates& coords, const float value);	
+	void setComponent3(const TF::Coordinates& coords, const float value);
 	void setAlpha(const TF::Coordinates& coords, const float value);
 	void setColor(const TF::Coordinates& coords, const float value);
 
 	//---size---
-	
+
 	void resize(const TF::Size dimension, const TF::Size size);
 	void resize(const std::vector<TF::Size>& sizes);
 
 	//---zoom---
-	
+
 	void zoom(const TF::Size dimension, const int center, const int stepCount);
 	void move(const std::vector<int>& increments);
-	
+
 	float getZoom(const TF::Size dimension);
-	float getZoomCenter(const TF::Size dimension);	
-	float getMaxZoom();	
+	float getZoomCenter(const TF::Size dimension);
+	float getMaxZoom();
 	void setMaxZoom(const float zoom);
-	
+
 private:
 
 	class HistProperties{
@@ -100,8 +103,8 @@ private:
 		double getLogValue(const TF::Size value){
 
 			if(value == 0) return 0.0;
-			
-			return std::log((double)value)/logMod_;			
+
+			return std::log((double)value)/logMod_;
 		}
 
 		double getExpLogValue(const TF::Size value){
@@ -145,6 +148,7 @@ private:
 
 	TransferFunctionInterface::Ptr data_;
 	TF::HistogramInterface::Ptr histogram_;
+	M4D::Imaging::Statistics::Ptr mStatistics;
 
 	TF::Coordinates coords_;
 
@@ -157,12 +161,14 @@ private:
 	bool histogramChanged_;
 	bool histogramEnabled_;
 	HistProperties hist_;
-	
+
+
+
 	TF::Color getColor_(const TF::Coordinates& coords,
 		TF::Size& count,
 		const bool& RGBf,
 		TF::Size dimension = 1);
-	
+
 	void setComponent_(const TF::Coordinates& coords,
 		const Component& component,
 		const float& value,
@@ -172,7 +178,7 @@ private:
 		TF::Size& count,
 		TF::Size dimension = 1);
 
-	void computeZoom_(const TF::Size dimension, const float nextZoom, const float center);	
+	void computeZoom_(const TF::Size dimension, const float nextZoom, const float center);
 };
 
 } // namespace GUI
