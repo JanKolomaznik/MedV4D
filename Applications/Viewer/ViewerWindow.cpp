@@ -237,10 +237,11 @@ ViewerWindow::initialize()
 
 	auto paletteWidget = new tfw::PaletteWidget(this);
 	auto palette = std::make_shared<tfw::TransferFunctionPalette>();
-	palette->add(std::make_shared<tfw::ATransferFunction>());
-	palette->add(std::make_shared<tfw::ATransferFunction>());
+	palette->add(std::make_shared<tfw::TransferFunction1D>());
+	palette->add(std::make_shared<tfw::TransferFunction1D>());
 	paletteWidget->setPalette(palette);
 	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, paletteWidget, true );
+
 //*****************
 
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
