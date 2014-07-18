@@ -19,10 +19,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include "tfw/PaletteWidget.hpp"
-#include "tfw/data/ATransferFunction.hpp"
-#include "tfw/data/TransferFunctionLoading.hpp"
-#include "tfw/data/TransferFunctionPalette.hpp"
 
 
 #ifdef USE_CUDA
@@ -235,12 +231,12 @@ ViewerWindow::initialize()
 
 	LOG( "TF framework initialized" );
 
-	auto paletteWidget = new tfw::PaletteWidget(this);
-	auto palette = std::make_shared<tfw::TransferFunctionPalette>();
-	palette->add(std::make_shared<tfw::TransferFunction1D>());
-	palette->add(std::make_shared<tfw::TransferFunction1D>());
-	paletteWidget->setPalette(palette);
-	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, paletteWidget, true );
+	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
+	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
+	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>());
+	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>());
+	mTFPaletteWidget->setPalette(mTFPalette);
+	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), true );
 
 //*****************
 
@@ -329,6 +325,10 @@ ViewerWindow::initialize()
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( int ) ), this, SLOT( changedTransferFunctionSelection() ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
+
+	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionAdded, this, &ViewerWindow::transferFunctionAdded, Qt::QueuedConnection);
+	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::changedTransferFunctionSelection, this, &ViewerWindow::changedTransferFunctionSelection, Qt::QueuedConnection);
+	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionModified, this, &ViewerWindow::transferFunctionModified, Qt::QueuedConnection);
 
 	LOG( "Basic signals/slots connected" );
 
@@ -544,43 +544,16 @@ ViewerWindow::changedViewerSelection()
 	//LOG( __FUNCTION__ );
 }
 
-/*struct CreateGLTFBuffer
-{
-	vorgl::GLTransferFunctionBuffer1D::Ptr tfGLBuffer;
-	vorgl::TransferFunctionBuffer1D::Ptr tfBuffer;
-
-	void
-	operator()()
-	{
-		 tfGLBuffer = createGLTransferFunctionBuffer1D( *tfBuffer );
-	}
-};*/
 
 bool
-fillTransferFunctionInfo( M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBufferInfo &info )
+fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw::ATransferFunction &function, vorgl::TransferFunctionBufferInfo &info )
 {
 	if( fillBufferFromTF( function, info.tfBuffer ) ) {
-		//std::ofstream file( "TF.txt" );
-		//D_PRINT( "Printing TF" );
-		//std::copy( info.tfBuffer->Begin(), info.tfBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
-
-		//CreateGLTFBuffer ftor;
-		//ftor.tfBuffer = info.tfBuffer;
-		//ftor = OpenGLManager::getInstance()->doGL( ftor );
-		//info.tfGLBuffer = ftor.tfGLBuffer;
-
 		OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
 			});
 
-		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) )
-		{
-			//file << std::endl;
-			//std::copy( info.tfIntegralBuffer->Begin(), info.tfIntegralBuffer->End(), std::ostream_iterator<M4D::GUI::TransferFunctionBuffer1D::value_type>( file, " | " ) );
-
-			/*ftor.tfBuffer = info.tfIntegralBuffer;
-			ftor = OpenGLManager::getInstance()->doGL( ftor );
-			info.tfGLIntegralBuffer = ftor.tfGLBuffer;*/
+		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) ) {
 			OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D( *info.tfIntegralBuffer );
 			});
@@ -589,7 +562,6 @@ fillTransferFunctionInfo( M4D::GUI::TransferFunctionInterface::Const function, v
 				info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
 			});
 		}
-		//file.close();
 	} else {
 		D_PRINT( "TF buffer not created" );
 		return false;
@@ -598,12 +570,13 @@ fillTransferFunctionInfo( M4D::GUI::TransferFunctionInterface::Const function, v
 }
 
 void
-ViewerWindow::transferFunctionAdded( int idx )
+ViewerWindow::transferFunctionAdded(int idx)
 {
 	vorgl::TransferFunctionBufferInfo info;
 	info.id = idx;
 
-	if ( fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), info ) ) {
+	//if (fillTransferFunctionInfo(mTFEditingSystem->getTransferFunction(idx), info ) ) {
+	if (fillTransferFunctionInfo(mTFPaletteWidget->getTransferFunction(idx), info)) {
 		TransferFunctionBufferUsageRecord record;
 		record.info = info;
 		mTFUsageMap[idx] = record;
@@ -617,25 +590,31 @@ ViewerWindow::changedTransferFunctionSelection()
 	pViewer = ViewerManager::getInstance()->getSelectedViewer();
 
 	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
-	if(pGenViewer != NULL) {
-		M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
+	if(pGenViewer) {
+		int idx = mTFPaletteWidget->getSelectedTransferFunctionIndex();
+		vorgl::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
+		if (idx == oldInfo.id) {
+			return; //No change
+		}
+
+		/*M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
 		vorgl::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
 
 		if ( idx == oldInfo.id ) {
 			return; //No change
+		}*/
+		auto it = mTFUsageMap.find( oldInfo.id );
+		if (it != end(mTFUsageMap)) {
+			it->second.viewers.remove(pGenViewer);
 		}
-		TransferBufferUsageMap::iterator it = mTFUsageMap.find( oldInfo.id );
-		if ( it != mTFUsageMap.end() ) {
-			it->second.viewers.remove( pGenViewer );
+		it = mTFUsageMap.find(idx);
+		if(it == end(mTFUsageMap)) {
+			transferFunctionAdded(idx);
 		}
 		it = mTFUsageMap.find( idx );
-		if( it == mTFUsageMap.end() ) {
-			transferFunctionAdded( idx );
-		}
-		it = mTFUsageMap.find( idx );
 		if ( it != mTFUsageMap.end() ) {
-			pGenViewer->setTransferFunctionBufferInfo( it->second.info );
-			it->second.viewers.push_back( pGenViewer );
+			pGenViewer->setTransferFunctionBufferInfo(it->second.info);
+			it->second.viewers.push_back(pGenViewer);
 		} else {
 			LOG( "Function not found" );
 		}
@@ -647,17 +626,17 @@ void
 ViewerWindow::transferFunctionModified( int idx )
 {
 	TransferBufferUsageMap::iterator it = mTFUsageMap.find( idx );
-	if ( it != mTFUsageMap.end() ) {
+	if ( it != end(mTFUsageMap)) {
 		TransferFunctionBufferUsageRecord &rec = it->second;
 
-		fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), rec.info );
-		for (ViewerList::iterator it = rec.viewers.begin(); it != rec.viewers.end(); ++it ) {
-			(*it)->setTransferFunctionBufferInfo( rec.info );
+		//fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), rec.info );
+		fillTransferFunctionInfo(mTFPaletteWidget->getTransferFunction(idx), rec.info);
+		for (auto viewer : rec.viewers) {
+			viewer->setTransferFunctionBufferInfo(rec.info);
 		}
 	} else {
 		D_PRINT( "Modified function not found" );
 	}
-	//LOG( __FUNCTION__ );
 }
 
 

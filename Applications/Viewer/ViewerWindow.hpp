@@ -22,6 +22,11 @@
 #include "MedV4D/GUI/TF/Palette.h"
 #include "MedV4D/GUI/TF/FunctionInterface.h"
 
+#include "tfw/PaletteWidget.hpp"
+#include "tfw/data/ATransferFunction.hpp"
+#include "tfw/data/TransferFunctionLoading.hpp"
+#include "tfw/data/TransferFunctionPalette.hpp"
+
 typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord
 {
@@ -148,6 +153,9 @@ protected:
 	TransferBufferUsageMap mTFUsageMap;
 
 	QFileDialog	*mOpenDialog;
+
+	std::shared_ptr<tfw::TransferFunctionPalette> mTFPalette;
+	std::unique_ptr<tfw::PaletteWidget> mTFPaletteWidget;
 private:
 
 };
