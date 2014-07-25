@@ -545,9 +545,34 @@ ViewerWindow::changedViewerSelection()
 }
 
 
+struct FillTFBufferVisitor :
+	public tfw::ITransferFunctionVisitor
+{
+	void
+	visit(const tfw::TransferFunction1D &) override {
+
+	}
+};
+
+
+struct FillIntegralTFBufferVisitor :
+	public tfw::ITransferFunctionVisitor
+{
+	void
+	visit(const tfw::TransferFunction1D &) override {
+
+	}
+};
+
+
 bool
 fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw::ATransferFunction &function, vorgl::TransferFunctionBufferInfo &info )
 {
+	FillTFBufferVisitor fillBufferVisitor(info);
+	FillIntegralTFBufferVisitor fillIntegralBufferVisitor(info);
+	function.accept(fillBufferVisitor);
+	function.accept(fillIntegralBufferVisitor);
+
 	if( fillBufferFromTF( function, info.tfBuffer ) ) {
 		OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
