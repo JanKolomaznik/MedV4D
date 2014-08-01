@@ -233,8 +233,8 @@ ViewerWindow::initialize()
 
 	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
 	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
-	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>());
-	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>());
+	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>(0.0, 2000.0));
+	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>(0.0, 2000.0));
 	mTFPaletteWidget->setPalette(mTFPalette);
 	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), true );
 
@@ -546,48 +546,70 @@ ViewerWindow::changedViewerSelection()
 
 
 struct FillTFBufferVisitor :
-	public tfw::ITransferFunctionVisitor
+	public tfw::UnsupportedThrowConstTransferFunctionVisitor
 {
-	void
-	visit(const tfw::TransferFunction1D &) override {
+	FillTFBufferVisitor(vorgl::TransferFunctionBufferInfo &aInfo)
+		: mInfo(aInfo)
+	{}
 
+	void
+	visit(const tfw::TransferFunction1D &aTransferFunction) override {
+		mInfo.tfBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(1000);
+		mInfo.tfBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(0.0, 2000.0));
+		for (size_t i = 0; i < mInfo.tfBuffer->size(); ++i) {
+			vorgl::RGBAf color;
+			color.r = aTransferFunction.getIntensity(i, 0);
+			color.g = aTransferFunction.getIntensity(i, 1);
+			color.b = aTransferFunction.getIntensity(i, 2);
+			color.a = aTransferFunction.getIntensity(i, 3);
+			(*mInfo.tfBuffer)[i] = color;
+		}
 	}
+
+	vorgl::TransferFunctionBufferInfo &mInfo;
 };
 
 
 struct FillIntegralTFBufferVisitor :
-	public tfw::ITransferFunctionVisitor
+	public tfw::UnsupportedThrowConstTransferFunctionVisitor
 {
+	FillIntegralTFBufferVisitor(vorgl::TransferFunctionBufferInfo &aInfo)
+		: mInfo(aInfo)
+	{}
+
 	void
 	visit(const tfw::TransferFunction1D &) override {
 
 	}
+
+	vorgl::TransferFunctionBufferInfo &mInfo;
 };
 
 
 bool
 fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw::ATransferFunction &function, vorgl::TransferFunctionBufferInfo &info )
 {
-	FillTFBufferVisitor fillBufferVisitor(info);
-	FillIntegralTFBufferVisitor fillIntegralBufferVisitor(info);
-	function.accept(fillBufferVisitor);
-	function.accept(fillIntegralBufferVisitor);
+	try {
+		FillTFBufferVisitor fillBufferVisitor(info);
+		FillIntegralTFBufferVisitor fillIntegralBufferVisitor(info);
+		function.accept(fillBufferVisitor);
+		function.accept(fillIntegralBufferVisitor);
 
-	if( fillBufferFromTF( function, info.tfBuffer ) ) {
+	//if( fillBufferFromTF( function, info.tfBuffer ) ) {
 		OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
 			});
 
-		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) ) {
+/*		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) ) {
 			OpenGLManager::getInstance()->doGL([&info]() {
 				info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D( *info.tfIntegralBuffer );
 			});
-		} else {
-			OpenGLManager::getInstance()->doGL([&info]() {
-				info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
-			});
-		}
-	} else {
+		} else {*/
+		OpenGLManager::getInstance()->doGL([&info]() {
+			info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
+		});
+		//}
+	} catch (tfw::EUnsupportedTransferFunctionType &) {
 		D_PRINT( "TF buffer not created" );
 		return false;
 	}

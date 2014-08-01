@@ -161,7 +161,7 @@ TransferFunction1DEditor::UpdateSettings()
 {
 	ScaleVisualizer::UpdateSettings();
 
-	mTransferFunctionBuffer->SetMappedInterval( glm::fvec2( mMin, mMax ) );
+	mTransferFunctionBuffer->setMappedInterval( glm::fvec2( mMin, mMax ) );
 }
 
 void
