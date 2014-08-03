@@ -564,6 +564,21 @@ struct FillTFBufferVisitor :
 			color.a = aTransferFunction.getIntensity(i, 3);
 			(*mInfo.tfBuffer)[i] = color;
 		}
+
+		mInfo.tfIntegralBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(1000);
+		mInfo.tfIntegralBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(0.0, 2000.0));
+		vorgl::RGBAf lastColor = mInfo.tfBuffer->front();
+		for (size_t i = 1; i < mInfo.tfBuffer->size(); ++i) {
+			vorgl::RGBAf color = (*mInfo.tfBuffer)[i];
+			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
+			float alpha = 1.0f;//tmpColor.alpha;
+			(*mInfo.tfIntegralBuffer)[i] = (*mInfo.tfIntegralBuffer)[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
+				tmpColor.r * alpha,
+				tmpColor.g * alpha,
+				tmpColor.b * alpha,
+				tmpColor.a);
+			lastColor = color;
+		}
 	}
 
 	vorgl::TransferFunctionBufferInfo &mInfo;
@@ -606,7 +621,7 @@ fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw
 			});
 		} else {*/
 		OpenGLManager::getInstance()->doGL([&info]() {
-			info.tfGLIntegralBuffer = vorgl::GLTransferFunctionBuffer1D::Ptr();
+			info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D(*info.tfIntegralBuffer);
 		});
 		//}
 	} catch (tfw::EUnsupportedTransferFunctionType &) {

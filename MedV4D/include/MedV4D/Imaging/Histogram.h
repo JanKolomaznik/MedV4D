@@ -107,7 +107,6 @@ protected:
 	CellCoordinates
 	valueToCell(Value aVal) const
 	{
-		aVal = clamp(mMin, mMax, aVal);
 		CellCoordinates coords;
 		detail::FillCellCoordinates<TTraits, cDimension - 1>::apply(coords, aVal, mMin, mRangeSize, mResolution);
 		return coords;
@@ -116,7 +115,9 @@ protected:
 	Cell &
 	getCell(const Value &aValue)
 	{
-		return mData[valueToCell(aValue) * mStrides];
+		// TODO - better implementation
+		Value val = clamp(0, int(mData.size() - 1), valueToCell(aValue) * mStrides);
+		return mData[val];
 	}
 
 	Value mMin;
