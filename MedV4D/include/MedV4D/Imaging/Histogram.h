@@ -7,6 +7,7 @@
 #include <ostream>
 #include <iomanip>
 #include <memory>
+#include <utility>
 
 
 namespace M4D
@@ -84,6 +85,7 @@ public:
 	typedef typename TTraits::Cell Cell;
 	static const int cDimension = TTraits::cDimension;
 	typedef Vector<int, cDimension> CellCoordinates;
+	typedef std::vector<Cell> Buffer;
 
 	HistogramBase() = default;
 	HistogramBase(Value aMin, Value aMax, CellCoordinates aResolution)
@@ -101,6 +103,24 @@ public:
 		}
 	}
 
+	std::pair<Value, Value>
+	getRange() const
+	{
+		return std::make_pair(mMin, mMax);
+	}
+
+	CellCoordinates
+	resolution() const
+	{
+		return mResolution;
+	}
+
+	std::pair<Cell, Cell>
+	minmax() const
+	{
+		auto res = std::minmax_element(begin(mData), end(mData));
+		return std::pair<Cell, Cell>(*res.first, *res.second);
+	}
 
 protected:
 
@@ -123,17 +143,18 @@ protected:
 	Value mMin;
 	Value mMax;
 	CellCoordinates mResolution;
-	std::vector<Cell> mData;
+	Buffer mData;
 
 	Value mRangeSize;
 	CellCoordinates mStrides;
 };
 
 template<typename TValue, typename TCell = int64_t>
-class Histogram1D : HistogramBase<Histogram1DTraits<TValue, TCell>>
+class Histogram1D : public HistogramBase<Histogram1DTraits<TValue, TCell>>
 {
 public:
 	typedef HistogramBase<Histogram1DTraits<TValue, TCell>> Predecessor;
+	typedef typename Predecessor::Buffer Buffer;
 	typedef typename Predecessor::Value Value;
 	typedef typename Predecessor::ScalarValue ScalarValue;
 	typedef typename Predecessor::Cell Cell;
@@ -150,6 +171,30 @@ public:
 	put(const Value &aValue) {
 		this->getCell(aValue) += 1;
 	}
+
+	typename Buffer::iterator
+	begin()
+	{
+		return this->mData.begin();
+	}
+
+	typename Buffer::iterator
+	end()
+	{
+		return this->mData.end();
+	}
+
+	typename Buffer::const_iterator
+	begin() const
+	{
+		return this->mData.begin();
+	}
+
+	typename Buffer::const_iterator
+	end() const
+	{
+		return this->mData.end();
+	}
 };
 
 
@@ -163,7 +208,7 @@ public:
 class EIncompatibleHistograms: public ErrorHandling::ExceptionBase
 {
 public:
-	EIncompatibleHistograms() throw() : ErrorHandling::ExceptionBase ( "Operation could'nt proceed on these instances" ) {}
+	EIncompatibleHistograms() throw() : ErrorHandling::ExceptionBase ( "Operation could not proceed on these instances" ) {}
 };
 
 template< typename CellType >

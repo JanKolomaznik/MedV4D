@@ -554,19 +554,22 @@ struct FillTFBufferVisitor :
 
 	void
 	visit(const tfw::TransferFunction1D &aTransferFunction) override {
-		mInfo.tfBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(1000);
-		mInfo.tfBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(0.0, 2000.0));
+		static const int cSampleCount = 1000;
+		float step = (aTransferFunction.range().second - aTransferFunction.range().first) / cSampleCount;
+		mInfo.tfBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(cSampleCount);
+		mInfo.tfBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(aTransferFunction.range().first, aTransferFunction.range().second));
 		for (size_t i = 0; i < mInfo.tfBuffer->size(); ++i) {
 			vorgl::RGBAf color;
-			color.r = aTransferFunction.getIntensity(i, 0);
-			color.g = aTransferFunction.getIntensity(i, 1);
-			color.b = aTransferFunction.getIntensity(i, 2);
-			color.a = aTransferFunction.getIntensity(i, 3);
+			double value = aTransferFunction.range().first + i * step;
+			color.r = aTransferFunction.getIntensity(value, 0);
+			color.g = aTransferFunction.getIntensity(value, 1);
+			color.b = aTransferFunction.getIntensity(value, 2);
+			color.a = aTransferFunction.getIntensity(value, 3);
 			(*mInfo.tfBuffer)[i] = color;
 		}
 
-		mInfo.tfIntegralBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(1000);
-		mInfo.tfIntegralBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(0.0, 2000.0));
+		mInfo.tfIntegralBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(cSampleCount);
+		mInfo.tfIntegralBuffer->setMappedInterval(mInfo.tfBuffer->mappedInterval());
 		vorgl::RGBAf lastColor = mInfo.tfBuffer->front();
 		for (size_t i = 1; i < mInfo.tfBuffer->size(); ++i) {
 			vorgl::RGBAf color = (*mInfo.tfBuffer)[i];
@@ -900,6 +903,40 @@ ViewerWindow::dataLoaded()
 
 }
 
+class ImageStatistics : public tfw::AStatistics
+{
+public:
+	bool
+	hasHistogram() const override
+	{
+		return true;
+	}
+
+	std::pair<float, float>
+	getHistogramRange() const override
+	{
+		auto range = mHistogram.getRange();
+		return std::make_pair(float(range.first), float(range.second));
+	}
+
+	virtual std::vector<QPointF>
+	getHistogramSamples() const override
+	{
+		auto extremes = mHistogram.minmax();
+		std::vector<QPointF> points;
+		points.reserve(mHistogram.resolution()[0]);
+		float step = float(mHistogram.getRange().second - mHistogram.getRange().first) / mHistogram.resolution()[0];
+		float x = 0.0f;//TODO
+		for (auto value : mHistogram) {
+			points.emplace_back(x, float(value) / extremes.second);
+			x += step;
+		}
+		return points;
+	}
+
+	M4D::Imaging::Histogram1D<int> mHistogram;
+};
+
 void
 ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 {
@@ -907,34 +944,36 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	if( !aImage ) {
 		return;
 	}
-	typedef M4D::Imaging::SimpleHistogram64 Histogram;
-	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
+	//typedef M4D::Imaging::SimpleHistogram64 Histogram;
+	//typedef M4D::GUI::TF::Histogram<1> TFHistogram;
 
 	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
 	Histogram1D<int> histogram1D;
-	Histogram::Ptr histogram;
+	//Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
-		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
+		//histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
-	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
+	//int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
 
-	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
+	//TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
 
-	M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
+	/*M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
 	for(Histogram::iterator it = histogram->begin(); it != histogram->end(); ++it)	//values
 	{
 		tfHistogram->set(coords, *it);
 		++coords[0];
 	}
-	tfHistogram->seal();
+	tfHistogram->seal();*/
 
-	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+	//mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+	auto statistics = std::make_shared<ImageStatistics>();
 
-
+	statistics->mHistogram = std::move(histogram1D);
+	mTFPaletteWidget->setStatistics(statistics);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 
