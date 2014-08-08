@@ -149,7 +149,7 @@ protected:
 	QTimer mJoyTimer;
 #endif
 
-	M4D::GUI::Palette::Ptr mTFEditingSystem;
+	//M4D::GUI::Palette::Ptr mTFEditingSystem;
 	TransferBufferUsageMap mTFUsageMap;
 
 	QFileDialog	*mOpenDialog;

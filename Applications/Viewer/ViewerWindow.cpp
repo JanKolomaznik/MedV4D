@@ -213,11 +213,11 @@ ViewerWindow::initialize()
 	mViewerController = ProxyViewerController::Ptr( new ProxyViewerController );
 	mRenderingExtension = ProxyRenderingExtension::Ptr( new ProxyRenderingExtension );
 //***********************************************************
-	std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
+	/*std::vector<M4D::GUI::TF::Size> dataCT1D(1, 4096);	//default CT
 	mTFEditingSystem = M4D::GUI::Palette::Ptr(new M4D::GUI::Palette(this, dataCT1D));
-	mTFEditingSystem->setupDefault();
+	mTFEditingSystem->setupDefault();*/
 
-	createDockWidget( tr("Transfer Function Palette Old"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
+	//createDockWidget( tr("Transfer Function Palette Old"), Qt::RightDockWidgetArea, mTFEditingSystem.get(), true );
 	/*QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 
 	dockWidget->setWidget( &(*mTFEditingSystem) );
@@ -227,9 +227,9 @@ ViewerWindow::initialize()
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);*/
 	//dockWidget->setFloating(true);
 
-	loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./data/TF" ) ) );
+	//loadAllSavedTFEditorsIntoPalette( *mTFEditingSystem, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string( "./data/TF" ) ) );
 
-	LOG( "TF framework initialized" );
+	//LOG( "TF framework initialized" );
 
 	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
 	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
@@ -238,6 +238,10 @@ ViewerWindow::initialize()
 	mTFPaletteWidget->setPalette(mTFPalette);
 	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), true );
 
+	mTFPaletteWidget->setWrapEditorCallback(
+			[this](tfw::ATransferFunctionEditor *aEditor) -> QWidget * {
+				return createDockWidget(aEditor->tfName(), Qt::RightDockWidgetArea, aEditor, true );
+			});
 //*****************
 
 	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
@@ -322,10 +326,10 @@ ViewerWindow::initialize()
 
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
 
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
+	/*QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( int ) ), this, SLOT( changedTransferFunctionSelection() ), Qt::QueuedConnection );
 	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
-
+*/
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionAdded, this, &ViewerWindow::transferFunctionAdded, Qt::QueuedConnection);
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::changedTransferFunctionSelection, this, &ViewerWindow::changedTransferFunctionSelection, Qt::QueuedConnection);
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionModified, this, &ViewerWindow::transferFunctionModified, Qt::QueuedConnection);
@@ -539,7 +543,8 @@ ViewerWindow::changedViewerSelection()
 	M4D::GUI::Viewer::GeneralViewer *pGenViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (pViewer);
 	if(pGenViewer != NULL) {
 		vorgl::TransferFunctionBufferInfo info = pGenViewer->getTransferFunctionBufferInfo();
-		mTFEditingSystem->selectTransferFunction( info.id );
+		//mTFEditingSystem->selectTransferFunction( info.id );
+		mTFPaletteWidget->selectTransferFunction( info.id );
 	}
 	//LOG( __FUNCTION__ );
 }
@@ -787,23 +792,23 @@ ViewerWindow::openFile( const QString &aPath )
 
 	//applyTransferFunction();
 	//
-	typedef M4D::Imaging::SimpleHistogram64 Histogram;
-	typedef M4D::GUI::TF::Histogram<1> TFHistogram;
+	/*typedef M4D::Imaging::SimpleHistogram64 Histogram;
+	typedef M4D::GUI::TF::Histogram<1> TFHistogram;*/
 
 	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
-	Histogram::Ptr histogram;
+	/*Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
-	);
+	);*/
 
 	M4D::Imaging::Histogram1D<int> histogram2;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram2 = M4D::Imaging::createHistogramForImageRegion2<M4D::Imaging::Histogram1D<int>, IMAGE_TYPE>(IMAGE_TYPE::Cast(*image));
 	);
 
-	int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
+	/*int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
 
 	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
 
@@ -815,7 +820,7 @@ ViewerWindow::openFile( const QString &aPath )
 	}
 	tfHistogram->seal();
 
-	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
+	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));*/
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 
