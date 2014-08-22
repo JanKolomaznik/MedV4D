@@ -185,14 +185,50 @@ template< typename THistogram, typename TRegion >
 THistogram
 createHistogramForImageRegion2(const TRegion &aRegion)
 {
-	THistogram histogram(0, 2000, 500);
 	auto it = aRegion.GetIterator();
+
+	double minimum = *it;
+	double maximum = *it;
+
+	while ( !it.IsEnd() ) {
+		minimum = std::min<double>(minimum, *it);
+		maximum = std::max<double>(maximum, *it);
+		++it;
+	}
+
+	THistogram histogram(minimum, maximum, 500);
+	it = aRegion.GetIterator();
 	while ( !it.IsEnd() ) {
 		histogram.put(*it);
 		++it;
 	}
 	return histogram;
 }
+
+/*template< typename TScatterPlot, typename TRegion >
+TScatterPlot
+createGradientScatterPlotForImageRegion(const TRegion &aRegion)
+{
+	TScatterPlot scatterPlot;
+	auto it = aRegion.GetIterator();
+
+	double minimum = *it;
+	double maximum = *it;
+
+	while ( !it.IsEnd() ) {
+		minimum = std::min<double>(minimum, *it);
+		maximum = std::max<double>(maximum, *it);
+		++it;
+	}
+
+	THistogram histogram(minimum, maximum, 500);
+	it = aRegion.GetIterator();
+	while ( !it.IsEnd() ) {
+		histogram.put(*it);
+		++it;
+	}
+	return scatterPlot;
+}*/
 
 template< typename TImage, typename TContainer >
 void

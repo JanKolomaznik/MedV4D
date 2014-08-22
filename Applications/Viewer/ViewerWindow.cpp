@@ -949,32 +949,15 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	if( !aImage ) {
 		return;
 	}
-	//typedef M4D::Imaging::SimpleHistogram64 Histogram;
-	//typedef M4D::GUI::TF::Histogram<1> TFHistogram;
-
 	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
 
 	Histogram1D<int> histogram1D;
-	//Histogram::Ptr histogram;
+	ScatterPlot2D<int, float> gradientScatterPlot1D;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
-		//histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
 	);
 
-	//int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
-
-	//TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
-
-	/*M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
-	for(Histogram::iterator it = histogram->begin(); it != histogram->end(); ++it)	//values
-	{
-		tfHistogram->set(coords, *it);
-		++coords[0];
-	}
-	tfHistogram->seal();*/
-
-	//mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));
 	auto statistics = std::make_shared<ImageStatistics>();
 
 	statistics->mHistogram = std::move(histogram1D);

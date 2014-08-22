@@ -35,6 +35,31 @@ struct Histogram1DTraits
 		return aVal;
 	}
 };
+
+template<typename TValueX, typename TValueY, typename TCell>
+struct Histogram2DTraits
+{
+	typedef TCell Cell;
+	typedef std::pair<TValueX, TValueY> Value;
+	//typedef TValue ScalarValue;
+	static const int cDimension = 2;
+	static const bool cIsScalar = false;
+
+	template<int tDimIndex>
+	static typename std::tuple_element<tDimIndex, Value>::type &
+	get(Value &aVal)
+	{
+		return std::get<tDimIndex>(aVal);
+	}
+
+	template<int tDimIndex>
+	static const typename std::tuple_element<tDimIndex, Value>::type &
+	get(const Value &aVal)
+	{
+		return std::get<tDimIndex>(aVal);
+	}
+};
+
 namespace detail {
 
 template<typename TTraits, int tDimIndex>
@@ -81,7 +106,7 @@ class HistogramBase
 {
 public:
 	typedef typename TTraits::Value Value;
-	typedef typename TTraits::ScalarValue ScalarValue;
+	//typedef typename TTraits::ScalarValue ScalarValue;
 	typedef typename TTraits::Cell Cell;
 	static const int cDimension = TTraits::cDimension;
 	typedef Vector<int, cDimension> CellCoordinates;
@@ -156,7 +181,7 @@ public:
 	typedef HistogramBase<Histogram1DTraits<TValue, TCell>> Predecessor;
 	typedef typename Predecessor::Buffer Buffer;
 	typedef typename Predecessor::Value Value;
-	typedef typename Predecessor::ScalarValue ScalarValue;
+	//typedef typename Predecessor::ScalarValue ScalarValue;
 	typedef typename Predecessor::Cell Cell;
 	static const int cDimension = Predecessor::cDimension;
 	typedef typename Predecessor::CellCoordinates CellCoordinates;
@@ -197,6 +222,53 @@ public:
 	}
 };
 
+template<typename TValueX, typename TValueY, typename TCell = int64_t>
+class ScatterPlot2D : public HistogramBase<Histogram2DTraits<TValueX, TValueY, TCell>>
+{
+public:
+	typedef HistogramBase<Histogram2DTraits<TValueX, TValueY, TCell>> Predecessor;
+	typedef typename Predecessor::Buffer Buffer;
+	typedef typename Predecessor::Value Value;
+	//typedef typename Predecessor::ScalarValue ScalarValue;
+	typedef typename Predecessor::Cell Cell;
+	static const int cDimension = Predecessor::cDimension;
+	typedef typename Predecessor::CellCoordinates CellCoordinates;
+
+	ScatterPlot2D(Value aMin, Value aMax, int aResolution)
+		: Predecessor(aMin, aMax, CellCoordinates(aResolution))
+	{}
+
+	ScatterPlot2D() = default;
+
+	void
+	put(const Value &aValue) {
+		this->getCell(aValue) += 1;
+	}
+
+	/*typename Buffer::iterator
+	begin()
+	{
+		return this->mData.begin();
+	}
+
+	typename Buffer::iterator
+	end()
+	{
+		return this->mData.end();
+	}
+
+	typename Buffer::const_iterator
+	begin() const
+	{
+		return this->mData.begin();
+	}
+
+	typename Buffer::const_iterator
+	end() const
+	{
+		return this->mData.end();
+	}*/
+};
 
 class Statistics {
 public:
