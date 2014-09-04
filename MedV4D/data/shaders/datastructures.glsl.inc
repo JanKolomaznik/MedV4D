@@ -22,6 +22,15 @@ struct TransferFunction1D
 	int sampleCount;
 };
 
+struct TransferFunction2D
+{
+	sampler2D data;
+	vec2 from;
+	vec2 to;
+	int xSamples;
+	int ySamples;
+};
+
 struct Camera
 {
 	vec3 eyePosition;

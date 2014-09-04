@@ -33,7 +33,7 @@ void main(void)
 #endif //ENABLE_JITTERING
 
 #ifdef TRANSFER_FUNCTION_RENDERING
-#ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+#  ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 	vec4 color = preintegratedTransferFunction1D(
 				coordinates,
 				gPrimaryImageData3D,
@@ -41,15 +41,15 @@ void main(void)
 				gRenderingSliceThickness,
 				gMappedIntervalBands,
 				gCamera.viewDirection);
-#else	
+#  else	
 	vec4 color = transferFunction1D(
 				coordinates,
 				gPrimaryImageData3D,
 				gTransferFunction1D,
 				gMappedIntervalBands);
-#endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+#  endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 
-#ifdef ENABLE_SHADING
+#  ifdef ENABLE_SHADING
 	color = doShading(
 		coordinates,
 		color,
@@ -57,7 +57,7 @@ void main(void)
 		gLight,
 		gCamera.eyePosition
 		);
-#endif //ENABLE_SHADING
+#  endif //ENABLE_SHADING
 #endif //TRANSFER_FUNCTION_RENDERING
 
 #ifdef DENSITY_RENDERING

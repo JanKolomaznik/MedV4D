@@ -205,30 +205,37 @@ createHistogramForImageRegion2(const TRegion &aRegion)
 	return histogram;
 }
 
-/*template< typename TScatterPlot, typename TRegion >
+template< typename TScatterPlot, typename TRegion >
 TScatterPlot
 createGradientScatterPlotForImageRegion(const TRegion &aRegion)
 {
-	TScatterPlot scatterPlot;
-	auto it = aRegion.GetIterator();
+	typedef typename TScatterPlot::Value Value;
+	typedef typename TScatterPlot::CellCoordinates CellCoordinates;
+	TScatterPlot scatterPlot(Value(0,0), Value(2000,500), CellCoordinates(2000, 500));
 
-	double minimum = *it;
-	double maximum = *it;
+	auto from = aRegion.GetMinimum();
+	auto to = aRegion.GetMaximum();
+	auto element = aRegion.GetElementExtents();
 
-	while ( !it.IsEnd() ) {
-		minimum = std::min<double>(minimum, *it);
-		maximum = std::max<double>(maximum, *it);
-		++it;
-	}
+	auto index = from;
 
-	THistogram histogram(minimum, maximum, 500);
-	it = aRegion.GetIterator();
-	while ( !it.IsEnd() ) {
-		histogram.put(*it);
-		++it;
+	for (; index[2] < to[2]-1; ++index[2]) {
+		for (index[1] = from[1]; index[1] < to[1]-1; ++index[1]) {
+			for (index[0] = from[0]; index[0] < to[0]-1; ++index[0]) {
+				auto value = aRegion.GetElement(index);
+				decltype(value) gradient = 0;
+				for (int i = 0; i < 3; ++i) {
+					auto index2 = index;
+					++index2[i];
+					auto d = (value - aRegion.GetElementFast(index2)) / element[i];
+					gradient += d * d;
+				}
+				scatterPlot.put(value, std::sqrt(gradient));
+			}
+		}
 	}
 	return scatterPlot;
-}*/
+}
 
 template< typename TImage, typename TContainer >
 void

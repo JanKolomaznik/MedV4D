@@ -587,26 +587,36 @@ struct FillTFBufferVisitor :
 				tmpColor.a);
 			lastColor = color;
 		}
+		OpenGLManager::getInstance()->doGL([this]() {
+				mInfo.tfGLBuffer = vorgl::createGLTransferFunctionBuffer1D( *mInfo.tfBuffer );
+			});
+
+		OpenGLManager::getInstance()->doGL([this]() {
+			mInfo.tfGLIntegralBuffer = vorgl::createGLTransferFunctionBuffer1D(*mInfo.tfIntegralBuffer);
+		});
 	}
-
-	vorgl::TransferFunctionBufferInfo &mInfo;
-};
-
-
-struct FillIntegralTFBufferVisitor :
-	public tfw::UnsupportedThrowConstTransferFunctionVisitor
-{
-	FillIntegralTFBufferVisitor(vorgl::TransferFunctionBufferInfo &aInfo)
-		: mInfo(aInfo)
-	{}
 
 	void
-	visit(const tfw::TransferFunction1D &) override {
-
+	visit(const tfw::TransferFunction2D &aTransferFunction) override {
+		static const int cXSampleCount = 1000;
+		static const int cYSampleCount = 200;
+		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
+		tfw::TransferFunction2D::RangePoint from, to;
+		std::tie(from, to) = aTransferFunction.range();
+		std::array<float, 2> step {
+			(to[0] - from[0]) / cXSampleCount,
+			(to[1] - from[1]) / cYSampleCount };
+		for (int j = 0; j < cYSampleCount; ++j) {
+			for (int i = 0; i < cXSampleCount; ++i) {
+				buffer[j*cXSampleCount + i] = aTransferFunction.getColor(i * step[0] + from[0], j * step[1] + from[1]).data();
+			}
+		}
+		vorgl::createGLTransferFunctionBuffer2D(*mInfo.tfIntegralBuffer);
 	}
 
 	vorgl::TransferFunctionBufferInfo &mInfo;
 };
+
 
 
 bool
@@ -614,24 +624,8 @@ fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw
 {
 	try {
 		FillTFBufferVisitor fillBufferVisitor(info);
-		FillIntegralTFBufferVisitor fillIntegralBufferVisitor(info);
 		function.accept(fillBufferVisitor);
-		function.accept(fillIntegralBufferVisitor);
 
-	//if( fillBufferFromTF( function, info.tfBuffer ) ) {
-		OpenGLManager::getInstance()->doGL([&info]() {
-				info.tfGLBuffer = createGLTransferFunctionBuffer1D( *info.tfBuffer );
-			});
-
-/*		if( fillIntegralBufferFromTF( function, info.tfIntegralBuffer ) ) {
-			OpenGLManager::getInstance()->doGL([&info]() {
-				info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D( *info.tfIntegralBuffer );
-			});
-		} else {*/
-		OpenGLManager::getInstance()->doGL([&info]() {
-			info.tfGLIntegralBuffer = createGLTransferFunctionBuffer1D(*info.tfIntegralBuffer);
-		});
-		//}
 	} catch (tfw::EUnsupportedTransferFunctionType &) {
 		D_PRINT( "TF buffer not created" );
 		return false;
@@ -666,13 +660,6 @@ ViewerWindow::changedTransferFunctionSelection()
 		if (idx == oldInfo.id) {
 			return; //No change
 		}
-
-		/*M4D::Common::IDNumber idx = mTFEditingSystem->getActiveEditorId();
-		vorgl::TransferFunctionBufferInfo oldInfo = pGenViewer->getTransferFunctionBufferInfo();
-
-		if ( idx == oldInfo.id ) {
-			return; //No change
-		}*/
 		auto it = mTFUsageMap.find( oldInfo.id );
 		if (it != end(mTFUsageMap)) {
 			it->second.viewers.remove(pGenViewer);
@@ -730,18 +717,6 @@ ViewerWindow::openFile()
 			fileName = fileNames[0];
 		}
 	}
-	//QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
-
-	/*if ( !fileName.isEmpty() ) {
-		QFileInfo pathInfo( fileName );
-		QString ext = pathInfo.suffix();
-		if ( ext.toLower() == "dcm" ) {
-			openDicom( fileName );
-		} else {
-			openFile( fileName );
-		}
-	}*/
-
 	if ( !fileName.isEmpty() ) {
 		if( !mProgressDialog ) {
 			mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
@@ -768,64 +743,14 @@ ViewerWindow::openFile( const QString &aPath )
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	//M4D::Common::Clock clock;
-
-	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
-	);*/
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		IMAGE_TYPE::PointType strides;
-		IMAGE_TYPE::SizeType size;
-		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
-		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
-	);*/
-
-/*	M4D::Imaging::Histogram64::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
-	);
-
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
-*/
-
-	//applyTransferFunction();
-	//
-	/*typedef M4D::Imaging::SimpleHistogram64 Histogram;
-	typedef M4D::GUI::TF::Histogram<1> TFHistogram;*/
-
 	statusbar->showMessage("Computing histogram...");
 	M4D::Common::Clock clock;
-
-	/*Histogram::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		histogram = M4D::Imaging::createHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
-	);*/
 
 	M4D::Imaging::Histogram1D<int> histogram2;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
 		histogram2 = M4D::Imaging::createHistogramForImageRegion2<M4D::Imaging::Histogram1D<int>, IMAGE_TYPE>(IMAGE_TYPE::Cast(*image));
 	);
-
-	/*int domain = mTFEditingSystem->getDomain(TF_DIMENSION_1);
-
-	TFHistogram* tfHistogram(new TFHistogram(std::vector<M4D::GUI::TF::Size>(1, domain)));
-
-	M4D::GUI::TF::Coordinates coords(1, histogram->getMin());
-	for(Histogram::iterator it = histogram->begin(); it != histogram->end(); ++it)	//values
-	{
-		tfHistogram->set(coords, *it);
-		++coords[0];
-	}
-	tfHistogram->seal();
-
-	mTFEditingSystem->setHistogram(M4D::GUI::TF::HistogramInterface::Ptr(tfHistogram));*/
-
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-
-	//statusbar->showMessage("Applying transfer function...");
-	//applyTransferFunction();
 
 	statusbar->clearMessage();
 }
@@ -877,35 +802,7 @@ ViewerWindow::dataLoaded()
 
 	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	//M4D::Common::Clock clock;
-
-	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
-	);*/
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		IMAGE_TYPE::PointType strides;
-		IMAGE_TYPE::SizeType size;
-		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
-		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
-	);*/
-
-	/*M4D::Imaging::Histogram64::Ptr histogram;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
-	);
-
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	mTransferFunctionEditor->SetBackgroundHistogram( histogram );*/
-
-
-	//applyTransferFunction();
-
-	//boost::thread th = boost::thread( boost::bind( &ViewerWindow::computeHistogram, this, image ) );
-	//th.detach();
-
 	computeHistogram( image );
-
 }
 
 class ImageStatistics : public tfw::AStatistics
@@ -939,7 +836,40 @@ public:
 		return points;
 	}
 
+	bool
+	hasScatterPlot() const override
+	{
+		return true;
+	}
+
+	std::pair<QRectF, tfw::ScatterPlotData>
+	getScatterPlot() const override
+	{
+		auto range = mGradientScatterPlot.getRange();
+		QRectF region(
+			range.first.first,
+			range.first.second,
+			range.second.first - range.first.first,
+			range.second.second - range.first.second);
+
+		auto minmax = mGradientScatterPlot.minmax();
+		auto resolution = mGradientScatterPlot.resolution();
+
+		tfw::ScatterPlotData data;
+		data.size[0] = resolution[0];
+		data.size[1] = resolution[1];
+		data.buffer.resize(resolution[0] * resolution[1]);
+
+		for (int j = 0; j < resolution[1]; ++j) {
+			for (int i = 0; i < resolution[0]; ++i) {
+				data.buffer[i + j*resolution[0]] = double(mGradientScatterPlot.data()[i + j*resolution[0]]) / minmax.second;
+			}
+		}
+		return std::make_pair(region, std::move(data));
+	}
+
 	M4D::Imaging::Histogram1D<int> mHistogram;
+	M4D::Imaging::ScatterPlot2D<int, float> mGradientScatterPlot;
 };
 
 void
@@ -953,14 +883,16 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	M4D::Common::Clock clock;
 
 	Histogram1D<int> histogram1D;
-	ScatterPlot2D<int, float> gradientScatterPlot1D;
+	ScatterPlot2D<int, float> gradientScatterPlot;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
+		gradientScatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegion<ScatterPlot2D<int, float>, IMAGE_TYPE::SubRegion>(IMAGE_TYPE::Cast( *aImage ).GetRegion());
 	);
 
 	auto statistics = std::make_shared<ImageStatistics>();
 
 	statistics->mHistogram = std::move(histogram1D);
+	statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
 	mTFPaletteWidget->setStatistics(statistics);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );

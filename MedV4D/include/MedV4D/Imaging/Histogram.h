@@ -23,6 +23,11 @@ struct Histogram1DTraits
 	static const int cDimension = 1;
 	static const bool cIsScalar = true;
 
+	static Value
+	computeRange(const Value &aFrom, const Value &aTo) {
+		return aTo - aFrom;
+	}
+
 	template<int tDimIndex>
 	static ScalarValue& get(Value &aVal)
 	{
@@ -45,6 +50,11 @@ struct Histogram2DTraits
 	static const int cDimension = 2;
 	static const bool cIsScalar = false;
 
+	static Value
+	computeRange(const Value &aFrom, const Value &aTo) {
+		return Value(std::get<0>(aTo) - std::get<0>(aFrom), std::get<1>(aTo) - std::get<1>(aFrom));
+	}
+
 	template<int tDimIndex>
 	static typename std::tuple_element<tDimIndex, Value>::type &
 	get(Value &aVal)
@@ -62,13 +72,55 @@ struct Histogram2DTraits
 
 namespace detail {
 
-template<typename TTraits, int tDimIndex>
+template<int ...N> struct Seq {};
+template<int N, int ...S> struct Gens : Gens<N-1, N-1, S...> {};
+template<int ...S> struct Gens<0, S...> {typedef Seq<S...> type;};
+
+template<typename TTraits>
+struct FillCellCoordinates
+{
+	typedef typename TTraits::Value Value;
+	//typedef typename TTraits::ScalarValue ScalarValue;
+	static const int cDimension = TTraits::cDimension;
+	typedef Vector<int, cDimension> CellCoordinates;
+
+	template<int tDimIndex>
+	static int
+	getCellCoordinate(const Value &aValue, const Value &aMin, const Value &aRange, const CellCoordinates &aResolution) {
+		auto scalarMin = TTraits::template get<tDimIndex>(aMin);
+		auto scalarRangeSize = TTraits::template get<tDimIndex>(aRange);
+		auto value = TTraits::template get<tDimIndex>(aValue);
+
+		return round(((value - scalarMin) / double(scalarRangeSize)) * aResolution[tDimIndex]);
+	}
+	template<int ...tIndexes>
+	static CellCoordinates
+	getCellCoordinatesHelper(const Value &aValue, const Value &aMin, const Value &aRange, const CellCoordinates &aResolution, Seq<tIndexes...> ) {
+		return CellCoordinates(getCellCoordinate<tIndexes>(aValue, aMin, aRange, aResolution) ...);
+	}
+
+	static CellCoordinates
+	apply(const Value &aValue, const Value &aMin, const Value &aRange, const CellCoordinates &aResolution)
+	{
+		/*ScalarValue scalarMin = TTraits::template get<tDimIndex>(aMin);
+		ScalarValue scalarRangeSize = TTraits::template get<tDimIndex>(aRange);
+		ScalarValue value = TTraits::template get<tDimIndex>(aValue);
+		aCoords[tDimIndex] = round(((value - scalarMin) / double(scalarRangeSize)) * aResolution[tDimIndex]);
+		FillCellCoordinates<TTraits, tDimIndex - 1>::apply(aCoords, aValue, aMin, aRange, aResolution);*/
+		return getCellCoordinatesHelper(aValue, aMin, aRange, aResolution, typename Gens<cDimension>::type());
+	}
+};
+
+
+/*template<typename TTraits, int tDimIndex>
 struct FillCellCoordinates
 {
 	typedef typename TTraits::Value Value;
 	typedef typename TTraits::ScalarValue ScalarValue;
 	static const int cDimension = TTraits::cDimension;
 	typedef Vector<int, cDimension> CellCoordinates;
+
+	template<
 
 	static void
 	apply(CellCoordinates &aCoords, const Value &aValue, const Value &aMin, const Value &aRange, CellCoordinates &aResolution)
@@ -97,7 +149,7 @@ struct FillCellCoordinates<TTraits, 0>
 		ScalarValue value = TTraits::template get<0>(aValue);
 		aCoords[0] = round(((value - scalarMin) / double(scalarRangeSize)) * aResolution[0]);
 	}
-};
+};*/
 
 } // namespace detail
 
@@ -112,13 +164,14 @@ public:
 	typedef Vector<int, cDimension> CellCoordinates;
 	typedef std::vector<Cell> Buffer;
 
+
 	HistogramBase() = default;
 	HistogramBase(Value aMin, Value aMax, CellCoordinates aResolution)
 		: mMin(aMin)
 		, mMax(aMax)
 		, mResolution(aResolution)
 		, mData(VectorCoordinateProduct(aResolution))
-		, mRangeSize(aMax - aMin)
+		, mRangeSize(TTraits::computeRange(aMin, aMax))
 	{
 		mStrides[0] = 1;
 		int stride = 1;
@@ -147,21 +200,26 @@ public:
 		return std::pair<Cell, Cell>(*res.first, *res.second);
 	}
 
+	const Cell *
+	data() const {
+		return mData.data();
+	}
+
 protected:
 
 	CellCoordinates
 	valueToCell(Value aVal) const
 	{
-		CellCoordinates coords;
-		detail::FillCellCoordinates<TTraits, cDimension - 1>::apply(coords, aVal, mMin, mRangeSize, mResolution);
-		return coords;
+		//CellCoordinates coords;
+		return detail::FillCellCoordinates<TTraits>::apply(aVal, mMin, mRangeSize, mResolution);
+		//return coords;
 	}
 
 	Cell &
 	getCell(const Value &aValue)
 	{
 		// TODO - better implementation
-		Value val = clamp(0, int(mData.size() - 1), valueToCell(aValue) * mStrides);
+		int val = clamp(0, int(mData.size() - 1), valueToCell(aValue) * mStrides);
 		return mData[val];
 	}
 
@@ -234,8 +292,8 @@ public:
 	static const int cDimension = Predecessor::cDimension;
 	typedef typename Predecessor::CellCoordinates CellCoordinates;
 
-	ScatterPlot2D(Value aMin, Value aMax, int aResolution)
-		: Predecessor(aMin, aMax, CellCoordinates(aResolution))
+	ScatterPlot2D(Value aMin, Value aMax, CellCoordinates aResolution)
+		: Predecessor(aMin, aMax, aResolution)
 	{}
 
 	ScatterPlot2D() = default;
@@ -243,6 +301,11 @@ public:
 	void
 	put(const Value &aValue) {
 		this->getCell(aValue) += 1;
+	}
+
+	void
+	put(const TValueX &aXValue, const TValueY &aYValue) {
+		this->getCell(Value(aXValue, aYValue)) += 1;
 	}
 
 	/*typename Buffer::iterator
