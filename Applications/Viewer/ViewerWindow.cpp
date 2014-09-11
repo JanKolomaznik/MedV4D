@@ -437,7 +437,7 @@ struct SetTransferFunctionFtor
 		M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
 
 		if ( viewer ) {
-			viewer->setTransferFunctionBuffer( mTF );
+			//viewer->setTransferFunctionBuffer( mTF );
 		}
 	}
 
@@ -561,39 +561,40 @@ struct FillTFBufferVisitor :
 	visit(const tfw::TransferFunction1D &aTransferFunction) override {
 		static const int cSampleCount = 1000;
 		float step = (aTransferFunction.range().second - aTransferFunction.range().first) / cSampleCount;
-		mInfo.tfBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(cSampleCount);
-		mInfo.tfBuffer->setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(aTransferFunction.range().first, aTransferFunction.range().second));
-		for (size_t i = 0; i < mInfo.tfBuffer->size(); ++i) {
+		auto tfBuffer = vorgl::TransferFunctionBuffer1D(cSampleCount);
+		tfBuffer.setMappedInterval(vorgl::TransferFunctionBuffer1D::MappedInterval(aTransferFunction.range().first, aTransferFunction.range().second));
+		for (size_t i = 0; i < tfBuffer.size(); ++i) {
 			vorgl::RGBAf color;
 			double value = aTransferFunction.range().first + i * step;
 			color.r = aTransferFunction.getIntensity(value, 0);
 			color.g = aTransferFunction.getIntensity(value, 1);
 			color.b = aTransferFunction.getIntensity(value, 2);
 			color.a = aTransferFunction.getIntensity(value, 3);
-			(*mInfo.tfBuffer)[i] = color;
+			tfBuffer[i] = color;
 		}
 
-		mInfo.tfIntegralBuffer = std::make_shared<vorgl::TransferFunctionBuffer1D>(cSampleCount);
-		mInfo.tfIntegralBuffer->setMappedInterval(mInfo.tfBuffer->mappedInterval());
-		vorgl::RGBAf lastColor = mInfo.tfBuffer->front();
-		for (size_t i = 1; i < mInfo.tfBuffer->size(); ++i) {
-			vorgl::RGBAf color = (*mInfo.tfBuffer)[i];
+		auto tfIntegralBuffer = vorgl::TransferFunctionBuffer1D(cSampleCount);
+		tfIntegralBuffer.setMappedInterval(tfBuffer.mappedInterval());
+		vorgl::RGBAf lastColor = tfBuffer.front();
+		for (size_t i = 1; i < tfBuffer.size(); ++i) {
+			vorgl::RGBAf color = tfBuffer[i];
 			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
 			float alpha = 1.0f;//tmpColor.alpha;
-			(*mInfo.tfIntegralBuffer)[i] = (*mInfo.tfIntegralBuffer)[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
+			tfIntegralBuffer[i] = tfIntegralBuffer[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
 				tmpColor.r * alpha,
 				tmpColor.g * alpha,
 				tmpColor.b * alpha,
 				tmpColor.a);
 			lastColor = color;
 		}
-		OpenGLManager::getInstance()->doGL([this]() {
-				mInfo.tfGLBuffer = vorgl::createGLTransferFunctionBuffer1D( *mInfo.tfBuffer );
-			});
 
-		OpenGLManager::getInstance()->doGL([this]() {
-			mInfo.tfGLIntegralBuffer = vorgl::createGLTransferFunctionBuffer1D(*mInfo.tfIntegralBuffer);
-		});
+
+		OpenGLManager::getInstance()->doGL([this, &tfBuffer, &tfIntegralBuffer]() {
+				vorgl::TransferFunctionBuffer1DInfo info;
+				info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer1D(tfBuffer);
+				info.tfGLIntegralBuffer = vorgl::createGLTransferFunctionBuffer1D(tfIntegralBuffer);
+				mInfo.bufferInfo = info;
+			});
 	}
 
 	void
@@ -611,7 +612,9 @@ struct FillTFBufferVisitor :
 				buffer[j*cXSampleCount + i] = aTransferFunction.getColor(i * step[0] + from[0], j * step[1] + from[1]).data();
 			}
 		}
-		vorgl::createGLTransferFunctionBuffer2D(*mInfo.tfIntegralBuffer);
+		vorgl::TransferFunctionBuffer2DInfo info;
+		mInfo.bufferInfo = info;
+		//vorgl::createGLTransferFunctionBuffer2D(*mInfo.tfIntegralBuffer);
 	}
 
 	vorgl::TransferFunctionBufferInfo &mInfo;

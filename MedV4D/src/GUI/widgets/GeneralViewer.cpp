@@ -132,7 +132,7 @@ GeneralViewer::getLUTWindow() const
 	return getViewerState().mSliceRenderConfig.lutWindow;
 }
 
-void
+/*void
 GeneralViewer::setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
 {
 	if ( !aTFunctionBuffer ) {
@@ -152,7 +152,7 @@ GeneralViewer::setTransferFunctionBuffer( vorgl::TransferFunctionBuffer1D::Ptr a
 
 	notifyAboutSettingsChange();
 	update();
-}
+}*/
 
 void
 GeneralViewer::setTransferFunctionBufferInfo( vorgl::TransferFunctionBufferInfo aTFunctionBufferInfo )
@@ -160,9 +160,13 @@ GeneralViewer::setTransferFunctionBufferInfo( vorgl::TransferFunctionBufferInfo 
 	makeCurrent(); //TODO - RAII
 	getViewerState().mTransferFunctionBufferInfo = aTFunctionBufferInfo;
 
-	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
+	/*getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
 	getViewerState().mVolumeRenderConfig.transferFunctionOptions.transferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLBuffer;
-	getViewerState().mVolumeRenderConfig.transferFunctionOptions.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.integralTransferFunction = getViewerState().mTransferFunctionBufferInfo.tfGLIntegralBuffer;*/
+
+//	getViewerState().mSliceRenderConfig.transferFunction = getViewerState().mTransferFunctionBufferInfo;
+	getViewerState().mVolumeRenderConfig.transferFunctionOptions.transferFunction = getViewerState().mTransferFunctionBufferInfo.bufferInfo;
+
 	doneCurrent();
 
 	notifyAboutSettingsChange();
