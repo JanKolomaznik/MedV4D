@@ -20,7 +20,7 @@ public:
 	MainWindow();
 
 	MultiDockWidget *
-	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget, bool aDocked = true, bool aShow = true )
+	createDockWidget( QString aName, Qt::DockWidgetArea aArea, QWidget * aWidget, bool aFloating = true, bool aShow = true )
 	{
 		if (aWidget == nullptr) {
 			_THROW_ M4D::ErrorHandling::ENULLPointer();
@@ -30,7 +30,7 @@ public:
 		addDockWidget( aArea, dockwidget );
 		//dockwidget->addDockingWindow( aArea, this );
 		dockwidget->setVisible(aShow);
-		dockwidget->setFloating(aDocked);
+		dockwidget->setFloating(aFloating);
 		return dockwidget;
 	}
 

@@ -13,6 +13,7 @@ struct ImageData3D
 	vec3 realSize;
 	vec3 realMinimum;
 	vec3 realMaximum;
+	vec3 elementExtents;
 };
 
 struct TransferFunction1D
@@ -91,6 +92,15 @@ applyTransferFunction1D(float value, TransferFunction1D aTransferFunction1D)
 
 	return texture( aTransferFunction1D.data, remappedValue );
 } 
+
+vec4
+applyTransferFunction2D(vec2 aValue, TransferFunction2D aTransferFunction2D)
+{
+	vec2 range = aTransferFunction2D.to - aTransferFunction2D.from;
+	vec2 remappedValue = (aValue - aTransferFunction2D.from) / range;
+
+	return texture( aTransferFunction2D.data, remappedValue );
+}
 
 vec4
 applyIntegralTransferFunction1D( 
@@ -187,6 +197,25 @@ transferFunction1D(
 	float value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
 		
 	vec4 outputColor = applyTransferFunction1D( value, aTransferFunction1D );
+	return outputColor;
+}
+
+vec4 
+transferFunction2DWithGradient( 
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		TransferFunction2D aTransferFunction2D,
+		vec2 aMappedIntervalBands)
+{
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
+		
+	vec3 grad = computeGradient(aTextureData, aMappedIntervalBands, value, aPosition);
+	float magnitude = length(grad);
+	vec4 outputColor = applyTransferFunction2D(vec2(value, magnitude), aTransferFunction2D );
+
+	outputColor.a = clamp(magnitude / 2000, 0.0, 1.0);
 	return outputColor;
 }
 

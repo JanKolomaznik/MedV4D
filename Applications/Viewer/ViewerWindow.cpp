@@ -233,10 +233,8 @@ ViewerWindow::initialize()
 
 	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
 	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
-	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>(0.0, 2000.0));
-	mTFPalette->add(std::make_shared<tfw::TransferFunction1D>(0.0, 2000.0));
 	mTFPaletteWidget->setPalette(mTFPalette);
-	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), true );
+	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), false );
 
 	mTFPaletteWidget->setWrapEditorCallback(
 			[this](tfw::ATransferFunctionEditor *aEditor) -> QWidget * {
@@ -270,7 +268,7 @@ ViewerWindow::initialize()
 				mViewerControls->setViewer(genViewer);
 			});
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
-	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls );
+	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
 	LOG( "Viewer controls GUI initialized" );
 
 	//************* TOOLBAR & MENU *****************
@@ -326,10 +324,6 @@ ViewerWindow::initialize()
 
 	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
 
-	/*QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionAdded( int ) ), this, SLOT( transferFunctionAdded( int ) ), Qt::QueuedConnection );
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(changedTransferFunctionSelection( int ) ), this, SLOT( changedTransferFunctionSelection() ), Qt::QueuedConnection );
-	QObject::connect( mTFEditingSystem.get(), SIGNAL(transferFunctionModified( int )), this, SLOT( transferFunctionModified( int ) ), Qt::QueuedConnection );
-*/
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionAdded, this, &ViewerWindow::transferFunctionAdded, Qt::QueuedConnection);
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::changedTransferFunctionSelection, this, &ViewerWindow::changedTransferFunctionSelection, Qt::QueuedConnection);
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionModified, this, &ViewerWindow::transferFunctionModified, Qt::QueuedConnection);
@@ -612,9 +606,16 @@ struct FillTFBufferVisitor :
 				buffer[j*cXSampleCount + i] = aTransferFunction.getColor(i * step[0] + from[0], j * step[1] + from[1]).data();
 			}
 		}
-		vorgl::TransferFunctionBuffer2DInfo info;
-		mInfo.bufferInfo = info;
-		//vorgl::createGLTransferFunctionBuffer2D(*mInfo.tfIntegralBuffer);
+		OpenGLManager::getInstance()->doGL([this, &buffer, from, to] () {
+				vorgl::TransferFunctionBuffer2DInfo info;
+				info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer2D(
+							buffer.data(),
+							cXSampleCount,
+							cYSampleCount,
+							glm::fvec2(std::get<0>(from), std::get<1>(from)),
+							glm::fvec2(std::get<0>(to), std::get<1>(to)));
+				mInfo.bufferInfo = info;
+			});
 	}
 
 	vorgl::TransferFunctionBufferInfo &mInfo;
@@ -688,8 +689,6 @@ ViewerWindow::transferFunctionModified( int idx )
 	TransferBufferUsageMap::iterator it = mTFUsageMap.find( idx );
 	if ( it != end(mTFUsageMap)) {
 		TransferFunctionBufferUsageRecord &rec = it->second;
-
-		//fillTransferFunctionInfo( mTFEditingSystem->getTransferFunction(idx), rec.info );
 		fillTransferFunctionInfo(mTFPaletteWidget->getTransferFunction(idx), rec.info);
 		for (auto viewer : rec.viewers) {
 			viewer->setTransferFunctionBufferInfo(rec.info);

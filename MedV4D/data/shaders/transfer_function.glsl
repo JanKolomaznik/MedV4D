@@ -2,6 +2,7 @@ uniform Light gLight;
 uniform ImageData3D gPrimaryImageData3D;
 uniform vec2 gMappedIntervalBands;
 uniform TransferFunction1D gTransferFunction1D;
+uniform TransferFunction2D gTransferFunction2D;
 
 struct StepInfo {
 	vec4 color;
@@ -22,7 +23,8 @@ StepInfo initInfo(vec3 aCoordinates)
 
 StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 {
-#ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+#ifdef USE_TRANSFER_FUNCTION_1D
+#  ifdef ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
 	float currentValue = getUnmappedValue(
 				aCoordinates,
 				gPrimaryImageData3D,
@@ -35,13 +37,24 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 				gTransferFunction1D
 				);
 	aInfo.previousValue = currentValue;
-#else	
+#  else	
 	vec4 sampleColor = transferFunction1D(
 				aCoordinates,
 				gPrimaryImageData3D,
 				gTransferFunction1D,
 				gMappedIntervalBands);
-#endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+#  endif //ENABLE_PREINTEGRATED_TRANSFER_FUNCTION
+#endif //USE_TRANSFER_FUNCTION_1D
+
+
+#ifdef USE_TRANSFER_FUNCTION_2D
+	vec4 sampleColor = transferFunction2DWithGradient(
+				aCoordinates,
+				gPrimaryImageData3D,
+				gTransferFunction2D,
+				gMappedIntervalBands);
+#endif //USE_TRANSFER_FUNCTION_2D
+
 
 #ifdef ENABLE_SHADING
 	sampleColor = doShading(
