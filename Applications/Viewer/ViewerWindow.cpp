@@ -695,50 +695,22 @@ ViewerWindow::showSettingsDialog()
 void
 ViewerWindow::openFile()
 {
-	try {
-	QStringList fileNames;
-	QString fileName;
-	if ( mOpenDialog->exec() ) {
-		fileNames = mOpenDialog->selectedFiles();
-		if (!fileNames.isEmpty()) {
-			fileName = fileNames[0];
-		}
+	auto id = mDatasetManager.loadFromFile();
+	if (!id) {
+		return;
 	}
-	if ( !fileName.isEmpty() ) {
-		if( !mProgressDialog ) {
-			mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
-			QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
-		}
-
-		mDatasetId = M4D::DatasetManager::getInstance()->openFileNonBlocking( std::string( fileName.toLocal8Bit().data() ), mProgressDialog );
-
-		mProgressDialog->show();
-	}
-	} catch ( std::exception &e ) {
-		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
-	}
-	catch (...) {
-		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
-	}
+	dataLoaded(id);
 }
 
 void
-ViewerWindow::dataLoaded()
+ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 {
 	//M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
-	D_PRINT( "Loaded dataset ID = " << mDatasetId );
-	M4D::ADatasetRecord::Ptr rec = M4D::DatasetManager::getInstance()->getDatasetInfo( mDatasetId );
-	if ( !rec ) {
-		D_PRINT( "Loaded dataset record not available" );
-		return;
-	}
-	M4D::ImageRecord * iRec = dynamic_cast< M4D::ImageRecord * >( rec.get() );
-	if ( !iRec ) {
-		D_PRINT( "Loaded dataset isn't image" );
-	}
-	M4D::Imaging::AImage::Ptr image = iRec->image;
+	D_PRINT( "Loaded dataset ID = " << aId );
+	auto & rec = mDatasetManager.getDatasetRecord(aId);
+	M4D::Imaging::AImage::Ptr image = rec.mImage;
 
-	M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
+	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
 	computeHistogram( image );
 }

@@ -36,6 +36,18 @@ extern int		____EXCEPTION_LINE_NUMBER;
 
 void
 ResetExceptionInfo();
+
+
+#define STUBBED(x) do { \
+	static bool seen_this = false; \
+		if (!seen_this) { \
+			seen_this = true; \
+			fprintf(stderr, "STUBBED: %s at %s (%s:%d)\n", x, __FUNCTION__, __FILE__, __LINE__); \
+		} \
+	} while (0)
+
+
+
 /**
  * Do not use pdout explicitely in your code.
  */ 

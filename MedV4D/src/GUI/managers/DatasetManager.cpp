@@ -98,7 +98,8 @@ DatasetManager::openFileBlocking( boost::filesystem::path aPath, ProgressNotifie
 void
 DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier::Ptr aProgressNotifier, DatasetID aDatasetId, bool aUseAsCurrent )
 {
-	M4D::Imaging::AImage::Ptr image;
+	STUBBED("DatasetManager this should not be called!");
+/*	M4D::Imaging::AImage::Ptr image;
 	if ( aPath.extension() == ".dcm" || aPath.extension() == ".DCM" ) {
 		M4D::Dicom::DicomObjSetPtr dicomObjSet = M4D::Dicom::DicomObjSetPtr( new M4D::Dicom::DicomObjSet() );
 		M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( aPath, aPath.parent_path(), *dicomObjSet, aProgressNotifier );
@@ -113,7 +114,7 @@ DatasetManager::openFileHelper( boost::filesystem::path aPath, ProgressNotifier:
 	if( aProgressNotifier ) {
 		aProgressNotifier->finished();
 	}
-	//mProdconn.PutDataset( image );
+	//mProdconn.PutDataset( image );*/
 }
 
 void

@@ -10,3 +10,6 @@
 [submodule "extern/tfw"]
 	path = extern/tfw
 	url = git@github.com:JanKolomaznik/tfw.git
+[submodule "extern/prognot"]
+	path = extern/prognot
+	url = git@github.com:JanKolomaznik/prognot.git

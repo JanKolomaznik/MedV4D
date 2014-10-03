@@ -60,6 +60,9 @@ public:
 	void
 	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController );
 
+	void
+	dataLoaded(DatasetManager::DatasetID aId);
+
 public slots:
 
 	void
@@ -82,9 +85,6 @@ public slots:
 
 	void
 	initAfterLoopStart();
-
-	void
-	dataLoaded();
 
 	void
 	selectedViewerSettingsChanged();

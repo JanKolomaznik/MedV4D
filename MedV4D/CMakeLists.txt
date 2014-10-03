@@ -45,6 +45,9 @@ INCLUDE_DIRECTORIES(../extern/vorgl/include)
 ADD_SUBDIRECTORY(../extern/tfw tfw)
 INCLUDE_DIRECTORIES(../extern/tfw/include)
 
+ADD_SUBDIRECTORY(../extern/prognot prognot)
+INCLUDE_DIRECTORIES(../extern/prognot/)
+
 ADD_SUBDIRECTORY( src/Common )
 ADD_SUBDIRECTORY( src/Imaging )
 ADD_SUBDIRECTORY( src/DICOMInterface )

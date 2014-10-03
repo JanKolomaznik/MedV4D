@@ -547,15 +547,11 @@ LocalService::GetSeriesFromFolder(
 		std::string aStudyID,
 		std::string aSerieID,
 		DicomObjSet &aResult,
-		ProgressNotifier::Ptr aProgressNotifier
+		prognot::ProgressNotifier aProgressNotifier
 		)
 {
 	fs::path dirName = fs::path(aFolder);
 	if ( fs::is_directory( dirName ) ) {
-		if( aProgressNotifier ) {
-			aProgressNotifier->init( 1 );
-		}
-
 		fs::directory_iterator end_iter;
 		fs::directory_iterator dir_itr( dirName );
 		int i = 0;
@@ -563,9 +559,7 @@ LocalService::GetSeriesFromFolder(
 		{
 			++i;
 		}
-		if( aProgressNotifier ) {
-			aProgressNotifier->initNextPhase( i );
-		}
+		aProgressNotifier.setStepCount(i);
 		for ( dir_itr = fs::directory_iterator( dirName ); dir_itr != end_iter; ++dir_itr )
 		{
 			// if it is subdir, call itself on subdir
@@ -579,12 +573,7 @@ LocalService::GetSeriesFromFolder(
 						dirName.string() 
 						);
 			}
-			if( aProgressNotifier ) {
-				aProgressNotifier->updateProgress();
-			}
-		}
-		if( aProgressNotifier ) {
-			aProgressNotifier->finished();
+			aProgressNotifier.increment();
 		}
 	} else {
 		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( aFolder << " doesn't name a directory!" ) );

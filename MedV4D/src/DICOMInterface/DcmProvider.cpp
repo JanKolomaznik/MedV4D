@@ -429,7 +429,7 @@ DcmProvider::LoadSerieThatFileBelongsTo(
 		std::string fileName,
 		std::string folder, 
 		DicomObjSet &result,
-		ProgressNotifier::Ptr aProgressNotifier
+		prognot::ProgressNotifier aProgressNotifier
 		)
 {
 	DicomObj o;
@@ -443,7 +443,12 @@ DcmProvider::LoadSerieThatFileBelongsTo(
 	o.GetTagValue(0x0010, 0x0020, patientID);
 
 	g_localService.GetSeriesFromFolder(
-			folder, patientID, studyUID, seriesUID, result, aProgressNotifier );
+			folder,
+			patientID,
+			studyUID,
+			seriesUID,
+			result,
+			std::move(aProgressNotifier));
 }
 
 ///////////////////////////////////////////////////////////////////////

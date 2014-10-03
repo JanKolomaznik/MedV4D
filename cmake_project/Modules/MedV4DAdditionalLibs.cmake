@@ -111,6 +111,7 @@ set(EXTERN_LIBS_INCLUDE_DIRS
 	${MEDV4D_ROOT_DIRECTORY}/../extern/soglu/include
 	${MEDV4D_ROOT_DIRECTORY}/../extern/vorgl/include
 	${MEDV4D_ROOT_DIRECTORY}/../extern/tfw/include
+	${MEDV4D_ROOT_DIRECTORY}/../extern/prognot
 	)
 
 #**************************************************************

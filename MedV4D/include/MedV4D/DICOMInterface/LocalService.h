@@ -13,7 +13,7 @@
 #include <set>
 #include "structures.h"
 #include "DcmObject.h"
-#include "MedV4D/Common/ProgressNotifier.h"
+#include <prognot/prognot.hpp>
 
 namespace M4D
 {
@@ -67,7 +67,7 @@ public:
 		std::string aStudyID,
 		std::string aSerieID,
 		DicomObjSet &aResult,
-		ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
+		prognot::ProgressNotifier aProgressNotifier = prognot::DummyProgressNotifier()
 		);
 
 private:

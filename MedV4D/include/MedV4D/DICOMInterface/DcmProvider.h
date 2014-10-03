@@ -15,7 +15,7 @@
 #include "structures.h"
 #include "MedV4D/Imaging/ImageFactory.h"
 #include "DcmObject.h"
-#include "MedV4D/Common/ProgressNotifier.h"
+#include <prognot/prognot.hpp>
 
 #include <dcmtk/dcmdata/dcdicdir.h>
 
@@ -237,17 +237,17 @@ public:
 			std::string fileName,
 			std::string folder, 
 			DicomObjSet &result,
-			ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
+			prognot::ProgressNotifier aProgressNotifier = prognot::DummyProgressNotifier()
 			);
 	static void
 	LoadSerieThatFileBelongsTo(
 			boost::filesystem::path fileName,
 			boost::filesystem::path folder, 
 			DicomObjSet &result,
-			ProgressNotifier::Ptr aProgressNotifier = ProgressNotifier::Ptr()
+			prognot::ProgressNotifier aProgressNotifier = prognot::DummyProgressNotifier()
 			)
 	{
-		LoadSerieThatFileBelongsTo( fileName.string(), folder.string(), result,	aProgressNotifier );
+		LoadSerieThatFileBelongsTo( fileName.string(), folder.string(), result, std::move(aProgressNotifier));
 	}
 	
 	static void
