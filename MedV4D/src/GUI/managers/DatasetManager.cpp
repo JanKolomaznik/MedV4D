@@ -1,6 +1,10 @@
 #include "MedV4D/GUI/managers/DatasetManager.h"
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 
+
+namespace M4D {
+
+
 DatasetManager *fileManagerInstance = NULL;
 
 DatasetManager *
@@ -150,3 +154,4 @@ DatasetManager::clearAll()
 	mDatasetInfos.clear();
 }
 
+} //namespace M4D

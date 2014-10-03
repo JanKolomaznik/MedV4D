@@ -90,7 +90,7 @@ void
 ViewerManager::deselectViewer( M4D::GUI::Viewer::AGLViewer *aViewer )
 {
 	ASSERT( mPimpl );
-	if ( aViewer != NULL && mPimpl->mSelectedViewer == aViewer ) { 
+	if ( aViewer != NULL && mPimpl->mSelectedViewer == aViewer ) {
 		mPimpl->mSelectedViewer = NULL;
 		aViewer->deselect();
 	}
@@ -110,21 +110,21 @@ ViewerManager::getViewerActionSet()
 void
 ViewerManager::createViewerActions()
 {
-	ApplicationManager &app = *(ApplicationManager::getInstance());
+	M4D::ApplicationManager &app = *(M4D::ApplicationManager::getInstance());
 
 
 	QActionGroup *viewGroup = new QActionGroup( NULL );
-	QAction *action2D = createGeneralViewerAction( 
-			QString( "2D" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setViewType, _1, M4D::GUI::Viewer::vt2DAlignedSlices ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ), 
+	QAction *action2D = createGeneralViewerAction(
+			QString( "2D" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setViewType, _1, M4D::GUI::Viewer::vt2DAlignedSlices ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
 			true,
 			app.getIcon( "2D" )
 			);
-	QAction *action3D = createGeneralViewerAction( 
-			QString( "3D" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setViewType, _1, M4D::GUI::Viewer::vt3D ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	QAction *action3D = createGeneralViewerAction(
+			QString( "3D" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setViewType, _1, M4D::GUI::Viewer::vt3D ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "3D" )
 			);
@@ -132,90 +132,90 @@ ViewerManager::createViewerActions()
 	viewGroup->addAction( action3D );
 	mPimpl->mViewerActions.addActionGroup( viewGroup );
 	mPimpl->mViewerActions.addSeparator();
-	//****************************	
-	QAction *actionEnableJittering = createGeneralViewerAction( 
-			QString( "Jittering" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableJittering, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isJitteringEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableJittering = createGeneralViewerAction(
+			QString( "Jittering" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableJittering, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isJitteringEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "jittering" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableJittering );
-	//****************************	
-	QAction *actionEnableShading = createGeneralViewerAction( 
-			QString( "Shading" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableShading, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isShadingEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableShading = createGeneralViewerAction(
+			QString( "Shading" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableShading, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isShadingEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "shading" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableShading );
-	//****************************	
-	QAction *actionEnableBoundingBox = createGeneralViewerAction( 
-			QString( "Bounding Box" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableBoundingBox, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isBoundingBoxEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableBoundingBox = createGeneralViewerAction(
+			QString( "Bounding Box" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableBoundingBox, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isBoundingBoxEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "bounding_box" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableBoundingBox );
 	mPimpl->mViewerActions.addSeparator();
-	//****************************	
-	QAction *actionEnableCutPlane = createGeneralViewerAction( 
-			QString( "Cut Plane" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableCutPlane, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isCutPlaneEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableCutPlane = createGeneralViewerAction(
+			QString( "Cut Plane" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableCutPlane, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isCutPlaneEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
-			app.getIcon( "cut_plane" ) 
+			app.getIcon( "cut_plane" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableCutPlane );
-	//****************************	
-	QAction *actionEnableVolumeRestriction = createGeneralViewerAction( 
-			QString( "Volume Restriction" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableVolumeRestrictions, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isVolumeRestrictionEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableVolumeRestriction = createGeneralViewerAction(
+			QString( "Volume Restriction" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableVolumeRestrictions, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isVolumeRestrictionEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
-			app.getIcon( "volume_restrictions" ) 
+			app.getIcon( "volume_restrictions" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableVolumeRestriction );
-	//****************************	
-	QAction *actionEnableInterpolation = createGeneralViewerAction( 
-			QString( "Enable Interpolation" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableInterpolation, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isInterpolationEnabled, _1 ), 
-			M4D::Functors::PredicateAlwaysTrue(), 
+	//****************************
+	QAction *actionEnableInterpolation = createGeneralViewerAction(
+			QString( "Enable Interpolation" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableInterpolation, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isInterpolationEnabled, _1 ),
+			M4D::Functors::PredicateAlwaysTrue(),
 			true,
-			app.getIcon( "interpolation" ) 
+			app.getIcon( "interpolation" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableInterpolation );
 	mPimpl->mViewerActions.addSeparator();
-	//****************************	
-	QAction *actionXY = createGeneralViewerAction( 
-			QString( "XY" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, XY_PLANE ), 
-			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(XY_PLANE) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ), 
+	//****************************
+	QAction *actionXY = createGeneralViewerAction(
+			QString( "XY" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, XY_PLANE ),
+			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(XY_PLANE) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
 			true,
 			app.getIcon( "XY" )
 			);
-	QAction *actionYZ = createGeneralViewerAction( 
-			QString( "YZ" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, YZ_PLANE ), 
-			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(YZ_PLANE) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ), 
+	QAction *actionYZ = createGeneralViewerAction(
+			QString( "YZ" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, YZ_PLANE ),
+			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(YZ_PLANE) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
 			true,
 			app.getIcon( "YZ" )
 			);
-	QAction *actionXZ = createGeneralViewerAction( 
-			QString( "XZ" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, XZ_PLANE ), 
-			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(XZ_PLANE) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ), 
+	QAction *actionXZ = createGeneralViewerAction(
+			QString( "XZ" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setCurrentViewPlane, _1, XZ_PLANE ),
+			(boost::lambda::bind<CartesianPlanes>( &M4D::GUI::Viewer::GeneralViewer::getCurrentViewPlane, boost::lambda::_1 ) == boost::lambda::constant(XZ_PLANE) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
 			true,
 			app.getIcon( "XZ" )
 			);
@@ -225,11 +225,11 @@ ViewerManager::createViewerActions()
 	planeGroup->addAction( actionXZ );
 	mPimpl->mViewerActions.addActionGroup( planeGroup );
 	mPimpl->mViewerActions.addSeparator();
-	//****************************	
-	QAction *actionResetView = createGeneralViewerAction( 
-			QString( "Reset view" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::resetView, _1 ), 
-			M4D::Functors::PredicateAlwaysFalse(), 
+	//****************************
+	QAction *actionResetView = createGeneralViewerAction(
+			QString( "Reset view" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::resetView, _1 ),
+			M4D::Functors::PredicateAlwaysFalse(),
 			false,
 			app.getIcon( "reset_view" )
 			);
@@ -245,8 +245,8 @@ ViewerManager::createViewerActions()
 	QAction *colorTransformChooser = createGeneralViewerSubmenuAction(
 			QString( "Color transform" ),
 			boost::bind( setColTr, _1, _2 ),
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getAvailableColorTransformationNames, _1 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getColorTransformName, _1 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getAvailableColorTransformationNames, _1 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getColorTransformName, _1 ),
 			M4D::Functors::PredicateAlwaysTrue()
 			);
 	mPimpl->mViewerActions.addAction( colorTransformChooser );
@@ -255,53 +255,53 @@ ViewerManager::createViewerActions()
 	QAction *zoomChooser = createGeneralViewerSubmenuAction(
 			QString( "Zoom" ),
 			boost::bind( setZoom, _1, _2 ),
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getPredefinedZoomValueNames, _1 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getZoomValueName, _1 ), 
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getPredefinedZoomValueNames, _1 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::getZoomValueName, _1 ),
 			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt2DAlignedSlices) ),
 			NULL,
 			true
 			);
 	mPimpl->mViewerActions.addAction( zoomChooser );
-	//****************************	
-	QAction *actionEnableIntegratedTF = createGeneralViewerAction( 
-			QString( "Integrated TF" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableIntegratedTransferFunction, _1, _2 ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isIntegratedTransferFunctionEnabled, _1 ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	//****************************
+	QAction *actionEnableIntegratedTF = createGeneralViewerAction(
+			QString( "Integrated TF" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::enableIntegratedTransferFunction, _1, _2 ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::isIntegratedTransferFunctionEnabled, _1 ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "integrated_tf" )
 			);
 	mPimpl->mViewerActions.addAction( actionEnableIntegratedTF );
 
-	QAction *actionLowQuality = createGeneralViewerAction( 
-			QString( "Low Quality" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmLow ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmLow) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	QAction *actionLowQuality = createGeneralViewerAction(
+			QString( "Low Quality" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmLow ),
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmLow) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "low_quality" )
 			);
-	QAction *actionNormalQuality = createGeneralViewerAction( 
-			QString( "Normal Quality" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmNormal ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmNormal) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	QAction *actionNormalQuality = createGeneralViewerAction(
+			QString( "Normal Quality" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmNormal ),
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmNormal) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "normal_quality" )
 			);
-	QAction *actionHighQuality = createGeneralViewerAction( 
-			QString( "High Quality" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmHigh ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmHigh) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	QAction *actionHighQuality = createGeneralViewerAction(
+			QString( "High Quality" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmHigh ),
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmHigh) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "high_quality" )
 			);
-	QAction *actionFinestQuality = createGeneralViewerAction( 
-			QString( "Finest Quality" ), 
-			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmFinest ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmFinest) ), 
-			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ), 
+	QAction *actionFinestQuality = createGeneralViewerAction(
+			QString( "Finest Quality" ),
+			boost::bind( &M4D::GUI::Viewer::GeneralViewer::setRenderingQuality, _1, M4D::GUI::Viewer::qmFinest ),
+			(boost::lambda::bind<M4D::GUI::Viewer::QualityMode>( &M4D::GUI::Viewer::GeneralViewer::getRenderingQuality, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::qmFinest) ),
+			(boost::lambda::bind<M4D::GUI::Viewer::ViewType>( &M4D::GUI::Viewer::GeneralViewer::getViewType, boost::lambda::_1 ) == boost::lambda::constant(M4D::GUI::Viewer::vt3D) ),
 			true,
 			app.getIcon( "finest_quality" )
 			);

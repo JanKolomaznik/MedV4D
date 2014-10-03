@@ -26,16 +26,20 @@
 
 
 #define GET_SETTINGS( NAME, TYPE, DEFAULT ) \
-	ApplicationManager::getInstance()->settings().get<TYPE>( NAME, DEFAULT )
+	M4D::ApplicationManager::getInstance()->settings().get<TYPE>( NAME, DEFAULT )
 
 #define GET_SETTINGS_NODEFAULT( NAME, TYPE ) \
-	ApplicationManager::getInstance()->settings().get<TYPE>( NAME )
+	M4D::ApplicationManager::getInstance()->settings().get<TYPE>( NAME )
 
 #define SET_SETTINGS( NAME, TYPE, VALUE ) \
-	ApplicationManager::getInstance()->settings().set<TYPE>( NAME, VALUE )
+	M4D::ApplicationManager::getInstance()->settings().set<TYPE>( NAME, VALUE )
 
 
 class QApplication;
+
+
+
+namespace M4D {
 
 class ApplicationManager: public QObject, public OpenGLManager, public ViewerManager, public DatasetManager
 {
@@ -215,5 +219,7 @@ protected:
 	tbb::task_scheduler_init mTBBScheduler;
 #endif /*USE_TBB*/
 };
+
+} //namespace M4D
 
 #endif /*APPLICATION_MANAGER_H*/

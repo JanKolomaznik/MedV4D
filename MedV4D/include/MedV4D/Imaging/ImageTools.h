@@ -211,7 +211,7 @@ createGradientScatterPlotForImageRegion(const TRegion &aRegion)
 {
 	typedef typename TScatterPlot::Value Value;
 	typedef typename TScatterPlot::CellCoordinates CellCoordinates;
-	TScatterPlot scatterPlot(Value(0,0), Value(2000,500), CellCoordinates(2000, 500));
+	TScatterPlot scatterPlot(Value(0,0), Value(2000,1000), CellCoordinates(2000, 1000));
 
 	auto from = aRegion.GetMinimum();
 	auto to = aRegion.GetMaximum();
@@ -223,7 +223,7 @@ createGradientScatterPlotForImageRegion(const TRegion &aRegion)
 		for (index[1] = from[1]; index[1] < to[1]-1; ++index[1]) {
 			for (index[0] = from[0]; index[0] < to[0]-1; ++index[0]) {
 				auto value = aRegion.GetElement(index);
-				decltype(value) gradient = 0;
+				float gradient = 0;
 				for (int i = 0; i < 3; ++i) {
 					auto index2 = index;
 					++index2[i];

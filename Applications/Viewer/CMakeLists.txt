@@ -72,9 +72,11 @@ ENDIF( EXTENSION_MODULES_ENABLED )
 
 
 SET( VIEWER_HEADERS
+	"DatasetManager.hpp"
 	"JoyInput.h"
 	"ViewerWindow.hpp" )
 SET( VIEWER_SOURCES
+	"DatasetManager.cpp"
 	"JoyInput.cpp"
 	"main.cpp"
 	"ViewerWindow.cpp" )

@@ -10,11 +10,14 @@
 
 #include <boost/thread/recursive_mutex.hpp>
 
+namespace M4D {
+
+
 typedef M4D::Common::IDNumber DatasetID;
 struct ADatasetRecord
 {
 	typedef std::shared_ptr< ADatasetRecord > Ptr;
-	
+
 	DatasetID id;
 
 	virtual ~ADatasetRecord()
@@ -22,10 +25,10 @@ struct ADatasetRecord
 };
 
 
-struct ImageRecord: public ADatasetRecord 
+struct ImageRecord: public ADatasetRecord
 {
 	typedef std::shared_ptr< ImageRecord > Ptr;
-	
+
 	boost::filesystem::path	filePath;
 
 	M4D::Imaging::AImage::Ptr image;
@@ -55,37 +58,37 @@ public:
 
 	ADatasetRecord::Ptr
 	getDatasetInfo( DatasetID aDatasetId );
-	
+
 	ImageRecord::Ptr
 	getImageInfo( DatasetID aDatasetId );
-	
+
 	ADatasetRecord::Ptr
-	getCurrentDatasetInfo() 
+	getCurrentDatasetInfo()
 	{
 		return getDatasetInfo( mCurrentDatasetId );
 	}
-	
+
 	ImageRecord::Ptr
-	getCurrentImageInfo() 
+	getCurrentImageInfo()
 	{
 		return getImageInfo( mCurrentDatasetId );
 	}
-	
+
 	void
 	setCurrentDatasetInfo( DatasetID aDatasetId );
-	
+
 	M4D::Imaging::ConnectionInterface &
 	primaryImageInputConnection()
 	{
 		return mPrimaryProdconn;
 	}
-	
+
 	M4D::Imaging::ConnectionInterface &
 	secondaryImageInputConnection()
 	{
 		return mSecondaryProdconn;
 	}
-	
+
 	void
 	clearAll();
 
@@ -103,14 +106,16 @@ protected:
 
 	DatasetInfoMap mDatasetInfos;
 	//M4D::Multithreading::RecursiveMutex mDatasetInfoAccessLock;
-	
+
 	boost::recursive_mutex mDatasetInfoAccessLock;
-	
+
 	DatasetID mCurrentDatasetId;
-	
+
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mPrimaryProdconn;
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mSecondaryProdconn;
 
 };
+
+} //namespace M4D
 
 #endif /*DATASET_MANAGER_H*/

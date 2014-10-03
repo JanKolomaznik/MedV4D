@@ -215,7 +215,7 @@ transferFunction2DWithGradient(
 	float magnitude = length(grad);
 	vec4 outputColor = applyTransferFunction2D(vec2(value, magnitude), aTransferFunction2D );
 
-	outputColor.a = clamp(magnitude / 2000, 0.0, 1.0);
+	//outputColor.a = clamp(magnitude / 2000, 0.0, 1.0);
 	return outputColor;
 }
 

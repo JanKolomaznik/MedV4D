@@ -55,7 +55,7 @@ main( int argc, char** argv )
 	//SET_DOUT( debugFile );
 
 	//XInitThreads();
-	ApplicationManager appManager;
+	M4D::ApplicationManager appManager;
 
 	boost::filesystem::path executablePath(argv[0]);
 	boost::filesystem::path dataDirName = GET_SETTINGS( "application.data_directory", std::string, (boost::filesystem::path(argv[0]).parent_path() / "data").string() );

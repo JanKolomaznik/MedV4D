@@ -27,6 +27,9 @@
 #include "tfw/data/TransferFunctionLoading.hpp"
 #include "tfw/data/TransferFunctionPalette.hpp"
 
+#include "DatasetManager.hpp"
+
+
 typedef std::list< M4D::GUI::Viewer::GeneralViewer * > ViewerList;
 struct TransferFunctionBufferUsageRecord
 {
@@ -64,12 +67,6 @@ public slots:
 
 	void
 	openFile();
-
-	void
-	openFile( const QString &aPath );
-
-	void
-	openDicom( const QString &aPath );
 
 	void
 	updateTransferFunction();
@@ -141,7 +138,7 @@ protected:
 
 	ProgressInfoDialog::Ptr mProgressDialog;
 	M4D::Dicom::DicomObjSetPtr mDicomObjSet;
-	DatasetID mDatasetId;
+	M4D::DatasetID mDatasetId;
 
 #ifdef OIS_ENABLED
 	// OIS
@@ -156,6 +153,9 @@ protected:
 
 	std::shared_ptr<tfw::TransferFunctionPalette> mTFPalette;
 	std::unique_ptr<tfw::PaletteWidget> mTFPaletteWidget;
+
+	DatasetManager mDatasetManager;
+
 private:
 
 };

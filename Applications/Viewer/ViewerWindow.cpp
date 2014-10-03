@@ -73,9 +73,6 @@ public:
 
 		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
-
-
-		//viewer->setBackgroundColor( QColor( 50,50,100 ) );
 		return viewer;
 	}
 	void
@@ -240,18 +237,6 @@ ViewerWindow::initialize()
 			[this](tfw::ATransferFunctionEditor *aEditor) -> QWidget * {
 				return createDockWidget(aEditor->tfName(), Qt::RightDockWidgetArea, aEditor, true );
 			});
-//*****************
-
-	/*mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
-	createDockWidget( tr("Transfer Function" ), Qt::RightDockWidgetArea, mTransferFunctionEditor );
-
-	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
-	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
-	mTransferFunctionEditor->SetBorderWidth( 10 );
-
-	mTransFuncTimer.setInterval( 500 );
-	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );*/
-//***********************************************************
 #ifdef USE_PYTHON
 	M4D::GUI::TerminalWidget *mTerminal = new M4D::GUI::PythonTerminal;
 	createDockWidget( tr("Python Terminal" ), Qt::BottomDockWidgetArea, mTerminal, false );
@@ -260,14 +245,14 @@ ViewerWindow::initialize()
 
 	ViewerControls *mViewerControls = new ViewerControls;
 	QObject::connect(
-			ApplicationManager::getInstance(),
-			&ApplicationManager::viewerSelectionChanged,
+			M4D::ApplicationManager::getInstance(),
+			&M4D::ApplicationManager::viewerSelectionChanged,
 			[mViewerControls] () {
 				auto viewer = ViewerManager::getInstance()->getSelectedViewer();
 				auto genViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (viewer);
 				mViewerControls->setViewer(genViewer);
 			});
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
+	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
 	LOG( "Viewer controls GUI initialized" );
 
@@ -295,8 +280,8 @@ ViewerWindow::initialize()
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mRenderingExtension );
-	factory->setPrimaryInputConnection( DatasetManager::getInstance()->primaryImageInputConnection() );
-	factory->setSecondaryInputConnection( DatasetManager::getInstance()->secondaryImageInputConnection() );
+	factory->setPrimaryInputConnection( M4D::DatasetManager::getInstance()->primaryImageInputConnection() );
+	factory->setSecondaryInputConnection( M4D::DatasetManager::getInstance()->secondaryImageInputConnection() );
 	mViewerDesktop->setViewerFactory( factory );
 	LOG( "Viewer factory initialized" );
 
@@ -320,9 +305,9 @@ ViewerWindow::initialize()
 #endif
 
 
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
+	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( selectedViewerSettingsChanged() ) );
 
-	QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
+	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( changedViewerSelection() ) );
 
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::transferFunctionAdded, this, &ViewerWindow::transferFunctionAdded, Qt::QueuedConnection);
 	QObject::connect(mTFPaletteWidget.get(), &tfw::PaletteWidget::changedTransferFunctionSelection, this, &ViewerWindow::changedTransferFunctionSelection, Qt::QueuedConnection);
@@ -340,7 +325,7 @@ void
 ViewerWindow::denoiseImage()
 {
 	LOG( "denoiseImage()" );
-	ImageRecord::Ptr rec = DatasetManager::getInstance()->getCurrentImageInfo();
+	M4D::ImageRecord::Ptr rec = M4D::DatasetManager::getInstance()->getCurrentImageInfo();
 	M4D::Imaging::AImage::Ptr image = rec->image;
 	if( !image ) {
 		return;
@@ -624,7 +609,7 @@ struct FillTFBufferVisitor :
 
 
 bool
-fillTransferFunctionInfo(/*M4D::GUI::TransferFunctionInterface::Const*/const tfw::ATransferFunction &function, vorgl::TransferFunctionBufferInfo &info )
+fillTransferFunctionInfo(const tfw::ATransferFunction &function, vorgl::TransferFunctionBufferInfo &info )
 {
 	try {
 		FillTFBufferVisitor fillBufferVisitor(info);
@@ -703,7 +688,7 @@ void
 ViewerWindow::showSettingsDialog()
 {
 	SettingsDialog *dialog = new SettingsDialog( this );
-	dialog->showDialog( ApplicationManager::getInstance()->settings() );
+	dialog->showDialog( M4D::ApplicationManager::getInstance()->settings() );
 	delete dialog;
 }
 
@@ -725,7 +710,7 @@ ViewerWindow::openFile()
 			QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
 		}
 
-		mDatasetId = DatasetManager::getInstance()->openFileNonBlocking( std::string( fileName.toLocal8Bit().data() ), mProgressDialog );
+		mDatasetId = M4D::DatasetManager::getInstance()->openFileNonBlocking( std::string( fileName.toLocal8Bit().data() ), mProgressDialog );
 
 		mProgressDialog->show();
 	}
@@ -738,71 +723,22 @@ ViewerWindow::openFile()
 }
 
 void
-ViewerWindow::openFile( const QString &aPath )
-{
-	ASSERT( false );
-	std::string path = std::string( aPath.toLocal8Bit().data() );
-	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
-	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
-
-	statusbar->showMessage("Computing histogram...");
-	M4D::Common::Clock clock;
-
-	M4D::Imaging::Histogram1D<int> histogram2;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image,
-		histogram2 = M4D::Imaging::createHistogramForImageRegion2<M4D::Imaging::Histogram1D<int>, IMAGE_TYPE>(IMAGE_TYPE::Cast(*image));
-	);
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
-
-	statusbar->clearMessage();
-}
-
-void
-ViewerWindow::openDicom( const QString &aPath )
-{
-	ASSERT( false );
-	LOG( "Opening Dicom" );
-	std::string path = std::string( aPath.toLocal8Bit().data() );
-
-	QFileInfo pathInfo( aPath );
-
-	if( !mDicomObjSet ) {
-		mDicomObjSet = M4D::Dicom::DicomObjSetPtr( new M4D::Dicom::DicomObjSet() );
-	}
-
-	if( !mProgressDialog ) {
-		mProgressDialog = ProgressInfoDialog::Ptr( new ProgressInfoDialog( this ) );
-		QObject::connect( mProgressDialog.get(), SIGNAL( finishedSignal() ), this, SLOT( dataLoaded() ), Qt::QueuedConnection );
-	}
-	/*boost::thread th = boost::thread(
-			&M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo,
-			std::string( pathInfo.absoluteFilePath().toLocal8Bit().data() ),
-			std::string( pathInfo.absolutePath().toLocal8Bit().data() ),
-			boost::ref( *mDicomObjSet ),
-			mProgressDialog
-			);
-	th.detach();*/
-	mProgressDialog->show();
-	//th.join();
-}
-
-void
 ViewerWindow::dataLoaded()
 {
 	//M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
 	D_PRINT( "Loaded dataset ID = " << mDatasetId );
-	ADatasetRecord::Ptr rec = DatasetManager::getInstance()->getDatasetInfo( mDatasetId );
+	M4D::ADatasetRecord::Ptr rec = M4D::DatasetManager::getInstance()->getDatasetInfo( mDatasetId );
 	if ( !rec ) {
 		D_PRINT( "Loaded dataset record not available" );
 		return;
 	}
-	ImageRecord * iRec = dynamic_cast< ImageRecord * >( rec.get() );
+	M4D::ImageRecord * iRec = dynamic_cast< M4D::ImageRecord * >( rec.get() );
 	if ( !iRec ) {
 		D_PRINT( "Loaded dataset isn't image" );
 	}
 	M4D::Imaging::AImage::Ptr image = iRec->image;
 
-	DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
+	M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
 	computeHistogram( image );
 }

@@ -25,7 +25,7 @@ class ViewerActionSet: public QObject
 public:
 	ViewerActionSet()
 	{
-		QObject::connect( ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( updateActions() ) );
+		QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), this, SLOT( updateActions() ) );
 	}
 
 	~ViewerActionSet();
@@ -119,14 +119,14 @@ public:
 		: HelperViewerAction( aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
 	{
 		//setCheckable( tCheckable );
-		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
+		QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
 
 	ViewerAction( const QIcon & icon, const QString &aName, TOnClick aOnClick, TCheckState aCheckState, TCheckEnabled aCheckEnabled, QObject *parent )
 		: HelperViewerAction( icon, aName, parent ), mOnClick( aOnClick ), mCheckState( aCheckState ), mCheckEnabled( aCheckEnabled )
 	{
 		//setCheckable( tCheckable );
-		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
+		QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
 
 	void
@@ -205,7 +205,7 @@ public:
 	SubmenuViewerAction( QString aName, TOnChangeOption aOnChangeOption, TGetOptions aGetOptions, TGetCurrentOption aGetCurrentOption, TCheckEnabled aCheckEnabled, QObject *parent, bool aEditable = false )
 		: HelperViewerWidgetAction( parent ), mName( aName ), mOnChangeOption( aOnChangeOption ), mGetOptions( aGetOptions ), mGetCurrentOption( aGetCurrentOption ), mCheckEnabled( aCheckEnabled ), mEditable( aEditable )
 	{
-		QObject::connect( ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
+		QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( viewerSelectionChanged() ), this, SLOT( callCheckState() ) );
 	}
 
 	void

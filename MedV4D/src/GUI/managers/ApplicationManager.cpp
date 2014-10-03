@@ -3,6 +3,8 @@
 #include <QtWidgets>
 
 
+namespace M4D {
+
 ApplicationManager *appManagerInstance = NULL;
 
 ApplicationManager *
@@ -157,3 +159,5 @@ ApplicationManager::notifyAboutChangedViewerSettings()
 	emit selectedViewerSettingsChanged();
 }
 
+
+} //namespace M4D

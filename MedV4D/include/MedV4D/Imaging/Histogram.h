@@ -299,13 +299,13 @@ public:
 	ScatterPlot2D() = default;
 
 	void
-	put(const Value &aValue) {
-		this->getCell(aValue) += 1;
+	put(const Value &aValue, Cell aIncrement = 1) {
+		this->getCell(aValue) += aIncrement;
 	}
 
 	void
-	put(const TValueX &aXValue, const TValueY &aYValue) {
-		this->getCell(Value(aXValue, aYValue)) += 1;
+	put(const TValueX &aXValue, const TValueY &aYValue, Cell aIncrement = 1) {
+		this->getCell(Value(aXValue, aYValue)) += aIncrement;
 	}
 
 	/*typename Buffer::iterator
