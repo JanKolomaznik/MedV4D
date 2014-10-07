@@ -52,6 +52,7 @@ public:
 
 	M4D::Imaging::AImage::Ptr
 	openFileBlocking(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNotifier);
+
 protected:
 
 	DatasetID

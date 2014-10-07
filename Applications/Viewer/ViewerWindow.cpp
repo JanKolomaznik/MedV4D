@@ -12,6 +12,7 @@
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 #include "MedV4D/GUI/widgets/SettingsDialog.h"
 #include "MedV4D/GUI/widgets/ViewerControls.h"
+#include "ExtendedViewerControls.hpp"
 #include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 
@@ -36,7 +37,7 @@ namespace Viewer
 class GeneralViewerFactory: public AViewerFactory
 {
 public:
-	GeneralViewerFactory() :mPrimaryConnection( NULL ), mSecondaryConnection( NULL )
+	GeneralViewerFactory()
 	{}
 	typedef std::shared_ptr< GeneralViewerFactory > Ptr;
 
@@ -50,13 +51,6 @@ public:
 		if( mViewerController ) {
 			viewer->setViewerController( mViewerController );
 		}
-		if( mPrimaryConnection ) {
-			mPrimaryConnection->ConnectConsumer( viewer->InputPort()[0] );
-		}
-		if( mSecondaryConnection ) {
-			mSecondaryConnection->ConnectConsumer( viewer->InputPort()[1] );
-		}
-
 		viewer->setLUTWindow(glm::fvec2(1500.0f,100.0f));
 
 		viewer->enableShading( GET_SETTINGS( "gui.viewer.volume_rendering.shading_enabled", bool, true ) );
@@ -86,21 +80,9 @@ public:
 	{
 		mViewerController = aController;
 	}
-	void
-	setPrimaryInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
-	{
-		mPrimaryConnection = &mProdconn;
-	}
-	void
-	setSecondaryInputConnection( M4D::Imaging::ConnectionInterface &mProdconn )
-	{
-		mSecondaryConnection = &mProdconn;
-	}
 protected:
 	RenderingExtension::Ptr mRenderingExtension;
 	AViewerController::Ptr	mViewerController;
-	M4D::Imaging::ConnectionInterface *mPrimaryConnection;
-	M4D::Imaging::ConnectionInterface *mSecondaryConnection;
 };
 
 } /*namespace Viewer*/
@@ -243,14 +225,14 @@ ViewerWindow::initialize()
 	LOG( "Python terminal initialized" );
 #endif //USE_PYTHON
 
-	ViewerControls *mViewerControls = new ViewerControls;
+	ExtendedViewerControls *mViewerControls = new ExtendedViewerControls;
 	QObject::connect(
 			M4D::ApplicationManager::getInstance(),
 			&M4D::ApplicationManager::viewerSelectionChanged,
 			[mViewerControls] () {
 				auto viewer = ViewerManager::getInstance()->getSelectedViewer();
 				auto genViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (viewer);
-				mViewerControls->setViewer(genViewer);
+				mViewerControls->viewerControls().setViewer(genViewer);
 			});
 	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
@@ -275,13 +257,10 @@ ViewerWindow::initialize()
 	mInfoLabel = new QLabel();
 	statusbar->addWidget( mInfoLabel );
 
-
 	//************* VIEWER FACTORY *****************
 	M4D::GUI::Viewer::GeneralViewerFactory::Ptr factory = M4D::GUI::Viewer::GeneralViewerFactory::Ptr( new M4D::GUI::Viewer::GeneralViewerFactory );
 	factory->setViewerController( mViewerController );
 	factory->setRenderingExtension( mRenderingExtension );
-	factory->setPrimaryInputConnection( M4D::DatasetManager::getInstance()->primaryImageInputConnection() );
-	factory->setSecondaryInputConnection( M4D::DatasetManager::getInstance()->secondaryImageInputConnection() );
 	mViewerDesktop->setViewerFactory( factory );
 	LOG( "Viewer factory initialized" );
 
@@ -290,8 +269,6 @@ ViewerWindow::initialize()
 
 	QObject::connect( this, SIGNAL( callInitAfterLoopStart() ), this, SLOT( initAfterLoopStart() ), Qt::QueuedConnection );
 	emit callInitAfterLoopStart();
-
-
 
 	// HH: OIS support
 #ifdef OIS_ENABLED
@@ -710,9 +687,19 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 	auto & rec = mDatasetManager.getDatasetRecord(aId);
 	M4D::Imaging::AImage::Ptr image = rec.mImage;
 
+	auto inputData = M4D::GUI::Viewer::ViewerInputData::Ptr(new M4D::GUI::Viewer::ViewerInputData);
+	inputData->primaryImage = std::static_pointer_cast<M4D::Imaging::AImageDim<3>>(image);
+
+	mViewerDesktop->forEachViewer(
+		[inputData](M4D::GUI::Viewer::AGLViewer * aViewer) {
+			M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
+			if (viewer) {
+				viewer->setInputData(inputData);
+			}
+		});
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	computeHistogram( image );
+	//computeHistogram( image );
 }
 
 class ImageStatistics : public tfw::AStatistics

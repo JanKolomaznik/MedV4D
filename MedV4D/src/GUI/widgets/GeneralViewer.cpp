@@ -297,17 +297,17 @@ QString
 GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 {
 	//TODO improve
-	try {
+	/*try {
 		if ( TryGetAndLockAllAvailableInputs() == 0 ) {
 			return QString("NONE");
 		}
 	} catch (...) {
 		return QString("NONE");
 	}
-	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0].lock() );
+	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0].lock() );*/
 	QString result;
 
-	try {
+	/*try {
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
@@ -326,7 +326,7 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 	} catch (...) {
 		result = QString("NONE");
 	}
-	ReleaseAllInputs();
+	ReleaseAllInputs();*/
 	return result;
 }
 
@@ -994,36 +994,31 @@ bool
 GeneralViewer::PrepareData()
 {
 	D_BLOCK_COMMENT( "Entering PrepareData() method", "Leaving PrepareData() method" );
-	try {
+	/*try {
 		if( TryGetAndLockAllAvailableInputs() == 0 ){
 			return false;
 		};
 	} catch (std::exception &) {
 		return false;
-	}
-
-
-	if ( mInputDatasets[0].lock() ) {
-		M4D::Imaging::AImageDim<3>::ConstPtr primaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0].lock() );
-		if ( ! primaryImage ) return false;
-
-		getViewerState().mPrimaryImageExtents = primaryImage->GetImageExtentsRecord();
-		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *primaryImage );
-	} else {
+	}*/
+	if (!mData) {
 		return false;
 	}
 
-	if ( mInputDatasets[1].lock() ) {
-		M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[1].lock() );
-		if ( secondaryImage ) {;
-			getViewerState().mSecondaryImageExtents = secondaryImage->GetImageExtentsRecord();
-			getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage( *secondaryImage );
-		} else {
-			getViewerState().mSecondaryImageTexture.reset();
-		}
+	if (mData->primaryImage) {
+		getViewerState().mPrimaryImageExtents = mData->primaryImage->GetImageExtentsRecord();
+		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->primaryImage));
+	} else {
+		return false;
+	}
+	if (mData->secondaryImage) {;
+		getViewerState().mSecondaryImageExtents = mData->secondaryImage->GetImageExtentsRecord();
+		getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->secondaryImage));
+	} else {
+		getViewerState().mSecondaryImageTexture.reset();
 	}
 
-	ReleaseAllInputs();
+	//ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
 	getViewerState().mSliceRenderConfig.primaryImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mPrimaryImageTexture );
@@ -1098,6 +1093,13 @@ GeneralViewer::getZoomValueName()const
 	//LOG( getViewerState().mSliceRenderConfig.viewConfig.zoom );
 	return QString::number( getViewerState().mSliceRenderConfig.viewConfig.zoom * 100.0 ) +"%";
 	//return QString();
+}
+
+void GeneralViewer::setInputData(ViewerInputData::ConstPtr aData)
+{
+	mData = aData;
+	PrepareData();
+	notifyAboutSettingsChange();
 }
 
 void

@@ -112,19 +112,30 @@ public:
 };
 
 
-class GeneralViewer :
-	public ViewerConstructionKit<   AGLViewer,
+class ViewerInputData
+{
+public:
+	typedef std::shared_ptr<ViewerInputData> Ptr;
+	typedef std::shared_ptr<const ViewerInputData> ConstPtr;
+
+	M4D::Imaging::AImageDim<3>::ConstPtr primaryImage;
+	M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage;
+};
+
+
+class GeneralViewer : public AGLViewer
+	/*public ViewerConstructionKit<   AGLViewer,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
-					>
+					>*/
 {
 	Q_OBJECT;
 public:
-	typedef ViewerConstructionKit<  AGLViewer,
+	/*typedef ViewerConstructionKit<  AGLViewer,
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage, M4D::Imaging::AImage > >
-					>	PredecessorType;
+					>	PredecessorType;*/
+	typedef AGLViewer PredecessorType;
 
-
-	GeneralViewer( QWidget *parent = NULL );
+	GeneralViewer(QWidget *parent = nullptr);
 
 	void
 	setTiling(int aRows, int aCols);
@@ -302,6 +313,16 @@ public:
 		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue = aValue;
 		emit settingsChanged();
 	}
+
+	void
+	setInputData(ViewerInputData::ConstPtr aData);
+
+	ViewerInputData::ConstPtr
+	inputData() const
+	{
+		return mData;
+	}
+
 public slots:
 	void
 	setViewType( int aViewType );
@@ -414,6 +435,8 @@ protected:
 	RenderingExtension::Ptr mRenderingExtension;
 
 	Vector4i mSliceCountForRenderingQualities;
+
+	ViewerInputData::ConstPtr mData;
 
 private:
 	ViewerState &

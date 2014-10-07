@@ -72,15 +72,18 @@ ENDIF( EXTENSION_MODULES_ENABLED )
 
 
 SET( VIEWER_HEADERS
+	"ExtendedViewerControls.hpp"
 	"DatasetManager.hpp"
 	"JoyInput.h"
 	"ViewerWindow.hpp" )
 SET( VIEWER_SOURCES
+	"ExtendedViewerControls.cpp"
 	"DatasetManager.cpp"
 	"JoyInput.cpp"
 	"main.cpp"
 	"ViewerWindow.cpp" )
 SET( VIEWER_UI
+	"ExtendedViewerControls.ui"
 	"ViewerWindow.ui"
 	)
 
