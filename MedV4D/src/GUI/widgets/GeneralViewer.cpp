@@ -606,6 +606,9 @@ GeneralViewer::setColorTransformType( int aColorTransform )
 	getViewerState().mSliceRenderConfig.colorTransform = aColorTransform;
 	getViewerState().mVolumeRenderConfig.colorTransform = aColorTransform;
 
+	//TODO handle in consistent way
+	getViewerState().mVolumeRenderConfig.densityOptions.enableMIP = (aColorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection);
+
 	notifyAboutSettingsChange();
 	update();
 
