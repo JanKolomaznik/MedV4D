@@ -6,14 +6,14 @@ namespace GUI
 {
 namespace Renderer
 {
-	
+
 boost::filesystem::path gSliceRendererShaderPath;
 
 void
 SliceRenderer::initialize()
 {
 	vorgl::SliceRenderer::initialize(gSliceRendererShaderPath);
-	
+
 	mAvailableColorTransforms.clear();
 	//mAvailableColorTransforms.push_back( WideNameIdPair( L"LUT window", ctLUTWindow ) );
 	//mAvailableColorTransforms.push_back( WideNameIdPair( L"Transfer function", ctTransferFunction1D ) );
@@ -38,20 +38,34 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 	if ( !primaryData ) {
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
-	
+
 	std::string techniqueName;
 	switch ( aConfig.colorTransform ) {
 	case ctLUTWindow:
 		{
-			lutWindowRendering(
+			vorgl::SliceConfiguration slice = {
+					float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],
+					(soglu::CartesianPlanes)aConfig.plane };
+			vorgl::SliceRenderingQuality renderingQuality = { aConfig.enableInterpolation };
+			vorgl::BrightnessContrastRenderingOptions bcOptions = { aConfig.lutWindow };
+
+			brightnessContrastRendering(
+				aViewSetup,
+				*primaryData,
+				slice,
+				renderingQuality,
+				bcOptions
+				);
+
+			/*lutWindowRendering(
 				*primaryData,
 				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],
 				(soglu::CartesianPlanes)aConfig.plane,
 				aConfig.lutWindow,
 				aConfig.enableInterpolation,
 				aViewSetup
-				);
-		} 
+				);*/
+		}
 		break;
 	case ctTransferFunction1D:
 		{
@@ -79,9 +93,9 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 	default:
 		ASSERT( false );
 	}
-	
+
 	soglu::GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
-	
+
 	if( secondaryData ) {
 		overlayMaskRendering(
 				*primaryData,
@@ -91,14 +105,14 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 				aConfig.enableInterpolation,
 				aViewSetup
 				);
-		/*mCgEffect.executeTechniquePass( 
-			"OverlayMask_3D", 
-			boost::bind( &vorgl::GLDrawVolumeSlice3D, 
-				secondaryData->getExtents().realMinimum, 
-				secondaryData->getExtents().realMaximum, 
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * secondaryData->getExtents().elementExtents[aConfig.plane], 
-				aConfig.plane 
-				) 
+		/*mCgEffect.executeTechniquePass(
+			"OverlayMask_3D",
+			boost::bind( &vorgl::GLDrawVolumeSlice3D,
+				secondaryData->getExtents().realMinimum,
+				secondaryData->getExtents().realMaximum,
+				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * secondaryData->getExtents().elementExtents[aConfig.plane],
+				aConfig.plane
+				)
 			);*/
 	}
 }

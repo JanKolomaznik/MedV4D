@@ -236,6 +236,29 @@ struct M4DToGLTextureInternal< float64 >
 	static const GLint GLInternal = GL_R32F;
 };
 
+template<typename T>
+struct M4DToGLFormat
+{
+	static const GLint GLFormat = GL_RED;
+};
+
+template<typename T>
+struct M4DToGLFormat<Vector<T, 2>>
+{
+	static const GLint GLFormat = GL_RG;
+};
+
+template<typename T>
+struct M4DToGLFormat<Vector<T, 3>>
+{
+	static const GLint GLFormat = GL_RGB;
+};
+
+template<typename T>
+struct M4DToGLFormat<Vector<T, 4>>
+{
+	static const GLint GLFormat = GL_RGBA;
+};
 
 template< typename ImageRegionType >
 GLuint
@@ -286,7 +309,7 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 			size[0],
 			size[1],
 			0,
-			GL_LUMINANCE,
+			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
 			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
 			image.GetPointer()
 			);
@@ -338,7 +361,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 			size[1],
 			size[2],
 			0,
-			GL_RED,
+			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
 			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
 			image.GetPointer()
 			) );
