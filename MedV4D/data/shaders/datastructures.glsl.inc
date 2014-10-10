@@ -119,9 +119,6 @@ applyIntegralTransferFunction1D(
 	return color;
 }
 
-
-
-
 vec3
 texCoordsFromPosition(vec3 pos, ImageData3D image)
 {

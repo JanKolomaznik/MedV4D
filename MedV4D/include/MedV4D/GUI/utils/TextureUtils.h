@@ -71,6 +71,24 @@ updateTextureSubImage(soglu::GLTextureImage &aTexImage, const M4D::Imaging::AIma
 soglu::GLTextureImage::Ptr
 createTextureFromImage(const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );
 
+inline glm::fvec2
+getMappedIntervalFromNTID(int aNID)
+{
+	switch (NTID_SIMPLE_TYPE_MASK & aNID) {
+	case NTID_INT_8:
+	case NTID_UINT_8:
+		return glm::fvec2(0, 255);
+	case NTID_INT_16:
+	case NTID_UINT_16:
+		return glm::fvec2(0, 65535);
+	/*
+	case NTID_INT_32,
+	case NTID_UINT_32,*/
+	default :
+		return glm::fvec2(0, 1);
+	}
+}
+
 template < size_t Dim >
 soglu::GLTextureImage::Ptr
 createTextureFromImageTyped(const M4D::Imaging::AImageRegionDim<Dim> &image, bool aLinearInterpolation = true )
@@ -87,9 +105,9 @@ createTextureFromImageTyped(const M4D::Imaging::AImageRegionDim<Dim> &image, boo
 	soglu::set(ext.maximum, extents.maximum.data());
 	soglu::set(ext.elementExtents, extents.elementExtents.data());
 
-	typename soglu::GLMDimension<Dim>::fvec elementExtents;
+	glm::fvec2 mappedInterval = getMappedIntervalFromNTID(image.GetElementTypeID());
 
-	return typename TextureImage::Ptr( new TextureImage( textureID, aLinearInterpolation, ext ) );
+	return typename TextureImage::Ptr( new TextureImage( textureID, aLinearInterpolation, ext, mappedInterval) );
 }
 
 void
@@ -169,12 +187,18 @@ struct M4DToGLType< float32 >
 {
 	static const GLenum GLTypeID = GL_FLOAT;
 };
+
+template<typename T, size_t tDimension>
+struct M4DToGLType<Vector<T, tDimension>>
+{
+	static const GLenum GLTypeID = M4DToGLType<T>::GLTypeID;
+};
 //-**************************************************************************
 template< typename T >
-struct M4DToGLTextureInternal
-{
+struct M4DToGLTextureInternal;
+/*{
 	static const GLint GLInternal = 0;
-};
+};*/
 
 template<>
 struct M4DToGLTextureInternal< uint8 >
@@ -235,6 +259,194 @@ struct M4DToGLTextureInternal< float64 >
 {
 	static const GLint GLInternal = GL_R32F;
 };
+//*****************************************************************
+template<>
+struct M4DToGLTextureInternal<Vector<uint8, 2> >
+{
+	static const GLint GLInternal = GL_RG8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int8, 2> >
+{
+	static const GLint GLInternal = GL_RG8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint16, 2> >
+{
+	static const GLint GLInternal = GL_RG16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int16, 2> >
+{
+	static const GLint GLInternal = GL_RG16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint32, 2> >
+{
+	static const GLint GLInternal = GL_RG32UI;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int32, 2> >
+{
+	static const GLint GLInternal = GL_RG32I;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint64, 2> >
+{
+	static const GLint GLInternal = GL_RG32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int64, 2> >
+{
+	static const GLint GLInternal = GL_RG32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float32, 2> >
+{
+	static const GLint GLInternal = GL_RG32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float64, 2> >
+{
+	static const GLint GLInternal = GL_RG32F;
+};
+
+
+//*****************************************************************
+template<>
+struct M4DToGLTextureInternal<Vector<uint8, 3> >
+{
+	static const GLint GLInternal = GL_RGB8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int8, 3> >
+{
+	static const GLint GLInternal = GL_RGB8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint16, 3> >
+{
+	static const GLint GLInternal = GL_RGB16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int16, 3> >
+{
+	static const GLint GLInternal = GL_RGB16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint32, 3> >
+{
+	static const GLint GLInternal = GL_RGB32UI;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int32, 3> >
+{
+	static const GLint GLInternal = GL_RGB32I;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint64, 3> >
+{
+	static const GLint GLInternal = GL_RGB32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int64, 3> >
+{
+	static const GLint GLInternal = GL_RGB32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float32, 3> >
+{
+	static const GLint GLInternal = GL_RGB32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float64, 3> >
+{
+	static const GLint GLInternal = GL_RGB32F;
+};
+
+
+//*****************************************************************
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint8, 4> >
+{
+	static const GLint GLInternal = GL_RGBA8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int8, 4> >
+{
+	static const GLint GLInternal = GL_RGBA8;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint16, 4> >
+{
+	static const GLint GLInternal = GL_RGBA16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int16, 4> >
+{
+	static const GLint GLInternal = GL_RGBA16;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint32, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32UI;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int32, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32I;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<uint64, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<int64, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float32, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32F;
+};
+
+template<>
+struct M4DToGLTextureInternal<Vector<float64, 4> >
+{
+	static const GLint GLInternal = GL_RGBA32F;
+};
+
+
+//*****************************************************************
 
 template<typename T>
 struct M4DToGLFormat
@@ -305,12 +517,12 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 
 	glTexImage2D(	GL_TEXTURE_2D,
 			0,
-			GL_LUMINANCE16,
+			M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal,
 			size[0],
 			size[1],
 			0,
 			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			M4DToGLType< typename ImageRegionType::Element>::GLTypeID,
 			image.GetPointer()
 			);
 
@@ -362,7 +574,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 			size[2],
 			0,
 			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			M4DToGLType< typename ImageRegionType::Element>::GLTypeID,
 			image.GetPointer()
 			) );
 
@@ -403,8 +615,8 @@ GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image
 			offset[1],
 			size[0],
 			size[1],
-			GL_RED,
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
+			M4DToGLType< typename ImageRegionType::Element>::GLTypeID,
 			image.GetPointer()
 		       ) );
 
@@ -448,8 +660,8 @@ GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image
 			size[0],
 			size[1],
 			size[2],
-			GL_RED,
-			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID,
+			M4DToGLFormat<typename ImageRegionType::Element>::GLFormat,
+			M4DToGLType< typename ImageRegionType::Element>::GLTypeID,
 			image.GetPointer() + offset * image.GetStride()
 		       ) );
 

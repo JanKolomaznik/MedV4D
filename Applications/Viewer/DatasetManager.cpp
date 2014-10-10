@@ -10,6 +10,8 @@
 
 #include <prognot/Qt/ProgressDialog.hpp>
 
+#include "MedV4D/Common/MathTools.h"
+
 
 DatasetManager::DatasetID DatasetManager::loadFromFile()
 {
@@ -63,5 +65,22 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 	} else {
 		image = M4D::Imaging::ImageFactory::LoadDumpedImage( aPath.string() );
 	}
+
+	/*float step = 5.0f / 128;
+	M4D::Imaging::Image< Vector<uint16, 3 >, 3 >::Ptr image =
+		M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< Vector<uint16, 3 > >( 128, 128, 32 );
+	for( unsigned i=0; i<128; ++i ) {
+		for( unsigned j=0; j<128; ++j ) {
+			for( unsigned k=0; k<32; ++k ) {
+				float x = (i - 64) * step;
+				float y = (j - 64) * step;
+				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = Vector<uint16, 3 >(
+							(i % 30) * 40,
+							(j % 60) * 30,
+							(k * 80)
+							);
+			}
+		}
+	}*/
 	return image;
 }

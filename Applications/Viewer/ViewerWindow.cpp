@@ -783,13 +783,13 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	ScatterPlot2D<int, float> gradientScatterPlot;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
-		gradientScatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegion<ScatterPlot2D<int, float>, IMAGE_TYPE::SubRegion>(IMAGE_TYPE::Cast( *aImage ).GetRegion());
+		//gradientScatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegion<ScatterPlot2D<int, float>, IMAGE_TYPE::SubRegion>(IMAGE_TYPE::Cast( *aImage ).GetRegion());
 	);
 
 	auto statistics = std::make_shared<ImageStatistics>();
 
 	statistics->mHistogram = std::move(histogram1D);
-	statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
+	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
 	mTFPaletteWidget->setStatistics(statistics);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );

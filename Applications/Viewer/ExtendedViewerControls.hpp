@@ -18,6 +18,10 @@ public:
 
 	ViewerControls &
 	viewerControls() const;
+public slots:
+	void
+	updateControls();
+
 private:
 	Ui::ExtendedViewerControls *ui;
 };

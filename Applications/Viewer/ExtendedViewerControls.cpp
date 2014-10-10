@@ -13,7 +13,13 @@ ExtendedViewerControls::~ExtendedViewerControls()
 	delete ui;
 }
 
-ViewerControls &ExtendedViewerControls::viewerControls() const
+ViewerControls &
+ExtendedViewerControls::viewerControls() const
 {
 	return *(ui->mViewerControls);
+}
+
+void ExtendedViewerControls::updateControls()
+{
+	viewerControls().updateControls();
 }
