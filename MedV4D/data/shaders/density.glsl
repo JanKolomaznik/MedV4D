@@ -45,6 +45,6 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 
 vec4 colorFromStepInfo(StepInfo aInfo)
 {
-	return vec4(1.0, 1.0, 1.0, 0.5 * aInfo.value);
+	return vec4(1.0, 1.0, 1.0, aInfo.value);
 }
 

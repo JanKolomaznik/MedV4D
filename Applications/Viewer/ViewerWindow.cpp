@@ -225,16 +225,17 @@ ViewerWindow::initialize()
 	LOG( "Python terminal initialized" );
 #endif //USE_PYTHON
 
-	ExtendedViewerControls *mViewerControls = new ExtendedViewerControls;
+	ExtendedViewerControls *mViewerControls = new ExtendedViewerControls(mDatasetManager);
 	QObject::connect(
 			M4D::ApplicationManager::getInstance(),
 			&M4D::ApplicationManager::viewerSelectionChanged,
 			[mViewerControls] () {
 				auto viewer = ViewerManager::getInstance()->getSelectedViewer();
 				auto genViewer = dynamic_cast<M4D::GUI::Viewer::GeneralViewer*> (viewer);
-				mViewerControls->viewerControls().setViewer(genViewer);
+				mViewerControls->setViewer(genViewer);
 			});
 	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
+
 	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
 	LOG( "Viewer controls GUI initialized" );
 
@@ -687,8 +688,7 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 	auto & rec = mDatasetManager.getDatasetRecord(aId);
 	M4D::Imaging::AImage::Ptr image = rec.mImage;
 
-	auto inputData = M4D::GUI::Viewer::ViewerInputData::Ptr(new M4D::GUI::Viewer::ViewerInputData);
-	inputData->primaryImage = std::static_pointer_cast<M4D::Imaging::AImageDim<3>>(image);
+	auto inputData = ViewerInputDataWithId::Ptr(new ViewerInputDataWithId(std::static_pointer_cast<M4D::Imaging::AImageDim<3>>(image), aId));
 
 	mViewerDesktop->forEachViewer(
 		[inputData](M4D::GUI::Viewer::AGLViewer * aViewer) {

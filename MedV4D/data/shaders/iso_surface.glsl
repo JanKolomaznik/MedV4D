@@ -50,7 +50,7 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 			}
 		}
 
-		vec4 surfaceColor = vec4(0.5, 0.5, 0.2, 0.3);//gSurfaceColor;
+		vec4 surfaceColor = gSurfaceColor;
 		// SHADING ----------------------------------------------------------
 		vec3 gradient = computeGradient(gPrimaryImageData3D, gMappedIntervalBands, currentValue, aCoordinates);
 		vec3 N = normalize( gradient );

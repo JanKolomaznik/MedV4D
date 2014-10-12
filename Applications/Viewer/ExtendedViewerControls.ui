@@ -60,5 +60,41 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>mPrimaryDatasetComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>assignDatasets()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mSecondaryDatasetComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>assignDatasets()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>57</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>assignDatasets()</slot>
+ </slots>
 </ui>

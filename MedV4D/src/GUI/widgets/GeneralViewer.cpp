@@ -55,6 +55,7 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
+	state->mVolumeRenderConfig.isoSurfaceOptions.isoSurfaceColor = glm::fvec4(0.4f, 0.4f, 1.0f, 0.5f);
 	state->mVolumeRenderConfig.isoSurfaceOptions.enableLight = true;
 	state->mVolumeRenderConfig.isoSurfaceOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
@@ -1008,15 +1009,15 @@ GeneralViewer::PrepareData()
 		return false;
 	}
 
-	if (mData->primaryImage) {
-		getViewerState().mPrimaryImageExtents = mData->primaryImage->GetImageExtentsRecord();
-		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->primaryImage));
+	if (mData->primaryImage()) {
+		getViewerState().mPrimaryImageExtents = mData->primaryImage()->GetImageExtentsRecord();
+		getViewerState().mPrimaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->primaryImage()));
 	} else {
 		return false;
 	}
-	if (mData->secondaryImage) {;
-		getViewerState().mSecondaryImageExtents = mData->secondaryImage->GetImageExtentsRecord();
-		getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->secondaryImage));
+	if (mData->secondaryImage()) {;
+		getViewerState().mSecondaryImageExtents = mData->secondaryImage()->GetImageExtentsRecord();
+		getViewerState().mSecondaryImageTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->secondaryImage()));
 	} else {
 		getViewerState().mSecondaryImageTexture.reset();
 	}

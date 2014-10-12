@@ -7,6 +7,44 @@
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/GUI/utils/QtM4DTools.h"
 
+#include <QPushButton>
+
+/*class ColorButton : public QPushButton
+{
+	Q_OBJECT;
+public:
+	ColorButton(QWidget *parent = nullptr)
+		: QPushButton(parent)
+	{
+	}
+
+	QColor
+	color() const
+	{
+		return mColor;
+	}
+
+	QColor getIdealTextColor(const QColor& aBackgroundColor) const
+	{
+		const int cThreshold = 105;
+		int backgroundDelta = (aBackgroundColor.red() * 0.299) + (aBackgroundColor.green() * 0.587) + (aBackgroundColor.blue() * 0.114);
+		return QColor((255- backgroundDelta < cThreshold) ? Qt::black : Qt::white);
+	}
+
+public slots:
+	void
+	setColor(QColor aColor)
+	{
+		mColor = aColor;
+
+		static const QString cColorStyle("QPushButton { background-color : %1; color : %2; }");
+		QColor idealTextColor = getIdealTextColor(aColor);
+		setStyleSheet(cColorStyle.arg(aColor.name()).arg(idealTextColor.name()));
+	}
+protected:
+	QColor mColor;
+};*/
+
 class ViewerControls: public QWidget, public Ui::ViewerControls
 {
 	Q_OBJECT;
@@ -17,6 +55,9 @@ public:
 		, mUpdating( false )
 	{
 		setupUi( this );
+		mSurfaceColorButton->enableAlpha(true);
+		QObject::connect(mSurfaceColorButton, &ColorChooserButton::colorUpdated, this, &ViewerControls::settingsChanged);
+		QObject::connect(mIsoValueSetter, &DoubleSpinBoxWithSlider::valueChanged, this, &ViewerControls::settingsChanged);
 		updateControls();
 	}
 
@@ -25,6 +66,12 @@ public:
 	{
 		mCurrentViewer = aViewer;
 		updateControls();
+	}
+
+	M4D::GUI::Viewer::GeneralViewer *
+	viewer() const
+	{
+		return mCurrentViewer;
 	}
 
 public slots:
@@ -82,7 +129,8 @@ public slots:
 		mEnablePreintegratedTFCheckBox->setChecked(mCurrentViewer->isIntegratedTransferFunctionEnabled());
 
 		//mIsoValueSlider;
-		mIsoValueSpinBox->setValue(mCurrentViewer->isoSurfaceValue());
+		mIsoValueSetter->setValue(mCurrentViewer->isoSurfaceValue());
+		mSurfaceColorButton->setColor(mCurrentViewer->isoSurfaceColor());
 
 		mUpdating = false;
 	}
@@ -120,7 +168,8 @@ protected slots:
 
 		mCurrentViewer->enableIntegratedTransferFunction(mEnablePreintegratedTFCheckBox->isChecked());
 
-		mCurrentViewer->setIsoSurfaceValue(mIsoValueSpinBox->value());
+		mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());
+		mCurrentViewer->setIsoSurfaceColor(mSurfaceColorButton->color());
 
 		mUpdating = false;
 		updateControls();

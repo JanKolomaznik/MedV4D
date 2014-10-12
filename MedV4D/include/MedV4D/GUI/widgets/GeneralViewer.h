@@ -118,8 +118,29 @@ public:
 	typedef std::shared_ptr<ViewerInputData> Ptr;
 	typedef std::shared_ptr<const ViewerInputData> ConstPtr;
 
-	M4D::Imaging::AImageDim<3>::ConstPtr primaryImage;
-	M4D::Imaging::AImageDim<3>::ConstPtr secondaryImage;
+	ViewerInputData()
+	{}
+
+	ViewerInputData(M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage, M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr())
+		: mPrimaryImage(aPrimaryImage)
+		, mSecondaryImage(aSecondaryImage)
+	{}
+
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	primaryImage() const
+	{
+		return mPrimaryImage;
+	}
+
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	secondaryImage() const
+	{
+		return mSecondaryImage;
+	}
+
+protected:
+	M4D::Imaging::AImageDim<3>::ConstPtr mPrimaryImage;
+	M4D::Imaging::AImageDim<3>::ConstPtr mSecondaryImage;
 };
 
 
@@ -311,6 +332,25 @@ public:
 	void
 	setIsoSurfaceValue(float aValue) {
 		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue = aValue;
+		emit settingsChanged();
+	}
+
+	QColor
+	isoSurfaceColor() const
+	{
+		const auto &c = getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaceColor;
+		return QColor::fromRgbF(c[0], c[1], c[2], c[3]);
+	}
+
+	void
+	setIsoSurfaceColor(QColor aColor) {
+		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaceColor =
+			glm::fvec4(
+				aColor.redF(),
+				aColor.greenF(),
+				aColor.blueF(),
+				aColor.alphaF()
+				);
 		emit settingsChanged();
 	}
 

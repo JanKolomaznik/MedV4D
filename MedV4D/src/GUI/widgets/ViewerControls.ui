@@ -235,28 +235,28 @@
           <attribute name="title">
            <string>Isosurface</string>
           </attribute>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1">
+           <item row="1" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
               <string>Isovalue:</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QSlider" name="mIsoValueSlider">
-             <property name="maximum">
-              <number>5000</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="2" column="0" colspan="2">
+            <widget class="ColorChooserButton" name="mSurfaceColorButton">
+             <property name="text">
+              <string>Surface color ...</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="mIsoValueSpinBox">
-             <property name="maximum">
-              <double>5000.000000000000000</double>
+           <item row="1" column="1">
+            <widget class="DoubleSpinBoxWithSlider" name="mIsoValueSetter" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>10</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -417,6 +417,19 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorChooserButton</class>
+   <extends>QPushButton</extends>
+   <header>MedV4D/GUI/widgets/ColorChooserButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBoxWithSlider</class>
+   <extends>QWidget</extends>
+   <header>MedV4D/GUI/widgets/DoubleSpinBoxWithSlider.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -640,22 +653,6 @@
     <hint type="destinationlabel">
      <x>6</x>
      <y>439</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mIsoValueSpinBox</sender>
-   <signal>valueChanged(double)</signal>
-   <receiver>ViewerControls</receiver>
-   <slot>settingsChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>356</x>
-     <y>57</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>309</y>
     </hint>
    </hints>
   </connection>
