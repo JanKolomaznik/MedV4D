@@ -244,8 +244,7 @@ MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
           transferSyntaxes[2]  = UID_LittleEndianImplicitTransferSyntax;
           numTransferSyntaxes = 3;
           break;
-        case EXS_JPEGProcess14SV1TransferSyntax:
-          /* we prefer JPEGLossless:Hierarchical-1stOrderPrediction (default lossless) */
+        /*case EXS_JPEGProcess14SV1TransferSyntax:
           transferSyntaxes[0] = UID_JPEGProcess14SV1TransferSyntax;
           transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
           transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
@@ -253,7 +252,6 @@ MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
           numTransferSyntaxes = 4;
           break;
         case EXS_JPEGProcess1TransferSyntax:
-          /* we prefer JPEGBaseline (default lossy for 8 bit images) */
           transferSyntaxes[0] = UID_JPEGProcess1TransferSyntax;
           transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
           transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
@@ -261,12 +259,11 @@ MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
           numTransferSyntaxes = 4;
           break;
         case EXS_JPEGProcess2_4TransferSyntax:
-          /* we prefer JPEGExtended (default lossy for 12 bit images) */
           transferSyntaxes[0] = UID_JPEGProcess2_4TransferSyntax;
           transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
           transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
           transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
+          numTransferSyntaxes = 4;*/
           break;
         case EXS_JPEG2000:
           /* we prefer JPEG2000 Lossy */

@@ -9,9 +9,11 @@
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/int.hpp>
 #include <boost/mpl/size.hpp>
+
+#ifndef Q_MOC_RUN
 #include <boost/fusion/container/vector/convert.hpp>
 #include <boost/fusion/include/as_vector.hpp>
-
+#endif
 
 
 

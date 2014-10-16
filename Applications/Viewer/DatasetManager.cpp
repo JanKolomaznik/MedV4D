@@ -27,14 +27,16 @@ DatasetManager::DatasetID DatasetManager::loadFromFile()
 		return 0;
 	}
 	try {
+		std::string* stdFilename = new std::string(fileName.toStdString());
+
 		prognot::qt::ProgressDialog progressDialog(QApplication::activeWindow());
 		//TODO QString to path proper conversion on win
-		auto image = openFileNonBlocking(fileName.toStdString(), progressDialog.progressNotifier());
+		auto image = openFileNonBlocking(*stdFilename, progressDialog.progressNotifier());
 		progressDialog.exec();
 
 		DatasetID currentID = newID();
 		auto & currentRecord = mImages[currentID];
-		currentRecord.assignImage(image.get(), fileName.toStdString());
+		currentRecord.assignImage(image.get(), *stdFilename);
 		return currentID;
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
