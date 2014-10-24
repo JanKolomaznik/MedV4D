@@ -48,10 +48,12 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 	ViewerState * state = new ViewerState;
 
 	state->mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::ctLUTWindow;
+	state->mSliceRenderConfig.enableInterpolation = true;
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
 	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
 	state->mVolumeRenderConfig.renderingQuality.enableJittering = true;
+	state->mVolumeRenderConfig.renderingQuality.enableInterpolation = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
@@ -63,7 +65,7 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 
 	state->viewerWindow = this;
 
-	//state->backgroundColor = QColor( 20, 10, 90);
+	//state->backgroundColor = QColor( 255, 255, 255);
 	state->backgroundColor = QColor( 0, 0, 0, 0);
 
 	state->availableViewTypes = 5;
@@ -559,10 +561,10 @@ GeneralViewer::setViewType( int aViewType )
 	//TODO
 	switch ( getViewerState().viewType ) {
 	case vt3D:
-		setColorTransformType( GUI::Renderer::ctTransferFunction1D );
+		setColorTransformType(GUI::Renderer::ctMaxIntensityProjection);
 		break;
 	case vt2DAlignedSlices:
-		setColorTransformType( GUI::Renderer::ctLUTWindow );
+		setColorTransformType(GUI::Renderer::ctLUTWindow);
 		break;
 	default:
 		ASSERT( false );
