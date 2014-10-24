@@ -16,7 +16,7 @@ OrganSegmentationController::~OrganSegmentationController()
 unsigned
 OrganSegmentationController::getAvailableViewTypes()const
 {
-
+	return 0;
 }
 
 void
@@ -62,13 +62,13 @@ OrganSegmentationController::toggleRegionMarking( bool aToggle )
 {
 	if( aToggle ) {
 		ASSERT(mModule.getGraphCutSegmentationWrapper().mWatersheds);
-		setController( boost::make_shared<RegionMarkingMouseController>( 
+		setController(std::make_shared<RegionMarkingMouseController>(
 					mModule.getGraphCutSegmentationWrapper().mWatersheds, 
 					mIDMappingBuffer, 
 					mModule.getGraphCutSegmentationWrapper().mForegroundMarkers, 
 					boost::bind( &OrganSegmentationModule::update, mModule ) 
 					)
-			     );
+				);
 		D_PRINT( "Switched to region marking controller" );
 	} else {
 		resetController();//mMaskDrawingController.reset();

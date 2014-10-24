@@ -874,9 +874,9 @@ GeneralViewer::render()
 					glClear( GL_DEPTH_BUFFER_BIT );
 
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
-						CartesianPlanes plane = config.plane;
-						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
-						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
+//						CartesianPlanes plane = config.plane;
+//						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
+//						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
 						/*getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneWidth", 2*hextents[plane] );

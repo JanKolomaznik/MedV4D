@@ -363,7 +363,7 @@ public:
 		return mData;
 	}
 
-public slots:
+//public slots:
 	void
 	setViewType( int aViewType );
 

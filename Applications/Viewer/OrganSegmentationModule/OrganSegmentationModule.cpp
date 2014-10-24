@@ -15,14 +15,18 @@
 #include <QtGui>
 #include <QtCore>
 
+#include <memory>
+
 void
 OrganSegmentationModule::loadModule()
 {
-	ApplicationManager * appManager = ApplicationManager::getInstance();
+	M4D::ApplicationManager * appManager = M4D::ApplicationManager::getInstance();
 
 	mViewerController = OrganSegmentationController::Ptr( new OrganSegmentationController( *this ) );
 
-	mModeId = appManager->addNewMode( mViewerController/*controller*/, mViewerController/*renderer*/ );
+	mModeId = appManager->addNewMode(
+				mViewerController/*controller*/,
+				mViewerController/*renderer*/ );
 	mViewerController->setModeId( mModeId );
 	QObject::connect( mViewerController.get(), SIGNAL( updateRequest() ), appManager, SLOT( updateGUIRequest() ) );
 
@@ -50,28 +54,31 @@ OrganSegmentationModule::isUnloadable()
 void 
 OrganSegmentationModule::createMask()
 {
-	ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
+	STUBBED("Create mask");
+	/*ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
 	if( imageRecord && imageRecord->image ) {
 		const M4D::Imaging::AImageDim<3> & image = M4D::Imaging::AImageDim<3>::Cast( *(imageRecord->image) );
 		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >( image.GetImageExtentsRecord() );
 		
 		prepareMask( tmpMask );
-	}
+	}*/
 }
 
 void
 OrganSegmentationModule::prepareMask( M4D::Imaging::Mask3D::Ptr aMask )
 {
-	mMask = aMask;
+	STUBBED("Prepare mask");
+	/*mMask = aMask;
 	DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
-	mViewerController->mMask = mMask;
+	mViewerController->mMask = mMask;*/
 }
 
 void 
 OrganSegmentationModule::loadMask()
 {
-	try {
-	QString fileName = QFileDialog::getOpenFileName(/*ApplicationManager::getInstance()->*/NULL, /*tr(*/"Load Mask"/*)*/ );
+	STUBBED("load mask");
+	/*try {
+	QString fileName = QFileDialog::getOpenFileName(nullptr, "Load Mask");
 
 	if ( !fileName.isEmpty() ) {
 
@@ -96,14 +103,15 @@ OrganSegmentationModule::loadMask()
 	}
 	catch (...) {
 		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
-	}
+	}*/
 }
 
 void 
 OrganSegmentationModule::loadIndexFile()
 {
-	try {
-	QString fileName = QFileDialog::getOpenFileName(/*ApplicationManager::getInstance()->*/NULL, /*tr(*/"Load Mask"/*)*/ );
+	STUBBED("load mask");
+	/*try {
+	QString fileName = QFileDialog::getOpenFileName(nullptr,"Load Index File");
 
 	if ( !fileName.isEmpty() ) {
 		std::fstream file( fileName.toLocal8Bit().data() );
@@ -141,7 +149,7 @@ OrganSegmentationModule::loadIndexFile()
 	}
 	catch (...) {
 		QMessageBox::critical ( NULL, "Exception", "Problem with file loading" );
-	}
+	}*/
 }
 //************************************************************************************
 M4D::Imaging::Mask3D::SliceRegion::PointType 
@@ -265,15 +273,18 @@ OrganSegmentationModule::updateTimestamp()
 	
 	M4D::Imaging::WriterBBoxInterface & mod = mMask->SetWholeDirtyBBox();
 	mod.SetModified();
-	
-	DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
+	STUBBED("updateTimestamp");
+	//DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
 }
 
 void
 OrganSegmentationModule::startSegmentationMode()
 {
-	ApplicationManager * appManager = ApplicationManager::getInstance();
-	appManager->createDockWidget( "Organ segmentation", Qt::RightDockWidgetArea, new OrganSegmentationWidget( mViewerController, *this ) );
+	M4D::ApplicationManager * appManager = M4D::ApplicationManager::getInstance();
+	appManager->createDockWidget(
+			"Organ segmentation",
+			Qt::RightDockWidgetArea,
+			new OrganSegmentationWidget( mViewerController, *this ));
 
 	appManager->activateMode( mModeId );
 }
@@ -287,7 +298,8 @@ OrganSegmentationModule::stopSegmentationMode()
 void
 OrganSegmentationModule::computeWatershedTransformation()
 {
-	ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
+	STUBBED("computeWatershedTransformation");
+	/*ImageRecord::Ptr imageRecord = DatasetManager::getInstance()->getCurrentImageInfo();
 	if( imageRecord && imageRecord->image ) {
 		
 		mGraphCutSegmentationWrapper.setInputImage( imageRecord->image );
@@ -296,7 +308,7 @@ OrganSegmentationModule::computeWatershedTransformation()
 		mGraphCutSegmentationWrapper.computeWatershedTransformation();
 
 		mIDMappingBuffer = boost::make_shared< M4D::GUI::IDMappingBuffer >( mGraphCutSegmentationWrapper.mRegionCount + 1 );
-	}
+	}*/
 }
 
 void
