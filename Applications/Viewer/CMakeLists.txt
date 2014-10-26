@@ -42,31 +42,31 @@ IF( EXTENSION_MODULES_ENABLED )
 	ADD_DEFINITIONS(-DEXTENSION_MODULES_ENABLED)
 	SET( EXTENSION_SOURCES
 		#"AnnotationModule/AnnotationEditorController.cpp"
-		"ShoulderMeasurementModule/Computations.cpp"
-		"ShoulderMeasurementModule/ShoulderMeasurementController.cpp"
-		"ShoulderMeasurementModule/ShoulderMeasurementModule.cpp"
-		#"OrganSegmentationModule/OrganSegmentationModule.cpp"
-		#"OrganSegmentationModule/OrganSegmentationController.cpp"
-		#"OrganSegmentationModule/OrganSegmentationWidget.cpp"
+		#"ShoulderMeasurementModule/Computations.cpp"
+		#"ShoulderMeasurementModule/ShoulderMeasurementController.cpp"
+		#"ShoulderMeasurementModule/ShoulderMeasurementModule.cpp"
+		"OrganSegmentationModule/OrganSegmentationModule.cpp"
+		"OrganSegmentationModule/OrganSegmentationController.cpp"
+		"OrganSegmentationModule/OrganSegmentationWidget.cpp"
 	)
 	SET( EXTENSION_HEADERS
 		#"AnnotationModule/AnnotationEditorController.hpp"
 		#"AnnotationModule/AnnotationModule.hpp"
 		#"AnnotationModule/AnnotationSettingsDialog.hpp"
 		#"AnnotationModule/AnnotationWidget.hpp"
-		"ShoulderMeasurementModule/Computations.hpp"
-		"ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
-		"ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
-		"ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
-		#"OrganSegmentationModule/OrganSegmentationModule.hpp"
-		#"OrganSegmentationModule/OrganSegmentationWidget.hpp"
-		#"OrganSegmentationModule/OrganSegmentationController.hpp"
+		#"ShoulderMeasurementModule/Computations.hpp"
+		#"ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
+		#"ShoulderMeasurementModule/ShoulderMeasurementWidget.hpp"
+		#"ShoulderMeasurementModule/ShoulderMeasurementController.hpp"
+		"OrganSegmentationModule/OrganSegmentationModule.hpp"
+		"OrganSegmentationModule/OrganSegmentationWidget.hpp"
+		"OrganSegmentationModule/OrganSegmentationController.hpp"
 		)
 	SET( EXTENSION_UIS
 		#"AnnotationModule/AnnotationSettingsDialog.ui"
 		#"AnnotationModule/AnnotationWidget.ui"
-		"ShoulderMeasurementModule/ShoulderMeasurementWidget.ui"
-		#"OrganSegmentationModule/OrganSegmentationWidget.ui"
+		#"ShoulderMeasurementModule/ShoulderMeasurementWidget.ui"
+		"OrganSegmentationModule/OrganSegmentationWidget.ui"
 		)
 ENDIF( EXTENSION_MODULES_ENABLED )
 

@@ -18,7 +18,7 @@
 class MaskDrawingMouseController: public ADrawingMouseController
 {
 public:
-	typedef boost::shared_ptr<MaskDrawingMouseController> Ptr;
+	typedef std::shared_ptr<MaskDrawingMouseController> Ptr;
 	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask, uint8 aBrushValue=255 ): mMask( aMask ), mBrushValue( aBrushValue )
 	{ ASSERT( mMask ); }
 	
@@ -72,19 +72,24 @@ protected:
 class RegionMarkingMouseController: public ADrawingMouseController
 {
 public:
-	typedef boost::shared_ptr<RegionMarkingMouseController> Ptr;
+	typedef std::shared_ptr<RegionMarkingMouseController> Ptr;
 	typedef std::set< uint32 > ValuesSet;
 	
 	RegionMarkingMouseController( 
 			M4D::Imaging::Image3DUnsigned32b::Ptr aRegions, 
 			M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer,
-			boost::shared_ptr< ValuesSet > aValues,
+			std::shared_ptr< ValuesSet > aValues,
 		       	boost::function<void ()> aUpdateCallback
-			): mRegions( aRegions ), mIDMappingBuffer( aIDMappingBuffer ), mValues( aValues ), mUpdateCallback( aUpdateCallback )
-	{ ASSERT( mRegions ); }
+			)
+		: mRegions( aRegions )
+		, mIDMappingBuffer( aIDMappingBuffer )
+		, mValues( aValues )
+		, mUpdateCallback( aUpdateCallback )
+	{
+		ASSERT( mRegions ); }
 	
 	void
-	setValuesSet( boost::shared_ptr< ValuesSet > aValues )
+	setValuesSet( std::shared_ptr< ValuesSet > aValues )
 	{
 		mValues = aValues;
 	}
@@ -108,8 +113,8 @@ protected:
 	{
 		float width = 10.0f;
 		Vector3f offset( width, width, width );
-		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
-		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
+//		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
+//		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
 		
 		//Vector3i c1 = M4D::maxVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( minimum ), mRegions->GetMinimum() );
 		//Vector3i c2 = M4D::minVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( maximum ), mRegions->GetMaximum() );
@@ -125,7 +130,7 @@ protected:
 	
 	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
 	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
-	boost::shared_ptr< ValuesSet > mValues;
+	std::shared_ptr< ValuesSet > mValues;
 	boost::function<void ()> mUpdateCallback;
 };
 
@@ -145,7 +150,7 @@ public:
 	};
 
 	typedef QList<QAction *> QActionList;
-	typedef boost::shared_ptr< OrganSegmentationController > Ptr;
+	typedef std::shared_ptr< OrganSegmentationController > Ptr;
 	typedef M4D::GUI::Viewer::ViewerController ControllerPredecessor;
 	typedef M4D::GUI::Viewer::RenderingExtension RenderingExtPredecessor;
 

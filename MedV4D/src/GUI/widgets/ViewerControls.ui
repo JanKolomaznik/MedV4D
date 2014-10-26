@@ -20,7 +20,7 @@
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="m2DTab">
       <attribute name="title">
@@ -205,7 +205,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_4">
           <attribute name="title">
@@ -251,14 +251,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="DoubleSpinBoxWithSlider" name="mIsoValueSetter" native="true">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>10</height>
-              </size>
-             </property>
-            </widget>
+            <widget class="DoubleSpinBoxWithSlider" name="mIsoValueSetter" native="true"/>
            </item>
           </layout>
          </widget>

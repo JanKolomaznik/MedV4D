@@ -96,7 +96,7 @@ QVariant ImageListModel::data(const QModelIndex &index, int role) const
 	if (role != Qt::DisplayRole) {
 		return QVariant();
 	}
-	if (index.row() < mManager.mDatasetIDList.size()) {
+	if (index.row() < int(mManager.mDatasetIDList.size())) {
 		const auto &rec = mManager.getDatasetRecord(mManager.mDatasetIDList[index.row()]);
 		return QVariant(rec.name().c_str());
 	}
