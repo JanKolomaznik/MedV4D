@@ -27,6 +27,15 @@ void main(void)
 			break;
 		}
 
+#ifdef USE_MASK
+		vec3 maskCoordinates = texCoordsFromPosition(point, gMaskData3D);
+		if (texture(gMaskData3D.data, maskCoordinates).x < 0.5) {
+			//info.color = vec4(1.0, 0.0, 0.0, 0.5);
+			//break;
+			continue;
+		}	
+#endif // USE_MASK
+
 		info = doStep(info, point, dir);
 	}
 	fragmentColor = colorFromStepInfo(info);

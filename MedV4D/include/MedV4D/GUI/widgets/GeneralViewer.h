@@ -70,11 +70,15 @@ public:
 
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
 	soglu::GLTextureImage::WPtr mPrimaryImageTexture;
-	M4D::Common::TimeStamp mPrimaryEditTimestamp;
+	//M4D::Common::TimeStamp mPrimaryEditTimestamp;
 
 	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
 	soglu::GLTextureImage::WPtr mSecondaryImageTexture;
-	M4D::Common::TimeStamp mSecondaryEditTimestamp;
+	//M4D::Common::TimeStamp mSecondaryEditTimestamp;
+
+	M4D::Imaging::ImageExtentsRecord<3> mMaskExtents;
+	soglu::GLTextureImage::WPtr mMaskTexture;
+	//M4D::Common::TimeStamp mMaskEditTimestamp;
 
 	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
@@ -121,9 +125,14 @@ public:
 	ViewerInputData()
 	{}
 
-	ViewerInputData(M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage, M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr())
+	ViewerInputData(
+		M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage,
+		M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr(),
+		M4D::Imaging::AImageDim<3>::ConstPtr aMaskImage = M4D::Imaging::AImageDim<3>::ConstPtr()
+		)
 		: mPrimaryImage(aPrimaryImage)
 		, mSecondaryImage(aSecondaryImage)
+		, mMaskImage(aMaskImage)
 	{}
 
 	M4D::Imaging::AImageDim<3>::ConstPtr
@@ -138,9 +147,16 @@ public:
 		return mSecondaryImage;
 	}
 
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	mask() const
+	{
+		return mMaskImage;
+	}
+
 protected:
 	M4D::Imaging::AImageDim<3>::ConstPtr mPrimaryImage;
 	M4D::Imaging::AImageDim<3>::ConstPtr mSecondaryImage;
+	M4D::Imaging::AImageDim<3>::ConstPtr mMaskImage;
 };
 
 

@@ -13,7 +13,8 @@
 #include "MedV4D/Common/MathTools.h"
 
 
-DatasetManager::DatasetID DatasetManager::loadFromFile()
+DatasetManager::DatasetID
+DatasetManager::loadFromFile()
 {
 	QStringList fileNames;
 	QString fileName;
@@ -86,12 +87,23 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 }
 
 
-int ImageListModel::rowCount(const QModelIndex &parent) const
+DatasetManager::DatasetID
+DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage)
+{
+	DatasetID currentID = newID();
+	auto & currentRecord = mImages[currentID];
+	currentRecord.assignImage(aImage);
+	return currentID;
+}
+
+int
+ImageListModel::rowCount(const QModelIndex &parent) const
 {
 	return mManager.mDatasetIDList.size();
 }
 
-QVariant ImageListModel::data(const QModelIndex &index, int role) const
+QVariant
+ImageListModel::data(const QModelIndex &index, int role) const
 {
 	if (role != Qt::DisplayRole) {
 		return QVariant();
@@ -102,3 +114,5 @@ QVariant ImageListModel::data(const QModelIndex &index, int role) const
 	}
 	return QVariant();
 }
+
+

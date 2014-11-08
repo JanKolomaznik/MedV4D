@@ -444,6 +444,13 @@ template< typename CoordType, size_t Dim >
 CoordType
 operator*( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
 {
+	return dot(a, b);
+}
+
+template< typename CoordType, size_t Dim >
+CoordType
+dot( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+{
 	CoordType result = TypeTraits< CoordType >::Zero;
 	for( size_t i=0; i < Dim; ++i ) {
 		result += a[i] * b[i];

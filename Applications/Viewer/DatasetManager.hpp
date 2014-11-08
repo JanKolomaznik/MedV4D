@@ -57,6 +57,11 @@ public:
 		mFileName = aPath;
 	}
 
+	void
+	assignImage(M4D::Imaging::AImage::Ptr aImage) {
+		mImage = aImage;
+	}
+
 	std::string
 	name() const
 	{
@@ -118,6 +123,9 @@ public:
 	{
 		return mDatasetIDList.at(aIndex);
 	}
+
+	DatasetID
+	registerDataset(M4D::Imaging::AImage::Ptr aImage);
 protected:
 	DatasetID
 	newID()
@@ -189,6 +197,16 @@ public:
 		mSecondaryImageId = aImageId;
 	}
 
+	void
+	assignMaskWithId(
+		M4D::Imaging::AImageDim<3>::ConstPtr aImage,
+		DatasetManager::DatasetID aImageId
+		)
+	{
+		mMaskImage = aImage;
+		mMaskImageId = aImageId;
+	}
+
 	DatasetManager::DatasetID
 	primaryImageId() const
 	{
@@ -200,9 +218,16 @@ public:
 	{
 		return mSecondaryImageId;
 	}
+
+	DatasetManager::DatasetID
+	maskId() const
+	{
+		return mMaskImageId;
+	}
 protected:
 	DatasetManager::DatasetID mPrimaryImageId;
 	DatasetManager::DatasetID mSecondaryImageId;
+	DatasetManager::DatasetID mMaskImageId;
 };
 
 

@@ -63,6 +63,9 @@ public:
 	void
 	dataLoaded(DatasetManager::DatasetID aId);
 
+	void
+	processModule(AModule &aModule);
+
 public slots:
 
 	void

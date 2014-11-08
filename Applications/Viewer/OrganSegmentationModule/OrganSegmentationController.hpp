@@ -19,35 +19,46 @@ class MaskDrawingMouseController: public ADrawingMouseController
 {
 public:
 	typedef std::shared_ptr<MaskDrawingMouseController> Ptr;
-	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask, uint8 aBrushValue=255 ): mMask( aMask ), mBrushValue( aBrushValue )
-	{ ASSERT( mMask ); }
-	
+	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask, uint8 aBrushValue=255 )
+		: mMask( aMask )
+		, mBrushValue( aBrushValue )
+	{
+		ASSERT( mMask );
+	}
+
+	void
+	setMask(M4D::Imaging::Mask3D::Ptr aMask)
+	{
+		mMask = aMask;
+	}
+
 	void
 	setBrushValue( uint8 aBrushValue )
 	{
-			mBrushValue = aBrushValue;
+		mBrushValue = aBrushValue;
 	}
-protected:	
+protected:
 	void
-	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
+	drawStep(const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal) override
 	{
-		drawMaskStep( aStart, aEnd );
+		drawMaskStep(aStart, aEnd, aNormal);
 	}
-	
+
 	void
-	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd )
+	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal)
 	{
 		float width = 10.0f;
 		Vector3f offset( width, width, width );
 		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
 		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
-		
+
 		Vector3i c1 = M4D::maxVect<int,3>( mMask->GetElementCoordsFromWorldCoords( minimum ), mMask->GetMinimum() );
 		Vector3i c2 = M4D::minVect<int,3>( mMask->GetElementCoordsFromWorldCoords( maximum ), mMask->GetMaximum() );
 		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetDirtyBBox( c1, c2 );
 		LOG( "EditedA : " << c1 << " => " << c2 );
 		try {
-			M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, Vector3f( 0.0f, 0.0f, 1.0f ) );
+			M4D::Imaging::painting::draw3DLine(*mMask, mBrushValue, aStart, aEnd, 10, aNormal);
+			//M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, aNormal);
 		} catch (...){
 			D_PRINT( "drawStep exception" );
 		}
@@ -64,7 +75,7 @@ protected:
 			}
 		}*/
 	}
-	
+
 	M4D::Imaging::Mask3D::Ptr mMask;
 	uint8 mBrushValue;
 };
@@ -74,12 +85,12 @@ class RegionMarkingMouseController: public ADrawingMouseController
 public:
 	typedef std::shared_ptr<RegionMarkingMouseController> Ptr;
 	typedef std::set< uint32 > ValuesSet;
-	
-	RegionMarkingMouseController( 
-			M4D::Imaging::Image3DUnsigned32b::Ptr aRegions, 
+
+	RegionMarkingMouseController(
+			M4D::Imaging::Image3DUnsigned32b::Ptr aRegions,
 			M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer,
 			std::shared_ptr< ValuesSet > aValues,
-		       	boost::function<void ()> aUpdateCallback
+			boost::function<void ()> aUpdateCallback
 			)
 		: mRegions( aRegions )
 		, mIDMappingBuffer( aIDMappingBuffer )
@@ -87,27 +98,27 @@ public:
 		, mUpdateCallback( aUpdateCallback )
 	{
 		ASSERT( mRegions ); }
-	
+
 	void
 	setValuesSet( std::shared_ptr< ValuesSet > aValues )
 	{
 		mValues = aValues;
 	}
-	
+
 	void
 	setRegions( M4D::Imaging::Image3DUnsigned32b::Ptr aRegions )
 	{
 		mRegions = aRegions;
 	}
-protected:	
+protected:
 	void
-	drawStep( const Vector3f &aStart, const Vector3f &aEnd )
+	drawStep( const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal) override
 	{
 		ASSERT( mValues );
 		ASSERT( mRegions );
 		drawMaskStep( aStart, aEnd );
 	}
-	
+
 	void
 	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd )
 	{
@@ -115,7 +126,7 @@ protected:
 		Vector3f offset( width, width, width );
 //		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
 //		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
-		
+
 		//Vector3i c1 = M4D::maxVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( minimum ), mRegions->GetMinimum() );
 		//Vector3i c2 = M4D::minVect<int,3>( mRegions->GetElementCoordsFromWorldCoords( maximum ), mRegions->GetMaximum() );
 		try {
@@ -127,7 +138,7 @@ protected:
 
 		mUpdateCallback();
 	}
-	
+
 	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
 	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
 	std::shared_ptr< ValuesSet > mValues;
@@ -146,7 +157,7 @@ public:
 		mmHUMERAL_HEAD,
 		mmPROXIMAL_SHAFT,
 
-		mmSENTINEL //use for valid interval testing 
+		mmSENTINEL //use for valid interval testing
 	};
 
 	typedef QList<QAction *> QActionList;
@@ -178,7 +189,7 @@ public:
 	/*bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
-	bool	
+	bool
 	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo );
 
 	bool
@@ -217,13 +228,13 @@ signals:
 public slots:
 	void
 	toggleMaskDrawing( bool aToggle );
-	
+
 	void
 	toggleRegionMarking( bool aToggle );
 
 	void
 	toggleBiMaskDrawing( bool aToggle );
-	
+
 	void
 	changeMarkerType( bool aForeground );
 protected:
@@ -236,11 +247,11 @@ public:
 	bool mOverlay;
 
 	M4D::Common::IDNumber mModeId;
-	
+
 	OrganSegmentationModule &mModule;
-	
+
 	ADrawingMouseController::Ptr mMaskDrawingController;
-	
+
 	uint8 mBrushValue;
 };
 

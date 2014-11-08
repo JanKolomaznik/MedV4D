@@ -117,8 +117,9 @@ struct VolumeRenderer::RenderingConfiguration
 		: colorTransform( ctMaxIntensityProjection )
 		, enableVolumeRestrictions( false )
 	{ }
-	soglu::GLTextureImage3D::WPtr		primaryImageData;
-	soglu::GLTextureImage3D::WPtr		secondaryImageData;
+	soglu::GLTextureImage3D::WPtr primaryImageData;
+	soglu::GLTextureImage3D::WPtr secondaryImageData;
+	soglu::GLTextureImage3D::WPtr maskImageData;
 
 	int					colorTransform;
 	bool					enableVolumeRestrictions;

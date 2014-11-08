@@ -21,17 +21,30 @@ namespace Viewer
 
 struct MouseEventInfo
 {
-	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType )
-		{ }
+	MouseEventInfo(const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType)
+		: viewSetup( aViewSetup )
+		, event( aEvent )
+		, viewType( aViewType )
+	{ }
 
-	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPos ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), realCoordinates( aPos )
-		{ }
+	/*MouseEventInfo(const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPos )
+		: viewSetup( aViewSetup )
+		, event( aEvent )
+		, viewType( aViewType )
+		, point( aPos )
+		//, realCoordinates( aPos )
+	{ }*/
 
 	//MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, Point3Df aPoint, glm::fvec3 aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
 	//	{ }
 
-	MouseEventInfo( const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPoint, glm::fvec3 aDirection ): viewSetup( aViewSetup ), event( aEvent ), viewType( aViewType ), point( aPoint ), direction( aDirection )
-		{ }
+	MouseEventInfo(const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPoint, glm::fvec3 aDirection )
+		: viewSetup( aViewSetup )
+		, event( aEvent )
+		, viewType( aViewType )
+		, point( aPoint )
+		, direction( aDirection )
+	{ }
 
 	soglu::GLViewSetup viewSetup;
 
@@ -39,7 +52,8 @@ struct MouseEventInfo
 	ViewType viewType;
 
 	//2D section
-	glm::fvec3 realCoordinates;
+	//glm::fvec3 realCoordinates;
+	//glm::fvec3 normal;
 
 	//3D section
 

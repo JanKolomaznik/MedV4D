@@ -10,3 +10,4 @@ uniform sampler2D gDepthBuffer;
 
 uniform float gRenderingSliceThickness;
 
+uniform ImageData3D gMaskData3D;

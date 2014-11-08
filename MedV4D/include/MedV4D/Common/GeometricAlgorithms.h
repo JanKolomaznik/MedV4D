@@ -12,10 +12,10 @@
 namespace M4D
 {
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file GeometricAlgorithms.h 
- * @{ 
+ * @ingroup imaging
+ * @author Jan Kolomaznik
+ * @file GeometricAlgorithms.h
+ * @{
  **/
 
 enum IntersectionResult {
@@ -38,7 +38,7 @@ getSomePerpendicularVector( const Vector< CoordType, 3 > &v )
 	size_t maxI = maxIdx< CoordType, 3 >( v );
 	size_t minI = minIdx< CoordType, 3 >( v );
 	Vector< CoordType, 3 > v2( v );
-	
+
 	if( maxI != minI ) {
 		v2[maxI] = v[minI];
 		v2[minI] = v[maxI];
@@ -74,20 +74,20 @@ angleAndRotationAxisFromVectors( const Vector< CoordType, 3 > &a, const Vector< 
 
 template< typename CoordType >
 bool
-LineIntersectionTest( 
-		const Vector< CoordType, 2 > &pointL1A, 
+LineIntersectionTest(
+		const Vector< CoordType, 2 > &pointL1A,
 		const Vector< CoordType, 2 > &pointL1B,
-		const Vector< CoordType, 2 > &pointL2A, 
+		const Vector< CoordType, 2 > &pointL2A,
 		const Vector< CoordType, 2 > &pointL2B
 	     )
 {
 	Vector< CoordType, 2 > v1 = pointL1B - pointL1A;
-	
+
 	bool first = PointLinePositionPointVector( pointL2A, pointL1A, v1 ) < 0;
 	bool second = PointLinePositionPointVector( pointL2B, pointL1A, v1 ) > 0;
 	if( ( first && second ) || !( first || second ) ) {
 		v1 = pointL2B - pointL2A;
-		
+
 		first = PointLinePositionPointVector( pointL1A, pointL2A, v1 ) < 0;
 		second = PointLinePositionPointVector( pointL1B, pointL2A, v1 ) > 0;
 		if( ( first && second ) || !( first || second ) ) {
@@ -106,10 +106,10 @@ LineIntersectionTest(
 //            2=overlap in segment from I0 to I1
 template< typename CoordType >
 int
-intersect2D_Segments( 
-		const Vector< CoordType, 2 >	&pointL1A, 
+intersect2D_Segments(
+		const Vector< CoordType, 2 >	&pointL1A,
 		const Vector< CoordType, 2 >	&pointL1B,
-		const Vector< CoordType, 2 >	&pointL2A, 
+		const Vector< CoordType, 2 >	&pointL2A,
 		const Vector< CoordType, 2 >	&pointL2B,
 		Vector< CoordType, 2 >		&intersection
 		)
@@ -122,71 +122,71 @@ intersect2D_Segments(
 
     // test if they are parallel (includes either being a point)
     if (fabs(D) < SMALL_NUM) {          // S1 and S2 are parallel
-        if (perp(u,w) != 0 || perp(v,w) != 0) {
-            return 0;                   // they are NOT collinear
-        }
-        // they are collinear or degenerate
-        // check if they are degenerate points
-        float du = dot(u,u);
-        float dv = dot(v,v);
-        if (du==0 && dv==0) {           // both segments are points
-            if (S1.P0 != S2.P0)         // they are distinct points
-                return 0;
-            *I0 = S1.P0;                // they are the same point
-            return 1;
-        }
-        if (du==0) {                    // S1 is a single point
-            if (inSegment(S1.P0, S2) == 0)  // but is not in S2
-                return 0;
-            *I0 = S1.P0;
-            return 1;
-        }
-        if (dv==0) {                    // S2 a single point
-            if (inSegment(S2.P0, S1) == 0)  // but is not in S1
-                return 0;
-            *I0 = S2.P0;
-            return 1;
-        }
-        // they are collinear segments - get overlap (or not)
-        float t0, t1;                   // endpoints of S1 in eqn for S2
-        Vector w2 = S1.P1 - S2.P0;
-        if (v.x != 0) {
-                t0 = w.x / v.x;
-                t1 = w2.x / v.x;
-        }
-        else {
-                t0 = w.y / v.y;
-                t1 = w2.y / v.y;
-        }
-        if (t0 > t1) {                  // must have t0 smaller than t1
-                float t=t0; t0=t1; t1=t;    // swap if not
-        }
-        if (t0 > 1 || t1 < 0) {
-            return 0;     // NO overlap
-        }
-        t0 = t0<0? 0 : t0;              // clip to min 0
-        t1 = t1>1? 1 : t1;              // clip to max 1
-        if (t0 == t1) {                 // intersect is a point
-            *I0 = S2.P0 + t0 * v;
-            return 1;
-        }
+	if (perp(u,w) != 0 || perp(v,w) != 0) {
+	    return 0;                   // they are NOT collinear
+	}
+	// they are collinear or degenerate
+	// check if they are degenerate points
+	float du = dot(u,u);
+	float dv = dot(v,v);
+	if (du==0 && dv==0) {           // both segments are points
+	    if (S1.P0 != S2.P0)         // they are distinct points
+		return 0;
+	    *I0 = S1.P0;                // they are the same point
+	    return 1;
+	}
+	if (du==0) {                    // S1 is a single point
+	    if (inSegment(S1.P0, S2) == 0)  // but is not in S2
+		return 0;
+	    *I0 = S1.P0;
+	    return 1;
+	}
+	if (dv==0) {                    // S2 a single point
+	    if (inSegment(S2.P0, S1) == 0)  // but is not in S1
+		return 0;
+	    *I0 = S2.P0;
+	    return 1;
+	}
+	// they are collinear segments - get overlap (or not)
+	float t0, t1;                   // endpoints of S1 in eqn for S2
+	Vector w2 = S1.P1 - S2.P0;
+	if (v.x != 0) {
+		t0 = w.x / v.x;
+		t1 = w2.x / v.x;
+	}
+	else {
+		t0 = w.y / v.y;
+		t1 = w2.y / v.y;
+	}
+	if (t0 > t1) {                  // must have t0 smaller than t1
+		float t=t0; t0=t1; t1=t;    // swap if not
+	}
+	if (t0 > 1 || t1 < 0) {
+	    return 0;     // NO overlap
+	}
+	t0 = t0<0? 0 : t0;              // clip to min 0
+	t1 = t1>1? 1 : t1;              // clip to max 1
+	if (t0 == t1) {                 // intersect is a point
+	    *I0 = S2.P0 + t0 * v;
+	    return 1;
+	}
 
-        // they overlap in a valid subsegment
-        *I0 = S2.P0 + t0 * v;
-        *I1 = S2.P0 + t1 * v;
-        return 2;
+	// they overlap in a valid subsegment
+	*I0 = S2.P0 + t0 * v;
+	*I1 = S2.P0 + t1 * v;
+	return 2;
     }
 
     // the segments are skew and may intersect in a point
     // get the intersect parameter for S1
     float     sI = perp(v,w) / D;
     if (sI < 0 || sI > 1)               // no intersect with S1
-        return 0;
+	return 0;
 
     // get the intersect parameter for S2
     float     tI = perp(u,w) / D;
     if (tI < 0 || tI > 1)               // no intersect with S2
-        return 0;
+	return 0;
 
     *I0 = S1.P0 + sI * u;               // compute S1 intersect point
     return 1;
@@ -200,9 +200,9 @@ intersect2D_Segments(
  **/
 template< typename CoordType >
 inline CoordType
-PointLinePosition2Points( 
+PointLinePosition2Points(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &lineA, 
+		const Vector< CoordType, 2 > &lineA,
 		const Vector< CoordType, 2 > &lineB
 	     )
 {
@@ -218,9 +218,9 @@ PointLinePosition2Points(
  */
 template< typename CoordType >
 inline CoordType
-PointLinePositionPointVector( 
+PointLinePositionPointVector(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &A,
 		const Vector< CoordType, 2 > &v
 	     )
 {
@@ -242,9 +242,9 @@ PerpendicularVectorToVector( const Vector< CoordType, 2 > &v )
  **/
 template< typename CoordType >
 inline CoordType
-PointLineDistanceSquared( 
+PointLineDistanceSquared(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &A,
 		const Vector< CoordType, 2 > &v
 		)
 {
@@ -261,9 +261,9 @@ PointLineDistanceSquared(
  **/
 template< typename CoordType >
 inline float32
-PointLineDistance( 
+PointLineDistance(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &A,
 		const Vector< CoordType, 2 > &v
 		)
 {
@@ -277,9 +277,9 @@ PointLineDistance(
  **/
 template< typename CoordType >
 inline float32
-PointLineDistanceSquared( 
+PointLineDistanceSquared(
 		const Vector< CoordType, 3 > &point,
-		const Vector< CoordType, 3 > &A, 
+		const Vector< CoordType, 3 > &A,
 		const Vector< CoordType, 3 > &v
 		)
 {
@@ -298,9 +298,9 @@ PointLineDistanceSquared(
  **/
 template< typename CoordType >
 inline float32
-PointLineDistance( 
+PointLineDistance(
 		const Vector< CoordType, 3 > &point,
-		const Vector< CoordType, 3 > &A, 
+		const Vector< CoordType, 3 > &A,
 		const Vector< CoordType, 3 > &v
 		)
 {
@@ -314,9 +314,9 @@ PointLineDistance(
  **/
 template< typename CoordType >
 inline CoordType
-PointLineSegmentDistanceSquared( 
+PointLineSegmentDistanceSquared(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &A,
 		const Vector< CoordType, 2 > &v
 		)
 {
@@ -327,11 +327,46 @@ PointLineSegmentDistanceSquared(
 	if( M4D::sgn(p1) != M4D::sgn(p2) ) {
 		return PointLineDistanceSquared( point, A, v );
 	}
-	return min( 
-			(point-A)*(point-A), 
-			(point-B)*(point-B) 
+	return min(
+			(point-A)*(point-A),
+			(point-B)*(point-B)
 		  );
 }
+
+template <typename TVector>
+inline float
+lengthSquared(const TVector &aA, const TVector &aB) {
+	auto v = aA - aB;
+	return dot(v, v);
+}
+
+template <typename TVector>
+inline float
+distance(const TVector &aA, const TVector &aB) {
+	return sqrt(lengthSquared(aA, aB));
+}
+
+template <typename TVector>
+inline float
+pointLineSegmentDistance(const TVector &aA, const TVector &aB, const TVector &aP) {
+	// Return minimum distance between line segment and point
+	const float l2 = lengthSquared(aA, aB);
+	if (l2 == 0.0) {
+		return distance(aP, aA);   // v == w case
+	}
+	// Consider the line extending the segment, parameterized as v + t (w - v).
+	// We find projection of point p onto the line.
+	// It falls where t = [(p-v) . (w-v)] / |w-v|^2
+	const float t = dot(aP - aA, aB - aA) / l2;
+	if (t < 0.0) {
+		return distance(aP, aA);       // Beyond the 'v' end of the segment
+	} else if (t > 1.0) {
+		return distance(aP, aB);  // Beyond the 'w' end of the segment
+	}
+	auto projection = aA + t * (aB - aA);  // Projection falls on the segment
+	return distance(aP, projection);
+}
+
 
 /**
  * \param point Measured point
@@ -340,9 +375,9 @@ PointLineSegmentDistanceSquared(
  **/
 template< typename CoordType >
 inline float32
-PointLineSegmentDistance( 
+PointLineSegmentDistance(
 		const Vector< CoordType, 2 > &point,
-		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &A,
 		const Vector< CoordType, 2 > &v
 		)
 {
@@ -352,10 +387,10 @@ PointLineSegmentDistance(
 
 template< typename CoordType >
 inline IntersectionResult
-LineSegmentPlaneIntersection( 
-		const Vector< CoordType, 3 >	&lineA, 
+LineSegmentPlaneIntersection(
+		const Vector< CoordType, 3 >	&lineA,
 		const Vector< CoordType, 3 >	&lineB,
-		const Vector< CoordType, 3 >	&planePoint, 
+		const Vector< CoordType, 3 >	&planePoint,
 		const Vector< CoordType, 3 >	&planeNormal,
 		Vector< CoordType, 3 >		&intersection
 		)
@@ -364,7 +399,7 @@ LineSegmentPlaneIntersection(
 	Vector< CoordType, 3 > u( lineB - lineA );
 	Vector< CoordType, 3 > w( lineA - planePoint );
 
-	//only for debugging - ensure we aren't using random location later 
+	//only for debugging - ensure we aren't using random location later
 	D_COMMAND( intersection = Vector< CoordType, 3 >(); );
 
 	CoordType D = planeNormal * u;
@@ -390,10 +425,10 @@ LineSegmentPlaneIntersection(
 
 template< typename CoordType >
 inline IntersectionResult
-AxisPlaneIntersection( 
-		const Vector< CoordType, 3 >	&linePoint, 
+AxisPlaneIntersection(
+		const Vector< CoordType, 3 >	&linePoint,
 		const Vector< CoordType, 3 >	&lineDirection,
-		const Vector< CoordType, 3 >	&planePoint, 
+		const Vector< CoordType, 3 >	&planePoint,
 		const Vector< CoordType, 3 >	&planeNormal,
 		Vector< CoordType, 3 >		&intersection
 		)
@@ -403,7 +438,7 @@ AxisPlaneIntersection(
 	VectorNormalization( u );
 	Vector< CoordType, 3 > w( linePoint - planePoint );
 
-	//only for debugging - ensure we aren't using random location later 
+	//only for debugging - ensure we aren't using random location later
 	D_COMMAND( intersection = Vector< CoordType, 3 >(); );
 
 	CoordType D = planeNormal * u;
@@ -419,21 +454,21 @@ AxisPlaneIntersection(
 	// they are not parallel
 	// compute intersect param
 	CoordType sI = N / D;
-	
+
 	intersection = linePoint + sI * u;                 // compute segment intersect point
 	return ie_UNIQUE_INTERSECTION;
 }
 
 template< typename CoordType >
 bool
-lineAABBIntersections( 
-		const Vector< CoordType, 3 > &aMin, 
-		const Vector< CoordType, 3 > &aMax, 
-		const Vector< CoordType, 3 > &A, 
+lineAABBIntersections(
+		const Vector< CoordType, 3 > &aMin,
+		const Vector< CoordType, 3 > &aMax,
+		const Vector< CoordType, 3 > &A,
 		const Vector< CoordType, 3 > &v,
-		Vector< CoordType, 3 > &aIntersection1, 
+		Vector< CoordType, 3 > &aIntersection1,
 		Vector< CoordType, 3 > &aIntersection2
-	       	)
+		)
 {
 	//TODO
 	Vector< CoordType, 3 > v1 = A - aMin;
@@ -455,9 +490,9 @@ lineAABBIntersections(
 template< typename CoordType >
 bool
 closestPointsOnTwoLines(
-		const Vector< CoordType, 3 > &A1, 
+		const Vector< CoordType, 3 > &A1,
 		const Vector< CoordType, 3 > &v1,
-		const Vector< CoordType, 3 > &A2, 
+		const Vector< CoordType, 3 > &A2,
 		const Vector< CoordType, 3 > &v2,
 		CoordType &t1,
 		CoordType &t2

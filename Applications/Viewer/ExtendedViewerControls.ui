@@ -43,6 +43,16 @@
       <item row="1" column="1">
        <widget class="QComboBox" name="mSecondaryDatasetComboBox"/>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Mask</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="mMaskComboBox"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -90,6 +100,22 @@
     <hint type="destinationlabel">
      <x>400</x>
      <y>57</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMaskComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>assignDatasets()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>335</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>102</y>
     </hint>
    </hints>
   </connection>

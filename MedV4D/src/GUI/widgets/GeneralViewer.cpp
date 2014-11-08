@@ -970,7 +970,7 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			float32 realSlice = getCurrentRealSlice();*/
 			//Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
 			glm::fvec3 position = toGLM(intersection);
-			return MouseEventInfo( mViewerState->glViewSetup, event, vt2DAlignedSlices, position );
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt2DAlignedSlices, position, dir);
 		}
 		break;
 	default:
@@ -1024,6 +1024,12 @@ GeneralViewer::PrepareData()
 		getViewerState().mSecondaryImageTexture.reset();
 	}
 
+	if (mData->mask()) {;
+		getViewerState().mMaskExtents = mData->mask()->GetImageExtentsRecord();
+		getViewerState().mMaskTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->mask()));
+	} else {
+		getViewerState().mMaskTexture.reset();
+	}
 	//ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
@@ -1036,6 +1042,15 @@ GeneralViewer::PrepareData()
 	} else {
 		getViewerState().mSliceRenderConfig.secondaryImageData.reset();
 		getViewerState().mVolumeRenderConfig.secondaryImageData.reset();
+	}
+
+	if ( getViewerState().mMaskTexture.lock() ) {
+		getViewerState().mSliceRenderConfig.maskImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>(getViewerState().mMaskTexture);
+		getViewerState().mVolumeRenderConfig.maskImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>(getViewerState().mMaskTexture);
+		D_PRINT( "Mask image prepared" );
+	} else {
+		getViewerState().mSliceRenderConfig.maskImageData.reset();
+		getViewerState().mVolumeRenderConfig.maskImageData.reset();
 	}
 
 	Vector3f tmp = getViewerState().getRealCenter();

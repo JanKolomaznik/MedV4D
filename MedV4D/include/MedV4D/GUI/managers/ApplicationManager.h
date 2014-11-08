@@ -71,6 +71,11 @@ public:
 			ModuleMap::iterator it = mModules.find( aModule->getName() );
 			if( it == mModules.end() ) {
 				mModules[ aModule->getName() ] = aModule;
+				if (mMainWindow) {
+					mMainWindow->processModule(*aModule);
+				} else {
+					_THROW_ M4D::ErrorHandling::ENULLPointer();
+				}
 			} else {
 				_THROW_ M4D::ErrorHandling::EAlreadyPresent();
 			}

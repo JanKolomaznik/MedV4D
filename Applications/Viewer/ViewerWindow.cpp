@@ -20,7 +20,7 @@
 #include <iterator>
 #include <algorithm>
 
-
+#include "ViewerModule.hpp"
 
 #ifdef USE_CUDA
 #include "MedV4D/Imaging/cuda/MedianFilter.h"
@@ -701,6 +701,13 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
 	//computeHistogram( image );
+}
+
+void ViewerWindow::processModule(AModule &aModule)
+{
+	//TODO - do proper type handling
+	auto & module = static_cast<ViewerModule &>(aModule);
+	module.setDatasetManager(mDatasetManager);
 }
 
 class ImageStatistics : public tfw::AStatistics
