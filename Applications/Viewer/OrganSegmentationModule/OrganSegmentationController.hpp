@@ -19,11 +19,10 @@ class MaskDrawingMouseController: public ADrawingMouseController
 {
 public:
 	typedef std::shared_ptr<MaskDrawingMouseController> Ptr;
-	MaskDrawingMouseController( M4D::Imaging::Mask3D::Ptr aMask, uint8 aBrushValue=255 )
+	MaskDrawingMouseController(M4D::Imaging::Mask3D::Ptr aMask = M4D::Imaging::Mask3D::Ptr(), uint8 aBrushValue = 255)
 		: mMask( aMask )
 		, mBrushValue( aBrushValue )
 	{
-		ASSERT( mMask );
 	}
 
 	void
@@ -47,6 +46,7 @@ protected:
 	void
 	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal)
 	{
+		ASSERT( mMask );
 		float width = 10.0f;
 		Vector3f offset( width, width, width );
 		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
@@ -152,12 +152,10 @@ class OrganSegmentationController: public ModeProxyViewerController, public M4D:
 {
 	Q_OBJECT;
 public:
-	enum MeasurementMode {
-		mmNONE,
-		mmHUMERAL_HEAD,
-		mmPROXIMAL_SHAFT,
-
-		mmSENTINEL //use for valid interval testing
+	enum class MarkerType {
+		none,
+		foreground,
+		background
 	};
 
 	typedef QList<QAction *> QActionList;
@@ -221,6 +219,9 @@ public:
 	void
 	setIDMappingBuffer( M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer )
 	{ mIDMappingBuffer = aIDMappingBuffer; }
+
+	void
+	changeMarkerType(MarkerType aMarkerType);
 signals:
 	void
 	updateRequest();
@@ -234,9 +235,6 @@ public slots:
 
 	void
 	toggleBiMaskDrawing( bool aToggle );
-
-	void
-	changeMarkerType( bool aForeground );
 protected:
 
 public:
@@ -250,7 +248,9 @@ public:
 
 	OrganSegmentationModule &mModule;
 
-	ADrawingMouseController::Ptr mMaskDrawingController;
+	//ADrawingMouseController::Ptr mMaskDrawingController;
+	MaskDrawingMouseController::Ptr mMaskDrawingController;
+	MarkerType mMarkerType;
 
 	uint8 mBrushValue;
 };

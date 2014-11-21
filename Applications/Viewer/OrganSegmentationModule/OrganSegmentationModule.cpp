@@ -2,7 +2,7 @@
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include "OrganSegmentationModule/OrganSegmentationWidget.hpp"
 
-#include "MedV4D/GUI/managers/DatasetManager.h"
+//#include "MedV4D/GUI/managers/DatasetManager.h"
 
 #include "MedV4D/Imaging/cuda/ConnectedComponentLabeling.h"
 #include "MedV4D/Imaging/cuda/EdgeDetection.h"
@@ -11,6 +11,8 @@
 #include "MedV4D/Imaging/cuda/GraphOperations.h"
 #include "MedV4D/Imaging/cuda/SimpleFilters.h"
 #include "MedV4D/Imaging/ImageFactory.h"
+
+#include "GraphCutSegmentation.hpp"
 
 #include <QtGui>
 #include <QtCore>
@@ -51,16 +53,14 @@ OrganSegmentationModule::isUnloadable()
 	return false;
 }
 
+
 void
 OrganSegmentationModule::createMask()
 {
 	STUBBED("Create mask");
-	const auto &record = mDatasetManager->getDatasetRecord(mDatasetManager->idFromIndex(0));
-
-	if(record.mImage) {
-		const auto & image = M4D::Imaging::AImageDim<3>::Cast(*(record.mImage));
-		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >( image.GetImageExtentsRecord() );
-
+	auto image = getProcessedImage();
+	if(image) {
+		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >(image->GetImageExtentsRecord());
 		prepareMask( tmpMask );
 	}
 }
@@ -69,7 +69,7 @@ void
 OrganSegmentationModule::prepareMask( M4D::Imaging::Mask3D::Ptr aMask )
 {
 	STUBBED("Prepare mask");
-	mDatasetManager->registerDataset(aMask);
+	mDatasetManager->registerDataset(aMask, std::string("Mask"));
 	mMask = aMask;
 	mViewerController->mMask = mMask;
 }
@@ -296,6 +296,17 @@ OrganSegmentationModule::stopSegmentationMode()
 
 }
 
+M4D::Imaging::AImageDim<3>::ConstPtr
+OrganSegmentationModule::getProcessedImage()
+{
+	const auto &record = mDatasetManager->getDatasetRecord(mDatasetManager->idFromIndex(0));
+
+	if(record.mImage) {
+		return std::static_pointer_cast<const M4D::Imaging::AImageDim<3> >(record.mImage);
+	}
+	return M4D::Imaging::AImageDim<3>::ConstPtr();
+}
+
 void
 OrganSegmentationModule::computeWatershedTransformation()
 {
@@ -315,9 +326,11 @@ OrganSegmentationModule::computeWatershedTransformation()
 void
 OrganSegmentationModule::computeSegmentation()
 {
-	mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
+	auto image = getProcessedImage();
+
+	/*mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
 	mGraphCutSegmentationWrapper.extendGraph();
-	mGraphCutSegmentationWrapper.executeGraphCut();
+	mGraphCutSegmentationWrapper.executeGraphCut();*/
 }
 
 /*void

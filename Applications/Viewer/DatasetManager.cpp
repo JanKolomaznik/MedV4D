@@ -88,11 +88,11 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 
 
 DatasetManager::DatasetID
-DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage)
+DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName)
 {
 	DatasetID currentID = newID();
 	auto & currentRecord = mImages[currentID];
-	currentRecord.assignImage(aImage);
+	currentRecord.assignImage(aImage, aName);
 	return currentID;
 }
 

@@ -14,8 +14,12 @@ colorMap(vec3 aPosition, ImageData3D aTextureData)
 	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
 	float value = texture(aTextureData.data, coordinates);
 		
-	if (value > 0.5) {
-		return vec4(0.0, 0.0, 1.0, 0.3);
+	if (value > 0.3) {
+		if (value > 0.8) {
+			return vec4(0.0, 0.0, 1.0, 0.3);
+		} else {
+			return vec4(1.0, 0.0, 0.0, 0.3);
+		}
 	}
 	return vec4(0.0, 0.0, 0.0, 0.0);
 }
@@ -25,9 +29,8 @@ out vec4 fragmentColor;
 
 void main(void)
 {
-	fragmentColor = //vec4(0.0, 0.0, 1.0, 0.3);
-colorMap(
-				positionInImage,
-				gPrimaryImageData3D
-				);
+	fragmentColor = colorMap(
+		positionInImage,
+		gPrimaryImageData3D
+		);
 }

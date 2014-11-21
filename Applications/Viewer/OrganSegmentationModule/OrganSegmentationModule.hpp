@@ -54,6 +54,9 @@ public:
 	}
 
 protected:
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	getProcessedImage();
+
 	void
 	loadModule();
 

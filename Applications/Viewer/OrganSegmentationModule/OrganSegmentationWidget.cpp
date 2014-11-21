@@ -41,13 +41,19 @@ OrganSegmentationWidget::toggleDraw( bool aToggle )
 void
 OrganSegmentationWidget::toggleBiMaskDraw( bool aToggle )
 {
+	changedMarkerType();
 	mController->toggleBiMaskDrawing( aToggle );
 }
 
 void
 OrganSegmentationWidget::changedMarkerType()
 {
-	mController->changeMarkerType( foregroundRadioButton->isChecked() );
+	if (mForegroundRadioButton->isChecked()) {
+		mController->changeMarkerType(OrganSegmentationController::MarkerType::foreground);
+	}
+	if (mBackgroundRadioButton->isChecked()) {
+		mController->changeMarkerType(OrganSegmentationController::MarkerType::background);
+	}
 }
 
 void
@@ -57,9 +63,16 @@ OrganSegmentationWidget::updateTimestamp()
 }
 
 void
+OrganSegmentationWidget::runSegmentation()
+{
+	mModule.computeSegmentation();
+}
+
+void
 OrganSegmentationWidget::buttonPressed()
 {
-	QObject * obj = sender();
+	STUBBED("Remove (probably)");
+	/*QObject * obj = sender();
 	if (obj == buttonComputeWatersheds) {
 		mModule.computeWatershedTransformation();
 		return;
@@ -67,6 +80,6 @@ OrganSegmentationWidget::buttonPressed()
 	if (obj == buttonRunSegmentation) {
 		mModule.computeSegmentation();
 		return;
-	}
-	
+	}*/
+
 }

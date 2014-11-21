@@ -58,13 +58,17 @@ public:
 	}
 
 	void
-	assignImage(M4D::Imaging::AImage::Ptr aImage) {
+	assignImage(M4D::Imaging::AImage::Ptr aImage, const std::string &aName) {
 		mImage = aImage;
+		mName = aName;
 	}
 
 	std::string
 	name() const
 	{
+		if (!mName.empty()) {
+			return mName;
+		}
 		return mFileName.filename().string();
 	}
 
@@ -72,6 +76,7 @@ public:
 	//std::atomic_bool mIsReady;
 	M4D::Imaging::AImage::Ptr mImage;
 	boost::filesystem::path mFileName;
+	std::string mName;
 };
 
 
@@ -125,7 +130,7 @@ public:
 	}
 
 	DatasetID
-	registerDataset(M4D::Imaging::AImage::Ptr aImage);
+	registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName);
 protected:
 	DatasetID
 	newID()

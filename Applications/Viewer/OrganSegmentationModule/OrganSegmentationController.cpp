@@ -2,10 +2,13 @@
 #include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #include <algorithm>
 
-OrganSegmentationController::OrganSegmentationController( OrganSegmentationModule &aModule ): mModule( aModule ), mBrushValue( 255 )
+OrganSegmentationController::OrganSegmentationController( OrganSegmentationModule &aModule )
+	: mModule( aModule )
+	, mMarkerType(MarkerType::foreground)
+	, mBrushValue( 255 )
 {
+	mMaskDrawingController = MaskDrawingMouseController::Ptr(new MaskDrawingMouseController());
 
-	
 }
 
 OrganSegmentationController::~OrganSegmentationController()
@@ -22,7 +25,7 @@ OrganSegmentationController::getAvailableViewTypes()const
 void
 OrganSegmentationController::render2DAlignedSlices( int32 aSliceIdx, Vector2f aInterval, CartesianPlanes aPlane )
 {
-	
+
 }
 
 void
@@ -44,14 +47,16 @@ OrganSegmentationController::postRender3D()
 void
 OrganSegmentationController::render3D()
 {
-	
+
 }
 
 void
 OrganSegmentationController::toggleMaskDrawing( bool aToggle )
 {
 	if( aToggle ) {
-		setController( MaskDrawingMouseController::Ptr( new MaskDrawingMouseController( mMask, 255 ) ) );
+		mMaskDrawingController->setMask(mMask);
+		changeMarkerType(MarkerType::foreground);
+		setController(mMaskDrawingController);
 	} else {
 		resetController();//mMaskDrawingController.reset();
 	}
@@ -63,10 +68,10 @@ OrganSegmentationController::toggleRegionMarking( bool aToggle )
 	if( aToggle ) {
 		ASSERT(mModule.getGraphCutSegmentationWrapper().mWatersheds);
 		setController(std::make_shared<RegionMarkingMouseController>(
-					mModule.getGraphCutSegmentationWrapper().mWatersheds, 
-					mIDMappingBuffer, 
-					mModule.getGraphCutSegmentationWrapper().mForegroundMarkers, 
-					boost::bind( &OrganSegmentationModule::update, mModule ) 
+					mModule.getGraphCutSegmentationWrapper().mWatersheds,
+					mIDMappingBuffer,
+					mModule.getGraphCutSegmentationWrapper().mForegroundMarkers,
+					boost::bind( &OrganSegmentationModule::update, mModule )
 					)
 				);
 		D_PRINT( "Switched to region marking controller" );
@@ -78,6 +83,13 @@ OrganSegmentationController::toggleRegionMarking( bool aToggle )
 void
 OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 {
+	if( aToggle ) {
+		//setController(MaskDrawingMouseController::Ptr(new MaskDrawingMouseController(mMask, 255)));
+		mMaskDrawingController->setMask(mMask);
+		setController(mMaskDrawingController);
+	} else {
+		resetController();
+	}
 	/*if( aToggle ) {
 		mMaskDrawingController = RegionMarkingMouseController::Ptr( new RegionMarkingMouseController( mModule.getGraphCutSegmentationWrapper().mWatersheds, mModule.getGraphCutSegmentationWrapper().mForegroundMarkers ) );
 	} else {
@@ -86,8 +98,23 @@ OrganSegmentationController::toggleBiMaskDrawing( bool aToggle )
 }
 
 void
-OrganSegmentationController::changeMarkerType( bool aForeground )
-{	
+OrganSegmentationController::changeMarkerType(MarkerType aMarkerType)
+{
+	mMarkerType = aMarkerType;
+	switch (mMarkerType) {
+	case MarkerType::background :
+		mMaskDrawingController->setBrushValue(128);
+		break;
+	case MarkerType::foreground :
+		mMaskDrawingController->setBrushValue(255);
+		break;
+	case MarkerType::none :
+		mMaskDrawingController->setBrushValue(0);
+		break;
+	default:
+		ASSERT(false);
+	}
+
 	/*if (mMaskDrawingController && dynamic_cast<RegionMarkingMouseController *>( mMaskDrawingController.get()) ) {
 		RegionMarkingMouseController &controller = dynamic_cast<RegionMarkingMouseController &>(*mMaskDrawingController);
 		if ( aForeground ) {

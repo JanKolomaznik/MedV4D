@@ -22,12 +22,6 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>60</height>
-      </size>
-     </property>
      <property name="title">
       <string>Mask Operations</string>
      </property>
@@ -59,7 +53,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QTabWidget" name="mBimaskDrawToggleButton">
+    <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -160,7 +154,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QRadioButton" name="foregroundRadioButton">
+           <widget class="QRadioButton" name="mForegroundRadioButton">
             <property name="text">
              <string>Foreground</string>
             </property>
@@ -170,7 +164,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_2">
+           <widget class="QRadioButton" name="mBackgroundRadioButton">
             <property name="text">
              <string>Background</string>
             </property>
@@ -180,7 +174,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="mBimaskDrawToggleButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -209,7 +203,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QPushButton" name="buttonRunSegmentation">
+        <widget class="QPushButton" name="mRunSegmentationButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -409,7 +403,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>foregroundRadioButton</sender>
+   <sender>mForegroundRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>changedMarkerType()</slot>
@@ -425,7 +419,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton_2</sender>
+   <sender>mBackgroundRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>changedMarkerType()</slot>
@@ -457,10 +451,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonRunSegmentation</sender>
+   <sender>mRunSegmentationButton</sender>
    <signal>clicked()</signal>
    <receiver>OrganSegmentationWidget</receiver>
-   <slot>buttonPressed()</slot>
+   <slot>runSegmentation()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>45</x>
@@ -473,10 +467,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_7</sender>
+   <sender>mBimaskDrawToggleButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
-   <slot>toggleRegionMarking(bool)</slot>
+   <slot>toggleBiMaskDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>91</x>
@@ -501,5 +495,6 @@
   <slot>changedMarkerType()</slot>
   <slot>buttonPressed()</slot>
   <slot>toggleRegionMarking(bool)</slot>
+  <slot>runSegmentation()</slot>
  </slots>
 </ui>

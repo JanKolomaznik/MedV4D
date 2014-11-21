@@ -41,6 +41,9 @@ public slots:
 
 	void
 	buttonPressed();
+
+	void
+	runSegmentation();
 protected:
 	OrganSegmentationController::Ptr mController;
 	OrganSegmentationModule &mModule;

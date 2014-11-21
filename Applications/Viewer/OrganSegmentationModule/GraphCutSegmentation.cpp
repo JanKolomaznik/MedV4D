@@ -15,11 +15,11 @@ graphCutSegmentation(const TImage &aImage, const TMask &aMarkerData, TMask &aSeg
 	TGraph graph;
 	buildGraph(graph, aImage);
 
-	connectSourceAndSink(graph, aMarkerData);
+	/*connectSourceAndSink(graph, aMarkerData);
 
 	findMinCut(graph);
 
-	constructSegmentationMask(graph, aSegmentationMask);
+	constructSegmentationMask(graph, aSegmentationMask);*/
 }
 
 struct GridCutGraph
@@ -55,20 +55,20 @@ buildGraph(GridCutGraph &aGraph, const TImage &aImage)
 						     (type_neighbor_cap*)(mfi->cap_neighbor[5]) };*/
 
 
-	aGraph.graph = new GridCutGraph::Graph(imageSize[0], imageSize[1], imageSize[2]);
+	aGraph.graph = std::unique_ptr<GridCutGraph::Graph>(new GridCutGraph::Graph(imageSize[0], imageSize[1], imageSize[2]));
 
 	static const std::array<std::array<int, 3>, 6> cOffsets = {
-		{{-1, 0, 0}},
-		{{+1, 0, 0}},
-		{{ 0,-1, 0}},
-		{{ 0,+1, 0}},
-		{{ 0, 0,-1}},
-		{{ 0, 0,+1}}
+		std::array<int, 3>{{-1, 0, 0}},
+		std::array<int, 3>{{+1, 0, 0}},
+		std::array<int, 3>{{ 0,-1, 0}},
+		std::array<int, 3>{{ 0,+1, 0}},
+		std::array<int, 3>{{ 0, 0,-1}},
+		std::array<int, 3>{{ 0, 0,+1}}
 	};
 
-	for (int z = 0; z < imageSize[2]; ++z) {
-		for (int y = 0; y < imageSize[1]; ++y) {
-			for(int x = 0; x < imageSize[0]; ++x) {
+	for (int z = 0; z < int(imageSize[2]); ++z) {
+		for (int y = 0; y < int(imageSize[1]); ++y) {
+			for(int x = 0; x < int(imageSize[0]); ++x) {
 				const int node = aGraph.graph->node_id(x,y,z);
 				Coords nodeCoords(x, y, z);
 				//aGraph.graph->set_terminal_cap(node, cap_source[x+y*w+z*(w*h)],cap_sink[x+y*w+z*(w*h)]);
@@ -133,4 +133,14 @@ buildGraph(GridCutGraph &aGraph, const TImage &aImage)
 
 	delete graph;*/
 
+}
+
+
+void computeGraphCutSegmentation(const M4D::Imaging::AImageDim<3> &aImage, const M4D::Imaging::Mask3D &aMarkerData, M4D::Imaging::Mask3D &aSegmentationMask)
+{
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(aImage.GetElementTypeID(),
+		typedef const M4D::Imaging::Image<TTYPE, 3> ConstImageType;
+		ConstImageType &image = static_cast<ConstImageType &>(aImage);
+		graphCutSegmentation<ConstImageType, M4D::Imaging::Mask3D, GridCutGraph>(image, aMarkerData, aSegmentationMask);
+	);
 }
