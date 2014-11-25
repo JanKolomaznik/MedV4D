@@ -109,7 +109,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 			}
 		}
 		break;
-	case ctTestColorTransform:
+	case ctIsoSurfaces:
 		{
 			if (maskData) {
 				isosurfaceRendering(

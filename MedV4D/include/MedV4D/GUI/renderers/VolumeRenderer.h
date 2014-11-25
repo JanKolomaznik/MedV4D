@@ -85,7 +85,7 @@ public:
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
-		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Test", ctTestColorTransform ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Iso-Surfaces", ctIsoSurfaces ) );
 	}
 
 	void

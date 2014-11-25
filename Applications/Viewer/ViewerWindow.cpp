@@ -213,6 +213,7 @@ ViewerWindow::initialize()
 
 	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
 	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
+	tfw::fillTFPalette(*mTFPalette, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string("./data/TF")));
 	mTFPaletteWidget->setPalette(mTFPalette);
 	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), false );
 
@@ -537,12 +538,19 @@ struct FillTFBufferVisitor :
 		for (size_t i = 1; i < tfBuffer.size(); ++i) {
 			vorgl::RGBAf color = tfBuffer[i];
 			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
-			float alpha = 1.0f;//tmpColor.alpha;
+			float alpha = 1.0f;//tmpColor.a;
 			tfIntegralBuffer[i] = tfIntegralBuffer[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
 				tmpColor.r * alpha,
 				tmpColor.g * alpha,
 				tmpColor.b * alpha,
 				tmpColor.a);
+			/*tfIntegralBuffer[i] = vorgl::TransferFunctionBuffer1D::value_type(
+				tfIntegralBuffer[i - 1].r * (1-alpha) + tmpColor.r * alpha,
+				tfIntegralBuffer[i - 1].g * (1-alpha) + tmpColor.g * alpha,
+				tfIntegralBuffer[i - 1].b * (1-alpha) + tmpColor.b * alpha,
+				tmpColor.a
+				);*/
+
 			lastColor = color;
 		}
 
@@ -557,6 +565,7 @@ struct FillTFBufferVisitor :
 
 	void
 	visit(const tfw::TransferFunction2D &aTransferFunction) override {
+		STUBBED("Handle these constants for 2D transfer function");
 		static const int cXSampleCount = 1000;
 		static const int cYSampleCount = 200;
 		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
@@ -700,7 +709,7 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 		});
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	//computeHistogram( image );
+	computeHistogram( image );
 }
 
 void ViewerWindow::processModule(AModule &aModule)
