@@ -91,84 +91,6 @@ protected:
 } /*namespace M4D*/
 
 
-bool fillBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
-
-	if(!function) return false;
-
-	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->size() != domain)
-	{
-		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
-	}
-
-	M4D::GUI::TF::Coordinates coords(1);
-	M4D::GUI::TF::Color color;
-	for(M4D::GUI::TF::Size i = 0; i < domain; ++i)
-	{
-		coords[0] = i;
-		color = function.getRGBfColor(coords);
-
-		(*buffer)[i] = vorgl::TransferFunctionBuffer1D::value_type(
-			color.component1,
-			color.component2,
-			color.component3,
-			color.alpha);
-	}
-	return true;
-}
-
-bool fillIntegralBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
-
-	if(!function) return false;
-
-	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->size() != domain)
-	{
-		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
-	}
-
-	M4D::GUI::TF::Coordinates coords(1);
-	M4D::GUI::TF::Color lastColor = function.getRGBfColor(coords);
-	M4D::GUI::TF::Color color;
-	for(M4D::GUI::TF::Size i = 1; i < domain; ++i)
-	{
-		coords[0] = i;
-		color = function.getRGBfColor(coords);
-
-		M4D::GUI::TF::Color tmpColor = (lastColor + color)*0.5f;
-		float alpha = 1.0f;//tmpColor.alpha;
-		(*buffer)[i] = (*buffer)[i-1] + vorgl::TransferFunctionBuffer1D::value_type(
-			tmpColor.component1 * alpha,
-			tmpColor.component2 * alpha,
-			tmpColor.component3 * alpha,
-			tmpColor.alpha);;
-		lastColor = color;
-	}
-	return true;
-}
-
-void
-loadAllSavedTFEditorsIntoPalette( M4D::GUI::Palette &palette, boost::filesystem::path dirName )
-{
-	if (!boost::filesystem::exists(dirName)) {
-		LOG( "Directory \'" << dirName << "\' doesn't exist!" );
-		return;
-	}
-	if (!boost::filesystem::is_directory(dirName) ){
-		LOG( "\'" << dirName << "\' is not a directory!" );
-		return;
-	}
-
-	boost::filesystem::directory_iterator dirIt(dirName);
-	boost::filesystem::directory_iterator end;
-	for ( ;dirIt != end; ++dirIt ) {
-		LOG( "Found TFE file :" << *dirIt );
-		boost::filesystem::path p = dirIt->path();
-		palette.loadFromFile( QString( p.string().data() ), false );
-	}
-}
-
-
 ViewerWindow::ViewerWindow()
 {
 	setupUi( this );
@@ -518,6 +440,7 @@ struct FillTFBufferVisitor :
 
 	void
 	visit(const tfw::TransferFunction1D &aTransferFunction) override {
+		STUBBED("use some adaptive sample count");
 		static const int cSampleCount = 1000;
 		float step = (aTransferFunction.range().second - aTransferFunction.range().first) / cSampleCount;
 		auto tfBuffer = vorgl::TransferFunctionBuffer1D(cSampleCount);
@@ -538,19 +461,12 @@ struct FillTFBufferVisitor :
 		for (size_t i = 1; i < tfBuffer.size(); ++i) {
 			vorgl::RGBAf color = tfBuffer[i];
 			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
-			float alpha = 1.0f;//tmpColor.a;
+			float alpha = /*1.0f;/*/tmpColor.a;
 			tfIntegralBuffer[i] = tfIntegralBuffer[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
 				tmpColor.r * alpha,
 				tmpColor.g * alpha,
 				tmpColor.b * alpha,
 				tmpColor.a);
-			/*tfIntegralBuffer[i] = vorgl::TransferFunctionBuffer1D::value_type(
-				tfIntegralBuffer[i - 1].r * (1-alpha) + tmpColor.r * alpha,
-				tfIntegralBuffer[i - 1].g * (1-alpha) + tmpColor.g * alpha,
-				tfIntegralBuffer[i - 1].b * (1-alpha) + tmpColor.b * alpha,
-				tmpColor.a
-				);*/
-
 			lastColor = color;
 		}
 
@@ -753,7 +669,7 @@ public:
 	bool
 	hasScatterPlot() const override
 	{
-		return true;
+		return !mGradientScatterPlot.empty();
 	}
 
 	std::pair<QRectF, tfw::ScatterPlotData>

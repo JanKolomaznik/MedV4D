@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <memory>
 #include <utility>
+#include <limits>
 
 
 namespace M4D
@@ -196,6 +197,9 @@ public:
 	std::pair<Cell, Cell>
 	minmax() const
 	{
+	/*	if (mData.empty()) {
+			return std::pair<Cell, Cell>(std::numeric_limits<Cell>::max(), std::numeric_limits<Cell>::min());
+		}*/
 		auto res = std::minmax_element(begin(mData), end(mData));
 		return std::pair<Cell, Cell>(*res.first, *res.second);
 	}
@@ -203,6 +207,12 @@ public:
 	const Cell *
 	data() const {
 		return mData.data();
+	}
+
+	bool
+	empty() const
+	{
+		return mData.empty();
 	}
 
 protected:

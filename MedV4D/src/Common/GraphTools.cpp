@@ -25,57 +25,57 @@ void
 computeMinCut( WeightedUndirectedGraph & aGraph )
 {
 	M4D::Common::Clock clock;
-	
+
 	//size_t comp = boost::is_bipartite( aGraph );
 	std::vector<int> component(boost::num_vertices(aGraph));
 	size_t comp = boost::connected_components(aGraph, &component[0]);
-	
+
 	LOG( "Number of components = " << comp );
-	
+
 	BOOST_AUTO( parities, boost::make_one_bit_color_map(num_vertices(aGraph), get(boost::vertex_index, aGraph)) );
-	
-	
-	
+
+
+
 	/*edge_t edges[] = {{3, 4}, {3, 6}, {3, 5}, {0, 4}, {0, 1}, {0, 6}, {0, 7},
 	{0, 5}, {0, 2}, {4, 1}, {1, 6}, {1, 5}, {6, 7}, {7, 5}, {5, 2}, {3, 4}};
 
 	// for each of the 16 edges, define the associated edge weight. ws[i] is the weight for the edge
 	// that is described by edges[i].
 	float ws[] = {0, 3, 1, 3, 1, 2, 6, 1, 8, 1, 1, 80, 2, 1, 1, 4};
-	
+
 	aGraph = WeightedUndirectedGraph(edges, edges + 16, ws, 8, 16);*/
-	
+
 	size_t i;
 	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
 		if (boost::out_degree( i, aGraph ) == 0) {
 			std::cout << i+1 << " - degree " << boost::out_degree( i, aGraph ) << std::endl;
 		}
 	}
-	
-	
-	
+
+
+
 	float w = boost::stoer_wagner_min_cut(aGraph, get(boost::edge_weight, aGraph), boost::parity_map(parities));
 	LOG( "min cut weight = " << w );
-	
-	
-	std::pair<WeightedUndirectedGraph::edge_iterator, WeightedUndirectedGraph::edge_iterator> es = boost::edges(aGraph);
-	
+
+
+	//std::pair<WeightedUndirectedGraph::edge_iterator, WeightedUndirectedGraph::edge_iterator> es = boost::edges(aGraph);
+
 	WeightedUndirectedGraphTraits::edge_iterator ei, ei_end;
 	for (boost::tie(ei, ei_end) = boost::edges(aGraph); ei != ei_end; ++ei) {
 		WeightedUndirectedGraphTraits::edge_descriptor e = *ei;
 		WeightedUndirectedGraphTraits::vertex_descriptor u = boost::source(e, aGraph);
 		WeightedUndirectedGraphTraits::vertex_descriptor v = boost::target(e, aGraph);
-		if( 
+		if(
 			( get(parities, u ) || get(parities, v ) )
-			&& !( get(parities, u ) && get(parities, v ) ) 
+			&& !( get(parities, u ) && get(parities, v ) )
 			)
 		{
 			std::cout << "aaa " << u+1 << " - " << v+1 << " : " << get(boost::edge_weight, aGraph)[ e ] << std::endl;
 		}
 	}
-	
+
 	std::cout << "One set of vertices consists of:" << std::endl;
-	
+
 	for (i = 0; i < boost::num_vertices(aGraph); ++i) {
 	if (get(parities, i))
 	std::cout << i+1 << " - " << boost::out_degree( i, aGraph ) << std::endl;
@@ -97,17 +97,17 @@ computeMaxFlow( WeightedBidirectionalGraph & aGraph )
 {
 	/*std::vector<int> component(boost::num_vertices(aGraph));
 	size_t comp = boost::connected_components(aGraph, &component[0]);
-	
+
 	LOG( "Number of components = " << comp );
-	
+
 	WeightedBidirectionalGraphTraits::vertex_descriptor src;
 	WeightedBidirectionalGraphTraits::vertex_descriptor sink;
 	float flow = boost::boykov_kolmogorov_max_flow( aGraph, src, sink );
-	
-	
+
+
 	LOG( "Flow = " << flow );*/
-	
-	
+
+
 /*	using namespace boost;
 
   typedef adjacency_list_traits < vecS, vecS, directedS > Traits;
@@ -144,8 +144,8 @@ computeMaxFlow( WeightedBidirectionalGraph & aGraph )
   for (boost::tie(u_iter, u_end) = vertices(g); u_iter != u_end; ++u_iter)
     for (boost::tie(ei, e_end) = out_edges(*u_iter, g); ei != e_end; ++ei)
       if (capacity[*ei] > 0)
-        std::cout << "f " << *u_iter << " " << target(*ei, g) << " "
-          << (capacity[*ei] - residual_capacity[*ei]) << std::endl;
+	std::cout << "f " << *u_iter << " " << target(*ei, g) << " "
+	  << (capacity[*ei] - residual_capacity[*ei]) << std::endl;
 	*/
 }
 
@@ -156,13 +156,13 @@ int test()
 	using namespace std;
 
 	typedef boost::adjacency_list<
-		boost::vecS, 
-		boost::vecS, 
+		boost::vecS,
+		boost::vecS,
 		boost::undirectedS,
-		boost::no_property, 
-		boost::property<boost::edge_weight_t, float> 
+		boost::no_property,
+		boost::property<boost::edge_weight_t, float>
 		> undirected_graph;
-		
+
 	typedef boost::graph_traits<undirected_graph>::vertex_descriptor vertex_descriptor;
 	typedef boost::property_map<undirected_graph, boost::edge_weight_t>::type weight_map_type;
 	typedef boost::property_traits<weight_map_type>::value_type weight_type;

@@ -11,19 +11,6 @@
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 
-
-
-///#include "MedV4D/GUI/utils/ViewConfiguration.h"
-//#include "MedV4D/GUI/utils/IUserEvents.h"
-
-/*#include "MedV4D/GUI/utils/MouseTracking.h"
-#include "MedV4D/GUI/widgets/AGUIViewer.h"
-
-*/
-
-//#include <vorgl/TransferFunctionBuffer.hpp>
-//#include "MedV4D/GUI/utils/IDMappingBuffer.h"
-
 #include "MedV4D/GUI/renderers/RendererTools.h"
 #include "MedV4D/GUI/renderers/SliceRenderer.h"
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
@@ -340,7 +327,18 @@ public:
 	QString
 	getZoomValueName()const;
 
-	float
+	void
+	setIsoSurfaces(vorgl::IsoSurfaceDefinitionList aIsoSurfaces)
+	{
+		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces = aIsoSurfaces;
+	}
+
+	const vorgl::IsoSurfaceDefinitionList &
+	isoSurfaces() const
+	{
+		return getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces;
+	}
+	/*float
 	isoSurfaceValue() const {
 		return getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue;
 	}
@@ -368,7 +366,7 @@ public:
 				aColor.alphaF()
 				);
 		emit settingsChanged();
-	}
+	}*/
 
 	void
 	setInputData(ViewerInputData::ConstPtr aData);

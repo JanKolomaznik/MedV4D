@@ -11,7 +11,32 @@
 #include <prognot/Qt/ProgressDialog.hpp>
 
 #include "MedV4D/Common/MathTools.h"
+#include "MedV4D/Imaging/ImageFactory.h"
+#include "MedV4D/Imaging/AImage.h"
+#include "MedV4D/Imaging/Image.h"
 
+#include "ItkUtils.hpp"
+
+
+M4D::Imaging::AImage::Ptr
+loadDatFile(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNotifier)
+{
+	FILE *fp = fopen(aPath.string().c_str(), "rb");
+
+	unsigned short vuSize[3];
+	fread((void*)vuSize, 3, sizeof(unsigned short), fp);
+
+	auto image = M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped
+			<unsigned short>(vuSize[0], vuSize[1], vuSize[2]);
+
+
+	int uCount = int(vuSize[0])*int(vuSize[1])*int(vuSize[2]);
+	//unsigned short *pData = new unsigned short[uCount];
+	fread((void*)image->GetPointer(), uCount, sizeof(unsigned short), fp);
+
+	fclose(fp);
+	return image;
+}
 
 DatasetManager::DatasetID
 DatasetManager::loadFromFile()
@@ -58,13 +83,22 @@ DatasetManager::openFileNonBlocking(boost::filesystem::path aPath, prognot::Prog
 M4D::Imaging::AImage::Ptr
 DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNotifier)
 {
+	aProgressNotifier.setStepCount(3);
 	M4D::Imaging::AImage::Ptr image;
 	if ( aPath.extension() == ".dcm" || aPath.extension() == ".DCM" ) {
 		M4D::Dicom::DicomObjSetPtr dicomObjSet = M4D::Dicom::DicomObjSetPtr( new M4D::Dicom::DicomObjSet() );
-		M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( aPath, aPath.parent_path(), *dicomObjSet, std::move(aProgressNotifier));
+		M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( aPath, aPath.parent_path(), *dicomObjSet, aProgressNotifier.subTaskNotifier(1));
 		image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 	} else {
-		image = M4D::Imaging::ImageFactory::LoadDumpedImage( aPath.string() );
+		if ( aPath.extension() == ".dat" || aPath.extension() == ".DAT" ) {
+			image = loadDatFile(aPath, aProgressNotifier.subTaskNotifier(1));
+		} else {
+			try {
+				image = M4D::Imaging::ImageFactory::LoadDumpedImage(aPath.string());
+			} catch (std::exception &) {
+				image = loadItkImage(aPath, aProgressNotifier.subTaskNotifier(1));
+			}
+		}
 	}
 
 	/*float step = 5.0f / 128;

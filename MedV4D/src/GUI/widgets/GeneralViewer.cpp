@@ -57,7 +57,7 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
-	state->mVolumeRenderConfig.isoSurfaceOptions.isoSurfaceColor = glm::fvec4(0.4f, 0.4f, 1.0f, 0.5f);
+	state->mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces = vorgl::defaultIsoSurfaces();
 	state->mVolumeRenderConfig.isoSurfaceOptions.enableLight = true;
 	state->mVolumeRenderConfig.isoSurfaceOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 

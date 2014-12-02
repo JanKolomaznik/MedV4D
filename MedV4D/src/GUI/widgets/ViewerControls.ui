@@ -7,20 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>394</width>
-    <height>461</height>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
    <item>
     <widget class="QTabWidget" name="mViewTypeTabWidget">
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="m2DTab">
       <attribute name="title">
@@ -205,7 +205,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="tab_4">
           <attribute name="title">
@@ -235,23 +235,9 @@
           <attribute name="title">
            <string>Isosurface</string>
           </attribute>
-          <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1">
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Isovalue:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
-            <widget class="ColorChooserButton" name="mSurfaceColorButton">
-             <property name="text">
-              <string>Surface color ...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="DoubleSpinBoxWithSlider" name="mIsoValueSetter" native="true"/>
+          <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
+           <item row="1" column="0" colspan="2">
+            <widget class="IsoSurfacesSetupWidget" name="mIsoSurfacesSetup" native="true"/>
            </item>
           </layout>
          </widget>
@@ -395,31 +381,13 @@
      </widget>
     </widget>
    </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ColorChooserButton</class>
-   <extends>QPushButton</extends>
-   <header>MedV4D/GUI/widgets/ColorChooserButton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DoubleSpinBoxWithSlider</class>
+   <class>IsoSurfacesSetupWidget</class>
    <extends>QWidget</extends>
-   <header>MedV4D/GUI/widgets/DoubleSpinBoxWithSlider.h</header>
+   <header>MedV4D/GUI/widgets/IsoSurfacesSetupWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -432,8 +400,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>256</x>
-     <y>136</y>
+     <x>259</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>168</x>
@@ -448,8 +416,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>256</x>
-     <y>164</y>
+     <x>259</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
      <x>191</x>
@@ -464,8 +432,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>256</x>
-     <y>192</y>
+     <x>259</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>219</x>
@@ -481,7 +449,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>364</x>
-     <y>136</y>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -497,7 +465,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>364</x>
-     <y>164</y>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -513,7 +481,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>364</x>
-     <y>192</y>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
@@ -576,8 +544,8 @@
    <slot>resetVolumeRestrictions()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>256</x>
-     <y>217</y>
+     <x>364</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>100</x>
@@ -592,11 +560,11 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>148</x>
-     <y>267</y>
+     <x>133</x>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
+     <x>0</x>
      <y>24</y>
     </hint>
    </hints>
@@ -608,8 +576,8 @@
    <slot>settingsChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>267</y>
+     <x>244</x>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -625,7 +593,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>371</x>
-     <y>267</y>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
      <x>345</x>
@@ -645,7 +613,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
-     <y>439</y>
+     <y>432</y>
     </hint>
    </hints>
   </connection>

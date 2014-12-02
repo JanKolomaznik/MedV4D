@@ -53,6 +53,27 @@
       <item row="2" column="1">
        <widget class="QComboBox" name="mMaskComboBox"/>
       </item>
+      <item row="0" column="2">
+       <widget class="QToolButton" name="mResetPrimaryDatasetButton">
+        <property name="text">
+         <string>X</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QToolButton" name="mResetSecondaryDatasetButton">
+        <property name="text">
+         <string>X</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QToolButton" name="mResetMaskDatasetButton">
+        <property name="text">
+         <string>X</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -119,8 +140,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mResetPrimaryDatasetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>resetPrimaryDataset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>372</x>
+     <y>26</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>153</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mResetSecondaryDatasetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>resetSecondaryDataset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mResetMaskDatasetButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>resetMaskDataset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>379</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>assignDatasets()</slot>
+  <slot>resetPrimaryDataset()</slot>
+  <slot>resetSecondaryDataset()</slot>
+  <slot>resetMaskDataset()</slot>
  </slots>
 </ui>

@@ -1,6 +1,4 @@
 uniform Light gLight;
-uniform ImageData3D gPrimaryImageData3D;
-uniform vec2 gMappedIntervalBands;
 uniform TransferFunction1D gTransferFunction1D;
 uniform TransferFunction2D gTransferFunction2D;
 
@@ -36,6 +34,9 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 				gPrimaryImageData3D,
 				gTransferFunction1D
 				);
+	if (sampleColor.a > 0.000001) {
+		sampleColor.rgb *= 1.0 / sampleColor.a;
+	}
 	aInfo.previousValue = currentValue;
 #  else	
 	vec4 sampleColor = transferFunction1D(
@@ -48,11 +49,23 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 
 
 #ifdef USE_TRANSFER_FUNCTION_2D
+#  ifdef USE_SECONDARY
+	vec4 sampleColor = transferFunction2DWithSecondary(
+				aCoordinates,
+				gPrimaryImageData3D,
+				gMappedIntervalBands,
+				gSecondaryImageData3D,
+				gSecondaryMappedIntervalBands,
+				gTransferFunction2D
+				);
+#  else	
 	vec4 sampleColor = transferFunction2DWithGradient(
 				aCoordinates,
 				gPrimaryImageData3D,
-				gTransferFunction2D,
-				gMappedIntervalBands);
+				gMappedIntervalBands,
+				gTransferFunction2D
+				);
+#  endif //USE_SECONDARY
 #endif //USE_TRANSFER_FUNCTION_2D
 
 
@@ -65,11 +78,10 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 				gCamera.eyePosition
 				);
 #endif //ENABLE_SHADING
-
 	sampleColor.a = 1.0f - pow(1.0f - sampleColor.a, gRenderingSliceThickness);
 
 	float alpha = aInfo.color.a;
-	vec3 outColor = aInfo.color.rgb/* * alpha*/ + sampleColor.rgb * sampleColor.a * (1 - alpha);
+	vec3 outColor = aInfo.color.rgb + sampleColor.rgb * sampleColor.a * (1 - alpha);
 	alpha = alpha + sampleColor.a * (1 - alpha);
 	aInfo.color = vec4(outColor, alpha);
 

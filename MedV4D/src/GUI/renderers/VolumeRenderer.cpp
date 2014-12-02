@@ -69,21 +69,41 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 	case ctTransferFunction1D:
 		{
 			if (maskData) {
-				transferFunctionRendering(
+				if (secondaryData) {
+					transferFunctionRendering(
 						aConfig.renderingConfiguration,
-						MaskedImage {*primaryData, *maskData },
+						MaskedImageWithSecondaryImage{*primaryData, *secondaryData, *maskData },
 						aConfig.renderingQuality,
 						aConfig.clipPlanes,
 						aConfig.transferFunctionOptions
 						);
+				} else {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						MaskedImage{*primaryData, *maskData },
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				}
 			} else {
-				transferFunctionRendering(
+				if (secondaryData) {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						ImageWithSecondaryImage{*primaryData, *secondaryData},
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				} else {
+					transferFunctionRendering(
 						aConfig.renderingConfiguration,
 						*primaryData,
 						aConfig.renderingQuality,
 						aConfig.clipPlanes,
 						aConfig.transferFunctionOptions
 						);
+				}
 			}
 		}
 		break;

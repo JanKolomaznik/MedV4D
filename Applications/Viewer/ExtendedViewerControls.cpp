@@ -119,3 +119,18 @@ void ExtendedViewerControls::assignDatasets()
 
 	viewerControls().viewer()->setInputData(inputData);
 }
+
+void ExtendedViewerControls::resetPrimaryDataset()
+{
+	ui->mPrimaryDatasetComboBox->setCurrentIndex(-1);
+}
+
+void ExtendedViewerControls::resetSecondaryDataset()
+{
+	ui->mSecondaryDatasetComboBox->setCurrentIndex(-1);
+}
+
+void ExtendedViewerControls::resetMaskDataset()
+{
+	ui->mMaskComboBox->setCurrentIndex(-1);
+}

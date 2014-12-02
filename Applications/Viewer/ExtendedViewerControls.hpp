@@ -33,6 +33,13 @@ public slots:
 
 	void
 	assignDatasets();
+
+	void
+	resetPrimaryDataset();
+	void
+	resetSecondaryDataset();
+	void
+	resetMaskDataset();
 private:
 	Ui::ExtendedViewerControls *ui;
 
