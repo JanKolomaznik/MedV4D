@@ -16,11 +16,15 @@
 #include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 
+#include "Statistics.hpp"
+
 #include <iostream>
 #include <iterator>
 #include <algorithm>
 
 #include "ViewerModule.hpp"
+
+#include <boost/scope_exit.hpp>
 
 #ifdef USE_CUDA
 #include "MedV4D/Imaging/cuda/MedianFilter.h"
@@ -606,6 +610,19 @@ ViewerWindow::openFile()
 	dataLoaded(id);
 }
 
+void ViewerWindow::closeAllFiles()
+{
+	//TODO - add confirmation dialog
+	mViewerDesktop->forEachViewer(
+		[](M4D::GUI::Viewer::AGLViewer * aViewer) {
+			M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
+			if (viewer) {
+				viewer->setInputData(ViewerInputDataWithId::Ptr());
+			}
+		});
+	mDatasetManager.closeAll();
+}
+
 void
 ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 {
@@ -625,7 +642,7 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 		});
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	computeHistogram( image );
+	computeHistogram(aId/* image */);
 }
 
 void ViewerWindow::processModule(AModule &aModule)
@@ -635,84 +652,21 @@ void ViewerWindow::processModule(AModule &aModule)
 	module.setDatasetManager(mDatasetManager);
 }
 
-class ImageStatistics : public tfw::AStatistics
-{
-public:
-	bool
-	hasHistogram() const override
-	{
-		return true;
-	}
-
-	std::pair<float, float>
-	getHistogramRange() const override
-	{
-		auto range = mHistogram.getRange();
-		return std::make_pair(float(range.first), float(range.second));
-	}
-
-	virtual std::vector<QPointF>
-	getHistogramSamples() const override
-	{
-		auto extremes = mHistogram.minmax();
-		std::vector<QPointF> points;
-		points.reserve(mHistogram.resolution()[0]);
-		float step = float(mHistogram.getRange().second - mHistogram.getRange().first) / mHistogram.resolution()[0];
-		float x = 0.0f;//TODO
-		for (auto value : mHistogram) {
-			points.emplace_back(x, float(value) / extremes.second);
-			x += step;
-		}
-		return points;
-	}
-
-	bool
-	hasScatterPlot() const override
-	{
-		return !mGradientScatterPlot.empty();
-	}
-
-	std::pair<QRectF, tfw::ScatterPlotData>
-	getScatterPlot() const override
-	{
-		auto range = mGradientScatterPlot.getRange();
-		QRectF region(
-			range.first.first,
-			range.first.second,
-			range.second.first - range.first.first,
-			range.second.second - range.first.second);
-
-		auto minmax = mGradientScatterPlot.minmax();
-		auto resolution = mGradientScatterPlot.resolution();
-
-		tfw::ScatterPlotData data;
-		data.size[0] = resolution[0];
-		data.size[1] = resolution[1];
-		data.buffer.resize(resolution[0] * resolution[1]);
-
-		for (int j = 0; j < resolution[1]; ++j) {
-			for (int i = 0; i < resolution[0]; ++i) {
-				data.buffer[i + j*resolution[0]] = double(mGradientScatterPlot.data()[i + j*resolution[0]]) / minmax.second;
-			}
-		}
-		return std::make_pair(region, std::move(data));
-	}
-
-	M4D::Imaging::Histogram1D<int> mHistogram;
-	M4D::Imaging::ScatterPlot2D<int, float> mGradientScatterPlot;
-};
-
 void
-ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
+ViewerWindow::computeHistogram(DatasetManager::DatasetID aId/* M4D::Imaging::AImage::Ptr aImage */)
 {
 	using namespace M4D::Imaging;
-	if( !aImage ) {
+	/*if( !aImage ) {
 		return;
-	}
+	}*/
 	statusbar->showMessage("Computing histogram...");
-	M4D::Common::Clock clock;
+	BOOST_SCOPE_EXIT_ALL(this) {
+		statusbar->clearMessage();
+	};
 
-	Histogram1D<int> histogram1D;
+	//M4D::Common::Clock clock;
+
+	/*Histogram1D<int> histogram1D;
 	ScatterPlot2D<int, float> gradientScatterPlot;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
@@ -722,14 +676,14 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	auto statistics = std::make_shared<ImageStatistics>();
 
 	statistics->mHistogram = std::move(histogram1D);
-	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
-	mTFPaletteWidget->setStatistics(statistics);
+	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);*/
+	//mTFPaletteWidget->setStatistics(statistics);
+	mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
 
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
+	//LOG( "Histogram computed in " << clock.SecondsPassed() );
 
 
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();
 
-	statusbar->clearMessage();
 }

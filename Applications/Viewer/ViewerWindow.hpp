@@ -75,6 +75,9 @@ public slots:
 	openFile();
 
 	void
+	closeAllFiles();
+
+	void
 	updateTransferFunction();
 
 	void
@@ -115,7 +118,7 @@ public slots:
 	updateInfoInStatusBar( const QString &aInfo );
 
 	void
-	computeHistogram( M4D::Imaging::AImage::Ptr aImage );
+	computeHistogram(DatasetManager::DatasetID aId/*M4D::Imaging::AImage::Ptr aImage*/);
 
 	//TMP
 	void

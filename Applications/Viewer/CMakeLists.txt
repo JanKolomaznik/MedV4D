@@ -82,6 +82,7 @@ SET( VIEWER_HEADERS
 	"ExtendedViewerControls.hpp"
 	"DatasetManager.hpp"
 	"ItkUtils.hpp"
+	"Statistics.hpp"
 	"JoyInput.h"
 	"ViewerWindow.hpp" )
 SET( VIEWER_SOURCES
@@ -89,6 +90,7 @@ SET( VIEWER_SOURCES
 	"DatasetManager.cpp"
 	"JoyInput.cpp"
 	"ItkUtils.cpp"
+	"Statistics.cpp"
 	"main.cpp"
 	"ViewerWindow.cpp" )
 SET( VIEWER_UI

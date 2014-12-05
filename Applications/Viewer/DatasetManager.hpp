@@ -22,6 +22,8 @@
 #include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
 
+#include "Statistics.hpp"
+
 class DatasetManager;
 
 class ImageListModel : public QAbstractListModel
@@ -76,6 +78,7 @@ public:
 	//std::atomic_bool mIsReady;
 	M4D::Imaging::AImage::Ptr mImage;
 	boost::filesystem::path mFileName;
+	std::shared_ptr<ImageStatistics> mStatistics;
 	std::string mName;
 };
 
@@ -131,6 +134,16 @@ public:
 
 	DatasetID
 	registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName);
+
+	void
+	closeAll();
+
+
+	std::shared_ptr<ImageStatistics>
+	getImageStatistics(DatasetID aId);
+
+	std::shared_ptr<ImageStatistics>
+	getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondaryId);
 protected:
 	DatasetID
 	newID()
