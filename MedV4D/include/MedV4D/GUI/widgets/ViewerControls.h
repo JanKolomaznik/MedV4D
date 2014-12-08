@@ -55,9 +55,7 @@ public:
 		, mUpdating( false )
 	{
 		setupUi( this );
-		mSurfaceColorButton->enableAlpha(true);
-		QObject::connect(mSurfaceColorButton, &ColorChooserButton::colorUpdated, this, &ViewerControls::settingsChanged);
-		QObject::connect(mIsoValueSetter, &DoubleSpinBoxWithSlider::valueChanged, this, &ViewerControls::settingsChanged);
+		QObject::connect(mIsoSurfacesSetup, &IsoSurfacesSetupWidget::isoSurfaceSetupUpdated, this, &ViewerControls::settingsChanged);
 		updateControls();
 	}
 
@@ -129,8 +127,10 @@ public slots:
 		mEnablePreintegratedTFCheckBox->setChecked(mCurrentViewer->isIntegratedTransferFunctionEnabled());
 
 		//mIsoValueSlider;
-		mIsoValueSetter->setValue(mCurrentViewer->isoSurfaceValue());
-		mSurfaceColorButton->setColor(mCurrentViewer->isoSurfaceColor());
+		std::cout << mCurrentViewer->isoSurfaces()[0].isoSurfaceColor[0] << std::endl;
+		mIsoSurfacesSetup->setIsoSurfaces(mCurrentViewer->isoSurfaces());
+		//mIsoValueSetter->setValue(mCurrentViewer->isoSurfaceValue());
+		//mSurfaceColorButton->setColor(mCurrentViewer->isoSurfaceColor());
 
 		mUpdating = false;
 	}
@@ -168,8 +168,9 @@ protected slots:
 
 		mCurrentViewer->enableIntegratedTransferFunction(mEnablePreintegratedTFCheckBox->isChecked());
 
-		mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());
-		mCurrentViewer->setIsoSurfaceColor(mSurfaceColorButton->color());
+		mCurrentViewer->setIsoSurfaces(mIsoSurfacesSetup->isoSurfaces());
+		//mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());
+		//mCurrentViewer->setIsoSurfaceColor(mSurfaceColorButton->color());
 
 		mUpdating = false;
 		updateControls();

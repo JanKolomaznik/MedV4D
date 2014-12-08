@@ -20,7 +20,7 @@ enum ColorTransform
 	ctBasic,
 	ctSimpleColorMap,
 
-	ctTestColorTransform // TODO - remove
+	ctIsoSurfaces // TODO - remove
 };
 
 enum MultiDatasetRenderingStyle

@@ -6,6 +6,8 @@
 #include <QShowEvent>
 #include <memory>
 
+#include <boost/scope_exit.hpp>
+
 class DummyOGLWidget: public QGLWidget
 {
 public:
@@ -117,6 +119,10 @@ OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage
 {
 	D_FUNCTION_COMMENT;
 	//Image should be locked!!!
+	makeCurrent();
+	BOOST_SCOPE_EXIT_ALL(this) {
+		doneCurrent();
+	};
 
 	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
 	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
@@ -156,8 +162,11 @@ OpenGLManager::createNewTextureFromImage( const M4D::Imaging::AImage &aImage )
 	M4D::Common::TimeStamp timestamp( aImage.GetEditTimestamp() );
 	//M4D::RAII makeCurrentContext( boost::bind( &OpenGLManager::makeCurrent, this ), boost::bind( &OpenGLManager::doneCurrent, this ) );
 	TextureRecord rec;
-	soglu::checkForGLError("Before make current");
 	makeCurrent();
+	BOOST_SCOPE_EXIT_ALL(this) {
+		doneCurrent();
+	};
+	soglu::checkForGLError("Before make current");
 	{
 		soglu::checkForGLError("After make current");
 		try {

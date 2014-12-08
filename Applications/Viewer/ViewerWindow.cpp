@@ -16,11 +16,15 @@
 #include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 
+#include "Statistics.hpp"
+
 #include <iostream>
 #include <iterator>
 #include <algorithm>
 
+#include "ViewerModule.hpp"
 
+#include <boost/scope_exit.hpp>
 
 #ifdef USE_CUDA
 #include "MedV4D/Imaging/cuda/MedianFilter.h"
@@ -67,6 +71,7 @@ public:
 
 		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
+		//viewer->setBackgroundColor(QColor( 255, 255, 255));
 		return viewer;
 	}
 	void
@@ -88,84 +93,6 @@ protected:
 } /*namespace Viewer*/
 } /*namespace GUI*/
 } /*namespace M4D*/
-
-
-bool fillBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
-
-	if(!function) return false;
-
-	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->size() != domain)
-	{
-		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
-	}
-
-	M4D::GUI::TF::Coordinates coords(1);
-	M4D::GUI::TF::Color color;
-	for(M4D::GUI::TF::Size i = 0; i < domain; ++i)
-	{
-		coords[0] = i;
-		color = function.getRGBfColor(coords);
-
-		(*buffer)[i] = vorgl::TransferFunctionBuffer1D::value_type(
-			color.component1,
-			color.component2,
-			color.component3,
-			color.alpha);
-	}
-	return true;
-}
-
-bool fillIntegralBufferFromTF(M4D::GUI::TransferFunctionInterface::Const function, vorgl::TransferFunctionBuffer1D::Ptr& buffer){
-
-	if(!function) return false;
-
-	M4D::GUI::TF::Size domain = function.getDomain(TF_DIMENSION_1);
-	if(!buffer || buffer->size() != domain)
-	{
-		buffer = vorgl::TransferFunctionBuffer1D::Ptr(new vorgl::TransferFunctionBuffer1D(domain, vorgl::TransferFunctionBuffer1D::MappedInterval(0.0f, (float)domain)));
-	}
-
-	M4D::GUI::TF::Coordinates coords(1);
-	M4D::GUI::TF::Color lastColor = function.getRGBfColor(coords);
-	M4D::GUI::TF::Color color;
-	for(M4D::GUI::TF::Size i = 1; i < domain; ++i)
-	{
-		coords[0] = i;
-		color = function.getRGBfColor(coords);
-
-		M4D::GUI::TF::Color tmpColor = (lastColor + color)*0.5f;
-		float alpha = 1.0f;//tmpColor.alpha;
-		(*buffer)[i] = (*buffer)[i-1] + vorgl::TransferFunctionBuffer1D::value_type(
-			tmpColor.component1 * alpha,
-			tmpColor.component2 * alpha,
-			tmpColor.component3 * alpha,
-			tmpColor.alpha);;
-		lastColor = color;
-	}
-	return true;
-}
-
-void
-loadAllSavedTFEditorsIntoPalette( M4D::GUI::Palette &palette, boost::filesystem::path dirName )
-{
-	if (!boost::filesystem::exists(dirName)) {
-		LOG( "Directory \'" << dirName << "\' doesn't exist!" );
-		return;
-	}
-	if (!boost::filesystem::is_directory(dirName) ){
-		LOG( "\'" << dirName << "\' is not a directory!" );
-		return;
-	}
-
-	boost::filesystem::directory_iterator dirIt(dirName);
-	boost::filesystem::directory_iterator end;
-	for ( ;dirIt != end; ++dirIt ) {
-		LOG( "Found TFE file :" << *dirIt );
-		boost::filesystem::path p = dirIt->path();
-		palette.loadFromFile( QString( p.string().data() ), false );
-	}
-}
 
 
 ViewerWindow::ViewerWindow()
@@ -212,6 +139,7 @@ ViewerWindow::initialize()
 
 	mTFPaletteWidget = std::unique_ptr<tfw::PaletteWidget>(new tfw::PaletteWidget(this));
 	mTFPalette = std::make_shared<tfw::TransferFunctionPalette>();
+	tfw::fillTFPalette(*mTFPalette, GET_SETTINGS( "gui.transfer_functions.load_path", std::string, std::string("./data/TF")));
 	mTFPaletteWidget->setPalette(mTFPalette);
 	createDockWidget( tr("Transfer Function Palette New"), Qt::RightDockWidgetArea, mTFPaletteWidget.get(), false );
 
@@ -516,6 +444,7 @@ struct FillTFBufferVisitor :
 
 	void
 	visit(const tfw::TransferFunction1D &aTransferFunction) override {
+		STUBBED("use some adaptive sample count");
 		static const int cSampleCount = 1000;
 		float step = (aTransferFunction.range().second - aTransferFunction.range().first) / cSampleCount;
 		auto tfBuffer = vorgl::TransferFunctionBuffer1D(cSampleCount);
@@ -536,7 +465,7 @@ struct FillTFBufferVisitor :
 		for (size_t i = 1; i < tfBuffer.size(); ++i) {
 			vorgl::RGBAf color = tfBuffer[i];
 			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
-			float alpha = 1.0f;//tmpColor.alpha;
+			float alpha = /*1.0f;/*/tmpColor.a;
 			tfIntegralBuffer[i] = tfIntegralBuffer[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
 				tmpColor.r * alpha,
 				tmpColor.g * alpha,
@@ -556,6 +485,7 @@ struct FillTFBufferVisitor :
 
 	void
 	visit(const tfw::TransferFunction2D &aTransferFunction) override {
+		STUBBED("Handle these constants for 2D transfer function");
 		static const int cXSampleCount = 1000;
 		static const int cYSampleCount = 200;
 		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
@@ -680,6 +610,19 @@ ViewerWindow::openFile()
 	dataLoaded(id);
 }
 
+void ViewerWindow::closeAllFiles()
+{
+	//TODO - add confirmation dialog
+	mViewerDesktop->forEachViewer(
+		[](M4D::GUI::Viewer::AGLViewer * aViewer) {
+			M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
+			if (viewer) {
+				viewer->setInputData(ViewerInputDataWithId::Ptr());
+			}
+		});
+	mDatasetManager.closeAll();
+}
+
 void
 ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 {
@@ -699,87 +642,31 @@ ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
 		});
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
-	//computeHistogram( image );
+	computeHistogram(aId/* image */);
 }
 
-class ImageStatistics : public tfw::AStatistics
+void ViewerWindow::processModule(AModule &aModule)
 {
-public:
-	bool
-	hasHistogram() const override
-	{
-		return true;
-	}
-
-	std::pair<float, float>
-	getHistogramRange() const override
-	{
-		auto range = mHistogram.getRange();
-		return std::make_pair(float(range.first), float(range.second));
-	}
-
-	virtual std::vector<QPointF>
-	getHistogramSamples() const override
-	{
-		auto extremes = mHistogram.minmax();
-		std::vector<QPointF> points;
-		points.reserve(mHistogram.resolution()[0]);
-		float step = float(mHistogram.getRange().second - mHistogram.getRange().first) / mHistogram.resolution()[0];
-		float x = 0.0f;//TODO
-		for (auto value : mHistogram) {
-			points.emplace_back(x, float(value) / extremes.second);
-			x += step;
-		}
-		return points;
-	}
-
-	bool
-	hasScatterPlot() const override
-	{
-		return true;
-	}
-
-	std::pair<QRectF, tfw::ScatterPlotData>
-	getScatterPlot() const override
-	{
-		auto range = mGradientScatterPlot.getRange();
-		QRectF region(
-			range.first.first,
-			range.first.second,
-			range.second.first - range.first.first,
-			range.second.second - range.first.second);
-
-		auto minmax = mGradientScatterPlot.minmax();
-		auto resolution = mGradientScatterPlot.resolution();
-
-		tfw::ScatterPlotData data;
-		data.size[0] = resolution[0];
-		data.size[1] = resolution[1];
-		data.buffer.resize(resolution[0] * resolution[1]);
-
-		for (int j = 0; j < resolution[1]; ++j) {
-			for (int i = 0; i < resolution[0]; ++i) {
-				data.buffer[i + j*resolution[0]] = double(mGradientScatterPlot.data()[i + j*resolution[0]]) / minmax.second;
-			}
-		}
-		return std::make_pair(region, std::move(data));
-	}
-
-	M4D::Imaging::Histogram1D<int> mHistogram;
-	M4D::Imaging::ScatterPlot2D<int, float> mGradientScatterPlot;
-};
+	//TODO - do proper type handling
+	auto & module = static_cast<ViewerModule &>(aModule);
+	module.setDatasetManager(mDatasetManager);
+}
 
 void
-ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
+ViewerWindow::computeHistogram(DatasetManager::DatasetID aId/* M4D::Imaging::AImage::Ptr aImage */)
 {
 	using namespace M4D::Imaging;
-	if( !aImage ) {
+	/*if( !aImage ) {
 		return;
-	}
+	}*/
 	statusbar->showMessage("Computing histogram...");
-	M4D::Common::Clock clock;
+	BOOST_SCOPE_EXIT_ALL(this) {
+		statusbar->clearMessage();
+	};
 
-	Histogram1D<int> histogram1D;
+	//M4D::Common::Clock clock;
+
+	/*Histogram1D<int> histogram1D;
 	ScatterPlot2D<int, float> gradientScatterPlot;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( aImage,
 		histogram1D = M4D::Imaging::createHistogramForImageRegion2<Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast( *aImage ) );
@@ -789,14 +676,14 @@ ViewerWindow::computeHistogram( M4D::Imaging::AImage::Ptr aImage )
 	auto statistics = std::make_shared<ImageStatistics>();
 
 	statistics->mHistogram = std::move(histogram1D);
-	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
-	mTFPaletteWidget->setStatistics(statistics);
+	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);*/
+	//mTFPaletteWidget->setStatistics(statistics);
+	mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
 
-	LOG( "Histogram computed in " << clock.SecondsPassed() );
+	//LOG( "Histogram computed in " << clock.SecondsPassed() );
 
 
 	//statusbar->showMessage("Applying transfer function...");
 	//applyTransferFunction();
 
-	statusbar->clearMessage();
 }

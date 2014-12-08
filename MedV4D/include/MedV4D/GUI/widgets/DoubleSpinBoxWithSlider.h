@@ -19,6 +19,7 @@ public:
 		layout->addWidget(mSlider = new QSlider);
 		layout->addWidget(mSpinBox = new QDoubleSpinBox);
 		layout->setStretch(0, 2);
+		layout->setMargin(0);
 		setLayout(layout);
 
 		mSlider->setOrientation(Qt::Horizontal);

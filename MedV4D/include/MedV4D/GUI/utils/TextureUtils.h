@@ -3,6 +3,7 @@
 #include <MedV4D/Imaging/Imaging.h>
 #include <soglu/GLTextureImage.hpp>
 #include <soglu/GLMUtils.hpp>
+#include <soglu/debug.hpp>
 
 #include <memory>
 #include <boost/weak_ptr.hpp>
@@ -203,25 +204,25 @@ struct M4DToGLTextureInternal;
 template<>
 struct M4DToGLTextureInternal< uint8 >
 {
-	static const GLint GLInternal = GL_LUMINANCE;
+	static const GLint GLInternal = GL_R16F;//GL_R8UI; //GL_LUMINANCE;
 };
 
 template<>
 struct M4DToGLTextureInternal< int8 >
 {
-	static const GLint GLInternal = GL_LUMINANCE;
+	static const GLint GLInternal = GL_R16F;//GL_R8I; //GL_LUMINANCE;
 };
 
 template<>
 struct M4DToGLTextureInternal< uint16 >
 {
-	static const GLint GLInternal = GL_R16F;
+	static const GLint GLInternal = GL_R16F; //GL_R16UI;
 };
 
 template<>
 struct M4DToGLTextureInternal< int16 >
 {
-	static const GLint GLInternal = GL_R16F;
+	static const GLint GLInternal = GL_R16F; //GL_R16I;
 };
 
 template<>
@@ -275,13 +276,13 @@ struct M4DToGLTextureInternal<Vector<int8, 2> >
 template<>
 struct M4DToGLTextureInternal<Vector<uint16, 2> >
 {
-	static const GLint GLInternal = GL_RG16;
+	static const GLint GLInternal = GL_RG16UI;
 };
 
 template<>
 struct M4DToGLTextureInternal<Vector<int16, 2> >
 {
-	static const GLint GLInternal = GL_RG16;
+	static const GLint GLInternal = GL_RG16I;
 };
 
 template<>
@@ -337,13 +338,13 @@ struct M4DToGLTextureInternal<Vector<int8, 3> >
 template<>
 struct M4DToGLTextureInternal<Vector<uint16, 3> >
 {
-	static const GLint GLInternal = GL_RGB16;
+	static const GLint GLInternal = GL_RGB16UI;
 };
 
 template<>
 struct M4DToGLTextureInternal<Vector<int16, 3> >
 {
-	static const GLint GLInternal = GL_RGB16;
+	static const GLint GLInternal = GL_RGB16I;
 };
 
 template<>
@@ -400,13 +401,13 @@ struct M4DToGLTextureInternal<Vector<int8, 4> >
 template<>
 struct M4DToGLTextureInternal<Vector<uint16, 4> >
 {
-	static const GLint GLInternal = GL_RGBA16;
+	static const GLint GLInternal = GL_RGBA16UI;
 };
 
 template<>
 struct M4DToGLTextureInternal<Vector<int16, 4> >
 {
-	static const GLint GLInternal = GL_RGBA16;
+	static const GLint GLInternal = GL_RGBA16I;
 };
 
 template<>
@@ -487,6 +488,7 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 	GLuint texName;
 
 	// opengl texture setup functions
+	GL_CHECKED_CALL(glActiveTexture(GL_TEXTURE0 + 0));
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
 	glGenTextures( 1, &texName );
@@ -546,6 +548,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 	GLuint texName;
 
 	// opengl texture setup functions
+	GL_CHECKED_CALL(glActiveTexture(GL_TEXTURE0 + 0));
 	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
 	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
 	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
@@ -565,6 +568,10 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 	GL_ERROR_CLEAR_AFTER_CALL( glEnable( GL_TEXTURE_3D ) ); //Opengl 3.3 throws error
 
 	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_3D, texName ) );
+
+	D_PRINT("GL internal format: " << soglu::enumToString(M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal));
+	D_PRINT("GL format: " << soglu::enumToString(M4DToGLFormat<typename ImageRegionType::Element>::GLFormat));
+	D_PRINT("GL type: " << soglu::enumToString(M4DToGLType< typename ImageRegionType::Element>::GLTypeID));
 
 	GL_CHECKED_CALL( glTexImage3D(	GL_TEXTURE_3D,
 			0,
@@ -597,6 +604,7 @@ GLUpdateTextureFromSubImageData2D( GLuint aTexture, const ImageRegionType &image
 	Vector2i offset = aMinimum - image.GetMinimum();
 
 	// opengl texture setup functions
+	GL_CHECKED_CALL(glActiveTexture(GL_TEXTURE0 + 0));
 	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
 	//glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) );
 	GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
@@ -637,6 +645,7 @@ GLUpdateTextureFromSubImageData3D( GLuint aTexture, const ImageRegionType &image
 	Vector3u size = aMaximum - aMinimum;
 	Vector3i offset = aMinimum - image.GetMinimum();
 
+	GL_CHECKED_CALL(glActiveTexture(GL_TEXTURE0 + 0));
 	// opengl texture setup functions
 	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
 	GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ROW_LENGTH, image.GetStride( 1 ) ) );

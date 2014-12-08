@@ -22,6 +22,8 @@
 #include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
 
+#include "Statistics.hpp"
+
 class DatasetManager;
 
 class ImageListModel : public QAbstractListModel
@@ -57,9 +59,18 @@ public:
 		mFileName = aPath;
 	}
 
+	void
+	assignImage(M4D::Imaging::AImage::Ptr aImage, const std::string &aName) {
+		mImage = aImage;
+		mName = aName;
+	}
+
 	std::string
 	name() const
 	{
+		if (!mName.empty()) {
+			return mName;
+		}
 		return mFileName.filename().string();
 	}
 
@@ -67,6 +78,8 @@ public:
 	//std::atomic_bool mIsReady;
 	M4D::Imaging::AImage::Ptr mImage;
 	boost::filesystem::path mFileName;
+	std::shared_ptr<ImageStatistics> mStatistics;
+	std::string mName;
 };
 
 
@@ -118,6 +131,19 @@ public:
 	{
 		return mDatasetIDList.at(aIndex);
 	}
+
+	DatasetID
+	registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName);
+
+	void
+	closeAll();
+
+
+	std::shared_ptr<ImageStatistics>
+	getImageStatistics(DatasetID aId);
+
+	std::shared_ptr<ImageStatistics>
+	getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondaryId);
 protected:
 	DatasetID
 	newID()
@@ -189,6 +215,16 @@ public:
 		mSecondaryImageId = aImageId;
 	}
 
+	void
+	assignMaskWithId(
+		M4D::Imaging::AImageDim<3>::ConstPtr aImage,
+		DatasetManager::DatasetID aImageId
+		)
+	{
+		mMaskImage = aImage;
+		mMaskImageId = aImageId;
+	}
+
 	DatasetManager::DatasetID
 	primaryImageId() const
 	{
@@ -200,9 +236,16 @@ public:
 	{
 		return mSecondaryImageId;
 	}
+
+	DatasetManager::DatasetID
+	maskId() const
+	{
+		return mMaskImageId;
+	}
 protected:
 	DatasetManager::DatasetID mPrimaryImageId;
 	DatasetManager::DatasetID mSecondaryImageId;
+	DatasetManager::DatasetID mMaskImageId;
 };
 
 

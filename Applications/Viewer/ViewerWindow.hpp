@@ -63,6 +63,9 @@ public:
 	void
 	dataLoaded(DatasetManager::DatasetID aId);
 
+	void
+	processModule(AModule &aModule);
+
 public slots:
 
 	void
@@ -70,6 +73,9 @@ public slots:
 
 	void
 	openFile();
+
+	void
+	closeAllFiles();
 
 	void
 	updateTransferFunction();
@@ -112,7 +118,7 @@ public slots:
 	updateInfoInStatusBar( const QString &aInfo );
 
 	void
-	computeHistogram( M4D::Imaging::AImage::Ptr aImage );
+	computeHistogram(DatasetManager::DatasetID aId/*M4D::Imaging::AImage::Ptr aImage*/);
 
 	//TMP
 	void

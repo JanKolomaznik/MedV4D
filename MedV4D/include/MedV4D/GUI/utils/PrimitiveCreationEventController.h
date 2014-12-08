@@ -2,19 +2,19 @@
 #define PRIMITIVE_CREATION_EVENT_CONTROLLER_H
 
 //Temporary workaround
-#ifndef Q_MOC_RUN 
+#ifndef Q_MOC_RUN
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
 #include "MedV4D/Common/GeometricAlgorithms.h"
 #include "MedV4D/Common/GeometricPrimitives.h"
 #include "MedV4D/Common/Sphere.h"
-#endif //Q_MOC_RUN 
+#endif //Q_MOC_RUN
 
 class APrimitiveCreationEventController: public M4D::GUI::Viewer::AViewerController
 {
 	Q_OBJECT;
 public:
 	typedef std::shared_ptr< APrimitiveCreationEventController > Ptr;
-	
+
 	Qt::MouseButton	mVectorEditorInteractionButton;
 
 	APrimitiveCreationEventController(): mVectorEditorInteractionButton( Qt::LeftButton ), mValid( false )
@@ -37,7 +37,7 @@ public:
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
 
-	bool	
+	bool
 	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) { return false; }
 
 	bool
@@ -160,9 +160,9 @@ class TemplatedPrimitiveCreationEventController< M4D::Point3Df >: public BaseTem
 public:
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
-	{ 
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( (aEventInfo.event->buttons() == Qt::NoButton) && (state.viewType == M4D::GUI::Viewer::vt3D) && (mCurrentStage > 0) ) 
+		if ( (aEventInfo.event->buttons() == Qt::NoButton) && (state.viewType == M4D::GUI::Viewer::vt3D) && (mCurrentStage > 0) )
 		{
 			float t1, t2;
 			if ( M4D::closestPointsOnTwoLines( mPoint, mDirection, fromGLM(aEventInfo.point), fromGLM(aEventInfo.direction), t1, t2 ) ) {
@@ -170,20 +170,20 @@ public:
 				*mPrimitive = M4D::Point3Df( point );
 			}
 
-			//mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+			//mPrimitive->secondPoint() = aEventInfo.point;
 			state.viewerWindow->update();
 			return true;
 		}
-		return false; 
+		return false;
 	}
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) {
-			
-			mPrimitive = this->beginPrimitive( M4D::Point3Df( fromGLM(aEventInfo.realCoordinates) ) );
+
+			mPrimitive = this->beginPrimitive( M4D::Point3Df( fromGLM(aEventInfo.point) ) );
 			if ( mPrimitive == NULL ) {
 				return true;
 			}
@@ -191,10 +191,10 @@ public:
 
 			state.viewerWindow->update();
 			return true;
-		} 
+		}
 
 		if ( aEventInfo.event->button() == mVectorEditorInteractionButton && state.viewType == M4D::GUI::Viewer::vt3D ) {
-			
+
 			LOG( "ADDING PRIMITIVE IN 3D" );
 			if ( mCurrentStage == 0 ) {
 				D_PRINT("aEventInfo.point " << aEventInfo.point);
@@ -208,7 +208,7 @@ public:
 				//endPrimitive( mPrimitive );
 				++mCurrentStage;
 			} else {
-				//mPrimitive->secondPoint() = aEventInfo.realCoordinates;
+				//mPrimitive->secondPoint() = aEventInfo.point;
 				this->endPrimitive( mPrimitive );
 			}
 			state.viewerWindow->update();
@@ -227,38 +227,38 @@ class TemplatedPrimitiveCreationEventController< M4D::Line3Df >: public BaseTemp
 public:
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
-	{ 
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
-			&& mCurrentStage > 0 ) 
+		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices
+			&& mCurrentStage > 0 )
 		{
-			mPrimitive->secondPoint() = fromGLM(aEventInfo.realCoordinates);
+			mPrimitive->secondPoint() = fromGLM(aEventInfo.point);
 			state.viewerWindow->update();
 			return true;
 		}
-		return false; 
+		return false;
 	}
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( aEventInfo.event->button() == mVectorEditorInteractionButton 
-			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
+		if ( aEventInfo.event->button() == mVectorEditorInteractionButton
+			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices )
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = this->beginPrimitive( M4D::Line3Df( fromGLM(aEventInfo.realCoordinates), fromGLM(aEventInfo.realCoordinates) ) );
+				mPrimitive = this->beginPrimitive( M4D::Line3Df( fromGLM(aEventInfo.point), fromGLM(aEventInfo.point) ) );
 				if ( mPrimitive == NULL ) {
 					return true;
 				}
 				++mCurrentStage;
 			} else {
-				mPrimitive->secondPoint() = fromGLM(aEventInfo.realCoordinates);
+				mPrimitive->secondPoint() = fromGLM(aEventInfo.point);
 				this->endPrimitive( mPrimitive );
 			}
 			state.viewerWindow->update();
 			return true;
-		} 
+		}
 		if ( aEventInfo.event->button() == Qt::RightButton && mCurrentStage > 0 ) {
 			this->cancelPrimitive( mPrimitive );
 			return true;
@@ -274,39 +274,39 @@ class TemplatedPrimitiveCreationEventController< M4D::Sphere3Df >: public BaseTe
 public:
 	bool
 	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
-	{ 
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices 
-			&& mCurrentStage > 0 ) 
+		if ( state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices
+			&& mCurrentStage > 0 )
 		{
-			mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.realCoordinates));
+			mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.point));
 			state.viewerWindow->update();
 			return true;
 		}
-		return false; 
+		return false;
 	}
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
 		M4D::GUI::Viewer::ViewerState &state = *(boost::polymorphic_downcast< M4D::GUI::Viewer::ViewerState *>( aViewerState.get() ) );
-		if ( aEventInfo.event->button() == mVectorEditorInteractionButton 
-			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices ) 
+		if ( aEventInfo.event->button() == mVectorEditorInteractionButton
+			&& state.viewType == M4D::GUI::Viewer::vt2DAlignedSlices )
 		{
 			if ( mCurrentStage == 0 ) {
-				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( fromGLM(aEventInfo.realCoordinates), 0.0f ) );
+				mPrimitive = this->beginPrimitive( M4D::Sphere3Df( fromGLM(aEventInfo.point), 0.0f ) );
 				if ( mPrimitive == NULL ) {
 					return true;
 				}
 				++mCurrentStage;
 			} else {
-				mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.realCoordinates));
+				mPrimitive->radius() = VectorSize(mPrimitive->center() - fromGLM(aEventInfo.point));
 				this->endPrimitive( mPrimitive );
 				mCurrentStage = 0;
 			}
 			state.viewerWindow->update();
 			return true;
-		} 
+		}
 		if ( aEventInfo.event->button() == Qt::RightButton && mCurrentStage > 0 ) {
 			this->cancelPrimitive( mPrimitive );
 			return true;

@@ -7,6 +7,7 @@
 #include "MedV4D/GUI/widgets/MultiDockWidget.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/utils/Module.h"
 
 namespace M4D
 {
@@ -39,6 +40,10 @@ public:
 
 	virtual void
 	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController ){}
+
+	virtual void
+	processModule(AModule &aModule) = 0;
+
 public slots:
 	virtual void
 	updateGui()

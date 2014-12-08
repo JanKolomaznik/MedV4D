@@ -48,14 +48,16 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 	ViewerState * state = new ViewerState;
 
 	state->mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::ctLUTWindow;
+	state->mSliceRenderConfig.enableInterpolation = true;
 	state->mSliceRenderConfig.plane = XY_PLANE;
 
 	state->mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::ctMaxIntensityProjection;
 	state->mVolumeRenderConfig.renderingQuality.enableJittering = true;
+	state->mVolumeRenderConfig.renderingQuality.enableInterpolation = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.enableLight = true;
 	state->mVolumeRenderConfig.transferFunctionOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
-	state->mVolumeRenderConfig.isoSurfaceOptions.isoSurfaceColor = glm::fvec4(0.4f, 0.4f, 1.0f, 0.5f);
+	state->mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces = vorgl::defaultIsoSurfaces();
 	state->mVolumeRenderConfig.isoSurfaceOptions.enableLight = true;
 	state->mVolumeRenderConfig.isoSurfaceOptions.lightPosition = glm::fvec3(3000.0f, -3000.0f, 3000.0f);
 
@@ -63,7 +65,7 @@ GeneralViewer::GeneralViewer( QWidget *parent )
 
 	state->viewerWindow = this;
 
-	//state->backgroundColor = QColor( 20, 10, 90);
+	//state->backgroundColor = QColor( 255, 255, 255);
 	state->backgroundColor = QColor( 0, 0, 0, 0);
 
 	state->availableViewTypes = 5;
@@ -559,10 +561,10 @@ GeneralViewer::setViewType( int aViewType )
 	//TODO
 	switch ( getViewerState().viewType ) {
 	case vt3D:
-		setColorTransformType( GUI::Renderer::ctTransferFunction1D );
+		setColorTransformType(GUI::Renderer::ctMaxIntensityProjection);
 		break;
 	case vt2DAlignedSlices:
-		setColorTransformType( GUI::Renderer::ctLUTWindow );
+		setColorTransformType(GUI::Renderer::ctLUTWindow);
 		break;
 	default:
 		ASSERT( false );
@@ -874,9 +876,9 @@ GeneralViewer::render()
 					glClear( GL_DEPTH_BUFFER_BIT );
 
 					if ( mRenderingExtension && (vt2DAlignedSlices | mRenderingExtension->getAvailableViewTypes()) ) {
-						CartesianPlanes plane = config.plane;
-						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
-						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
+//						CartesianPlanes plane = config.plane;
+//						Vector3f realSlices = fromGLM(config.getCurrentRealSlice());
+//						Vector3f hextents = 0.5f * getViewerState().getMinimalElementExtents();
 						/*getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneNormal", getViewerState().mSliceRenderConfig.sliceNormal );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlanePoint", getViewerState().mSliceRenderConfig.sliceCenter );
 						getViewerState().mSceneSlicingCgEffect.setParameter( "gPlaneWidth", 2*hextents[plane] );
@@ -968,7 +970,7 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			float32 realSlice = getCurrentRealSlice();*/
 			//Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
 			glm::fvec3 position = toGLM(intersection);
-			return MouseEventInfo( mViewerState->glViewSetup, event, vt2DAlignedSlices, position );
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt2DAlignedSlices, position, dir);
 		}
 		break;
 	default:
@@ -1022,6 +1024,12 @@ GeneralViewer::PrepareData()
 		getViewerState().mSecondaryImageTexture.reset();
 	}
 
+	if (mData->mask()) {;
+		getViewerState().mMaskExtents = mData->mask()->GetImageExtentsRecord();
+		getViewerState().mMaskTexture = OpenGLManager::getInstance()->getTextureFromImage(*(mData->mask()));
+	} else {
+		getViewerState().mMaskTexture.reset();
+	}
 	//ReleaseAllInputs();
 
 	getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
@@ -1034,6 +1042,15 @@ GeneralViewer::PrepareData()
 	} else {
 		getViewerState().mSliceRenderConfig.secondaryImageData.reset();
 		getViewerState().mVolumeRenderConfig.secondaryImageData.reset();
+	}
+
+	if ( getViewerState().mMaskTexture.lock() ) {
+		getViewerState().mSliceRenderConfig.maskImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>(getViewerState().mMaskTexture);
+		getViewerState().mVolumeRenderConfig.maskImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>(getViewerState().mMaskTexture);
+		D_PRINT( "Mask image prepared" );
+	} else {
+		getViewerState().mSliceRenderConfig.maskImageData.reset();
+		getViewerState().mVolumeRenderConfig.maskImageData.reset();
 	}
 
 	Vector3f tmp = getViewerState().getRealCenter();

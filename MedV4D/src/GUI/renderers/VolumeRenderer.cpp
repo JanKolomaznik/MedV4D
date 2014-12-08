@@ -58,6 +58,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
 	soglu::GLTextureImageTyped<3>::Ptr secondaryData = aConfig.secondaryImageData.lock();
+	soglu::GLTextureImageTyped<3>::Ptr maskData = aConfig.maskImageData.lock();
 
 	soglu::BoundingBox3D bbox(primaryData->getExtents().realMinimum, primaryData->getExtents().realMaximum);
 	if ( aConfig.enableVolumeRestrictions ) {
@@ -67,36 +68,86 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 	switch ( aConfig.colorTransform ) {
 	case ctTransferFunction1D:
 		{
-			transferFunctionRendering(
-					aConfig.renderingConfiguration,
-					*primaryData,
-					aConfig.renderingQuality,
-					aConfig.clipPlanes,
-					aConfig.transferFunctionOptions
-					);
+			if (maskData) {
+				if (secondaryData) {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						MaskedImageWithSecondaryImage{*primaryData, *secondaryData, *maskData },
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				} else {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						MaskedImage{*primaryData, *maskData },
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				}
+			} else {
+				if (secondaryData) {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						ImageWithSecondaryImage{*primaryData, *secondaryData},
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				} else {
+					transferFunctionRendering(
+						aConfig.renderingConfiguration,
+						*primaryData,
+						aConfig.renderingQuality,
+						aConfig.clipPlanes,
+						aConfig.transferFunctionOptions
+						);
+				}
+			}
 		}
 		break;
 	case ctMaxIntensityProjection:
 	case ctBasic:
 		{
-			densityRendering(
+			if (maskData) {
+				densityRendering(
+					aConfig.renderingConfiguration,
+					MaskedImage {*primaryData, *maskData },
+					aConfig.renderingQuality,
+					aConfig.clipPlanes,
+					aConfig.densityOptions
+					);
+			} else {
+				densityRendering(
 					aConfig.renderingConfiguration,
 					*primaryData,
 					aConfig.renderingQuality,
 					aConfig.clipPlanes,
 					aConfig.densityOptions
 					);
+			}
 		}
 		break;
-	case ctTestColorTransform:
+	case ctIsoSurfaces:
 		{
-			isosurfaceRendering(
+			if (maskData) {
+				isosurfaceRendering(
+					aConfig.renderingConfiguration,
+					MaskedImage {*primaryData, *maskData },
+					aConfig.renderingQuality,
+					aConfig.clipPlanes,
+					aConfig.isoSurfaceOptions
+					);
+			} else {
+				isosurfaceRendering(
 					aConfig.renderingConfiguration,
 					*primaryData,
 					aConfig.renderingQuality,
 					aConfig.clipPlanes,
 					aConfig.isoSurfaceOptions
 					);
+			}
 		}
 		break;
 	default:

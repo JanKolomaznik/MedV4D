@@ -31,7 +31,7 @@ public:
 	ExceptionBase( std::string name ) throw();
 	ExceptionBase() throw();
 	~ExceptionBase() throw(){}
-	const char* what() const  throw(){ return _name.data(); }	
+	const char* what() const  throw(){ return _name.data(); }
 
 	std::string
 	GetFileName()
@@ -248,6 +248,8 @@ typedef boost::error_info<struct tag_ArgumentName, std::string> EInfoArgumentNam
 typedef boost::error_info<struct tag_ItemName, std::string> EInfoItemName;
 typedef boost::error_info<struct tag_ItemIndex, size_t> EInfoItemIndex;
 typedef boost::error_info<struct tag_ObjectName, std::string> EInfoObjectName;
+
+#define M4D_THROW(x) BOOST_THROW_EXCEPTION(x)
 
 } /*namespace ErrorHandling*/
 } /*namespace M4D*/

@@ -73,6 +73,7 @@ struct SliceRenderer::RenderingConfiguration
 
 	soglu::GLTextureImage3D::WPtr			primaryImageData;
 	soglu::GLTextureImage3D::WPtr			secondaryImageData;
+	soglu::GLTextureImage3D::WPtr			maskImageData;
 	CartesianPlanes				plane;
 	glm::ivec3				currentSlice;
 

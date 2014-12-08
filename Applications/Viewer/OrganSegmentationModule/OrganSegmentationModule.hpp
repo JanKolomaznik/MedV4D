@@ -5,21 +5,24 @@
 #include <QtCore>
 #include "MedV4D/GUI/utils/Module.h"
 #include "MedV4D/GUI/managers/ApplicationManager.h"
+#include "ViewerModule.hpp"
 #include "OrganSegmentationModule/OrganSegmentationWidget.hpp"
 #include "OrganSegmentationModule/OrganSegmentationController.hpp"
 #include "MedV4D/Common/IDGenerator.h"
 
 #include "MedV4D/Imaging/GraphCutSegmentation.h"
 
+#include "DatasetManager.hpp"
 
 
-
-class OrganSegmentationModule: public AModule
+class OrganSegmentationModule: public ViewerModule
 {
 public:
 	typedef M4D::Imaging::Image< int16, 3 > Image16_3D;
 	friend class OrganSegmentationWidget;
-	OrganSegmentationModule(): AModule( "Organ Segmentation Module" )
+	OrganSegmentationModule()
+		: ViewerModule( "Organ Segmentation Module" )
+		, mDatasetManager(nullptr)
 	{}
 
 	bool
@@ -30,32 +33,43 @@ public:
 
 	void
 	stopSegmentationMode();
-	
+
 	GraphCutSegmentationWrapper &
 	getGraphCutSegmentationWrapper()
 	{
 		return mGraphCutSegmentationWrapper;
 	}
-	
+
 	void
 	update()
 	{
 
 	}
+
+	void
+	setDatasetManager(DatasetManager &aDatasetManager) override
+	{
+		mDatasetManager = &aDatasetManager;
+
+	}
+
 protected:
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	getProcessedImage();
+
 	void
 	loadModule();
 
 	void
 	unloadModule();
-	
-	void 
+
+	void
 	createMask();
-	
-	void 
+
+	void
 	loadMask();
-	
-	void 
+
+	void
 	loadIndexFile();
 
 	void
@@ -63,30 +77,32 @@ protected:
 
 	void
 	loadModel();
-	
+
 	void
 	updateTimestamp();
-	
+
 	void
 	prepareMask( M4D::Imaging::Mask3D::Ptr aMask );
-	
+
 	void
 	computeWatershedTransformation();
-	
+
 	void
 	computeSegmentation();
-	
+
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
-	
+
 	M4D::Imaging::Mask3D::Ptr	mMask;
 	Image16_3D::Ptr mImage;
-	
+
 	GraphCutSegmentationWrapper	mGraphCutSegmentationWrapper;
-	
+
 	M4D::Imaging::CanonicalProbModel::Ptr mProbModel;
 
 	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
+
+	DatasetManager *mDatasetManager;
 };
 
 

@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1142</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -28,6 +28,10 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Additional"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose_All"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuViewer">
@@ -57,6 +61,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpen_Additional"/>
    <addaction name="separator"/>
    <addaction name="actionTest"/>
   </widget>
@@ -84,6 +89,16 @@
   <action name="actionSettings_list">
    <property name="text">
     <string>Settings list ...</string>
+   </property>
+  </action>
+  <action name="actionClose_All">
+   <property name="text">
+    <string>Close All</string>
+   </property>
+  </action>
+  <action name="actionOpen_Additional">
+   <property name="text">
+    <string>Open Additional ...</string>
    </property>
   </action>
  </widget>
@@ -145,6 +160,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionClose_All</sender>
+   <signal>triggered()</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>closeAllFiles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>490</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>applyTransferFunction()</slot>
@@ -152,5 +183,6 @@
   <slot>openFile()</slot>
   <slot>testSlot()</slot>
   <slot>showSettingsDialog()</slot>
+  <slot>closeAllFiles()</slot>
  </slots>
 </ui>

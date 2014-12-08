@@ -1,12 +1,4 @@
 
-struct ViewSetup
-{
-	mat4 modelViewProj;
-	mat4 modelMatrix;
-	mat4 projMatrix;
-	mat4 viewMatrix;
-};
-
 uniform ViewSetup gViewSetup;
 
 in vec3 vertex;

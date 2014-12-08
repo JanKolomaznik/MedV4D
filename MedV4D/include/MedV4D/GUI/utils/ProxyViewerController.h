@@ -8,7 +8,7 @@ class ModeViewerController: public M4D::GUI::Viewer::ViewerController
 {
 public:
 	typedef std::shared_ptr< ModeViewerController > Ptr;
-	
+
 	virtual void
 	activated() = 0;
 
@@ -24,48 +24,48 @@ public:
 
 
 	bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
-		if( mCurrentController ) {
-			return mCurrentController->mouseMoveEvent ( aViewerState, aEventInfo );
-		} 
-		return TPredecessor::mouseMoveEvent ( aViewerState, aEventInfo ); 
-	}
-
-	bool	
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
-		if( mCurrentController ) {
-			return mCurrentController->mouseDoubleClickEvent ( aViewerState, aEventInfo );
-		} 
-		return TPredecessor::mouseDoubleClickEvent ( aViewerState, aEventInfo ); 
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
+		if( mCurrentController && mCurrentController->mouseMoveEvent(aViewerState, aEventInfo)) {
+			return true;
+		}
+		return TPredecessor::mouseMoveEvent ( aViewerState, aEventInfo );
 	}
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
-		if( mCurrentController ) {
-			return mCurrentController->mousePressEvent ( aViewerState, aEventInfo );
-		} 
-		return TPredecessor::mousePressEvent ( aViewerState, aEventInfo ); 
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
+		if( mCurrentController && mCurrentController->mouseDoubleClickEvent(aViewerState, aEventInfo)) {
+			return true;
+		}
+		return TPredecessor::mouseDoubleClickEvent ( aViewerState, aEventInfo );
 	}
 
 	bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) 
-	{ 
-		if( mCurrentController ) {
-			return mCurrentController->mouseReleaseEvent ( aViewerState, aEventInfo );
-		} 
-		return TPredecessor::mouseReleaseEvent ( aViewerState, aEventInfo ); 
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
+		if( mCurrentController && mCurrentController->mousePressEvent(aViewerState, aEventInfo)) {
+			return true;
+		}
+		return TPredecessor::mousePressEvent ( aViewerState, aEventInfo );
 	}
 
 	bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event )  
-	{ 
-		if( mCurrentController ) {
-			return mCurrentController->wheelEvent ( aViewerState, event );
-		} 
-		return TPredecessor::wheelEvent ( aViewerState, event ); 
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	{
+		if( mCurrentController && mCurrentController->mouseReleaseEvent(aViewerState, aEventInfo)) {
+			return true;
+		}
+		return TPredecessor::mouseReleaseEvent ( aViewerState, aEventInfo );
+	}
+
+	bool
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event )
+	{
+		if( mCurrentController && mCurrentController->wheelEvent(aViewerState, event)) {
+			return true;
+		}
+		return TPredecessor::wheelEvent ( aViewerState, event );
 	}
 
 	void
@@ -79,7 +79,7 @@ public:
 	{
 		return mCurrentController;
 	}
-	
+
 	void
 	resetController()
 	{

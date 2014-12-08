@@ -1,5 +1,5 @@
-uniform ImageData3D gPrimaryImageData3D;
-uniform vec2 gMappedIntervalBands;
+//uniform ImageData3D gPrimaryImageData3D;
+//uniform vec2 gMappedIntervalBands;
 uniform vec2 gWLWindow;
 
 struct StepInfo {
@@ -37,6 +37,7 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 	aInfo.value = max(aInfo.value, value);
 #else
 	value = 1.0f - pow(1.0f - value, gRenderingSliceThickness);
+	//value = 1.0 - exp(-gRenderingSliceThickness * (1.0 - value));
 	aInfo.value = aInfo.value + value * (1.0 - aInfo.value);
 #endif //ENABLE_MIP
 

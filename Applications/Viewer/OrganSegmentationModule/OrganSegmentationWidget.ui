@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>455</width>
-    <height>343</height>
+    <width>491</width>
+    <height>285</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,17 +22,11 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>60</height>
-      </size>
-     </property>
      <property name="title">
       <string>Mask Operations</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QPushButton" name="mSaveMaskButton">
         <property name="maximumSize">
          <size>
@@ -45,8 +39,15 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="FilePathComboBox" name="widget" native="true"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Create mask</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -117,17 +118,11 @@
       </widget>
      </widget>
      <widget class="QWidget" name="tab_2">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>100</height>
-       </size>
-      </property>
       <attribute name="title">
        <string>Graph cut</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="1">
+       <item row="4" column="1">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -140,40 +135,34 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox">
+       <item row="2" column="0">
+        <widget class="QPushButton" name="buttonComputeWatersheds">
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>75</height>
+           <height>23</height>
           </size>
          </property>
-         <property name="title">
-          <string>Marker type</string>
+         <property name="text">
+          <string>Watersheds</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QRadioButton" name="foregroundRadioButton">
-            <property name="text">
-             <string>Foreground</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButton_2">
-            <property name="text">
-             <string>Background</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton_7">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="mRunSegmentationButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Segmentation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="mBimaskDrawToggleButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -188,30 +177,36 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="buttonComputeWatersheds">
+       <item row="1" column="1" rowspan="3">
+        <widget class="QGroupBox" name="groupBox">
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>23</height>
+           <height>75</height>
           </size>
          </property>
-         <property name="text">
-          <string>Watersheds</string>
+         <property name="title">
+          <string>Marker type</string>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="buttonRunSegmentation">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Segmentation</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QRadioButton" name="mForegroundRadioButton">
+            <property name="text">
+             <string>Foreground</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="mBackgroundRadioButton">
+            <property name="text">
+             <string>Background</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -251,27 +246,20 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pushButton_3">
          <property name="text">
-          <string>Create mask</string>
+          <string>Update timestamp</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="pushButton_2">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="mManualDrawToggleButton">
          <property name="text">
           <string>Draw</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="pushButton_3">
-         <property name="text">
-          <string>Update timestamp</string>
          </property>
         </widget>
        </item>
@@ -303,8 +291,8 @@
    <slot>createMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>57</x>
-     <y>47</y>
+     <x>68</x>
+     <y>285</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -313,14 +301,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>mManualDrawToggleButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>toggleDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>57</x>
-     <y>80</y>
+     <x>67</x>
+     <y>64</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -409,7 +397,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>foregroundRadioButton</sender>
+   <sender>mForegroundRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>changedMarkerType()</slot>
@@ -425,7 +413,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton_2</sender>
+   <sender>mBackgroundRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>changedMarkerType()</slot>
@@ -441,46 +429,30 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_7</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>OrganSegmentationWidget</receiver>
-   <slot>toggleBiMaskDraw(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>134</x>
-     <y>72</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>308</x>
-     <y>10</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>buttonComputeWatersheds</sender>
    <signal>clicked()</signal>
    <receiver>OrganSegmentationWidget</receiver>
    <slot>buttonPressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>133</y>
+     <x>102</x>
+     <y>153</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-1</x>
+     <x>0</x>
      <y>180</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>buttonRunSegmentation</sender>
+   <sender>mRunSegmentationButton</sender>
    <signal>clicked()</signal>
    <receiver>OrganSegmentationWidget</receiver>
-   <slot>buttonPressed()</slot>
+   <slot>runSegmentation()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>35</x>
-     <y>156</y>
+     <x>45</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -489,14 +461,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_7</sender>
+   <sender>mBimaskDrawToggleButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>OrganSegmentationWidget</receiver>
-   <slot>toggleRegionMarking(bool)</slot>
+   <slot>toggleBiMaskDraw(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>81</x>
-     <y>71</y>
+     <x>91</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -517,5 +489,6 @@
   <slot>changedMarkerType()</slot>
   <slot>buttonPressed()</slot>
   <slot>toggleRegionMarking(bool)</slot>
+  <slot>runSegmentation()</slot>
  </slots>
 </ui>

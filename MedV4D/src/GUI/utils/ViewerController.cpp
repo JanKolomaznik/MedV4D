@@ -68,7 +68,7 @@ ViewerController::mouseMoveEvent ( BaseViewerState::Ptr aViewerState, const Mous
 	}
 
 	if ( state.viewType == vt2DAlignedSlices ) {
-		state.getViewerWindow< GeneralViewer >().updateMouseInfo( fromGLM(aEventInfo.realCoordinates) );
+		state.getViewerWindow< GeneralViewer >().updateMouseInfo( fromGLM(aEventInfo.point) );
 	}
 	return false;
 }

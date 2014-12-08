@@ -10,8 +10,16 @@ public:
 	ColorChooserButton( QWidget *parent = NULL ): QPushButton( parent ), mColor( 255,255,255,255 ), mAllowAlphaSetting( false )
 	{
 		mColorDialog = new QColorDialog( this );
-		QObject::connect( this, SIGNAL( clicked() ), this, SLOT( showDialog() ) );
-		QObject::connect( mColorDialog, SIGNAL( colorSelected( const QColor & ) ), this, SLOT( setColor( const QColor & ) ) );
+		QObject::connect(
+			this,
+			&QPushButton::clicked,
+			this,
+			&ColorChooserButton::showDialog);
+		/*QObject::connect(
+			mColorDialog,
+			&ColorChooserButton::colorSelected,
+			this,
+			&QColorChooserButton::setColor);*/
 	}
 
 	QColor
@@ -60,9 +68,10 @@ protected slots:
 	{
 		mColorDialog->setOption( QColorDialog::ShowAlphaChannel, mAllowAlphaSetting );
 		mColorDialog->setCurrentColor( mColor );
-		mColorDialog->exec();
-		setColor(mColorDialog->currentColor());
-		update();
+		if (mColorDialog->exec()) {
+			setColor(mColorDialog->currentColor());
+			update();
+		}
 	}
 
 protected:

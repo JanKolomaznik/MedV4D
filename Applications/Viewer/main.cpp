@@ -31,17 +31,17 @@ processCommandLine( int argc, char** argv )
 }
 #ifdef EXTENSION_MODULES_ENABLED
 //#include "AnnotationModule/AnnotationModule.hpp"
-#include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
-//#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
+//#include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
+#include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 #endif
 void
 createModules()
 {
 #ifdef EXTENSION_MODULES_ENABLED
-	ApplicationManager *appManager = ApplicationManager::getInstance();
+	M4D::ApplicationManager *appManager = M4D::ApplicationManager::getInstance();
 //	appManager->addModule( createModule< AnnotationModule >() );
-	appManager->addModule( createModule< ShoulderMeasurementModule >() );
-//	appManager->addModule( createModule< OrganSegmentationModule >() );
+//	appManager->addModule( createModule< ShoulderMeasurementModule >() );
+	appManager->addModule( createModule< OrganSegmentationModule >() );
 #endif
 }
 

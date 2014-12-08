@@ -19,7 +19,9 @@ class GraphCutSegmentationWrapper
 public:
 	typedef std::set<uint32> MarkerSet;
 	
-	GraphCutSegmentationWrapper(): mForegroundMarkers( boost::make_shared< MarkerSet >() ), mBackgroundMarkers( boost::make_shared< MarkerSet >() )
+	GraphCutSegmentationWrapper()
+		: mForegroundMarkers(std::make_shared< MarkerSet >())
+		, mBackgroundMarkers(std::make_shared< MarkerSet >())
 	{ }
 	
 	void
@@ -34,8 +36,8 @@ public:
 		mInputImage.reset();
 		mWatersheds.reset();
 		mGradientImage.reset();
-		mForegroundMarkers = boost::make_shared< std::set<uint32> >();
-		mBackgroundMarkers = boost::make_shared< std::set<uint32> >();
+		mForegroundMarkers = std::make_shared< std::set<uint32> >();
+		mBackgroundMarkers = std::make_shared< std::set<uint32> >();
 	}
 //protected:
 	void
@@ -59,7 +61,8 @@ public:
 	void
 	computeWatershedTransformation()
 	{
-		ASSERT( mInputImage );
+		STUBBED("computeWatershedTransformation");
+		/*ASSERT( mInputImage );
 		ASSERT( mGradientImage );
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( mGradientImage->GetElementTypeID(),
 			TTYPE threshold = TypeTraits<TTYPE>::Max;
@@ -74,13 +77,14 @@ public:
 			watershedTransformation3D( mWatersheds->GetRegion(), gradientImage->GetRegion(), mWatersheds->GetRegion() );
 			
 			LOG( "Computed watershed transformation" );
-		);
+		);*/
 	}
 	
 	void
 	buildNeighborhoodGraph()
 	{
-		mGraph = boost::make_shared<WeightedEdgeListGraph>();
+		STUBBED("buildNeighborhoodGraph");
+		/*mGraph = std::make_shared<WeightedEdgeListGraph>();
 		
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( mGradientImage->GetElementTypeID(),
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
@@ -88,17 +92,18 @@ public:
 			createAdjacencyGraph( *mGraph, mWatersheds->GetRegion(), gradientImage->GetRegion() );
 		);
 		
-		LOG( boost::str( boost::format( "Graph info :\nVertex count = %1% \nEdge count = %2%" ) % mGraph->mVertexCount % mGraph->mEdgeCount ) );
+		LOG( boost::str( boost::format( "Graph info :\nVertex count = %1% \nEdge count = %2%" ) % mGraph->mVertexCount % mGraph->mEdgeCount ) );*/
 	}
 	
 	void
 	extendGraph()
 	{
-		ASSERT( mGraph );
+		STUBBED("extendGraph");
+		/*ASSERT( mGraph );
 		ASSERT( mForegroundMarkers );
 		ASSERT( mBackgroundMarkers );
 		
-		mExtendedGraph = boost::make_shared<WeightedEdgeListGraph>();
+		mExtendedGraph = std::make_shared<WeightedEdgeListGraph>();
 		*mExtendedGraph = *mGraph;
 		
 		mSourceID = mGraph->mVertexCount + 1;
@@ -118,17 +123,18 @@ public:
 		}
 		ASSERT( mExtendedGraph->mEdgeCount == mExtendedGraph->mEdges.size() );
 		ASSERT( mExtendedGraph->mEdgeCount == mExtendedGraph->mWeights.size() );
-		LOG( boost::str( boost::format( "Adding %1% foreground marker edges and %2% background marker edges" ) % mForegroundMarkers->size() % mBackgroundMarkers->size() ) );
+		LOG( boost::str( boost::format( "Adding %1% foreground marker edges and %2% background marker edges" ) % mForegroundMarkers->size() % mBackgroundMarkers->size() ) );*/
 	}
 
 	void
 	executeGraphCut()
 	{
-		ASSERT( mExtendedGraph );
+		STUBBED("executeGraphCut");
+		/*ASSERT( mExtendedGraph );
 
 		std::vector< bool > componentSet;
 
-		minGraphCut( *mExtendedGraph, componentSet, mSourceID, mSinkID );
+		minGraphCut( *mExtendedGraph, componentSet, mSourceID, mSinkID );*/
 
 	}
 	

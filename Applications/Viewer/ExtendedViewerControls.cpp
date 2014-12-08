@@ -11,6 +11,7 @@ ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget
 
 	ui->mPrimaryDatasetComboBox->setModel(&mManager.imageModel());
 	ui->mSecondaryDatasetComboBox->setModel(&mManager.imageModel());
+	ui->mMaskComboBox->setModel(&mManager.imageModel());
 }
 
 ExtendedViewerControls::~ExtendedViewerControls()
@@ -58,12 +59,15 @@ ExtendedViewerControls::updateAssignedDatasets()
 
 	DatasetManager::DatasetID primaryID = inputWithId->primaryImageId();
 	DatasetManager::DatasetID secondaryID = inputWithId->secondaryImageId();
+	DatasetManager::DatasetID maskID = inputWithId->maskId();
 
 	int primaryIndex = mManager.indexFromID(primaryID);
 	int secondaryIndex = mManager.indexFromID(secondaryID);
+	int maskIndex = mManager.indexFromID(maskID);
 
 	ui->mPrimaryDatasetComboBox->setCurrentIndex(primaryIndex);
 	ui->mSecondaryDatasetComboBox->setCurrentIndex(secondaryIndex);
+	ui->mMaskComboBox->setCurrentIndex(maskIndex);
 
 	mIsUpdating = false;
 }
@@ -79,6 +83,7 @@ void ExtendedViewerControls::assignDatasets()
 
 	int primaryIndex = ui->mPrimaryDatasetComboBox->currentIndex();
 	int secondaryIndex = ui->mSecondaryDatasetComboBox->currentIndex();
+	int maskIndex = ui->mMaskComboBox->currentIndex();
 
 	auto inputData = ViewerInputDataWithId::Ptr(new ViewerInputDataWithId);
 
@@ -102,5 +107,30 @@ void ExtendedViewerControls::assignDatasets()
 		}
 	}
 
+	if (maskIndex >= 0) {
+		auto id = mManager.idFromIndex(maskIndex);
+		try {
+			const auto & rec = mManager.getDatasetRecord(id);
+			inputData->assignMaskWithId(std::static_pointer_cast<M4D::Imaging::AImageDim<3>>(rec.mImage), id);
+		} catch (std::exception &) {
+			D_PRINT("Mask dataset with id : " << id << " not found!");
+		}
+	}
+
 	viewerControls().viewer()->setInputData(inputData);
+}
+
+void ExtendedViewerControls::resetPrimaryDataset()
+{
+	ui->mPrimaryDatasetComboBox->setCurrentIndex(-1);
+}
+
+void ExtendedViewerControls::resetSecondaryDataset()
+{
+	ui->mSecondaryDatasetComboBox->setCurrentIndex(-1);
+}
+
+void ExtendedViewerControls::resetMaskDataset()
+{
+	ui->mMaskComboBox->setCurrentIndex(-1);
 }

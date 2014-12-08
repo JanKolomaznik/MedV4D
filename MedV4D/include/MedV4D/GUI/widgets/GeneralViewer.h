@@ -11,19 +11,6 @@
 #include "MedV4D/GUI/widgets/ViewerConstructionKit.h"
 #include "MedV4D/GUI/widgets/AGLViewer.h"
 
-
-
-///#include "MedV4D/GUI/utils/ViewConfiguration.h"
-//#include "MedV4D/GUI/utils/IUserEvents.h"
-
-/*#include "MedV4D/GUI/utils/MouseTracking.h"
-#include "MedV4D/GUI/widgets/AGUIViewer.h"
-
-*/
-
-//#include <vorgl/TransferFunctionBuffer.hpp>
-//#include "MedV4D/GUI/utils/IDMappingBuffer.h"
-
 #include "MedV4D/GUI/renderers/RendererTools.h"
 #include "MedV4D/GUI/renderers/SliceRenderer.h"
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
@@ -70,11 +57,15 @@ public:
 
 	M4D::Imaging::ImageExtentsRecord<3> mPrimaryImageExtents;
 	soglu::GLTextureImage::WPtr mPrimaryImageTexture;
-	M4D::Common::TimeStamp mPrimaryEditTimestamp;
+	//M4D::Common::TimeStamp mPrimaryEditTimestamp;
 
 	M4D::Imaging::ImageExtentsRecord<3> mSecondaryImageExtents;
 	soglu::GLTextureImage::WPtr mSecondaryImageTexture;
-	M4D::Common::TimeStamp mSecondaryEditTimestamp;
+	//M4D::Common::TimeStamp mSecondaryEditTimestamp;
+
+	M4D::Imaging::ImageExtentsRecord<3> mMaskExtents;
+	soglu::GLTextureImage::WPtr mMaskTexture;
+	//M4D::Common::TimeStamp mMaskEditTimestamp;
 
 	vorgl::TransferFunctionBufferInfo		mTransferFunctionBufferInfo;
 
@@ -121,9 +112,14 @@ public:
 	ViewerInputData()
 	{}
 
-	ViewerInputData(M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage, M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr())
+	ViewerInputData(
+		M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage,
+		M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr(),
+		M4D::Imaging::AImageDim<3>::ConstPtr aMaskImage = M4D::Imaging::AImageDim<3>::ConstPtr()
+		)
 		: mPrimaryImage(aPrimaryImage)
 		, mSecondaryImage(aSecondaryImage)
+		, mMaskImage(aMaskImage)
 	{}
 
 	M4D::Imaging::AImageDim<3>::ConstPtr
@@ -138,9 +134,16 @@ public:
 		return mSecondaryImage;
 	}
 
+	M4D::Imaging::AImageDim<3>::ConstPtr
+	mask() const
+	{
+		return mMaskImage;
+	}
+
 protected:
 	M4D::Imaging::AImageDim<3>::ConstPtr mPrimaryImage;
 	M4D::Imaging::AImageDim<3>::ConstPtr mSecondaryImage;
+	M4D::Imaging::AImageDim<3>::ConstPtr mMaskImage;
 };
 
 
@@ -324,7 +327,18 @@ public:
 	QString
 	getZoomValueName()const;
 
-	float
+	void
+	setIsoSurfaces(vorgl::IsoSurfaceDefinitionList aIsoSurfaces)
+	{
+		getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces = aIsoSurfaces;
+	}
+
+	const vorgl::IsoSurfaceDefinitionList &
+	isoSurfaces() const
+	{
+		return getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoSurfaces;
+	}
+	/*float
 	isoSurfaceValue() const {
 		return getViewerState().mVolumeRenderConfig.isoSurfaceOptions.isoValue;
 	}
@@ -352,7 +366,7 @@ public:
 				aColor.alphaF()
 				);
 		emit settingsChanged();
-	}
+	}*/
 
 	void
 	setInputData(ViewerInputData::ConstPtr aData);
@@ -363,7 +377,7 @@ public:
 		return mData;
 	}
 
-public slots:
+//public slots:
 	void
 	setViewType( int aViewType );
 
