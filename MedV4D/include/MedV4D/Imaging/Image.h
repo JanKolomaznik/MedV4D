@@ -72,6 +72,11 @@ namespace Imaging {
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
 			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetDimension(), IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) ) )
 //*********************************************************************************************
+//TODO
+//usage function< IMAGE_TYPE >( IMAGE )
+#define IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO_3D( AIMAGE_REF, ... ) \
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
+			{ const unsigned DIM = 3; IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) } )
 
 
 /**
