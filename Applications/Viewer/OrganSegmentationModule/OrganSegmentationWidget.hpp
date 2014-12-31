@@ -14,14 +14,12 @@ class OrganSegmentationWidget: public QWidget, public Ui::OrganSegmentationWidge
 {
 	Q_OBJECT;
 public:
-	OrganSegmentationWidget( OrganSegmentationController::Ptr aController, OrganSegmentationModule &aModule ): mController( aController ), mModule( aModule )
-	{
-		ASSERT( aController );
-		setupUi( this );
-	}
+	OrganSegmentationWidget( OrganSegmentationController::Ptr aController, OrganSegmentationModule &aModule );
 public slots:
 	void
 	createMask();
+	void
+	clearMask();
 	void
 	loadMask();
 	void
@@ -44,6 +42,9 @@ public slots:
 
 	void
 	runSegmentation();
+
+	void
+	brushChanged();
 protected:
 	OrganSegmentationController::Ptr mController;
 	OrganSegmentationModule &mModule;

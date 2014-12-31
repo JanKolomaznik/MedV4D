@@ -67,6 +67,9 @@ protected:
 	createMask();
 
 	void
+	clearMask();
+
+	void
 	loadMask();
 
 	void
@@ -94,6 +97,7 @@ protected:
 	M4D::Common::IDNumber mModeId;
 
 	M4D::Imaging::Mask3D::Ptr	mMask;
+	M4D::Imaging::Mask3D::Ptr	mResult;
 	Image16_3D::Ptr mImage;
 
 	GraphCutSegmentationWrapper	mGraphCutSegmentationWrapper;

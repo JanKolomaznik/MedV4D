@@ -397,6 +397,9 @@ public:
 		return _isDataContinuous;
 	}
 
+	void
+	fill(ElementType aValue);
+
 protected:
 	template< unsigned SDim >
 	Vector< int32, SDim >

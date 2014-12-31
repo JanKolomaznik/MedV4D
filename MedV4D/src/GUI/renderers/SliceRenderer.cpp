@@ -39,14 +39,15 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 		_THROW_ ErrorHandling::EObjectUnavailable( "Primary texture not available" );
 	}
 
+	vorgl::SliceConfiguration slice = {
+			float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],
+			(soglu::CartesianPlanes)aConfig.plane };
+	vorgl::SliceRenderingQuality renderingQuality = { aConfig.enableInterpolation };
+
 	std::string techniqueName;
 	switch ( aConfig.colorTransform ) {
 	case ctLUTWindow:
 		{
-			vorgl::SliceConfiguration slice = {
-					float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],
-					(soglu::CartesianPlanes)aConfig.plane };
-			vorgl::SliceRenderingQuality renderingQuality = { aConfig.enableInterpolation };
 			vorgl::BrightnessContrastRenderingOptions bcOptions = { aConfig.lutWindow };
 
 			brightnessContrastRendering(
@@ -56,15 +57,6 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 				renderingQuality,
 				bcOptions
 				);
-
-			/*lutWindowRendering(
-				*primaryData,
-				float32(aConfig.currentSlice[ aConfig.plane ]+0.5f) * primaryData->getExtents().elementExtents[aConfig.plane],
-				(soglu::CartesianPlanes)aConfig.plane,
-				aConfig.lutWindow,
-				aConfig.enableInterpolation,
-				aViewSetup
-				);*/
 		}
 		break;
 	case ctTransferFunction1D:
@@ -84,8 +76,16 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 		}
 		break;
 	case ctSimpleColorMap:
-		//techniqueName = "SimpleRegionColorMap_3D";
-		ASSERT( false );
+		{
+			vorgl::ColorMapRenderingOptions colorMapOptions = { 1.0f };
+			colorMapRendering(
+				aViewSetup,
+				*primaryData,
+				slice,
+				renderingQuality,
+				colorMapOptions
+				);
+		}
 		break;
 	case ctMaxIntensityProjection:
 		ASSERT( false );
