@@ -294,6 +294,60 @@ struct TypeTraits< uint64 >
 };
 
 template<>
+struct TypeTraits< long >
+{
+  typedef int64		Type;
+  static const int16	NTID = NTID_INT_64;
+
+  static const bool	Signed = true;
+  static const uint16	BitCount = sizeof(Type) * 8;
+  static const Type	Max = (Type)MAX_INT64;
+  static const Type	Min = (Type)(-MAX_INT64 - 1);
+  static const Type	Zero = 0;
+  static const Type	One = 1;
+
+  static const Type	CentralValue = 0;
+
+  typedef int64		SignedClosestType;
+  typedef int64		SuperiorType;
+  typedef float32		SuperiorSignedType;
+  typedef float32		SuperiorFloatType;
+
+  static std::string
+    Typename()
+  {
+    return "long";
+  }
+};
+
+template<>
+struct TypeTraits< unsigned long >
+{
+	typedef uint64		Type;
+	static const int16	NTID = NTID_UINT_64;
+
+	static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = (Type)~((Type)0);
+	static const Type	Min = (Type)(0);
+	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = Max / 2;
+
+	typedef int64		SignedClosestType;
+	typedef uint64		SuperiorType;
+	typedef float32		SuperiorSignedType;
+	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "unsigned int";
+	}
+};
+
+template<>
 struct TypeTraits< float32 >
 {
 	typedef float32		Type;
