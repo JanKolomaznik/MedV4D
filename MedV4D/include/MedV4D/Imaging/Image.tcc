@@ -369,8 +369,7 @@ template< typename ElementType, size_t Dim >
 ReaderBBoxInterface::Ptr
 Image< ElementType, Dim >::GetDirtyBBox (
 	typename Image< ElementType, Dim >::PointType min,
-	typename Image< ElementType, Dim >::PointType max
-) const
+	typename Image< ElementType, Dim >::PointType max) const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 	ReaderBBoxInterface::Ptr bbox;
@@ -615,6 +614,17 @@ Image< ElementType, Dim >::DeSerializeData ( M4D::IO::InStream &stream )
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
+template< typename ElementType, size_t Dim >
+void
+Image< ElementType, Dim >::fill(ElementType aValue)
+{
+	auto it = GetIterator();
+	while (!it.IsEnd()) {
+		*it = aValue;
+		++it;
+	}
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

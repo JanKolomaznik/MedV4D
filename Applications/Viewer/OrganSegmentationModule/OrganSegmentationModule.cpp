@@ -62,6 +62,18 @@ OrganSegmentationModule::createMask()
 	if(image) {
 		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >(image->GetImageExtentsRecord());
 		prepareMask( tmpMask );
+		tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >(image->GetImageExtentsRecord());
+		mDatasetManager->registerDataset(tmpMask, std::string("ResultMask"));
+		mResult = tmpMask;
+	}
+}
+
+void OrganSegmentationModule::clearMask()
+{
+	if (mMask) {
+		mMask->fill(0);
+		auto & bbox = mMask->SetWholeDirtyBBox();
+		bbox.SetModified();
 	}
 }
 
@@ -69,6 +81,7 @@ void
 OrganSegmentationModule::prepareMask( M4D::Imaging::Mask3D::Ptr aMask )
 {
 	STUBBED("Prepare mask");
+	aMask->fill(0);
 	mDatasetManager->registerDataset(aMask, std::string("Mask"));
 	mMask = aMask;
 	mViewerController->mMask = mMask;
@@ -328,6 +341,9 @@ OrganSegmentationModule::computeSegmentation()
 {
 	auto image = getProcessedImage();
 
+	auto &bbox = mResult->SetWholeDirtyBBox();
+	computeGraphCutSegmentation(*image, *mMask, *mResult);
+	bbox.SetModified();
 	/*mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
 	mGraphCutSegmentationWrapper.extendGraph();
 	mGraphCutSegmentationWrapper.executeGraphCut();*/

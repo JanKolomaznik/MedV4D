@@ -209,6 +209,7 @@ template< typename TScatterPlot, typename TRegion >
 TScatterPlot
 createGradientScatterPlotForImageRegion(const TRegion &aRegion)
 {
+	STUBBED("Set range for scatter plot 1");
 	typedef typename TScatterPlot::Value Value;
 	typedef typename TScatterPlot::CellCoordinates CellCoordinates;
 	TScatterPlot scatterPlot(Value(0,0), Value(2000,1000), CellCoordinates(2000, 1000));
@@ -231,6 +232,32 @@ createGradientScatterPlotForImageRegion(const TRegion &aRegion)
 					gradient += d * d;
 				}
 				scatterPlot.put(value, std::sqrt(gradient));
+			}
+		}
+	}
+	return scatterPlot;
+}
+
+template< typename TScatterPlot, typename TRegion1, typename TRegion2>
+TScatterPlot
+createGradientScatterPlotForImageRegionPair(const TRegion1 &aRegion1, const TRegion2 &aRegion2)
+{
+	STUBBED("Set range for scatter plot 2");
+	typedef typename TScatterPlot::Value Value;
+	typedef typename TScatterPlot::CellCoordinates CellCoordinates;
+	TScatterPlot scatterPlot(Value(0,0), Value(2000,10), CellCoordinates(2000, 1000));
+
+	auto from = aRegion1.GetMinimum();
+	auto to = aRegion1.GetMaximum();
+
+	auto index = from;
+
+	for (; index[2] < to[2]-1; ++index[2]) {
+		for (index[1] = from[1]; index[1] < to[1]-1; ++index[1]) {
+			for (index[0] = from[0]; index[0] < to[0]-1; ++index[0]) {
+				auto value1 = aRegion1.GetElement(index);
+				auto value2 = aRegion2.GetElement(index);
+				scatterPlot.put(value1, value2);
 			}
 		}
 	}

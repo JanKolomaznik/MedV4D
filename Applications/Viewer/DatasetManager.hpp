@@ -145,6 +145,15 @@ public:
 	std::shared_ptr<ImageStatistics>
 	getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondaryId);
 protected:
+
+	template <typename TImageType1>
+	std::shared_ptr<ImageStatistics>
+	getCombinedStatisticsType1(const TImageType1 &aImage1, const M4D::Imaging::AImage &aImage2);
+
+	template <typename TImageType1, typename TImageType2>
+	std::shared_ptr<ImageStatistics>
+	getCombinedStatisticsType1Type2(const TImageType1 &aImage1, const TImageType2 &aImage2);
+
 	DatasetID
 	newID()
 	{

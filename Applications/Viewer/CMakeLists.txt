@@ -54,6 +54,7 @@ IF( EXTENSION_MODULES_ENABLED )
 		"OrganSegmentationModule/OrganSegmentationModule.cpp"
 		"OrganSegmentationModule/OrganSegmentationController.cpp"
 		"OrganSegmentationModule/OrganSegmentationWidget.cpp"
+		"OrganSegmentationModule/BrushSettingsForm.cpp"
 	)
 	SET( EXTENSION_HEADERS
 		#"AnnotationModule/AnnotationEditorController.hpp"
@@ -68,12 +69,14 @@ IF( EXTENSION_MODULES_ENABLED )
 		"OrganSegmentationModule/OrganSegmentationModule.hpp"
 		"OrganSegmentationModule/OrganSegmentationWidget.hpp"
 		"OrganSegmentationModule/OrganSegmentationController.hpp"
+		"OrganSegmentationModule/BrushSettingsForm.hpp"
 		)
 	SET( EXTENSION_UIS
 		#"AnnotationModule/AnnotationSettingsDialog.ui"
 		#"AnnotationModule/AnnotationWidget.ui"
 		#"ShoulderMeasurementModule/ShoulderMeasurementWidget.ui"
 		"OrganSegmentationModule/OrganSegmentationWidget.ui"
+		"OrganSegmentationModule/BrushSettingsForm.ui"
 		)
 ENDIF( EXTENSION_MODULES_ENABLED )
 

@@ -15,6 +15,19 @@
 #include "MedV4D/Imaging/CanonicalProbModel.h"
 #include <boost/function.hpp>
 
+enum class BrushType {
+	Circle = 0,
+	Sphere,
+	Square,
+	Cube
+};
+
+struct DrawingBrush
+{
+	BrushType brushType;
+	double radius;
+};
+
 class MaskDrawingMouseController: public ADrawingMouseController
 {
 public:
@@ -36,6 +49,13 @@ public:
 	{
 		mBrushValue = aBrushValue;
 	}
+
+	void
+	setBrush(DrawingBrush aBrush)
+	{
+		mBrush = aBrush;
+	}
+
 protected:
 	void
 	drawStep(const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal) override
@@ -47,7 +67,7 @@ protected:
 	drawMaskStep( const Vector3f &aStart, const Vector3f &aEnd, const Vector3f &aNormal)
 	{
 		ASSERT( mMask );
-		float width = 10.0f;
+		float width = mBrush.radius;
 		Vector3f offset( width, width, width );
 		Vector3f minimum = M4D::minVect<float,3>( M4D::minVect<float,3>( aStart - offset, aStart + offset ), M4D::minVect<float,3>( aEnd - offset, aEnd + offset ) );
 		Vector3f maximum = M4D::maxVect<float,3>( M4D::maxVect<float,3>( aStart - offset, aStart + offset ), M4D::maxVect<float,3>( aEnd - offset, aEnd + offset ) );
@@ -57,7 +77,16 @@ protected:
 		M4D::Imaging::WriterBBoxInterface & mod = mMask->SetDirtyBBox( c1, c2 );
 		LOG( "EditedA : " << c1 << " => " << c2 );
 		try {
-			M4D::Imaging::painting::draw3DLine(*mMask, mBrushValue, aStart, aEnd, 10, aNormal);
+			switch (mBrush.brushType) {
+			case BrushType::Square:
+			case BrushType::Circle:
+			case BrushType::Cube:
+			case BrushType::Sphere:
+				M4D::Imaging::painting::draw3DLine(*mMask, mBrushValue, aStart, aEnd, mBrush.radius, aNormal);
+				break;
+			default:
+				assert(false);
+			}
 			//M4D::Imaging::painting::drawRectangleAlongLine( *mMask, mBrushValue, aStart, aEnd, 10, aNormal);
 		} catch (...){
 			D_PRINT( "drawStep exception" );
@@ -78,6 +107,7 @@ protected:
 
 	M4D::Imaging::Mask3D::Ptr mMask;
 	uint8 mBrushValue;
+	DrawingBrush mBrush;
 };
 
 class RegionMarkingMouseController: public ADrawingMouseController

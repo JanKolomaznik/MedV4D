@@ -304,6 +304,20 @@ ViewerWindow::testSlot()
 	}
 }
 
+void ViewerWindow::testSlot2()
+{
+	auto id1 = mDatasetManager.idFromIndex(0);
+	auto id2 = mDatasetManager.idFromIndex(1);
+
+	statusbar->showMessage("Computing combined stats...");
+	BOOST_SCOPE_EXIT_ALL(this) {
+		statusbar->clearMessage();
+	};
+	auto stats = mDatasetManager.getCombinedStatistics(id1, id2);
+
+	mTFPaletteWidget->setStatistics(stats);
+}
+
 void
 ViewerWindow::updateGui()
 {

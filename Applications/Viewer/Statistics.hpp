@@ -9,6 +9,7 @@
 class ImageStatistics : public tfw::AStatistics
 {
 public:
+	typedef M4D::Imaging::ScatterPlot2D<int, float> ScatterPlot;
 	bool
 	hasHistogram() const override
 	{
@@ -70,6 +71,6 @@ public:
 	}
 
 	M4D::Imaging::Histogram1D<int> mHistogram;
-	M4D::Imaging::ScatterPlot2D<int, float> mGradientScatterPlot;
+	ScatterPlot mGradientScatterPlot;
 };
 

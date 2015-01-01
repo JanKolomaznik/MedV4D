@@ -64,6 +64,7 @@
    <addaction name="actionOpen_Additional"/>
    <addaction name="separator"/>
    <addaction name="actionTest"/>
+   <addaction name="actionTest2"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -99,6 +100,11 @@
   <action name="actionOpen_Additional">
    <property name="text">
     <string>Open Additional ...</string>
+   </property>
+  </action>
+  <action name="actionTest2">
+   <property name="text">
+    <string>Test2</string>
    </property>
   </action>
  </widget>
@@ -176,6 +182,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTest2</sender>
+   <signal>triggered()</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>testSlot2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>490</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>applyTransferFunction()</slot>
@@ -184,5 +206,6 @@
   <slot>testSlot()</slot>
   <slot>showSettingsDialog()</slot>
   <slot>closeAllFiles()</slot>
+  <slot>testSlot2()</slot>
  </slots>
 </ui>

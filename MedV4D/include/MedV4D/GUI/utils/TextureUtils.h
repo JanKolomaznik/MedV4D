@@ -54,7 +54,7 @@ void
 updateTextureSubImageTyped(soglu::GLTextureImageTyped< Dim > &aTexImage, const M4D::Imaging::AImageRegionDim<Dim> &aImage, Vector< int, Dim > aMinimum, Vector< int, Dim > aMaximum)
 {
 	//TODO some checks
-	M4D::GLUpdateTextureFromSubImageData( aTexImage.GetTextureGLID(), aImage, aMinimum, aMaximum );
+	M4D::GLUpdateTextureFromSubImageData( aTexImage.GetTextureGLID().value, aImage, aMinimum, aMaximum );
 }
 
 template < size_t Dim >

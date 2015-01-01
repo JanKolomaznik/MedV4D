@@ -69,6 +69,12 @@ public:
 public slots:
 
 	void
+	testSlot();
+
+	void
+	testSlot2();
+
+	void
 	applyTransferFunction();
 
 	void
@@ -85,9 +91,6 @@ public slots:
 
 	void
 	updateGui();
-
-	void
-	testSlot();
 
 	void
 	initAfterLoopStart();

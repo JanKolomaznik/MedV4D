@@ -2,10 +2,27 @@
 #include "OrganSegmentationModule/OrganSegmentationModule.hpp"
 
 
+OrganSegmentationWidget::OrganSegmentationWidget(OrganSegmentationController::Ptr aController, OrganSegmentationModule &aModule)
+	: mController( aController )
+	, mModule( aModule )
+{
+	ASSERT( aController );
+	setupUi( this );
+
+	QObject::connect(mBrushSettings, &BrushSettingsForm::updated, this, &OrganSegmentationWidget::brushChanged);
+
+	brushChanged();
+}
+
 void
 OrganSegmentationWidget::createMask()
 {
 	mModule.createMask();
+}
+
+void OrganSegmentationWidget::clearMask()
+{
+	mModule.clearMask();
 }
 
 void
@@ -54,6 +71,9 @@ OrganSegmentationWidget::changedMarkerType()
 	if (mBackgroundRadioButton->isChecked()) {
 		mController->changeMarkerType(OrganSegmentationController::MarkerType::background);
 	}
+	if (mEraseRadioButton->isChecked()) {
+		mController->changeMarkerType(OrganSegmentationController::MarkerType::none);
+	}
 }
 
 void
@@ -66,6 +86,11 @@ void
 OrganSegmentationWidget::runSegmentation()
 {
 	mModule.computeSegmentation();
+}
+
+void OrganSegmentationWidget::brushChanged()
+{
+	mController->mMaskDrawingController->setBrush(mBrushSettings->brush());
 }
 
 void
