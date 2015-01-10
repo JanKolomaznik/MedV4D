@@ -624,7 +624,13 @@ ViewerWindow::openFile()
 	dataLoaded(id);
 }
 
-void ViewerWindow::closeAllFiles()
+void
+ViewerWindow::openFileAdditional()
+{
+	auto id = mDatasetManager.loadFromFile();
+}
+
+void ViewerWindow::closeAllFiles() 
 {
 	//TODO - add confirmation dialog
 	mViewerDesktop->forEachViewer(

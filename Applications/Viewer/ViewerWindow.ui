@@ -135,6 +135,22 @@
    </hints>
   </connection>
   <connection>
+   <sender>actionOpen_Additional</sender>
+   <signal>triggered()</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>openFileAdditional()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>actionTest</sender>
    <signal>triggered()</signal>
    <receiver>ViewerWindow</receiver>

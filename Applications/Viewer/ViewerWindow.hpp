@@ -81,6 +81,9 @@ public slots:
 	openFile();
 
 	void
+	openFileAdditional();
+
+	void
 	closeAllFiles();
 
 	void
