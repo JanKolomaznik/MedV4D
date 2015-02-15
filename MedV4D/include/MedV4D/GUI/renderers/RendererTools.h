@@ -19,6 +19,7 @@ enum ColorTransform
 	ctMaxIntensityProjection,
 	ctBasic,
 	ctSimpleColorMap,
+  ctEigenvalues,
 
 	ctIsoSurfaces // TODO - remove
 };

@@ -698,7 +698,7 @@ ViewerWindow::computeHistogram(DatasetManager::DatasetID aId/* M4D::Imaging::AIm
 	statistics->mHistogram = std::move(histogram1D);
 	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);*/
 	//mTFPaletteWidget->setStatistics(statistics);
-	mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
+	//mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
 
 	//LOG( "Histogram computed in " << clock.SecondsPassed() );
 

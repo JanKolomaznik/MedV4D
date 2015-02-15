@@ -86,6 +86,7 @@ public:
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "MIP", ctMaxIntensityProjection ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Basic", ctBasic ) );
 		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Iso-Surfaces", ctIsoSurfaces ) );
+		mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Eigenvalues", ctEigenvalues ) );
 	}
 
 	void
@@ -132,6 +133,7 @@ struct VolumeRenderer::RenderingConfiguration
 	vorgl::DensityRenderingOptions densityOptions;
 	vorgl::TransferFunctionRenderingOptions transferFunctionOptions;
 	vorgl::IsoSurfaceRenderingOptions isoSurfaceOptions;
+  vorgl::EigenvaluesRenderingOptions eigenvaluesOptions;
 };
 
 

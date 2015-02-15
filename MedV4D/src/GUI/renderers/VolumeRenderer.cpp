@@ -150,6 +150,17 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 			}
 		}
 		break;
+  case ctEigenvalues:
+		{
+      eigenvaluesRendering(
+				aConfig.renderingConfiguration,
+				*primaryData,
+				aConfig.renderingQuality,
+				aConfig.clipPlanes,
+        aConfig.densityOptions
+        );
+		}
+		break;
 	default:
 		ASSERT( false );
 	}
