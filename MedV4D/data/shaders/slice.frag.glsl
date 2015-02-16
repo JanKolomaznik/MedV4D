@@ -30,7 +30,7 @@ applyWLWindow(
 	return vec4(value, value, value, 1.0f );*/
 
 	vec3 value = clamp(
-			(texture(aTextureData.data, coordinates).rrr - lowBand) * multiplier,
+			(texture(aTextureData.data, coordinates).rgb - lowBand) * multiplier,
 			0.0f,
 			1.0f
 			);

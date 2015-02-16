@@ -33,15 +33,18 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 					)
 				);
 
-//#ifdef ENABLE_MIP
-//	aInfo.value = max(aInfo.value, value);
-//#else
-//	value = 1.0f - pow(1.0f - value, gRenderingSliceThickness);
-//	//value = 1.0 - exp(-gRenderingSliceThickness * (1.0 - value));
-//	aInfo.value = aInfo.value + value * (1.0 - aInfo.value);
-//#endif //ENABLE_MIP
-
-  aInfo.value = value;
+#define ENABLE_MIP
+#ifdef ENABLE_MIP
+	aInfo.value = max(aInfo.value, value);
+#else
+	value.x = 1.0f - pow(1.0f - value.x, gRenderingSliceThickness);
+	value.y = 1.0f - pow(1.0f - value.y, gRenderingSliceThickness);
+	value.z = 1.0f - pow(1.0f - value.z, gRenderingSliceThickness);
+	//value = 1.0 - exp(-gRenderingSliceThickness * (1.0 - value));
+	aInfo.value.x = aInfo.value.x + value.x * (1.0 - aInfo.value.x);
+	aInfo.value.y = aInfo.value.y + value.y * (1.0 - aInfo.value.y);
+	aInfo.value.z = aInfo.value.z + value.z * (1.0 - aInfo.value.z);
+#endif //ENABLE_MIP
 
 	return aInfo;
 }
@@ -127,7 +130,8 @@ vec4 colorFromStepInfo(StepInfo aInfo)
 	// return vec4(abs(aInfo.value.r / NORMALIZATION_VALUE), abs(aInfo.value.g / NORMALIZATION_VALUE), abs(aInfo.value.b / NORMALIZATION_VALUE), 0.5);
 
   vec3 eigenvalues = decodeEigenvalues(aInfo.value);
+	//return vec4(eigenvalues, 1);
   float vesselness = computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z);
-	return vec4(1, 1, 1, vesselness);
+	return vec4(vesselness, vesselness, vesselness, 1);
 }
 
