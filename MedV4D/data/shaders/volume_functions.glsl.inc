@@ -237,14 +237,6 @@ ImageData3D aTextureData,
 vec3 aWLWindow
 )
 {
-  float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
-  float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
-  float multiplier = aWLWindow.z;
-
   vec3 coordinates = texCoordsFromPosition(aPosition, aTextureData);
-  return //clamp(
-    (texture(aTextureData.data, coordinates).rgb - lowBand);// *multiplier,
-    //0.0f,
-    //1.0f
-    //);
+  return texture(aTextureData.data, coordinates).rgb;
 }

@@ -3,51 +3,8 @@
 uniform vec2 gWLWindow;
 
 struct StepInfo {
-	vec3 value;
+	float value;
 };
-
-StepInfo initInfo(vec3 aCoordinates)
-{
-	StepInfo info;
-	info.value = applyWLWindowVector(
-				aCoordinates,
-				gPrimaryImageData3D,
-				vec3(
-					gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
-					gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
-					(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x 
-					)
-				); 
-	return info;
-}
-
-StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
-{
-	vec3 value = applyWLWindowVector(
-				aCoordinates,
-				gPrimaryImageData3D,
-				vec3( 
-					gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
-					gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
-					(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x 
-					)
-				);
-
-#define ENABLE_MIP
-#ifdef ENABLE_MIP
-	aInfo.value = max(aInfo.value, value);
-#else
-	value.x = 1.0f - pow(1.0f - value.x, gRenderingSliceThickness);
-	value.y = 1.0f - pow(1.0f - value.y, gRenderingSliceThickness);
-	value.z = 1.0f - pow(1.0f - value.z, gRenderingSliceThickness);
-	//value = 1.0 - exp(-gRenderingSliceThickness * (1.0 - value));
-	aInfo.value.x = aInfo.value.x + value.x * (1.0 - aInfo.value.x);
-	aInfo.value.y = aInfo.value.y + value.y * (1.0 - aInfo.value.y);
-	aInfo.value.z = aInfo.value.z + value.z * (1.0 - aInfo.value.z);
-#endif //ENABLE_MIP
-
-	return aInfo;
-}
 
 #define swap(a, b) float c = a; a = b; b = c;
 #define clamp(value, min, max) (value < min) ? min : ((value > max) ? max : value);
@@ -116,22 +73,66 @@ vec3 decodeEigenvalues(vec3 encodedValues)
 
 
 
+StepInfo initInfo(vec3 aCoordinates)
+{
+	StepInfo info;
+	
+	vec3 wlWindow = vec3(
+		gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+		gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+		(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x
+		);
+	vec3 encodedEigenvalues = applyWLWindowVector(
+				aCoordinates,
+				gPrimaryImageData3D,
+				wlWindow
+				);
+				
+  float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
+  float highBand = wlWindow.y + (wlWindow.x * 0.5f);
+  float multiplier = wlWindow.z;
+				
+  vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
+  info.value = (computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z) - lowBand) * multiplier;
+	
+	return info;
+}
+
+StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
+{
+	vec3 wlWindow = vec3(
+		gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+		gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+		(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x
+		);
+		
+	vec3 encodedEigenvalues = applyWLWindowVector(
+				aCoordinates,
+				gPrimaryImageData3D,
+				wlWindow
+				);
+				
+  float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
+  float highBand = wlWindow.y + (wlWindow.x * 0.5f);
+  float multiplier = wlWindow.z;
+				
+  vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
+  float value = computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z)/* - lowBand) * multiplier*/;
+
+#define ENABLE_MIP
+#ifdef ENABLE_MIP
+	aInfo.value = max(aInfo.value, value);
+#else
+	value = 1.0f - pow(1.0f - value, gRenderingSliceThickness);
+	//value = 1.0 - exp(-gRenderingSliceThickness * (1.0 - value));
+	aInfo.value = aInfo.value + value * (1.0 - aInfo.value);
+#endif //ENABLE_MIP
+
+	return aInfo;
+}
+
 vec4 colorFromStepInfo(StepInfo aInfo)
 {
-	// if (aInfo.value.x >= 1)
-	// {
-		// return vec4(1, 0, 0, 1);
-	// }
-	// else
-	// {
-		// return vec4(0, 1, 0, 1);
-	// }
-	// const float NORMALIZATION_VALUE = 1000;
-	// return vec4(abs(aInfo.value.r / NORMALIZATION_VALUE), abs(aInfo.value.g / NORMALIZATION_VALUE), abs(aInfo.value.b / NORMALIZATION_VALUE), 0.5);
-
-  vec3 eigenvalues = decodeEigenvalues(aInfo.value);
-	//return vec4(eigenvalues, 1);
-  float vesselness = computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z);
-	return vec4(vesselness, vesselness, vesselness, 1);
+	return vec4(1, 1, 1, aInfo.value);
 }
 
