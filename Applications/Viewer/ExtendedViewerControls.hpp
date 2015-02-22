@@ -32,7 +32,10 @@ public slots:
 	updateAssignedDatasets();
 
 	void
-	assignDatasets();
+  assignDatasets();
+
+  void
+  createDataset();
 
 	void
 	resetPrimaryDataset();

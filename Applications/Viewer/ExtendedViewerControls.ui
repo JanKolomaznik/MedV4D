@@ -23,54 +23,79 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Primary dataset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="mPrimaryDatasetComboBox"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Secondary dataset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="mSecondaryDatasetComboBox"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Mask</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="mMaskComboBox"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QToolButton" name="mResetPrimaryDatasetButton">
+      <item row="4" column="2">
+       <widget class="QToolButton" name="mResetMaskDatasetButton">
         <property name="text">
          <string>X</string>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QToolButton" name="mResetSecondaryDatasetButton">
+       <widget class="QToolButton" name="mResetPrimaryDatasetButton">
         <property name="text">
          <string>X</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QToolButton" name="mResetMaskDatasetButton">
+       <widget class="QToolButton" name="mResetSecondaryDatasetButton">
         <property name="text">
          <string>X</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="mPrimaryDatasetComboBox"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Primary dataset</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Secondary dataset</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="mSecondaryDatasetComboBox"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="mMaskComboBox"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Mask</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="createDatasetTypeComboBox">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>Vesselness</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="createDatasetPushButton">
+        <property name="text">
+         <string>Create dataset</string>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -185,6 +210,22 @@
     <hint type="destinationlabel">
      <x>398</x>
      <y>242</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>createDatasetPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ExtendedViewerControls</receiver>
+   <slot>createDataset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>101</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>
