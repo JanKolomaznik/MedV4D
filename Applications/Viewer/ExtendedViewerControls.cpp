@@ -2,6 +2,9 @@
 #include "ui_ExtendedViewerControls.h"
 #include "itkUtils.hpp"
 
+#include "ItkFiltering.h"
+#include "EigenvaluesFilterPolicies.h"
+
 ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget *parent)
   : QWidget(parent)
   , ui(new Ui::ExtendedViewerControls)
@@ -54,7 +57,10 @@ ExtendedViewerControls::createDataset()
     typedef unsigned short ImageElementType;
     auto itkImage = M4dImageToItkImage<ImageElementType>(std::static_pointer_cast<const M4D::Imaging::Image<ImageElementType, 3>>(rec.mImage));
 
-    // do some black magic with itk
+    using namespace M4D::GUI::Viewer;
+    ItkFiltering<FranghiVesselness<>> filtering(itkImage);
+
+    auto filteredImage = filtering.GetEigenValuesFilterImage();
 
     auto medV4DImage = itkImageToM4dImage<ImageElementType>(itkImage);
     this->mManager.registerDataset(medV4DImage, "itkConvertedImage");
