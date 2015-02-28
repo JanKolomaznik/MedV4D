@@ -48,7 +48,6 @@ M4dImageToItkImage(typename M4D::Imaging::Image<TElement, 3>::ConstPtr aImage)
   typename ItkImageType::Pointer itkImage = ItkImageType::New();
   itkImage->SetRegions(region);
   itkImage->Allocate();
-  itkImage->FillBuffer(0);
   itkImage->SetOrigin(origin);
   itkImage->SetSpacing(spacing);
 

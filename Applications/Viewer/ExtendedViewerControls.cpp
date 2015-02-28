@@ -54,17 +54,17 @@ ExtendedViewerControls::createDataset()
     const auto & rec = mManager.getDatasetRecord(id);
 
     // rewrite generically!!
-    typedef unsigned short ImageElementType;
+    typedef Vector<float, 3> ImageElementType;
     auto itkImage = M4dImageToItkImage<ImageElementType>(std::static_pointer_cast<const M4D::Imaging::Image<ImageElementType, 3>>(rec.mImage));
 
-    using namespace M4D::GUI::Viewer;
-    ItkFiltering<FranghiVesselness<>> filtering(itkImage);
+    /*using namespace M4D::GUI::Viewer;
+    ItkFiltering<FranghiVesselness<ImageElementType, float>, ImageElementType> filtering(itkImage);
 
     auto filteredImage = filtering.GetEigenValuesFilterImage();
 
     auto medV4DImage = itkImageToM4dImage<ImageElementType>(itkImage);
     this->mManager.registerDataset(medV4DImage, "itkConvertedImage");
-    this->updateAssignedDatasets();
+    this->updateAssignedDatasets();*/
   }
 }
 

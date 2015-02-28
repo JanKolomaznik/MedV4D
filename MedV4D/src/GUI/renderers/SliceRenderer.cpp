@@ -21,6 +21,7 @@ SliceRenderer::initialize()
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "LUT window", ctLUTWindow ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Region colormap", ctSimpleColorMap ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Eigenvalues", ctEigenvalues ) );
 }
 
 void
@@ -87,6 +88,18 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 				);
 		}
 		break;
+  case ctEigenvalues:
+  {
+    vorgl::EigenvaluesSliceRenderingOptions eigenvaluesOptions = { aConfig.lutWindow };
+    eigenvaluesSliceRendering(
+      aViewSetup,
+      *primaryData,
+      slice,
+      renderingQuality,
+      eigenvaluesOptions
+      );
+  }
+  break;
 	case ctMaxIntensityProjection:
 		ASSERT( false );
 		break;

@@ -12,7 +12,7 @@ namespace M4D
   {
     namespace Viewer
     {
-      template<typename MethodPolicy, typename PixelType = unsigned short, typename EigenvalueType = float, unsigned int Dimension = 3>
+      template<typename MethodPolicy, typename PixelType = unsigned short, typename EigenvalueType = MethodPolicy::InputValueType, unsigned int Dimension = 3>
       class ItkFiltering
       {
       public:
