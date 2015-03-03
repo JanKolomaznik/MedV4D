@@ -4,6 +4,29 @@
 
 #include "ItkFiltering.h"
 #include "EigenvaluesFilterPolicies.h"
+#include "EigenvaluesFilterTraits.h"
+
+#include "FranghisVesselnessOptions.h"
+#include "LinearCombinationOptions.h"
+
+#include <vector>
+#include <string>
+
+
+using namespace M4D::GUI::Viewer;
+
+// pointers are used, because QDialog can not be copied
+typedef std::pair<std::string, std::function<std::shared_ptr<FilteringDialogBase<float>>()>> Options;
+std::vector<Options> eigenvaluesOptionsDialogs
+{
+  Options("Vesselness", []() {
+    return std::make_shared<FranghisVesselnessOptions>();
+  }),
+  Options("Eigenvalues linear combination", []() {
+    return std::make_shared<LinearCombinationOptions>();
+  })
+}
+;
 
 ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget *parent)
   : QWidget(parent)
@@ -16,6 +39,12 @@ ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget
   ui->mPrimaryDatasetComboBox->setModel(&mManager.imageModel());
   ui->mSecondaryDatasetComboBox->setModel(&mManager.imageModel());
   ui->mMaskComboBox->setModel(&mManager.imageModel());
+
+  this->ui->createDatasetTypeComboBox->clear();
+  for (auto eigenvaluesOptions : eigenvaluesOptionsDialogs)
+  {
+    this->ui->createDatasetTypeComboBox->addItem(QString::fromStdString(eigenvaluesOptions.first));
+  }
 }
 
 ExtendedViewerControls::~ExtendedViewerControls()
@@ -46,25 +75,57 @@ ExtendedViewerControls::updateControls()
 void
 ExtendedViewerControls::createDataset()
 {
+  // rewrite generically!!
+  typedef unsigned short ImageElementType;
+  typedef float EigenvaluesType;
+  const size_t DIMENSION = 3;
+
   int primaryIndex = ui->mPrimaryDatasetComboBox->currentIndex();
 
   if (primaryIndex >= 0) {
-    auto inputData = ViewerInputDataWithId::Ptr(new ViewerInputDataWithId);
-    auto id = mManager.idFromIndex(primaryIndex);
-    const auto & rec = mManager.getDatasetRecord(id);
 
-    // rewrite generically!!
-    typedef Vector<float, 3> ImageElementType;
-    auto itkImage = M4dImageToItkImage<ImageElementType>(std::static_pointer_cast<const M4D::Imaging::Image<ImageElementType, 3>>(rec.mImage));
+    size_t selectedPolicyIndex = this->ui->createDatasetTypeComboBox->currentIndex();
+    std::shared_ptr<FilteringDialogBase<EigenvaluesType>> datasetFunctionOptions = eigenvaluesOptionsDialogs[selectedPolicyIndex].second();
 
-    /*using namespace M4D::GUI::Viewer;
-    ItkFiltering<FranghiVesselness<ImageElementType, float>, ImageElementType> filtering(itkImage);
+    if (datasetFunctionOptions->exec() == QDialog::Accepted)
+    {
+      auto inputData = ViewerInputDataWithId::Ptr(new ViewerInputDataWithId);
+      auto id = mManager.idFromIndex(primaryIndex);
+      const auto & rec = mManager.getDatasetRecord(id);
 
-    auto filteredImage = filtering.GetEigenValuesFilterImage();
+      auto itkImage = M4dImageToItkImage<ImageElementType>(std::static_pointer_cast<const M4D::Imaging::Image<ImageElementType, DIMENSION>>(rec.mImage));
 
-    auto medV4DImage = itkImageToM4dImage<ImageElementType>(itkImage);
-    this->mManager.registerDataset(medV4DImage, "itkConvertedImage");
-    this->updateAssignedDatasets();*/
+      itk::Image<ImageElementType, DIMENSION>::Pointer filteredImage;
+
+      std::vector<EigenvaluesType> options = datasetFunctionOptions->GetValues();
+
+      switch (selectedPolicyIndex)
+      {
+      case 0:
+        {
+          typedef FranghiVesselness<ImageElementType, EigenvaluesType, DIMENSION> VesselnessType;
+          VesselnessType vesselness(options);
+          ItkFiltering<VesselnessType, ImageElementType> filtering(itkImage, vesselness);
+          filteredImage = filtering.GetEigenValuesFilterImage();
+        }
+       break;
+
+      case 1:
+        {
+          typedef EigenvaluesLinearCombination<ImageElementType, EigenvaluesType, DIMENSION> LinearCombinationType;
+          LinearCombinationType linearCombination(options);
+          ItkFiltering<LinearCombinationType, ImageElementType> filtering(itkImage, linearCombination);
+          filteredImage = filtering.GetEigenValuesFilterImage();
+        }
+        break;
+      }
+
+
+      auto medV4DImage = itkImageToM4dImage<ImageElementType>(filteredImage);
+      this->mManager.registerDataset(medV4DImage, eigenvaluesOptionsDialogs[selectedPolicyIndex].first);
+      this->updateAssignedDatasets();
+    }
+
   }
 }
 
@@ -99,6 +160,8 @@ ExtendedViewerControls::updateAssignedDatasets()
   ui->mMaskComboBox->setCurrentIndex(maskIndex);
 
   mIsUpdating = false;
+
+  this->ui->createDatasetPushButton->setEnabled(primaryIndex >= 0);
 }
 
 void ExtendedViewerControls::assignDatasets()

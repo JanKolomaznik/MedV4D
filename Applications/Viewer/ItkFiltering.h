@@ -30,7 +30,7 @@ namespace M4D
         typedef itk::ImageRegionConstIterator<HessianOutputType>  HessianIteratorType;
         typedef itk::HessianRecursiveGaussianImageFilter<ItkImageType, HessianOutputType> HessianFilterType;
 
-        ItkFiltering(ItkImagePointer image) : image(image)
+        ItkFiltering(ItkImagePointer image, MethodPolicy policy) : image(image), policy(policy)
         {
         }
 
@@ -39,8 +39,6 @@ namespace M4D
           this->GetEigenValues();
 
           std::cout << "Performing computes on eigenvalues" << std::endl;
-
-          this->policy.Initialize();
 
           itk::ImageRegionIterator<ItkImageType> imageIterator(this->image, this->image->GetRequestedRegion());
           EigenvaluesCollectionIteratorType eigenvaluesIterator(this->eigenvaluesPerVoxel, this->eigenvaluesPerVoxel->GetRequestedRegion());
@@ -121,8 +119,7 @@ namespace M4D
 
         void ComputeEigenvalues()
         {
-          // TODO: take value from GUI!
-          double hessianSigma = 3;
+          double hessianSigma = policy.GetHessianSigma();
 
           std::cout << "computing hessian matrices" << std::endl;
 
