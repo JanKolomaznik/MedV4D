@@ -59,20 +59,45 @@ void main(void)
 		gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
 		(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x
 		);
-	vec3 encodedEigenvalues = applyWLWindowVector(
+	vec3 mappedValues = applyWLWindowVector(
 				positionInImage,
 				gPrimaryImageData3D,
 				wlWindow
 				);
 	
-  float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
+	const float minimum = -5;
+	const float maximum = -2;
+	
+	vec3 unmappedValues = (mappedValues * maximum) + minimum;
+	
+	float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
+  float highBand = wlWindow.y + (wlWindow.x * 0.5f);
+  float multiplier = wlWindow.z;
+	
+	float value = computeVesselness(mappedValues.x, mappedValues.y, mappedValues.z);
+	fragmentColor = vec4(value, 0, 0, 1);
+	
+	/*if (mappedValues.x == -100)
+		fragmentColor = vec4(0, 1, 0, 1);
+	else if (mappedValues.x == 0.5)
+		fragmentColor = vec4(1, 0, 0, 1);
+	else
+		fragmentColor = vec4(0, 0, 0, 0);*/
+	
+	/*if (unmappedValues.x < -1.5 && unmappedValues.x > -2.5)
+		fragmentColor = vec4(0, 1, 0, 1);
+	else if (unmappedValues.x < -50000)
+		fragmentColor = vec4(1, 0, 1, 1);
+	else
+		fragmentColor = vec4(0, 0, 0, 0);*/
+	
+  /*float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
   float highBand = wlWindow.y + (wlWindow.x * 0.5f);
   float multiplier = wlWindow.z;
 				
   vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
-	float vesselness = computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z);
-  float value = (vesselness - lowBand);// * multiplier;
+  float value = (computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z) - lowBand);// * multiplier;
 	
-	fragmentColor = vec4(vesselness, 0, 0, 1);
-	//fragmentColor = vec4(encodedEigenvalues * multiplier, 1);
+	//fragmentColor = vec4(1, 1, 1, value);
+	fragmentColor = vec4(encodedEigenvalues * multiplier, 1);*/
 }

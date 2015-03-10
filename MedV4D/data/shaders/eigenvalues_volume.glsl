@@ -25,8 +25,8 @@ StepInfo initInfo(vec3 aCoordinates)
   float highBand = wlWindow.y + (wlWindow.x * 0.5f);
   float multiplier = wlWindow.z;
 				
-  vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
-  info.value = (computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z)*1000) * multiplier;
+  //vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
+  info.value = (computeVesselness(encodedEigenvalues.x, encodedEigenvalues.y, encodedEigenvalues.z)) * multiplier;
 	
 	return info;
 }
@@ -44,13 +44,17 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 				gPrimaryImageData3D,
 				wlWindow
 				);
-				
-  float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
+	
+	float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
   float highBand = wlWindow.y + (wlWindow.x * 0.5f);
-  float multiplier = wlWindow.z;
+  float multiplier = wlWindow.z;	
+				
+  float value = (computeVesselness(encodedEigenvalues.x, encodedEigenvalues.y, encodedEigenvalues.z)) * multiplier;
+				
+  /*
 				
   vec3 eigenvalues = decodeEigenvalues(encodedEigenvalues);
-  float value = (computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z)*1000) * multiplier;
+  float value = (computeVesselness(eigenvalues.x, eigenvalues.y, eigenvalues.z) - lowBand) * multiplier;*/
 
 #define ENABLE_MIP
 #ifdef ENABLE_MIP
@@ -66,6 +70,6 @@ StepInfo doStep(StepInfo aInfo, vec3 aCoordinates, vec3 aRayDirection)
 
 vec4 colorFromStepInfo(StepInfo aInfo)
 {
-	return vec4(1, 0, 0, aInfo.value);
+	return vec4(0, 1, 0, aInfo.value*1000);
 }
 
