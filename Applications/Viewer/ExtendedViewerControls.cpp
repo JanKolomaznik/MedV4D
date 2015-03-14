@@ -3,8 +3,8 @@
 #include "itkUtils.hpp"
 
 #include "ItkFiltering.h"
+#include "ItkEigenvalues.h"
 #include "EigenvaluesFilterPolicies.h"
-#include "EigenvaluesFilterTraits.h"
 
 #include "FranghisVesselnessOptions.h"
 #include "LinearCombinationOptions.h"
@@ -23,6 +23,9 @@ std::vector<Options> eigenvaluesOptionsDialogs
     return std::make_shared<FranghisVesselnessOptions>();
   }),
   Options("Eigenvalues linear combination", []() {
+    return std::make_shared<LinearCombinationOptions>();
+  }),
+  Options("Eigenvalues raw", []() {
     return std::make_shared<LinearCombinationOptions>();
   })
 }
@@ -95,8 +98,6 @@ ExtendedViewerControls::createDataset()
 
       auto itkImage = M4dImageToItkImage<ImageElementType>(std::static_pointer_cast<const M4D::Imaging::Image<ImageElementType, DIMENSION>>(rec.mImage));
 
-      itk::Image<ImageElementType, DIMENSION>::Pointer filteredImage;
-
       std::vector<EigenvaluesType> options = datasetFunctionOptions->GetValues();
 
       switch (selectedPolicyIndex)
@@ -106,7 +107,9 @@ ExtendedViewerControls::createDataset()
           typedef FranghiVesselness<ImageElementType, EigenvaluesType, DIMENSION> VesselnessType;
           VesselnessType vesselness(options);
           ItkFiltering<VesselnessType, ImageElementType> filtering(itkImage, vesselness);
-          filteredImage = filtering.GetEigenValuesFilterImage();
+          itk::Image<ImageElementType, DIMENSION>::Pointer filteredImage = filtering.GetEigenValuesFilterImage();
+          auto medV4DImage = itkImageToM4dImage<ImageElementType>(filteredImage);
+          this->mManager.registerDataset(medV4DImage, eigenvaluesOptionsDialogs[selectedPolicyIndex].first);
         }
        break;
 
@@ -115,14 +118,23 @@ ExtendedViewerControls::createDataset()
           typedef EigenvaluesLinearCombination<ImageElementType, EigenvaluesType, DIMENSION> LinearCombinationType;
           LinearCombinationType linearCombination(options);
           ItkFiltering<LinearCombinationType, ImageElementType> filtering(itkImage, linearCombination);
-          filteredImage = filtering.GetEigenValuesFilterImage();
+          itk::Image<ImageElementType, DIMENSION>::Pointer filteredImage = filtering.GetEigenValuesFilterImage();
+          auto medV4DImage = itkImageToM4dImage<ImageElementType>(filteredImage);
+          this->mManager.registerDataset(medV4DImage, eigenvaluesOptionsDialogs[selectedPolicyIndex].first);
+        }
+        break;
+
+      case 2:
+        {
+          ItkEigenvalues<ImageElementType, EigenvaluesType> eigenvaluesComputer(itkImage, options[0]);
+          itk::Image<Vector<EigenvaluesType, DIMENSION>, DIMENSION>::Pointer filteredImage = eigenvaluesComputer.GetEigenValuesImage();
+          M4D::Imaging::Image<Vector<EigenvaluesType, DIMENSION>, DIMENSION>::Ptr medV4DImage = itkImageToM4dImage<Vector<EigenvaluesType, DIMENSION>>(filteredImage);
+          this->mManager.registerDataset(medV4DImage, eigenvaluesOptionsDialogs[selectedPolicyIndex].first);
         }
         break;
       }
 
 
-      auto medV4DImage = itkImageToM4dImage<ImageElementType>(filteredImage);
-      this->mManager.registerDataset(medV4DImage, eigenvaluesOptionsDialogs[selectedPolicyIndex].first);
       this->updateAssignedDatasets();
     }
 
