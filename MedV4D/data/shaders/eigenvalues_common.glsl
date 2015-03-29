@@ -51,6 +51,11 @@ float computeVesselness(float lambda1, float lambda2, float lambda3)
   }
 }
 
+float computeVesselness(vec3 eigenvalues)
+{
+	return computeVesselness(eigenvalues[0], eigenvalues[1], eigenvalues[2]);
+}
+
 float decodeEigenvalue(float encodedValue)
 {
   const float NORMALIZATION_CONSTANT = 1000;

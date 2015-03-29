@@ -90,6 +90,18 @@ getUnmappedValue(
 	return (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
 }
 
+float 
+getUnmappedValueVector(
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		vec2 aMappedIntervalBands
+		)
+{
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	vec3 coordinates = texCoordsFromPosition(aPosition, aTextureData);
+	return (texture(aTextureData.data, coordinates).xyz * range) + aMappedIntervalBands[0];
+}
+
 vec3 
 computeGradient(ImageData3D aImage, vec2 aMappedIntervalBands, float aCentralValue, vec3 aPosition)
 {
@@ -125,21 +137,6 @@ preintegratedTransferFunction1D(
 }
 
 vec4 
-transferFunction1D( 
-		vec3 aPosition, 
-		ImageData3D aTextureData,
-		TransferFunction1D aTransferFunction1D,
-		vec2 aMappedIntervalBands)
-{
-	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
-		
-	vec4 outputColor = applyTransferFunction1D( value, aTransferFunction1D );
-	return outputColor;
-}
-
-vec4 
 transferFunction2DWithGradient( 
 		vec3 aPosition, 
 		ImageData3D aTextureData,
@@ -156,28 +153,6 @@ transferFunction2DWithGradient(
 	vec4 outputColor = applyTransferFunction2D(vec2(value, magnitude), aTransferFunction2D );
 
 	//outputColor.a = clamp(magnitude / 2000, 0.0, 1.0);
-	return outputColor;
-}
-
-vec4 
-transferFunction2DWithSecondary( 
-		vec3 aPosition, 
-		ImageData3D aTextureData,
-		vec2 aMappedIntervalBands,
-		ImageData3D aSecondaryTextureData,
-		vec2 aSecondaryMappedIntervalBands,
-		TransferFunction2D aTransferFunction2D
-		)
-{
-	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
-		
-	vec3 coordinates2 = texCoordsFromPosition( aPosition, aSecondaryTextureData );
-	float range2 = aSecondaryMappedIntervalBands[1] - aSecondaryMappedIntervalBands[0];
-	float value2 = (texture(aSecondaryTextureData.data, coordinates2).x * range2) + aSecondaryMappedIntervalBands[0];
-
-	vec4 outputColor = applyTransferFunction2D(vec2(value, value2), aTransferFunction2D );
 	return outputColor;
 }
 

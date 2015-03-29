@@ -7,6 +7,96 @@ struct StepInfo {
 	float previousValue;
 };
 
+vec4 
+transferFunction1D( 
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		TransferFunction1D aTransferFunction1D,
+		vec2 aMappedIntervalBands)
+{
+	const bool EIGENVALUES_PREPROCESS_PRIMARY = true;
+	
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	
+	float value = 0;
+	if (EIGENVALUES_PREPROCESS_PRIMARY)
+	{
+		//value = (computeVesselness(texture(aTextureData.data, coordinates).xyz) * range + aMappedIntervalBands[0]);
+		float vesselness = computeVesselness(texture(aTextureData.data, coordinates).rgb);
+		value = (vesselness * range) + aMappedIntervalBands[0];
+	}
+	else
+	{
+		value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
+	}
+	
+	return vec4(0, 1, 0, value);
+	vec4 outputColor = applyTransferFunction1D( value, aTransferFunction1D );
+	return outputColor;
+}
+
+vec4 
+transferFunction2DWithSecondary( 
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		vec2 aMappedIntervalBands,
+		ImageData3D aSecondaryTextureData,
+		vec2 aSecondaryMappedIntervalBands,
+		TransferFunction2D aTransferFunction2D
+		)
+{	
+	const bool EIGENVALUES_PREPROCESS_PRIMARY = false;
+	const bool EIGENVALUES_PREPROCESS_SECONDARY = true;
+
+	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = 0;
+	if (EIGENVALUES_PREPROCESS_PRIMARY)
+	{
+		vec3 eigenvalues = texture(aTextureData.data, coordinates).xyz;
+		float vesselness = computeVesselness(eigenvalues);
+		value = (vesselness * range) + aMappedIntervalBands[0];
+	}
+	else
+	{
+		value = (texture(aTextureData.data, coordinates).x * range) + aMappedIntervalBands[0];
+	}
+		
+	vec3 coordinates2 = texCoordsFromPosition( aPosition, aSecondaryTextureData );
+	float range2 = aSecondaryMappedIntervalBands[1] - aSecondaryMappedIntervalBands[0];
+	float value2 = 0;
+	if (EIGENVALUES_PREPROCESS_SECONDARY)
+	{
+		vec3 eigenvalues = texture(aSecondaryTextureData.data, coordinates2).xyz;
+		float vesselness = computeVesselness(eigenvalues)*500;
+		value2 = ((vesselness * range2) + aSecondaryMappedIntervalBands[0]);
+	}
+	else
+	{
+		value2 = (texture(aSecondaryTextureData.data, coordinates2).x * range2) + aSecondaryMappedIntervalBands[0];
+	}
+
+	vec4 outputColor = applyTransferFunction2D(vec2(value, value2), aTransferFunction2D );
+	return outputColor;
+}
+
+
+float 
+getUnmappedValueVesselness(
+		vec3 aPosition, 
+		ImageData3D aTextureData,
+		vec2 aMappedIntervalBands
+		)
+{
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	vec3 coordinates = texCoordsFromPosition(aPosition, aTextureData);
+	float vesselness = computeVesselness(texture(aTextureData.data, coordinates).xyz);
+	
+	//return 1;
+	return (vesselness * range) + aMappedIntervalBands[0];
+}
+
 StepInfo initInfo(vec3 aCoordinates)
 {
 	StepInfo info;
