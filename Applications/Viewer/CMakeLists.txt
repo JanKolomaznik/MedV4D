@@ -95,10 +95,14 @@ SET( VIEWER_SOURCES
 	"ItkUtils.cpp"
 	"Statistics.cpp"
 	"main.cpp"
-	"ViewerWindow.cpp" )
+	"ViewerWindow.cpp"
+  "FranghisVesselnessOptions.cpp"
+  "LinearCombinationOptions.cpp"	)
 SET( VIEWER_UI
 	"ExtendedViewerControls.ui"
 	"ViewerWindow.ui"
+	"FranghisVesselnessOptions.ui"
+	"LinearCombinationOptions.ui"
 	)
 
 #INCLUDE_DIRECTORIES(../../extern/soglu/include)
