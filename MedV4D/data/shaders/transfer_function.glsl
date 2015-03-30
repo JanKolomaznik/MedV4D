@@ -45,17 +45,14 @@ transferFunction2DWithSecondary(
 		vec2 aSecondaryMappedIntervalBands,
 		TransferFunction2D aTransferFunction2D
 		)
-{	
-	const bool EIGENVALUES_PREPROCESS_PRIMARY = false;
-	const bool EIGENVALUES_PREPROCESS_SECONDARY = true;
-
+{
 	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
 	float value = 0;
-	if (EIGENVALUES_PREPROCESS_PRIMARY)
+	if (aTransferFunction2D.eigenvalueProcessPrimary)
 	{
 		vec3 eigenvalues = texture(aTextureData.data, coordinates).xyz;
-		float vesselness = computeVesselness(eigenvalues);
+		float vesselness = computeVesselness(eigenvalues, aTransferFunction2D.primaryEigenvalueParameters)*aTransferFunction2D.primaryValuesMultiplier;
 		value = (vesselness * range) + aMappedIntervalBands[0];
 	}
 	else
@@ -66,10 +63,10 @@ transferFunction2DWithSecondary(
 	vec3 coordinates2 = texCoordsFromPosition( aPosition, aSecondaryTextureData );
 	float range2 = aSecondaryMappedIntervalBands[1] - aSecondaryMappedIntervalBands[0];
 	float value2 = 0;
-	if (EIGENVALUES_PREPROCESS_SECONDARY)
+	if (aTransferFunction2D.eigenvalueProcessSecondary)
 	{
 		vec3 eigenvalues = texture(aSecondaryTextureData.data, coordinates2).xyz;
-		float vesselness = computeVesselness(eigenvalues)*500;
+		float vesselness = computeVesselness(eigenvalues, aTransferFunction2D.secondaryEigenvalueParameters)*aTransferFunction2D.secondaryValuesMultiplier;
 		value2 = ((vesselness * range2) + aSecondaryMappedIntervalBands[0]);
 	}
 	else

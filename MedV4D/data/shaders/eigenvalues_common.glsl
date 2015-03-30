@@ -29,12 +29,8 @@ float ExponencialFormula(float a, float b)
     );
 }
 
-float computeVesselness(float lambda1, float lambda2, float lambda3)
+float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
 {
-  const float alpha = 0.5;
-  const float beta = 0.5;
-  const float gamma = 2;
-
   vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 
   float R_A = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
@@ -51,9 +47,19 @@ float computeVesselness(float lambda1, float lambda2, float lambda3)
   }
 }
 
+float computeVesselness(float lambda1, float lambda2, float lambda3)
+{
+	return computeVesselness(lambda1, lambda2, lambda3, 0.5, 0.5, 2);
+}
+
 float computeVesselness(vec3 eigenvalues)
 {
 	return computeVesselness(eigenvalues[0], eigenvalues[1], eigenvalues[2]);
+}
+
+float computeVesselness(vec3 eigenvalues, vec3 parameters)
+{
+	return computeVesselness(eigenvalues[0], eigenvalues[1], eigenvalues[2], parameters[0], parameters[1], parameters[2]);
 }
 
 float decodeEigenvalue(float encodedValue)
