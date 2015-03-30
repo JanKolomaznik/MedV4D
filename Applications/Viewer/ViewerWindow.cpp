@@ -501,10 +501,16 @@ struct FillTFBufferVisitor :
 	visit(const tfw::TransferFunction2D &aTransferFunction) override {
 		STUBBED("Handle these constants for 2D transfer function");
 		static const int cXSampleCount = 1000;
-		static const int cYSampleCount = 200;
+		static const int cYSampleCount = 20;
 		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
 		tfw::TransferFunction2D::RangePoint from, to;
+    tfw::TransferFunction2D::EigenvalueProcessingParameters primaryParameters = aTransferFunction.getPrimaryParameters();
+    int primaryValuesMultiplier = aTransferFunction.getPrimaryValuesMultiplier();
+    tfw::TransferFunction2D::EigenvalueProcessingParameters secondaryParameters = aTransferFunction.getSecondaryParameters();
+    int secondaryValuesMultiplier = aTransferFunction.getSecondaryValuesMultiplier();
 		std::tie(from, to) = aTransferFunction.range();
+    bool processEigenvaluePrimary = aTransferFunction.getEigenvalueProcessPrimary();
+    bool processEigenvalueSecondary = aTransferFunction.getEigenvalueProcessSecondary();
 		std::array<float, 2> step {
 			(to[0] - from[0]) / cXSampleCount,
 			(to[1] - from[1]) / cYSampleCount };
@@ -513,14 +519,23 @@ struct FillTFBufferVisitor :
 				buffer[j*cXSampleCount + i] = aTransferFunction.getColor(i * step[0] + from[0], j * step[1] + from[1]).data();
 			}
 		}
-		OpenGLManager::getInstance()->doGL([this, &buffer, from, to] () {
+    OpenGLManager::getInstance()->doGL(
+      [this, &buffer, from, to, processEigenvaluePrimary, processEigenvalueSecondary, primaryParameters, primaryValuesMultiplier, secondaryParameters, secondaryValuesMultiplier]
+        () {
 				vorgl::TransferFunctionBuffer2DInfo info;
 				info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer2D(
 							buffer.data(),
 							cXSampleCount,
 							cYSampleCount,
 							glm::fvec2(std::get<0>(from), std::get<1>(from)),
-							glm::fvec2(std::get<0>(to), std::get<1>(to)));
+							glm::fvec2(std::get<0>(to), std::get<1>(to)),
+              processEigenvaluePrimary,
+              processEigenvalueSecondary,
+              primaryParameters,
+              primaryValuesMultiplier,
+              secondaryParameters,
+              secondaryValuesMultiplier
+        );
 				mInfo.bufferInfo = info;
 			});
 	}
