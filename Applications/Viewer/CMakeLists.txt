@@ -87,7 +87,9 @@ SET( VIEWER_HEADERS
 	"ItkUtils.hpp"
 	"Statistics.hpp"
 	"JoyInput.h"
-	"ViewerWindow.hpp" )
+	"ViewerWindow.hpp"
+  "FranghisVesselnessOptions.h"
+  "LinearCombinationOptions.h"	)
 SET( VIEWER_SOURCES
 	"ExtendedViewerControls.cpp"
 	"DatasetManager.cpp"
