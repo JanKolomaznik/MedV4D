@@ -32,8 +32,7 @@ itkImageToM4dImage(typename itk::Image<TElement, 3>::Pointer aImage)
     elementExtents[i] = aImage->GetSpacing()[i];
   }
 
-  auto image = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents
-    <TElement, 3>(minimum, maximum, elementExtents);
+  auto image = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents<TElement, 3>(minimum, maximum, elementExtents);
 
   for (int k = minimum[2]; k < maximum[2]; ++k) {
     for (int j = minimum[1]; j < maximum[1]; ++j) {
@@ -62,8 +61,8 @@ M4dImageToItkImage(typename M4D::Imaging::Image<TElement, 3>::ConstPtr aImage)
   Vector<float, cDimension> maximum = aImage->GetMaximum();
   typename M4D::Imaging::Image<TElement, 3>::ElementExtentsType elementExtents = aImage->GetElementExtents();
 
-  ItkImageType::SizeType size;
-  ItkImageType::IndexType start;
+  typename ItkImageType::SizeType size;
+  typename ItkImageType::IndexType start;
   double origin[cDimension];
   double spacing[cDimension];
 
@@ -75,7 +74,7 @@ M4dImageToItkImage(typename M4D::Imaging::Image<TElement, 3>::ConstPtr aImage)
     spacing[i] = elementExtents[i];
   }
 
-  ItkImageType::RegionType region;
+  typename ItkImageType::RegionType region;
   region.SetSize(size);
   region.SetIndex(start);
 
@@ -86,7 +85,7 @@ M4dImageToItkImage(typename M4D::Imaging::Image<TElement, 3>::ConstPtr aImage)
   itkImage->SetSpacing(spacing);
 
 
-  ItkImageType::IndexType index = region.GetIndex();
+  typename ItkImageType::IndexType index = region.GetIndex();
   size_t width = size[0];
   size_t height = size[1];
   size_t depth = size[2];

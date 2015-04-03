@@ -10,129 +10,132 @@
 
 namespace M4D
 {
-  namespace GUI
-  {
-    namespace Viewer
-    {
+namespace GUI
+{
+namespace Viewer
+{
 
-      template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
-      class MethodPolicy
-      {
-      public:
-        typedef itk::Vector<EigenvalueType, Dimension> EigenvaluesVectorType;
-        typedef EigenvalueType InputValueType;
+template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
+class MethodPolicy
+{
+public:
+	typedef itk::Vector<EigenvalueType, Dimension> EigenvaluesVectorType;
+	typedef EigenvalueType InputValueType;
 
-        virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const = 0;
+	virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const = 0;
 
-        virtual PixelType GetHessianSigma() const = 0;
-      };
+	virtual PixelType GetHessianSigma() const = 0;
+};
 
-      template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
-      class FranghiVesselness : public MethodPolicy<PixelType, EigenvalueType, Dimension>
-      {
-      public:
-        static const PixelType RANGE_NORMALIZATION_CONSTANT = 1000;
+template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
+class FranghiVesselness : public MethodPolicy<PixelType, EigenvalueType, Dimension>
+{
+public:
+	typedef itk::Vector<EigenvalueType, Dimension> EigenvaluesVectorType;
+	static const PixelType RANGE_NORMALIZATION_CONSTANT = 1000;
 
-        FranghiVesselness(PixelType hessianSigma, EigenvalueType alpha, EigenvalueType beta, EigenvalueType gamma)
-          : hessianSigma(hessianSigma), alpha(alpha), beta(beta), gamma(gamma)
-        {
-        }
+	FranghiVesselness(PixelType hessianSigma, EigenvalueType alpha, EigenvalueType beta, EigenvalueType gamma)
+		: hessianSigma(hessianSigma), alpha(alpha), beta(beta), gamma(gamma)
+	{
+	}
 
-        FranghiVesselness(const std::vector<EigenvalueType>& constants)
-          : hessianSigma(constants[0]), alpha(constants[1]), beta(constants[2]), gamma(constants[3])
-        {
-        }
+	FranghiVesselness(const std::vector<EigenvalueType>& constants)
+		: hessianSigma(constants[0]), alpha(constants[1]), beta(constants[2]), gamma(constants[3])
+	{
+	}
 
-        FranghiVesselness(const FranghiVesselness& other)
-          : hessianSigma((PixelType)other.hessianSigma), alpha(other.alpha), beta(other.beta), gamma(other.gamma)
-        {
-        }
+	FranghiVesselness(const FranghiVesselness& other)
+		: hessianSigma((PixelType)other.hessianSigma), alpha(other.alpha), beta(other.beta), gamma(other.gamma)
+	{
+	}
 
-        virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const override
-        {
-          this->SortEigenValuesAbsoluteValue(eigenvalues);
+	virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const override
+	{
+		this->SortEigenValuesAbsoluteValue(eigenvalues);
 
-          EigenvalueType R_A = abs(eigenvalues[1]) / abs(eigenvalues[2]);
-          EigenvalueType R_B = abs(eigenvalues[0]) / abs(eigenvalues[1] * eigenvalues[2]);
-          EigenvalueType S = sqrt(eigenvalues[0] * eigenvalues[0] + eigenvalues[1] * eigenvalues[1] + eigenvalues[2] * eigenvalues[2]);
+		EigenvalueType R_A = abs(eigenvalues[1]) / abs(eigenvalues[2]);
+		EigenvalueType R_B = abs(eigenvalues[0]) / abs(eigenvalues[1] * eigenvalues[2]);
+		EigenvalueType S = sqrt(eigenvalues[0] * eigenvalues[0] + eigenvalues[1] * eigenvalues[1] + eigenvalues[2] * eigenvalues[2]);
 
-          if (eigenvalues[1] < 0 && eigenvalues[2] < 0)
-          {
-            EigenvalueType retval = (1.0 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1.0 - ExponencialFormula(S, gamma));
+		if (eigenvalues[1] < 0 && eigenvalues[2] < 0)
+		{
+			EigenvalueType retval = (1.0 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1.0 - ExponencialFormula(S, gamma));
 
-            return retval * RANGE_NORMALIZATION_CONSTANT;
-          }
-          else
-          {
-            return 0;
-          }
-        }
+			return retval * RANGE_NORMALIZATION_CONSTANT;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 
-        virtual PixelType GetHessianSigma() const override
-        {
-          return this->hessianSigma;
-        }
+	virtual PixelType GetHessianSigma() const override
+	{
+		return this->hessianSigma;
+	}
 
-      private:
-        struct AbsoluteValueComparer
-        {
-          bool operator() (EigenvalueType lesser, EigenvalueType bigger) const
-          {
-            return abs(lesser) < abs(bigger);
-          }
-        };
+private:
+	struct AbsoluteValueComparer
+	{
+		bool operator() (EigenvalueType lesser, EigenvalueType bigger) const
+		{
+			return abs(lesser) < abs(bigger);
+		}
+	};
 
-        typename EigenvalueType ExponencialFormula(EigenvalueType a, EigenvalueType b) const
-        {
-          return exp(-((a*a) / (2 * b*b)));
-        }
+	EigenvalueType ExponencialFormula(EigenvalueType a, EigenvalueType b) const
+	{
+		return exp(-((a*a) / (2 * b*b)));
+	}
 
-        void SortEigenValuesAbsoluteValue(EigenvaluesVectorType& eigenvalues) const
-        {
-          std::sort(eigenvalues.Begin(), eigenvalues.End(), this->comparer);
-        }
+	void SortEigenValuesAbsoluteValue(EigenvaluesVectorType& eigenvalues) const
+	{
+		std::sort(eigenvalues.Begin(), eigenvalues.End(), this->comparer);
+	}
 
-        PixelType hessianSigma;
+	PixelType hessianSigma;
 
-        EigenvalueType alpha;
-        EigenvalueType beta;
-        EigenvalueType gamma;
+	EigenvalueType alpha;
+	EigenvalueType beta;
+	EigenvalueType gamma;
 
-        AbsoluteValueComparer comparer;
-      };
+	AbsoluteValueComparer comparer;
+};
 
-      template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
-      class EigenvaluesLinearCombination : public MethodPolicy<PixelType, EigenvalueType, Dimension>
-      {
-      public:
-        EigenvaluesLinearCombination(const std::vector<EigenvalueType>& constants)
-          : hessianSigma(constants[0]), alpha(constants[1]), beta(constants[2]), gamma(constants[3])
-        {
-        }
+template<typename PixelType = unsigned short, typename EigenvalueType = float, size_t Dimension = 3>
+class EigenvaluesLinearCombination : public MethodPolicy<PixelType, EigenvalueType, Dimension>
+{
+public:
+	typedef itk::Vector<EigenvalueType, Dimension> EigenvaluesVectorType;
 
-        virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const override
-        {
-          return this->alpha*eigenvalues[0] + this->beta*eigenvalues[1] + this->gamma*eigenvalues[2];
-        }
+	EigenvaluesLinearCombination(const std::vector<EigenvalueType>& constants)
+		: hessianSigma(constants[0]), alpha(constants[1]), beta(constants[2]), gamma(constants[3])
+	{
+	}
 
-        virtual ~EigenvaluesLinearCombination()
-        {
-        }
+	virtual PixelType ComputePixelValue(EigenvaluesVectorType eigenvalues) const override
+	{
+		return this->alpha*eigenvalues[0] + this->beta*eigenvalues[1] + this->gamma*eigenvalues[2];
+	}
 
-        virtual PixelType GetHessianSigma() const override
-        {
-          return this->hessianSigma;
-        }
+	virtual ~EigenvaluesLinearCombination()
+	{
+	}
 
-      private:
-        PixelType hessianSigma;
+	virtual PixelType GetHessianSigma() const override
+	{
+		return this->hessianSigma;
+	}
 
-        EigenvalueType alpha;
-        EigenvalueType beta;
-        EigenvalueType gamma;
-      };
-    }
-  }
+private:
+	PixelType hessianSigma;
+
+	EigenvalueType alpha;
+	EigenvalueType beta;
+	EigenvalueType gamma;
+};
+}
+}
 }
 
 #endif //EIGENVALUES_FILTER_POLICIES_H_
