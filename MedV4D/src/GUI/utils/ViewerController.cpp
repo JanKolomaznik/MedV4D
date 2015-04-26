@@ -123,7 +123,9 @@ ViewerController::mousePressEvent ( BaseViewerState::Ptr aViewerState, const Mou
 	}
 	if ( state.colorTransform == M4D::GUI::Renderer::ctLUTWindow
 		|| state.colorTransform == M4D::GUI::Renderer::ctMaxIntensityProjection
-		|| state.colorTransform == M4D::GUI::Renderer::ctBasic )
+		|| state.colorTransform == M4D::GUI::Renderer::ctBasic 
+		|| state.colorTransform == M4D::GUI::Renderer::ctEigenvalues 
+		|| state.colorTransform == M4D::GUI::Renderer::ctEigenvaluesRaw)
 	{
 		if( aEventInfo.event->button() == mLUTSetMouseButton ) {
 			mInteractionMode = imLUT_SETTING;

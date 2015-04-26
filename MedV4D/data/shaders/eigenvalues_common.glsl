@@ -51,7 +51,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 {
 	float returnValue = 0;
 	
-	const int type = 2;
+	const int type = 0;
 	
 	switch (type)
 	{
@@ -87,37 +87,15 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		}
 		break;
 		
-		case 2: // yoshi
+		case 2: // yoshinobu sato
 		{
 			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			
-			float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.x);
+			float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.z);
 			
 			float functionLambda1 = 0;
 			
-			float normalizeValue = min(-1.0 * sortedEigenvalues.y, -1.0 * sortedEigenvalues.z);
-
-			// Similarity measure to a line structure
-			if ( normalizeValue > 0 )
-			{
-				float lineMeasure;
-				if ( sortedEigenvalues.x <= 0 )
-				{
-					lineMeasure = exp( -0.5 *(sortedEigenvalues.x / ( 0.5 * normalizeValue ) )*(sortedEigenvalues.x / ( 0.5 * normalizeValue ) ) );
-				}
-				else
-				{
-					lineMeasure = exp( -0.5 * (sortedEigenvalues.x / ( 2 * normalizeValue ) )*(sortedEigenvalues.x / ( 2 * normalizeValue ) ) );
-				}
-
-				returnValue = lineMeasure * normalizeValue / 10;
-			}
-			else
-			{
-				returnValue = 0;
-			}
-			
-			/*if (lambdaC != 0)
+			if (lambdaC > 0)
 			{
 				if (sortedEigenvalues.x <= 0)
 				{
@@ -133,7 +111,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 				functionLambda1 = 0;
 			}
 			
-			returnValue = functionLambda1 * lambdaC;*/
+			returnValue = functionLambda1 * lambdaC / 10;
 		}
 		break;
 		

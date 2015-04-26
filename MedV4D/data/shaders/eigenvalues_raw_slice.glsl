@@ -54,6 +54,8 @@ out vec4 fragmentColor;
 
 void main(void)
 {
+	const int MAXIMUM_VALUE = 2000;
+	
 	vec3 wlWindow = vec3(
 		gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
 		gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
@@ -71,14 +73,19 @@ void main(void)
 	
 	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(mappedValues.x, mappedValues.y, mappedValues.z);
 	
-	float displayedEigenvalue = sortedEigenvalues.z;
+	float displayed = sortedEigenvalues.x;
+	float value = clamp(
+			(abs(displayed) * MAXIMUM_VALUE - lowBand) * multiplier,
+			0.0f,
+			1.0f
+			);
 	
-	if (displayedEigenvalue > 0)
+	if (displayed > 0)
 	{
-		fragmentColor = vec4(0, 0, abs(displayedEigenvalue), 1);
+		fragmentColor = vec4(0, 0, value, 1);
 	}
 	else
 	{
-		fragmentColor = vec4(abs(displayedEigenvalue), 0, 0, 1);
+		fragmentColor = vec4(value, 0, 0, 1);
 	}
 }
