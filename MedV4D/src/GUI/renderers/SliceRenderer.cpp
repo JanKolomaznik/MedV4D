@@ -22,6 +22,7 @@ SliceRenderer::initialize()
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Transfer function", ctTransferFunction1D ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Region colormap", ctSimpleColorMap ) );
 	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "Eigenvalues", ctEigenvalues ) );
+	mAvailableColorTransforms.push_back( ColorTransformNameIDList::value_type( "EigenvaluesRaw", ctEigenvaluesRaw ) );
 }
 
 void
@@ -92,6 +93,18 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
   {
     vorgl::EigenvaluesSliceRenderingOptions eigenvaluesOptions = { aConfig.lutWindow };
     eigenvaluesSliceRendering(
+      aViewSetup,
+      *primaryData,
+      slice,
+      renderingQuality,
+      eigenvaluesOptions
+      );
+  }
+  break;
+  case ctEigenvaluesRaw:
+  {
+    vorgl::EigenvaluesRawSliceRenderingOptions eigenvaluesOptions = { aConfig.lutWindow };
+    eigenvaluesRawSliceRendering(
       aViewSetup,
       *primaryData,
       slice,

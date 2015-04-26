@@ -20,6 +20,7 @@ enum ColorTransform
 	ctBasic,
 	ctSimpleColorMap,
   ctEigenvalues,
+  ctEigenvaluesRaw,
 
 	ctIsoSurfaces // TODO - remove
 };

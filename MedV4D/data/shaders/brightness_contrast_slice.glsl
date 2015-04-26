@@ -21,21 +21,21 @@ applyWLWindow(
 	float multiplier = aWLWindow.z;
 
 	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	/*float value = clamp(
+	float value = clamp(
 			(texture(aTextureData.data, coordinates).x - lowBand) * multiplier,
 			0.0f,
 			1.0f
 			);
 		
-	return vec4(value, value, value, 1.0f );*/
+	return vec4(value, value, value, 1.0f );
 
-	vec3 value = clamp(
+	/*vec3 value = clamp(
 			(texture(aTextureData.data, coordinates).rgb - lowBand) * multiplier,
 			0.0f,
 			1.0f
 			);
 		
-	return vec4(value.r, value.g, value.b, 1.0f );
+	return vec4(value.r, value.g, value.b, 1.0f );*/
 }
 
 in vec3 positionInImage;
