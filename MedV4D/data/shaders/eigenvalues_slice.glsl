@@ -65,10 +65,10 @@ void main(void)
 				wlWindow
 				);
 	
-	const float minimum = -5;
+	/*const float minimum = -5;
 	const float maximum = -2;
 	
-	vec3 unmappedValues = (mappedValues * maximum) + minimum;
+	vec3 unmappedValues = (mappedValues * maximum) + minimum;*/
 	
 	float lowBand = wlWindow.y - (wlWindow.x * 0.5f);
   float highBand = wlWindow.y + (wlWindow.x * 0.5f);

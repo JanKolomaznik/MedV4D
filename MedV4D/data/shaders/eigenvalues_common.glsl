@@ -1,6 +1,24 @@
 #define swap(a, b) float c = a; a = b; b = c;
 //#define clamp(value, min, max) (value < min) ? min : ((value > max) ? max : value);
 
+vec3 SortEigenValuesDecreasing(float lambda1, float lambda2, float lambda3)
+{
+  // simple bubble sort
+  while (lambda1 < lambda2 || lambda2 < lambda3)
+  {
+    if (lambda1 < lambda2)
+    {
+      swap(lambda1, lambda2);
+    }
+    if (lambda2 < lambda3)
+    {
+      swap(lambda2, lambda3);
+    }
+  }
+
+  return vec3(lambda1, lambda2, lambda3);
+}
+
 vec3 SortEigenValuesAbsoluteValue(float lambda1, float lambda2, float lambda3)
 {
   // simple bubble sort
@@ -31,20 +49,114 @@ float ExponencialFormula(float a, float b)
 
 float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
 {
-  vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
-
-  float R_A = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
-  float R_B = abs(sortedEigenvalues.x) / abs(sortedEigenvalues.y*sortedEigenvalues.z);
-  float S = sqrt(sortedEigenvalues.x*sortedEigenvalues.x + sortedEigenvalues.y*sortedEigenvalues.y + sortedEigenvalues.z*sortedEigenvalues.z);
+	float returnValue = 0;
 	
-  if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0)
-  {
-    return (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
-  }
-  else
-  {
-    return 0;
-  }
+	const int type = 2;
+	
+	switch (type)
+	{
+		case 0: // Franghi's
+		{
+			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			if (sortedEigenvalues.y <= 0 && sortedEigenvalues.z <= 0)
+			{
+				float R_A = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
+				float R_B = sqrt(abs(sortedEigenvalues.x) / abs(sortedEigenvalues.y*sortedEigenvalues.z));
+				float S = sqrt(sortedEigenvalues.x*sortedEigenvalues.x + sortedEigenvalues.y*sortedEigenvalues.y + sortedEigenvalues.z*sortedEigenvalues.z);
+
+				returnValue = (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+			}
+			else
+			{
+				returnValue = 0;
+			}
+		}
+		break;
+		
+		case 1:	// T.M.Koller, G.Gerig, G.Szekely
+		{
+			vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
+			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && sortedEigenvalues.y >= sortedEigenvalues.z)
+			{
+				returnValue = sqrt(abs(sortedEigenvalues.y * sortedEigenvalues.z));
+			}
+			else
+			{
+				returnValue = 0;
+			}
+		}
+		break;
+		
+		case 2: // yoshi
+		{
+			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			
+			float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.x);
+			
+			float functionLambda1 = 0;
+			
+			float normalizeValue = min(-1.0 * sortedEigenvalues.y, -1.0 * sortedEigenvalues.z);
+
+			// Similarity measure to a line structure
+			if ( normalizeValue > 0 )
+			{
+				float lineMeasure;
+				if ( sortedEigenvalues.x <= 0 )
+				{
+					lineMeasure = exp( -0.5 *(sortedEigenvalues.x / ( 0.5 * normalizeValue ) )*(sortedEigenvalues.x / ( 0.5 * normalizeValue ) ) );
+				}
+				else
+				{
+					lineMeasure = exp( -0.5 * (sortedEigenvalues.x / ( 2 * normalizeValue ) )*(sortedEigenvalues.x / ( 2 * normalizeValue ) ) );
+				}
+
+				returnValue = lineMeasure * normalizeValue / 10;
+			}
+			else
+			{
+				returnValue = 0;
+			}
+			
+			/*if (lambdaC != 0)
+			{
+				if (sortedEigenvalues.x <= 0)
+				{
+					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*beta*beta*lambdaC*lambdaC)));
+				}
+				else
+				{
+					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*gamma*gamma*lambdaC*lambdaC)));
+				}
+			}
+			else
+			{
+				functionLambda1 = 0;
+			}
+			
+			returnValue = functionLambda1 * lambdaC;*/
+		}
+		break;
+		
+		case 3: // ours
+		{
+			vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
+			
+			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0)
+			{
+				float first = alpha * abs(sortedEigenvalues.x);
+				float second = alpha * abs(sortedEigenvalues.y);
+				float third = alpha * abs(sortedEigenvalues.z);
+				returnValue = sqrt(second * third);// / (first * 0.01);
+			}
+			else
+			{
+				returnValue = 0;
+			}
+		}
+		break;
+	}
+	
+	return returnValue;
 }
 
 float computeVesselness(float lambda1, float lambda2, float lambda3)
