@@ -1,6 +1,6 @@
 #include "ExtendedViewerControls.hpp"
 #include "ui_ExtendedViewerControls.h"
-#include "itkUtils.hpp"
+#include "ItkUtils.hpp"
 
 #include "ItkFiltering.h"
 #include "ItkEigenvalues.h"

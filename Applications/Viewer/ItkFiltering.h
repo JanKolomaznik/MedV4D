@@ -12,7 +12,7 @@ namespace M4D
   {
     namespace Viewer
     {
-      template<typename MethodPolicy, typename PixelType = unsigned short, typename EigenvalueType = MethodPolicy::InputValueType, unsigned int Dimension = 3>
+      template<typename MethodPolicy, typename PixelType = unsigned short, typename EigenvalueType = typename MethodPolicy::InputValueType, unsigned int Dimension = 3>
       class ItkFiltering
       {
       public:
@@ -78,9 +78,9 @@ namespace M4D
 
         void InitializeEigenvalues()
         {
-          EigenvaluesCollectionType::SizeType imageSize = this->image->GetLargestPossibleRegion().GetSize();
-          EigenvaluesCollectionType::SizeType size;
-          EigenvaluesCollectionType::IndexType start;
+	  typename EigenvaluesCollectionType::SizeType imageSize = this->image->GetLargestPossibleRegion().GetSize();
+	  typename EigenvaluesCollectionType::SizeType size;
+	  typename EigenvaluesCollectionType::IndexType start;
           double origin[Dimension];
           double spacing[Dimension];
 
@@ -94,7 +94,7 @@ namespace M4D
             spacing[0] = 1.0;
           }
 
-          EigenvaluesCollectionType::RegionType region;
+	  typename EigenvaluesCollectionType::RegionType region;
           region.SetSize(size);
           region.SetIndex(start);
 
@@ -108,12 +108,12 @@ namespace M4D
 
         HessianOutputTypePointer GetHessianRecursiveGaussianFilterImage(double sigma)
         {
-          HessianFilterType::Pointer hessianFilter = HessianFilterType::New();
+	  typename HessianFilterType::Pointer hessianFilter = HessianFilterType::New();
           hessianFilter->SetInput(this->image.GetPointer());
           hessianFilter->SetSigma(sigma);
           hessianFilter->Update();
 
-          HessianOutputType::Pointer output = hessianFilter->GetOutput();
+	  typename HessianOutputType::Pointer output = hessianFilter->GetOutput();
           return output;
         }
 
@@ -123,7 +123,7 @@ namespace M4D
 
           std::cout << "computing hessian matrices" << std::endl;
 
-          HessianOutputType::Pointer hessianOutput = this->GetHessianRecursiveGaussianFilterImage(hessianSigma);
+	  typename HessianOutputType::Pointer hessianOutput = this->GetHessianRecursiveGaussianFilterImage(hessianSigma);
           
           std::cout << "computing eigenvalues at each point" << std::endl;
 

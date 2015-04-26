@@ -481,20 +481,20 @@ struct FillTFBufferVisitor :
 			vorgl::RGBAf tmpColor = (lastColor + color) * 0.5f;
 			float alpha = /*1.0f;/*/tmpColor.a;
 			tfIntegralBuffer[i] = tfIntegralBuffer[i - 1] + vorgl::TransferFunctionBuffer1D::value_type(
-				tmpColor.r * alpha,
-				tmpColor.g * alpha,
-				tmpColor.b * alpha,
-				tmpColor.a);
+						tmpColor.r * alpha,
+						tmpColor.g * alpha,
+						tmpColor.b * alpha,
+						tmpColor.a);
 			lastColor = color;
 		}
 
 
 		OpenGLManager::getInstance()->doGL([this, &tfBuffer, &tfIntegralBuffer]() {
-				vorgl::TransferFunctionBuffer1DInfo info;
-				info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer1D(tfBuffer);
-				info.tfGLIntegralBuffer = vorgl::createGLTransferFunctionBuffer1D(tfIntegralBuffer);
-				mInfo.bufferInfo = info;
-			});
+			vorgl::TransferFunctionBuffer1DInfo info;
+			info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer1D(tfBuffer);
+			info.tfGLIntegralBuffer = vorgl::createGLTransferFunctionBuffer1D(tfIntegralBuffer);
+			mInfo.bufferInfo = info;
+		});
 	}
 
 	void
@@ -504,40 +504,40 @@ struct FillTFBufferVisitor :
 		static const int cYSampleCount = 20;
 		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
 		tfw::TransferFunction2D::RangePoint from, to;
-    tfw::TransferFunction2D::EigenvalueProcessingParameters primaryParameters = aTransferFunction.getPrimaryParameters();
-    int primaryValuesMultiplier = aTransferFunction.getPrimaryValuesMultiplier();
-    tfw::TransferFunction2D::EigenvalueProcessingParameters secondaryParameters = aTransferFunction.getSecondaryParameters();
-    int secondaryValuesMultiplier = aTransferFunction.getSecondaryValuesMultiplier();
+		tfw::TransferFunction2D::EigenvalueProcessingParameters primaryParameters = aTransferFunction.getPrimaryParameters();
+		int primaryValuesMultiplier = aTransferFunction.getPrimaryValuesMultiplier();
+		tfw::TransferFunction2D::EigenvalueProcessingParameters secondaryParameters = aTransferFunction.getSecondaryParameters();
+		int secondaryValuesMultiplier = aTransferFunction.getSecondaryValuesMultiplier();
 		std::tie(from, to) = aTransferFunction.range();
-    bool processEigenvaluePrimary = aTransferFunction.getEigenvalueProcessPrimary();
-    bool processEigenvalueSecondary = aTransferFunction.getEigenvalueProcessSecondary();
+		bool processEigenvaluePrimary = aTransferFunction.getEigenvalueProcessPrimary();
+		bool processEigenvalueSecondary = aTransferFunction.getEigenvalueProcessSecondary();
 		std::array<float, 2> step {
 			(to[0] - from[0]) / cXSampleCount,
-			(to[1] - from[1]) / cYSampleCount };
+					(to[1] - from[1]) / cYSampleCount };
 		for (int j = 0; j < cYSampleCount; ++j) {
 			for (int i = 0; i < cXSampleCount; ++i) {
 				buffer[j*cXSampleCount + i] = aTransferFunction.getColor(i * step[0] + from[0], j * step[1] + from[1]).data();
 			}
 		}
-    OpenGLManager::getInstance()->doGL(
-      [this, &buffer, from, to, processEigenvaluePrimary, processEigenvalueSecondary, primaryParameters, primaryValuesMultiplier, secondaryParameters, secondaryValuesMultiplier]
-        () {
-				vorgl::TransferFunctionBuffer2DInfo info;
-				info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer2D(
-							buffer.data(),
-							cXSampleCount,
-							cYSampleCount,
-							glm::fvec2(std::get<0>(from), std::get<1>(from)),
-							glm::fvec2(std::get<0>(to), std::get<1>(to)),
-              processEigenvaluePrimary,
-              processEigenvalueSecondary,
-              primaryParameters,
-              primaryValuesMultiplier,
-              secondaryParameters,
-              secondaryValuesMultiplier
-        );
-				mInfo.bufferInfo = info;
-			});
+		OpenGLManager::getInstance()->doGL(
+					[this, &buffer, from, to, processEigenvaluePrimary, processEigenvalueSecondary, primaryParameters, primaryValuesMultiplier, secondaryParameters, secondaryValuesMultiplier]
+					() {
+			vorgl::TransferFunctionBuffer2DInfo info;
+			info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer2D(
+						buffer.data(),
+						cXSampleCount,
+						cYSampleCount,
+						glm::fvec2(std::get<0>(from), std::get<1>(from)),
+						glm::fvec2(std::get<0>(to), std::get<1>(to)),
+						processEigenvaluePrimary,
+						processEigenvalueSecondary,
+						primaryParameters,
+						primaryValuesMultiplier,
+						secondaryParameters,
+						secondaryValuesMultiplier
+						);
+			mInfo.bufferInfo = info;
+		});
 	}
 
 	vorgl::TransferFunctionBufferInfo &mInfo;
