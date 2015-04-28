@@ -399,6 +399,9 @@ public:
 	void
 	enableIntegratedTransferFunction( bool aEnable );
 
+  void
+  setEigenvaluesOptions(int type, float alpha, float beta, float gamma);
+
 	void
 	setJitterStrength( float aValue );
 

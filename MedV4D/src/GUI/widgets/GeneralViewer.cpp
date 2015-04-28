@@ -123,6 +123,7 @@ GeneralViewer::setLUTWindow(glm::fvec2 window)
 {
 	getViewerState().mSliceRenderConfig.lutWindow = window;
 	getViewerState().mVolumeRenderConfig.densityOptions.lutWindow = window;
+  getViewerState().mVolumeRenderConfig.eigenvaluesOptions.lutWindow = window;
 
 	notifyAboutSettingsChange();
 	update();
@@ -405,6 +406,19 @@ GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
 	getViewerState().mVolumeRenderConfig.transferFunctionOptions.preintegratedTransferFunction = aEnable;
 	notifyAboutSettingsChange();
 	update();
+}
+
+void
+GeneralViewer::setEigenvaluesOptions(int type, float alpha, float beta, float gamma)
+{
+  getViewerState().mVolumeRenderConfig.eigenvaluesOptions.eigenvaluesType = type;
+  getViewerState().mVolumeRenderConfig.eigenvaluesOptions.eigenvaluesConstants = glm::fvec3{ alpha, beta, gamma };
+
+  getViewerState().mSliceRenderConfig.eigenvaluesType = type;
+  getViewerState().mSliceRenderConfig.eigenvaluesConstants = glm::fvec3 { alpha, beta, gamma };
+
+  notifyAboutSettingsChange();
+  update();
 }
 
 bool

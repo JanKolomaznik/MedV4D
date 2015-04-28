@@ -101,11 +101,15 @@ public slots:
 		M4D::GUI::QtSignalBlocker signalBlocker(this);
 		mUpdating = true;
 
-		if (mCurrentViewer->getViewType() == M4D::GUI::Viewer::vt3D) {
-			mViewTypeTabWidget->setCurrentIndex(1);
-		} else {
-			mViewTypeTabWidget->setCurrentIndex(0);
-		}
+    if (mViewTypeTabWidget->currentIndex() != 2)
+    {
+      if (mCurrentViewer->getViewType() == M4D::GUI::Viewer::vt3D) {
+        mViewTypeTabWidget->setCurrentIndex(1);
+      }
+      else {
+        mViewTypeTabWidget->setCurrentIndex(0);
+      }
+    }
 
 		glm::fvec2 win = mCurrentViewer->getLUTWindow();
 		windowCenterSpinBox->setValue( win[0] );
@@ -167,6 +171,26 @@ protected slots:
 		mCurrentViewer->setTiling( viewportTilesRows->value(), viewportTilesCols->value(), sliceStep->value() );
 
 		mCurrentViewer->enableIntegratedTransferFunction(mEnablePreintegratedTFCheckBox->isChecked());
+
+    int type = 0;
+    if (this->franghisVesselnessRadioButton->isChecked())
+    {
+      type = 0;
+    }
+    else if (this->satosVesselessRadioButton->isChecked())
+    {
+      type = 1;
+    }
+    else if (this->kollersVesselnessRadioButton->isChecked())
+    {
+      type = 2;
+    }
+    else if (this->customVesselnessRadioButton->isChecked())
+    {
+      type = 3;
+    }
+
+    mCurrentViewer->setEigenvaluesOptions(type, this->alphaSpinBox->value(), this->betaSpinBox->value(), this->gammaSpinBox->value());
 
 		mCurrentViewer->setIsoSurfaces(mIsoSurfacesSetup->isoSurfaces());
 		//mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());

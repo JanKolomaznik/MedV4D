@@ -78,5 +78,5 @@ void main(void)
 			1.0f
 			);
 			
-	fragmentColor = vec4(value, 0, 0, 1);
+	fragmentColor = vec4(value, value, value, 1);
 }

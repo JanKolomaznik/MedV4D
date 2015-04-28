@@ -98,6 +98,8 @@ struct SliceRenderer::RenderingConfiguration
 	glm::fvec2					lutWindow;
 	soglu::ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
+  int eigenvaluesType;
+  glm::fvec3 eigenvaluesConstants;
 
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
 };

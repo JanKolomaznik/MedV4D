@@ -157,7 +157,7 @@ VolumeRenderer::Render(VolumeRenderer::RenderingConfiguration & aConfig, const s
 				*primaryData,
 				aConfig.renderingQuality,
 				aConfig.clipPlanes,
-        aConfig.densityOptions
+        aConfig.eigenvaluesOptions
         );
 		}
 		break;

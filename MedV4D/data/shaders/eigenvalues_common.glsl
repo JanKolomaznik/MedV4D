@@ -1,3 +1,6 @@
+uniform vec3 gEigenvaluesConstants;
+uniform int gEigenvaluesType;
+
 #define swap(a, b) float c = a; a = b; b = c;
 //#define clamp(value, min, max) (value < min) ? min : ((value > max) ? max : value);
 
@@ -51,9 +54,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 {
 	float returnValue = 0;
 	
-	const int type = 0;
-	
-	switch (type)
+	switch (gEigenvaluesType)
 	{
 		case 0: // Franghi's
 		{
@@ -73,21 +74,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		}
 		break;
 		
-		case 1:	// T.M.Koller, G.Gerig, G.Szekely
-		{
-			vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
-			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && sortedEigenvalues.y >= sortedEigenvalues.z)
-			{
-				returnValue = sqrt(abs(sortedEigenvalues.y * sortedEigenvalues.z));
-			}
-			else
-			{
-				returnValue = 0;
-			}
-		}
-		break;
-		
-		case 2: // yoshinobu sato
+		case 1: // yoshinobu sato
 		{
 			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			
@@ -115,16 +102,35 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		}
 		break;
 		
-		case 3: // ours
+		case 2:	// T.M. Koller, G. Gerig, G. Szekely
 		{
 			vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
+			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && sortedEigenvalues.y >= sortedEigenvalues.z)
+			{
+				returnValue = sqrt(abs(sortedEigenvalues.y * sortedEigenvalues.z));
+			}
+			else
+			{
+				returnValue = 0;
+			}
+		}
+		break;
+		
+		case 3: // ours
+		{
+			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			
 			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0)
 			{
 				float first = alpha * abs(sortedEigenvalues.x);
-				float second = alpha * abs(sortedEigenvalues.y);
-				float third = alpha * abs(sortedEigenvalues.z);
-				returnValue = sqrt(second * third);// / (first * 0.01);
+				float second = beta * abs(sortedEigenvalues.y);
+				float third = gamma * abs(sortedEigenvalues.z);
+				
+				/*if (abs(sortedEigenvalues.x) < abs(sortedEigenvalues.y) / 100)
+				{
+					returnValue = (1 / abs(sortedEigenvalues.x)) * abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
+				}*/
+				returnValue = abs(sortedEigenvalues.y/sortedEigenvalues.z)/sortedEigenvalues.x;
 			}
 			else
 			{
@@ -139,7 +145,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 
 float computeVesselness(float lambda1, float lambda2, float lambda3)
 {
-	return computeVesselness(lambda1, lambda2, lambda3, 0.5, 0.5, 2);
+	return computeVesselness(lambda1, lambda2, lambda3, gEigenvaluesConstants.x, gEigenvaluesConstants.y, gEigenvaluesConstants.z);
 }
 
 float computeVesselness(vec3 eigenvalues)

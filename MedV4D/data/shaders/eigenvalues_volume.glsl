@@ -2,6 +2,7 @@
 //uniform vec2 gMappedIntervalBands;
 uniform vec2 gWLWindow;
 
+
 struct StepInfo {
 	float value;
 };
