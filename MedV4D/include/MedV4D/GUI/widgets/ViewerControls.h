@@ -136,6 +136,18 @@ public slots:
 		//mIsoValueSetter->setValue(mCurrentViewer->isoSurfaceValue());
 		//mSurfaceColorButton->setColor(mCurrentViewer->isoSurfaceColor());
 
+    vorgl::EigenvaluesRenderingOptions eigenvaluesOptions = this->mCurrentViewer->getEigenvaluesOptions();
+    this->alphaSpinBox->setValue(eigenvaluesOptions.eigenvaluesConstants[0]);
+    this->betaSpinBox->setValue(eigenvaluesOptions.eigenvaluesConstants[1]);
+    this->gammaSpinBox->setValue(eigenvaluesOptions.eigenvaluesConstants[2]);
+    this->objectnessComboBox->setCurrentIndex(eigenvaluesOptions.objectnessType);
+
+    this->franghisVesselnessRadioButton->setChecked(eigenvaluesOptions.eigenvaluesType == 0);
+    this->satosVesselessRadioButton->setChecked(eigenvaluesOptions.eigenvaluesType == 1);
+    this->kollersVesselnessRadioButton->setChecked(eigenvaluesOptions.eigenvaluesType == 2);
+    this->objectnessRadioButton->setChecked(eigenvaluesOptions.eigenvaluesType == 3);
+    this->customVesselnessRadioButton->setChecked(eigenvaluesOptions.eigenvaluesType == 4);
+
 		mUpdating = false;
 	}
 
@@ -185,12 +197,16 @@ protected slots:
     {
       type = 2;
     }
+    else if (this->objectnessRadioButton->isChecked())
+    {
+      type = 3;
+    }
     else if (this->customVesselnessRadioButton->isChecked())
     {
       type = 3;
     }
 
-    mCurrentViewer->setEigenvaluesOptions(type, this->alphaSpinBox->value(), this->betaSpinBox->value(), this->gammaSpinBox->value());
+    mCurrentViewer->setEigenvaluesOptions(type, this->alphaSpinBox->value(), this->betaSpinBox->value(), this->gammaSpinBox->value(), this->objectnessComboBox->currentIndex());
 
 		mCurrentViewer->setIsoSurfaces(mIsoSurfacesSetup->isoSurfaces());
 		//mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());

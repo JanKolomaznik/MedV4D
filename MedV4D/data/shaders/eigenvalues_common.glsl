@@ -1,5 +1,6 @@
 uniform vec3 gEigenvaluesConstants;
 uniform int gEigenvaluesType;
+uniform int gObjectDimension;
 
 #define swap(a, b) float c = a; a = b; b = c;
 //#define clamp(value, min, max) (value < min) ? min : ((value > max) ? max : value);
@@ -116,7 +117,50 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		}
 		break;
 		
-		case 3: // ours
+		case 3:
+		{
+			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			
+			const int imageDimension = 3;
+			
+			bool display = true;
+			for (int i = gObjectDimension; i < imageDimension; ++i)
+			{
+				if (sortedEigenvalues[i] > 0)
+				{
+					display = false;
+				}
+			}
+			
+			if (display)
+			{
+				float R_A_denominator = 1;
+				for (int i = gObjectDimension + 1; i < imageDimension; ++i)
+				{
+					R_A_denominator *= abs(sortedEigenvalues[i]);
+				}
+				float R_A = abs(sortedEigenvalues[gObjectDimension]) / pow(R_A_denominator, 1/(imageDimension - gObjectDimension - 1));
+				
+				float R_B_denominator = 1;
+				for (int i = gObjectDimension; i < imageDimension; ++i)
+				{
+					R_B_denominator *= abs(sortedEigenvalues[i]);
+				}
+				float R_B = abs(sortedEigenvalues[gObjectDimension-1]) / pow(R_B_denominator, 1/(imageDimension - gObjectDimension));
+				
+				float S = 0;
+				for (int i = 0; i < imageDimension; ++i)
+				{
+					S += sortedEigenvalues[i]*sortedEigenvalues[i];
+				}
+				S = sqrt(S);
+				
+				returnValue = (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+			}
+		}
+		break;
+		
+		case 4: // ours
 		{
 			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			

@@ -91,7 +91,7 @@ SliceRenderer::render( SliceRenderer::RenderingConfiguration & aConfig, const so
 		break;
   case ctEigenvalues:
   {
-    vorgl::EigenvaluesSliceRenderingOptions eigenvaluesOptions = { aConfig.lutWindow, aConfig.eigenvaluesConstants, aConfig.eigenvaluesType };
+    vorgl::EigenvaluesSliceRenderingOptions eigenvaluesOptions = { aConfig.lutWindow, aConfig.eigenvaluesConstants, aConfig.eigenvaluesType, aConfig.objectnessType };
     eigenvaluesSliceRendering(
       aViewSetup,
       *primaryData,

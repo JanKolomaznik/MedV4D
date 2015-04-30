@@ -400,7 +400,10 @@ public:
 	enableIntegratedTransferFunction( bool aEnable );
 
   void
-  setEigenvaluesOptions(int type, float alpha, float beta, float gamma);
+  setEigenvaluesOptions(int type, float alpha, float beta, float gamma, int objectnessType);
+
+  vorgl::EigenvaluesRenderingOptions
+  getEigenvaluesOptions();
 
 	void
 	setJitterStrength( float aValue );

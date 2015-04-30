@@ -409,16 +409,28 @@ GeneralViewer::enableIntegratedTransferFunction( bool aEnable )
 }
 
 void
-GeneralViewer::setEigenvaluesOptions(int type, float alpha, float beta, float gamma)
+GeneralViewer::setEigenvaluesOptions(int type, float alpha, float beta, float gamma, int objectnessType)
 {
-  getViewerState().mVolumeRenderConfig.eigenvaluesOptions.eigenvaluesType = type;
-  getViewerState().mVolumeRenderConfig.eigenvaluesOptions.eigenvaluesConstants = glm::fvec3{ alpha, beta, gamma };
+  vorgl::EigenvaluesRenderingOptions options;
+  options.eigenvaluesType = type;
+  options.eigenvaluesConstants = glm::fvec3{ alpha, beta, gamma };
+  options.objectnessType = objectnessType;
 
-  getViewerState().mSliceRenderConfig.eigenvaluesType = type;
-  getViewerState().mSliceRenderConfig.eigenvaluesConstants = glm::fvec3 { alpha, beta, gamma };
+ // ViewerState viewerState = getViewerState();
+  getViewerState().mVolumeRenderConfig.eigenvaluesOptions = options;
+
+  getViewerState().mSliceRenderConfig.eigenvaluesType = options.eigenvaluesType;
+  getViewerState().mSliceRenderConfig.eigenvaluesConstants = options.eigenvaluesConstants;
+  getViewerState().mSliceRenderConfig.objectnessType = options.objectnessType;
 
   notifyAboutSettingsChange();
   update();
+}
+
+vorgl::EigenvaluesRenderingOptions
+GeneralViewer::getEigenvaluesOptions()
+{
+  return getViewerState().mVolumeRenderConfig.eigenvaluesOptions;
 }
 
 bool

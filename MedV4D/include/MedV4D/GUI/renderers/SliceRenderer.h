@@ -99,6 +99,7 @@ struct SliceRenderer::RenderingConfiguration
 	soglu::ViewConfiguration2D			viewConfig;
 	bool					enableInterpolation;
   int eigenvaluesType;
+  int objectnessType;
   glm::fvec3 eigenvaluesConstants;
 
 	MultiDatasetRenderingStyle		multiDatasetRenderingStyle;
