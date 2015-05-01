@@ -87,11 +87,11 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 			{
 				if (sortedEigenvalues.x <= 0)
 				{
-					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*beta*beta*lambdaC*lambdaC)));
+					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*alpha*alpha*lambdaC*lambdaC)));
 				}
 				else
 				{
-					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*gamma*gamma*lambdaC*lambdaC)));
+					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*beta*beta*lambdaC*lambdaC)));
 				}
 			}
 			else
@@ -119,7 +119,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		
 		case 3:
 		{
-			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			/*vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			
 			const int imageDimension = 3;
 			
@@ -137,7 +137,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 				float R_A_denominator = 1;
 				for (int i = gObjectDimension + 1; i < imageDimension; ++i)
 				{
-					R_A_denominator *= abs(sortedEigenvalues[i]);
+					//R_A_denominator *= abs(sortedEigenvalues[i]);
 				}
 				float R_A = abs(sortedEigenvalues[gObjectDimension]) / pow(R_A_denominator, 1/(imageDimension - gObjectDimension - 1));
 				
@@ -156,7 +156,7 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 				S = sqrt(S);
 				
 				returnValue = (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
-			}
+			}*/
 		}
 		break;
 		
@@ -164,21 +164,9 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 		{
 			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
 			
-			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0)
+			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && abs(sortedEigenvalues.x) > alpha && abs(sortedEigenvalues.x) < beta)
 			{
-				float first = alpha * abs(sortedEigenvalues.x);
-				float second = beta * abs(sortedEigenvalues.y);
-				float third = gamma * abs(sortedEigenvalues.z);
-				
-				/*if (abs(sortedEigenvalues.x) < abs(sortedEigenvalues.y) / 100)
-				{
-					returnValue = (1 / abs(sortedEigenvalues.x)) * abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
-				}*/
-				returnValue = abs(sortedEigenvalues.y/sortedEigenvalues.z)/sortedEigenvalues.x;
-			}
-			else
-			{
-				returnValue = 0;
+				returnValue = sortedEigenvalues.y/sortedEigenvalues.z;
 			}
 		}
 		break;

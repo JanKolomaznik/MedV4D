@@ -101,7 +101,7 @@ public slots:
 		M4D::GUI::QtSignalBlocker signalBlocker(this);
 		mUpdating = true;
 
-    if (mViewTypeTabWidget->currentIndex() != 2)
+    if (mViewTypeTabWidget->currentIndex() != 2) // eigenvalues tab - this one is not concerned about 2D/3D
     {
       if (mCurrentViewer->getViewType() == M4D::GUI::Viewer::vt3D) {
         mViewTypeTabWidget->setCurrentIndex(1);
@@ -161,15 +161,19 @@ protected slots:
 
 		mUpdating = true;
 
-		if (mViewTypeTabWidget->currentIndex() == 1) {
-			if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt3D) {
-				mCurrentViewer->setViewType(M4D::GUI::Viewer::vt3D);
-			}
-		} else {
-			if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt2DAlignedSlices) {
-				mCurrentViewer->setViewType(M4D::GUI::Viewer::vt2DAlignedSlices);
-			}
-		}
+    if (mViewTypeTabWidget->currentIndex() != 2) // eigenvalues tab - this one is not concerned about 2D/3D
+    {
+      if (mViewTypeTabWidget->currentIndex() == 1) {
+        if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt3D) {
+          mCurrentViewer->setViewType(M4D::GUI::Viewer::vt3D);
+        }
+      }
+      else {
+        if (mCurrentViewer->getViewType() != M4D::GUI::Viewer::vt2DAlignedSlices) {
+          mCurrentViewer->setViewType(M4D::GUI::Viewer::vt2DAlignedSlices);
+        }
+      }
+    }
 
 		mCurrentViewer->setLUTWindow( static_cast< float >( windowCenterSpinBox->value() ), static_cast< float >( windowWidthSpinBox->value() ) );
 
@@ -203,7 +207,7 @@ protected slots:
     }
     else if (this->customVesselnessRadioButton->isChecked())
     {
-      type = 3;
+      type = 4;
     }
 
     mCurrentViewer->setEigenvaluesOptions(type, this->alphaSpinBox->value(), this->betaSpinBox->value(), this->gammaSpinBox->value(), this->objectnessComboBox->currentIndex());
