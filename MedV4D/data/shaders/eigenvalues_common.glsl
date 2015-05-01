@@ -41,6 +41,29 @@ vec3 SortEigenValuesAbsoluteValue(float lambda1, float lambda2, float lambda3)
   return vec3(lambda1, lambda2, lambda3);
 }
 
+float accessVectorElement(vec3 vector, int index)
+{
+	// this is just horrible workaround that has to be done in order to got this working
+	// for some reason, element access by variable is not working (tested on two different graphic cards)
+	
+	if (index == 0)
+	{
+		return vector.x;
+	}
+	else if (index == 1)
+	{
+		return vector.y;
+	}
+	else if (index == 2)
+	{
+		return vector.z;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 float ExponencialFormula(float a, float b)
 {
   return exp
@@ -51,6 +74,190 @@ float ExponencialFormula(float a, float b)
     );
 }
 
+float computeFranghiVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+	if (sortedEigenvalues.y <= 0 && sortedEigenvalues.z <= 0)
+	{
+		float R_A = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
+		float R_B = abs(sortedEigenvalues.x) / sqrt(abs(sortedEigenvalues.y*sortedEigenvalues.z));
+		float S = sqrt(sortedEigenvalues.x*sortedEigenvalues.x + sortedEigenvalues.y*sortedEigenvalues.y + sortedEigenvalues.z*sortedEigenvalues.z);
+
+		return (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+float computeSatoVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+	
+	float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.z);
+	
+	float functionLambda1 = 0;
+	
+	if (lambdaC > 0)
+	{
+		if (sortedEigenvalues.x <= 0)
+		{
+			functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*alpha*alpha*lambdaC*lambdaC)));
+		}
+		else
+		{
+			functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*beta*beta*lambdaC*lambdaC)));
+		}
+	}
+	else
+	{
+		functionLambda1 = 0;
+	}
+	
+	return functionLambda1 * lambdaC / 100;
+}
+
+float computeKollerVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
+	
+	if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && sortedEigenvalues.y >= sortedEigenvalues.z)
+	{
+		return sqrt(abs(sortedEigenvalues.y * sortedEigenvalues.z));
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+float computeCustomVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			
+	if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && abs(sortedEigenvalues.x) > alpha && abs(sortedEigenvalues.x) < beta)
+	{
+		return sortedEigenvalues.y/sortedEigenvalues.z;
+	}
+}
+
+float computeBlobness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+
+	
+	if (sortedEigenvalues.x < 0 && sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0)
+	{
+		float R_A_denominator = abs(sortedEigenvalues.y*sortedEigenvalues.z);
+		float R_A = abs(sortedEigenvalues.x) / sqrt(R_A_denominator);
+		
+		float R_B = 0;
+		
+		float S = sqrt(lambda1*lambda1+lambda2*lambda2+lambda3*lambda3);
+		
+		return (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+	}
+	else
+	{
+		return 0;
+	}
+	
+	return 0;
+}
+
+float computePlateness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+	
+	if (sortedEigenvalues.z < 0)
+	{
+		float R_A = 1.0 / 0.0; // infinity
+		
+		float R_B = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
+		
+		float S = sqrt(lambda1*lambda1+lambda2*lambda2+lambda3*lambda3);
+		
+		return (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+float computeObjectnessDirectly(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma, int objectDimension)
+{
+	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+			
+	const int imageDimension = 3;
+	
+	bool display = true;
+	for (int i = objectDimension; i < imageDimension; ++i)
+	{
+		if (accessVectorElement(sortedEigenvalues, i) >= 0)
+		{
+			display = false;
+		}
+	}
+	
+	if (display)
+	{
+		float R_A_denominator = 1;
+		for (int i = objectDimension + 1; i < imageDimension; ++i)
+		{
+			R_A_denominator *= abs(accessVectorElement(sortedEigenvalues, i));
+		}
+		float R_A = abs(accessVectorElement(sortedEigenvalues, objectDimension)) / pow(R_A_denominator, 1/(imageDimension - objectDimension - 1));
+		
+		float R_B_denominator = 1;
+		for (int i = objectDimension; i < imageDimension; ++i)
+		{
+			R_B_denominator *= abs(accessVectorElement(sortedEigenvalues, i));
+		}
+		float R_B = abs(accessVectorElement(sortedEigenvalues, objectDimension-1)) / pow(R_B_denominator, 1/(imageDimension - objectDimension));
+		
+		float S = 0;
+		for (int i = 0; i < imageDimension; ++i)
+		{
+			float square = accessVectorElement(sortedEigenvalues, i);
+			S += square*square;
+		}
+		S = sqrt(S);
+		
+		return (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+float computeObjectness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma, int objectDimension)
+{
+	// unfortunately, direct computation suffers from numerical imprecisions
+	//return computeObjectnessDirectly(lambda1, lambda2, lambda3, alpha, beta, gamma, objectDimension);
+	
+	
+	if (objectDimension == 0)
+	{
+		return computeBlobness(lambda1, lambda2, lambda3, alpha, beta, gamma);
+	}
+	else if (objectDimension == 1)
+	{
+		return computeFranghiVesselness(lambda1, lambda2, lambda3, alpha, beta, gamma);
+	}
+	else if (objectDimension == 2)
+	{
+		return computePlateness(lambda1, lambda2, lambda3, alpha, beta, gamma);
+	}
+	else
+	{
+		return 0;
+	}
+	
+}
+
 float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
 {
 	float returnValue = 0;
@@ -59,115 +266,31 @@ float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha
 	{
 		case 0: // Franghi's
 		{
-			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
-			if (sortedEigenvalues.y <= 0 && sortedEigenvalues.z <= 0)
-			{
-				float R_A = abs(sortedEigenvalues.y) / abs(sortedEigenvalues.z);
-				float R_B = sqrt(abs(sortedEigenvalues.x) / abs(sortedEigenvalues.y*sortedEigenvalues.z));
-				float S = sqrt(sortedEigenvalues.x*sortedEigenvalues.x + sortedEigenvalues.y*sortedEigenvalues.y + sortedEigenvalues.z*sortedEigenvalues.z);
-
-				returnValue = (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
-			}
-			else
-			{
-				returnValue = 0;
-			}
+			returnValue = computeFranghiVesselness(lambda1, lambda2, lambda3, alpha, beta, gamma);
 		}
 		break;
 		
 		case 1: // yoshinobu sato
 		{
-			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
-			
-			float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.z);
-			
-			float functionLambda1 = 0;
-			
-			if (lambdaC > 0)
-			{
-				if (sortedEigenvalues.x <= 0)
-				{
-					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*alpha*alpha*lambdaC*lambdaC)));
-				}
-				else
-				{
-					functionLambda1 = exp(-((sortedEigenvalues.x*sortedEigenvalues.x)/(2*beta*beta*lambdaC*lambdaC)));
-				}
-			}
-			else
-			{
-				functionLambda1 = 0;
-			}
-			
-			returnValue = functionLambda1 * lambdaC / 10;
+			returnValue = computeSatoVesselness(lambda1, lambda2, lambda3, alpha, beta, gamma);
 		}
 		break;
 		
 		case 2:	// T.M. Koller, G. Gerig, G. Szekely
 		{
-			vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
-			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && sortedEigenvalues.y >= sortedEigenvalues.z)
-			{
-				returnValue = sqrt(abs(sortedEigenvalues.y * sortedEigenvalues.z));
-			}
-			else
-			{
-				returnValue = 0;
-			}
+			returnValue = computeKollerVesselness(lambda1, lambda2, lambda3, alpha, beta, gamma);
 		}
 		break;
 		
-		case 3:
-		{
-			/*vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
-			
-			const int imageDimension = 3;
-			
-			bool display = true;
-			for (int i = gObjectDimension; i < imageDimension; ++i)
-			{
-				if (sortedEigenvalues[i] > 0)
-				{
-					display = false;
-				}
-			}
-			
-			if (display)
-			{
-				float R_A_denominator = 1;
-				for (int i = gObjectDimension + 1; i < imageDimension; ++i)
-				{
-					//R_A_denominator *= abs(sortedEigenvalues[i]);
-				}
-				float R_A = abs(sortedEigenvalues[gObjectDimension]) / pow(R_A_denominator, 1/(imageDimension - gObjectDimension - 1));
-				
-				float R_B_denominator = 1;
-				for (int i = gObjectDimension; i < imageDimension; ++i)
-				{
-					R_B_denominator *= abs(sortedEigenvalues[i]);
-				}
-				float R_B = abs(sortedEigenvalues[gObjectDimension-1]) / pow(R_B_denominator, 1/(imageDimension - gObjectDimension));
-				
-				float S = 0;
-				for (int i = 0; i < imageDimension; ++i)
-				{
-					S += sortedEigenvalues[i]*sortedEigenvalues[i];
-				}
-				S = sqrt(S);
-				
-				returnValue = (1 - ExponencialFormula(R_A, alpha)) * ExponencialFormula(R_B, beta) * (1 - ExponencialFormula(S, gamma));
-			}*/
+		case 3: // objectness
+		{			
+			returnValue = computeObjectness(lambda1, lambda2, lambda3, alpha, beta, gamma, gObjectDimension);
 		}
 		break;
 		
 		case 4: // ours
 		{
-			vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
-			
-			if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && abs(sortedEigenvalues.x) > alpha && abs(sortedEigenvalues.x) < beta)
-			{
-				returnValue = sortedEigenvalues.y/sortedEigenvalues.z;
-			}
+			returnValue = computeCustomVesselness(lambda1, lambda2, lambda3, alpha, beta, gamma);
 		}
 		break;
 	}
