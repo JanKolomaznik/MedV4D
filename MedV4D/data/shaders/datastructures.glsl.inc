@@ -24,10 +24,6 @@ struct TransferFunction2D
 	int ySamples;
 	bool eigenvalueProcessPrimary;
 	bool eigenvalueProcessSecondary;
-	vec3 primaryEigenvalueParameters;
-	int primaryValuesMultiplier;
-	vec3 secondaryEigenvalueParameters;
-	int secondaryValuesMultiplier;
 };
 
 struct Camera
