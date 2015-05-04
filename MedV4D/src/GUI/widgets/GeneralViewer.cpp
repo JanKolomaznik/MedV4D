@@ -423,6 +423,10 @@ GeneralViewer::setEigenvaluesOptions(int type, float alpha, float beta, float ga
   getViewerState().mSliceRenderConfig.eigenvaluesConstants = options.eigenvaluesConstants;
   getViewerState().mSliceRenderConfig.objectnessType = options.objectnessType;
 
+  getViewerState().mVolumeRenderConfig.transferFunctionOptions.eigenvaluesType = options.eigenvaluesType;
+  getViewerState().mVolumeRenderConfig.transferFunctionOptions.eigenvaluesConstants = options.eigenvaluesConstants;
+  getViewerState().mVolumeRenderConfig.transferFunctionOptions.objectnessType = options.objectnessType;
+
   notifyAboutSettingsChange();
   update();
 }

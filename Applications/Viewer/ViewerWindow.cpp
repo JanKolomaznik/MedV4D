@@ -504,10 +504,6 @@ struct FillTFBufferVisitor :
 		static const int cYSampleCount = 20;
 		std::vector<vorgl::RGBAf> buffer(cXSampleCount * cYSampleCount);
 		tfw::TransferFunction2D::RangePoint from, to;
-		tfw::TransferFunction2D::EigenvalueProcessingParameters primaryParameters = aTransferFunction.getPrimaryParameters();
-		int primaryValuesMultiplier = aTransferFunction.getPrimaryValuesMultiplier();
-		tfw::TransferFunction2D::EigenvalueProcessingParameters secondaryParameters = aTransferFunction.getSecondaryParameters();
-		int secondaryValuesMultiplier = aTransferFunction.getSecondaryValuesMultiplier();
 		std::tie(from, to) = aTransferFunction.range();
 		bool processEigenvaluePrimary = aTransferFunction.getEigenvalueProcessPrimary();
 		bool processEigenvalueSecondary = aTransferFunction.getEigenvalueProcessSecondary();
@@ -520,7 +516,7 @@ struct FillTFBufferVisitor :
 			}
 		}
 		OpenGLManager::getInstance()->doGL(
-					[this, &buffer, from, to, processEigenvaluePrimary, processEigenvalueSecondary, primaryParameters, primaryValuesMultiplier, secondaryParameters, secondaryValuesMultiplier]
+					[this, &buffer, from, to, processEigenvaluePrimary, processEigenvalueSecondary]
 					() {
 			vorgl::TransferFunctionBuffer2DInfo info;
 			info.tfGLBuffer = vorgl::createGLTransferFunctionBuffer2D(
@@ -530,11 +526,7 @@ struct FillTFBufferVisitor :
 						glm::fvec2(std::get<0>(from), std::get<1>(from)),
 						glm::fvec2(std::get<0>(to), std::get<1>(to)),
 						processEigenvaluePrimary,
-						processEigenvalueSecondary,
-						primaryParameters,
-						primaryValuesMultiplier,
-						secondaryParameters,
-						secondaryValuesMultiplier
+						processEigenvalueSecondary
 						);
 			mInfo.bufferInfo = info;
 		});
