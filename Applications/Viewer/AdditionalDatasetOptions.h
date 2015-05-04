@@ -1,19 +1,19 @@
-#ifndef LINEAR_COMBINATION_OPTIONS_H_
-#define LINEAR_COMBINATION_OPTIONS_H_
+#ifndef ADDITIONAL_DATASET_OPTIONS_H_
+#define ADDITIONAL_DATASET_OPTIONS_H_
 
-#include <qdialog.h>
+#include <vector>
 
 #include "FilteringDialogBase.h"
-#include "ui_LinearCombinationOptions.h"
+#include "ui_AdditionalDatasetOptions.h"
 
-typedef float EigenvalueType;
+typedef double EigenvalueType;
 
-class LinearCombinationOptions : public FilteringDialogBase<EigenvalueType>
+class AdditionalDatasetOptions : public FilteringDialogBase<EigenvalueType>
 {
 public:
-  LinearCombinationOptions();
+  AdditionalDatasetOptions();
 
-  virtual ~LinearCombinationOptions();
+  virtual ~AdditionalDatasetOptions();
 
   virtual std::vector<EigenvalueType> GetValues() override
   {
@@ -26,7 +26,7 @@ public:
   }
 
 private:
-  Ui::LinearCombinationOptions* dialog;
+  Ui::AdditionalDatasetOptions* dialog;
 };
 
-#endif // LINEAR_COMBINATION_OPTIONS_H_
+#endif //ADDITIONAL_DATASET_OPTIONS_H_

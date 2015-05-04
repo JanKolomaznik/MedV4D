@@ -13,7 +13,7 @@ namespace GUI
 {
 namespace Viewer
 {
-template<typename PixelType = unsigned short, typename EigenvalueType = float, unsigned int Dimension = 3>
+template<typename PixelType = unsigned short, typename EigenvalueType = double, unsigned int Dimension = 3>
 class ItkEigenvalues
 {
 public:

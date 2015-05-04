@@ -88,8 +88,11 @@ SET( VIEWER_HEADERS
 	"Statistics.hpp"
 	"JoyInput.h"
 	"ViewerWindow.hpp"
-  "FranghisVesselnessOptions.h"
-  "LinearCombinationOptions.h"	)
+  "EigenvaluesFilterPolicies.h"
+  "ItkEigenvalues.h"
+  "ItkFiltering.h"
+  "AdditionalDatasetOptions.h"
+	)
 SET( VIEWER_SOURCES
 	"ExtendedViewerControls.cpp"
 	"DatasetManager.cpp"
@@ -98,13 +101,12 @@ SET( VIEWER_SOURCES
 	"Statistics.cpp"
 	"main.cpp"
 	"ViewerWindow.cpp"
-  "FranghisVesselnessOptions.cpp"
-  "LinearCombinationOptions.cpp"	)
+  "AdditionalDatasetOptions.cpp"
+	)
 SET( VIEWER_UI
 	"ExtendedViewerControls.ui"
 	"ViewerWindow.ui"
-	"FranghisVesselnessOptions.ui"
-	"LinearCombinationOptions.ui"
+	"AdditionalDatasetOptions.ui"
 	)
 
 #INCLUDE_DIRECTORIES(../../extern/soglu/include)

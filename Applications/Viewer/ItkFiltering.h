@@ -5,6 +5,11 @@
 
 #include <itkGradientMagnitudeImageFilter.h>
 #include <itkHessianRecursiveGaussianImageFilter.h>
+#include <itkHessian3DToVesselnessMeasureImageFilter.h>
+#include <itkRescaleIntensityImageFilter.h>
+#include <itkRescaleIntensityImageFilter.h>
+#include <itkAbsImageFilter.h>
+#include <itkLaplacianRecursiveGaussianImageFilter.h>
 
 namespace M4D
 {
@@ -29,6 +34,14 @@ namespace M4D
         typedef typename HessianOutputType::Pointer HessianOutputTypePointer;
         typedef itk::ImageRegionConstIterator<HessianOutputType>  HessianIteratorType;
         typedef itk::HessianRecursiveGaussianImageFilter<ItkImageType, HessianOutputType> HessianFilterType;
+        typedef itk::Hessian3DToVesselnessMeasureImageFilter<PixelType> VesselnessMeasureFilterType;
+        typedef itk::Image<double, Dimension> FloatImageType;
+        typedef itk::RescaleIntensityImageFilter<ItkImageType, ItkImageType> RescaleFilterType;
+        typedef itk::RescaleIntensityImageFilter<FloatImageType, ItkImageType> RescaleFilterIntegerType;
+        typedef itk::LaplacianRecursiveGaussianImageFilter<ItkImageType, FloatImageType>  FilterType;
+        typedef itk::AbsImageFilter <FloatImageType, FloatImageType> AbsImageFilterType;
+
+        const PixelType NORMALIZATION_CONSTANT = 1000;
 
         ItkFiltering(ItkImagePointer image, MethodPolicy policy) : image(image), policy(policy)
         {
@@ -51,6 +64,48 @@ namespace M4D
           }
 
           return this->image;
+        }
+
+        typename ItkFiltering::ItkImagePointer GetSatoVesselnessFilterImage(float alpha1, float alpha2)
+        {
+          HessianOutputType::ConstPointer hessianOutput = this->GetHessianRecursiveGaussianFilterImage(this->policy.GetHessianSigma());
+
+          VesselnessMeasureFilterType::Pointer vesselnessFilter = VesselnessMeasureFilterType::New();
+
+          vesselnessFilter->SetInput(hessianOutput);
+          vesselnessFilter->SetAlpha1(alpha1);
+          vesselnessFilter->SetAlpha2(alpha2);
+
+
+          // remap values
+          RescaleFilterType::Pointer rescale = RescaleFilterType::New();
+          rescale->SetInput(vesselnessFilter->GetOutput());
+          rescale->SetOutputMinimum(0);
+          rescale->SetOutputMaximum(NORMALIZATION_CONSTANT);
+          rescale->Update();
+
+          return rescale->GetOutput();
+        }
+
+        typename ItkFiltering::ItkImagePointer GetLaplacianOfGaussianFilterImage()
+        {
+          FilterType::Pointer laplacian = FilterType::New();
+          laplacian->SetNormalizeAcrossScale(false);
+          laplacian->SetInput(this->image);
+
+          laplacian->SetSigma(this->policy.GetHessianSigma());
+
+          AbsImageFilterType::Pointer absFilter = AbsImageFilterType::New();
+          absFilter->SetInput(laplacian->GetOutput());
+
+          // remap values
+          RescaleFilterIntegerType::Pointer rescale = RescaleFilterIntegerType::New();
+          rescale->SetInput(absFilter->GetOutput());
+          rescale->SetOutputMinimum(0);
+          rescale->SetOutputMaximum(NORMALIZATION_CONSTANT);
+          rescale->Update();
+
+          return rescale->GetOutput();
         }
 
       private:
@@ -78,9 +133,9 @@ namespace M4D
 
         void InitializeEigenvalues()
         {
-	  typename EigenvaluesCollectionType::SizeType imageSize = this->image->GetLargestPossibleRegion().GetSize();
-	  typename EigenvaluesCollectionType::SizeType size;
-	  typename EigenvaluesCollectionType::IndexType start;
+          typename EigenvaluesCollectionType::SizeType imageSize = this->image->GetLargestPossibleRegion().GetSize();
+          typename EigenvaluesCollectionType::SizeType size;
+          typename EigenvaluesCollectionType::IndexType start;
           double origin[Dimension];
           double spacing[Dimension];
 
@@ -94,7 +149,7 @@ namespace M4D
             spacing[0] = 1.0;
           }
 
-	  typename EigenvaluesCollectionType::RegionType region;
+          typename EigenvaluesCollectionType::RegionType region;
           region.SetSize(size);
           region.SetIndex(start);
 
@@ -108,12 +163,12 @@ namespace M4D
 
         HessianOutputTypePointer GetHessianRecursiveGaussianFilterImage(double sigma)
         {
-	  typename HessianFilterType::Pointer hessianFilter = HessianFilterType::New();
+          typename HessianFilterType::Pointer hessianFilter = HessianFilterType::New();
           hessianFilter->SetInput(this->image.GetPointer());
           hessianFilter->SetSigma(sigma);
           hessianFilter->Update();
 
-	  typename HessianOutputType::Pointer output = hessianFilter->GetOutput();
+          typename HessianOutputType::Pointer output = hessianFilter->GetOutput();
           return output;
         }
 
@@ -123,8 +178,8 @@ namespace M4D
 
           std::cout << "computing hessian matrices" << std::endl;
 
-	  typename HessianOutputType::Pointer hessianOutput = this->GetHessianRecursiveGaussianFilterImage(hessianSigma);
-          
+          typename HessianOutputType::Pointer hessianOutput = this->GetHessianRecursiveGaussianFilterImage(hessianSigma);
+
           std::cout << "computing eigenvalues at each point" << std::endl;
 
           this->InitializeEigenvalues();

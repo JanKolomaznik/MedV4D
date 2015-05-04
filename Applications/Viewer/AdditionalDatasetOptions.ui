@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FranghisVesselnessOptions</class>
- <widget class="QDialog" name="FranghisVesselnessOptions">
+ <class>AdditionalDatasetOptions</class>
+ <widget class="QDialog" name="AdditionalDatasetOptions">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Franghi's vesselness dataset</string>
+   <string>Compute additional dataset</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
@@ -139,7 +139,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>FranghisVesselnessOptions</receiver>
+   <receiver>AdditionalDatasetOptions</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -155,7 +155,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>FranghisVesselnessOptions</receiver>
+   <receiver>AdditionalDatasetOptions</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
