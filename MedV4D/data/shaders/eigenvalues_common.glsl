@@ -93,9 +93,9 @@ float computeFranghiVesselness(float lambda1, float lambda2, float lambda3, floa
 
 float computeSatoVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
 {
-	vec3 sortedEigenvalues = SortEigenValuesAbsoluteValue(lambda1, lambda2, lambda3);
+	vec3 sortedEigenvalues = SortEigenValuesDecreasing(lambda1, lambda2, lambda3);
 	
-	float lambdaC = min(-sortedEigenvalues.y, -sortedEigenvalues.z);
+	float lambdaC = -sortedEigenvalues.y;
 	
 	float functionLambda1 = 0;
 	
@@ -115,7 +115,7 @@ float computeSatoVesselness(float lambda1, float lambda2, float lambda3, float a
 		functionLambda1 = 0;
 	}
 	
-	return functionLambda1 * lambdaC / 100;
+	return functionLambda1 * lambdaC / 10;
 }
 
 float computeKollerVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
@@ -138,7 +138,13 @@ float computeCustomVesselness(float lambda1, float lambda2, float lambda3, float
 			
 	if (sortedEigenvalues.y < 0 && sortedEigenvalues.z < 0 && abs(sortedEigenvalues.x) > alpha && abs(sortedEigenvalues.x) < beta)
 	{
-		return sortedEigenvalues.y/sortedEigenvalues.z;
+		float norm = sqrt(sortedEigenvalues.x*sortedEigenvalues.x + sortedEigenvalues.y*sortedEigenvalues.y + sortedEigenvalues.z*sortedEigenvalues.z);
+		
+		return (sortedEigenvalues.y / sortedEigenvalues.z) * norm;
+	}
+	else
+	{
+		return 0;
 	}
 }
 
@@ -255,7 +261,6 @@ float computeObjectness(float lambda1, float lambda2, float lambda3, float alpha
 	{
 		return 0;
 	}
-	
 }
 
 float computeVesselness(float lambda1, float lambda2, float lambda3, float alpha, float beta, float gamma)
