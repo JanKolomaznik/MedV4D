@@ -212,6 +212,8 @@ protected slots:
 
     mCurrentViewer->setEigenvaluesOptions(type, this->alphaSpinBox->value(), this->betaSpinBox->value(), this->gammaSpinBox->value(), this->objectnessComboBox->currentIndex());
 
+    mCurrentViewer->setLUTWindow(this->windowCenterSpinBox->value(), this->windowWidthSpinBox->value());
+
 		mCurrentViewer->setIsoSurfaces(mIsoSurfacesSetup->isoSurfaces());
 		//mCurrentViewer->setIsoSurfaceValue(mIsoValueSetter->value());
 		//mCurrentViewer->setIsoSurfaceColor(mSurfaceColorButton->color());
