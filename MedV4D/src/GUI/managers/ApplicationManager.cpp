@@ -5,6 +5,48 @@
 
 namespace M4D {
 
+/**
+ * Handle uncaught exceptions which can bubble up from program.
+ **/
+void handleException() {
+	try {
+		throw;
+	} catch (const std::exception &e) {
+		LOG("Caught std::exception:\n" << boost::diagnostic_information(e));
+		QString message = QObject::tr("Exception occured:\n");
+		message.append(boost::diagnostic_information(e).c_str());
+		QMessageBox::critical(
+			QApplication::activeWindow(),
+			QObject::tr("Error"),
+			message);
+	}
+}
+
+/**
+ * Subclass QApplication to handle exceptions thrown from reaction on user action.
+ * If the exception gets here something is messed up (corrupted data).
+ * So we at least prevent application crash.
+ **/
+class Application: public QApplication {
+public:
+	Application(int &argc, char **argv) :
+		QApplication(argc, argv)
+	{}
+
+	bool notify(QObject* receiver, QEvent* event) override {
+		bool done = true;
+		try {
+			done = QApplication::notify(receiver, event);
+		} catch (const std::exception &) {
+			handleException();
+		}
+		return done;
+	}
+};
+
+
+
+
 ApplicationManager *appManagerInstance = NULL;
 
 ApplicationManager *
@@ -22,11 +64,11 @@ ApplicationManager::ApplicationManager()
 }
 
 void
-ApplicationManager::initialize( int &argc, char** argv )
+ApplicationManager::initialize(int &argc, char** argv)
 {
 	Medv4DInit();
 
-	mApp = new QApplication(argc, argv);
+	mApp.reset(new Application(argc, argv));
 	loadIcons();
 
 
@@ -53,7 +95,7 @@ ApplicationManager::finalize()
 	mModules.clear();
 	mIconMap.clear();
 	QApplication::quit();
-	delete mApp;
+	mApp.reset();
 	LOG( "Application manager finalization" );
 }
 

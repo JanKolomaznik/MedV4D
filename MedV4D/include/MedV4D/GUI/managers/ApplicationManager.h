@@ -207,7 +207,7 @@ protected:
 	loadIcons();
 
 	bool	mInitialized;
-	QApplication *mApp;
+	std::unique_ptr<QApplication> mApp;
 
 	M4D::GUI::MainWindow *mMainWindow;
 

@@ -4,8 +4,8 @@
 ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::ExtendedViewerControls)
-	, mManager(aManager),
-	  mIsUpdating(false)
+	, mManager(aManager)
+	, mIsUpdating(false)
 {
 	ui->setupUi(this);
 

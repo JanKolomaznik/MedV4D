@@ -192,7 +192,13 @@ DatasetManager::getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondary
 	auto &rec2 = getDatasetRecord(aSecondaryId);
 	IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO_3D(*rec1.mImage,
 		return getCombinedStatisticsType1<IMAGE_TYPE>(IMAGE_TYPE::Cast(*rec1.mImage), *rec2.mImage);
-	);
+			);
+}
+
+void DatasetManager::saveDataset(DatasetManager::DatasetID aId, boost::filesystem::path aPath)
+{
+	STUBBED("Implement dataset save!");
+
 }
 
 int ImageListModel::rowCount(const QModelIndex &parent) const
@@ -208,8 +214,30 @@ ImageListModel::data(const QModelIndex &index, int role) const
 	}
 	if (index.row() < int(mManager.mDatasetIDList.size())) {
 		const auto &rec = mManager.getDatasetRecord(mManager.mDatasetIDList[index.row()]);
-		return QVariant(rec.name().c_str());
+		switch (index.column()) {
+		case 0:
+			return QVariant(int(mManager.idFromIndex(index.row())));
+		case 1:
+			return QVariant(rec.name().c_str());
+		}
 	}
+	return QVariant();
+}
+
+QVariant
+ImageListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (role != Qt::DisplayRole || orientation != Qt::Horizontal) {
+		return QVariant();
+	}
+
+	switch (section) {
+	case 0:
+		return QVariant("Id");
+	case 1:
+		return QVariant("Name");
+	}
+
 	return QVariant();
 }
 

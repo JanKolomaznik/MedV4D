@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DatasetManagerWidget</class>
+ <widget class="QWidget" name="DatasetManagerWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTreeView" name="mDatasetView">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mDatasetView</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>DatasetManagerWidget</receiver>
+   <slot>datasetViewContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>datasetViewContextMenu(QPoint)</slot>
+ </slots>
+</ui>

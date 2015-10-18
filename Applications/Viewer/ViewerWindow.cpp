@@ -13,6 +13,7 @@
 #include "MedV4D/GUI/widgets/SettingsDialog.h"
 #include "MedV4D/GUI/widgets/ViewerControls.h"
 #include "ExtendedViewerControls.hpp"
+#include "DatasetManagerWidget.hpp"
 #include "MedV4D/Common/MathTools.h"
 #include <boost/thread.hpp>
 
@@ -154,6 +155,7 @@ ViewerWindow::initialize()
 #endif //USE_PYTHON
 
 	ExtendedViewerControls *mViewerControls = new ExtendedViewerControls(mDatasetManager);
+	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
 	QObject::connect(
 			M4D::ApplicationManager::getInstance(),
 			&M4D::ApplicationManager::viewerSelectionChanged,
@@ -163,10 +165,10 @@ ViewerWindow::initialize()
 				mViewerControls->setViewer(genViewer);
 			});
 	QObject::connect( M4D::ApplicationManager::getInstance(), SIGNAL( selectedViewerSettingsChanged() ), mViewerControls, SLOT( updateControls() ) );
-
-	createDockWidget( tr("Viewer Controls" ), Qt::RightDockWidgetArea, mViewerControls, false );
 	LOG( "Viewer controls GUI initialized" );
 
+	auto datasetManagerWidget = new DatasetManagerWidget(mDatasetManager);
+	createDockWidget( tr("Datasets" ), Qt::RightDockWidgetArea, datasetManagerWidget, false );
 	//************* TOOLBAR & MENU *****************
 	ViewerActionSet &actions = ViewerManager::getInstance()->getViewerActionSet();
 	QToolBar *toolbar = createToolBarFromViewerActionSet( actions, "Viewer settings" );
