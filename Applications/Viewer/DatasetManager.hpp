@@ -93,10 +93,7 @@ class DatasetManager {
 public:
 	friend class ImageListModel;
 
-	DatasetManager()
-		: mLastId(0)
-		, mImageModel(*this)
-	{}
+	DatasetManager();
 
 	typedef int64_t DatasetID;
 
@@ -107,6 +104,11 @@ public:
 	getDatasetRecord(DatasetID aId)
 	{
 		return mImages[aId];
+		/*auto it = mImages.find(aId);
+		if (mImages.end() == it) {
+			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
+		}
+		return it->second;*/
 	}
 
 	std::future<M4D::Imaging::AImage::Ptr>

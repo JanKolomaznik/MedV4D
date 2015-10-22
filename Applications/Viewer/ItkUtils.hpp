@@ -8,3 +8,5 @@
 M4D::Imaging::AImage::Ptr
 loadItkImage(const boost::filesystem::path &aFile, prognot::ProgressNotifier aProgressNotifier);
 
+void
+saveItkImage(const M4D::Imaging::AImage &aImage, const boost::filesystem::path &aFile, prognot::ProgressNotifier aProgressNotifier);

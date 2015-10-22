@@ -16,7 +16,7 @@ DatasetManagerWidget::DatasetManagerWidget(DatasetManager &aManager, QWidget *pa
 
 	QStringList filters;
 	filters << "Dump files (*.dump)"
-		<< "MRC files (*.mrc, *.MRC)";
+		<< "MRC files (*.mrc *.MRC)";
 		//<< "Any files (*)";
 	mExportFileDialog.setNameFilters(filters);
 }

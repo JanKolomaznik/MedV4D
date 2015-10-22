@@ -246,7 +246,7 @@ typedef boost::error_info<struct tag_wMessage, std::wstring> EInfoWMessage;
 typedef boost::error_info<struct tag_Message, std::string> EInfoMessage;
 typedef boost::error_info<struct tag_ArgumentName, std::string> EInfoArgumentName;
 typedef boost::error_info<struct tag_ItemName, std::string> EInfoItemName;
-typedef boost::error_info<struct tag_ItemIndex, size_t> EInfoItemIndex;
+typedef boost::error_info<struct tag_ItemIndex, int> EInfoItemIndex;
 typedef boost::error_info<struct tag_ObjectName, std::string> EInfoObjectName;
 
 #define M4D_THROW(x) BOOST_THROW_EXCEPTION(x)

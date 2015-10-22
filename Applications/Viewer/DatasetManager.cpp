@@ -19,7 +19,7 @@
 
 
 M4D::Imaging::AImage::Ptr
-loadDatFile(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNotifier)
+loadDataFile(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNotifier)
 {
 	FILE *fp = fopen(aPath.string().c_str(), "rb");
 
@@ -36,6 +36,14 @@ loadDatFile(boost::filesystem::path aPath, prognot::ProgressNotifier aProgressNo
 
 	fclose(fp);
 	return image;
+}
+
+DatasetManager::DatasetManager()
+	: mLastId(0)
+	, mImageModel(*this)
+	, mFileDialog(QApplication::activeWindow())
+{
+
 }
 
 DatasetManager::DatasetID
@@ -91,7 +99,7 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 		image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 	} else {
 		if ( aPath.extension() == ".dat" || aPath.extension() == ".DAT" ) {
-			image = loadDatFile(aPath, aProgressNotifier.subTaskNotifier(1));
+			image = loadDataFile(aPath, aProgressNotifier.subTaskNotifier(1));
 		} else {
 			try {
 				image = M4D::Imaging::ImageFactory::LoadDumpedImage(aPath.string());
@@ -197,6 +205,26 @@ DatasetManager::getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondary
 
 void DatasetManager::saveDataset(DatasetManager::DatasetID aId, boost::filesystem::path aPath)
 {
+	try {
+		prognot::qt::ProgressDialog progressDialog(QApplication::activeWindow());
+		//TODO QString to path proper conversion on win
+		auto & rec = getDatasetRecord(aId);
+		if (!rec.mImage) {
+			M4D_THROW(EItemNotFound());
+		}
+		auto image = rec.mImage;
+
+		// TODO when compilers fix passing movable types to async
+		std::shared_ptr<prognot::ProgressNotifier> notifierPtr(new prognot::ProgressNotifier(std::move(progressDialog.progressNotifier())));
+		std::async(
+			std::launch::async,
+			[aPath, image, notifierPtr] () {
+				saveItkImage(*image, aPath, std::move(*notifierPtr));
+			});
+		progressDialog.exec();
+	} catch ( std::exception &e ) {
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	}
 	STUBBED("Implement dataset save!");
 
 }
