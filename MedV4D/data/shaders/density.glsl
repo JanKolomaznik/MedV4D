@@ -9,7 +9,8 @@ struct StepInfo {
 StepInfo initInfo(vec3 aCoordinates)
 {
 	StepInfo info;
-	info.value = applyWLWindow(
+	// Should be 0, otherwise rendering with mask shows volume sides.
+	info.value = 0.0;/*applyWLWindow(
 				aCoordinates,
 				gPrimaryImageData3D,
 				vec3(
@@ -17,7 +18,7 @@ StepInfo initInfo(vec3 aCoordinates)
 					gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
 					(gMappedIntervalBands[1] - gMappedIntervalBands[0]) / gWLWindow.x 
 					)
-				); 
+				);*/
 	return info;
 }
 
