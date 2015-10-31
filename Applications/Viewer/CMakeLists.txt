@@ -55,6 +55,7 @@ IF( EXTENSION_MODULES_ENABLED )
 		"OrganSegmentationModule/OrganSegmentationController.cpp"
 		"OrganSegmentationModule/OrganSegmentationWidget.cpp"
 		"OrganSegmentationModule/BrushSettingsForm.cpp"
+		"SelectionModule/SelectionModule.cpp"
 	)
 	SET( EXTENSION_HEADERS
 		#"AnnotationModule/AnnotationEditorController.hpp"
@@ -70,6 +71,7 @@ IF( EXTENSION_MODULES_ENABLED )
 		"OrganSegmentationModule/OrganSegmentationWidget.hpp"
 		"OrganSegmentationModule/OrganSegmentationController.hpp"
 		"OrganSegmentationModule/BrushSettingsForm.hpp"
+		"SelectionModule/SelectionModule.hpp"
 		)
 	SET( EXTENSION_UIS
 		#"AnnotationModule/AnnotationSettingsDialog.ui"
@@ -87,6 +89,7 @@ SET( VIEWER_HEADERS
 	"DatasetManagerWidget.hpp"
 	"ItkUtils.hpp"
 	"Statistics.hpp"
+	"ViewerModule.hpp"
 	"JoyInput.h"
 	"ViewerWindow.hpp" )
 SET( VIEWER_SOURCES

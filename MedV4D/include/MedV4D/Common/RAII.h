@@ -1,7 +1,7 @@
 #ifndef RAII_H
 #define RAII_H
 
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/utility.hpp>
 #include <memory>
 
@@ -15,19 +15,22 @@ class RAII : private boost::noncopyable
 {
 public:
 	template< typename TAcquisition, typename TRelease >
-	RAII( TAcquisition aAcquisition, TRelease aRelease, bool aAcquire = true ): mAcquisition( aAcquisition ), mRelease( aRelease ), mAcquired( false )
-	{ 
+	RAII( TAcquisition aAcquisition, TRelease aRelease, bool aAcquire = true )
+		: mAcquisition( aAcquisition )
+		, mRelease( aRelease )
+		, mAcquired( false )
+	{
 		if ( aAcquire ) {
 			acquire();
 		}
-		
+
 	}
-	
+
 	~RAII()
 	{
 		release();
 	}
-	
+
 	void
 	acquire()
 	{
@@ -36,7 +39,7 @@ public:
 			mAcquired = true;
 		}
 	}
-	
+
 	void
 	release()
 	{
@@ -45,10 +48,10 @@ public:
 			mAcquired = false;
 		}
 	}
-	
+
 protected:
-	boost::function< void() > mAcquisition;
-	boost::function< void() > mRelease;
+	std::function< void() > mAcquisition;
+	std::function< void() > mRelease;
 	bool mAcquired;
 };
 
@@ -56,22 +59,25 @@ template< typename TResource >
 class ResourceGuard : private boost::noncopyable
 {
 public:
-	ResourceGuard( boost::function< TResource() > aAcquisition, boost::function< void(TResource &) > aRelease, bool aAcquire = true ): mAcquisition( aAcquisition ), mRelease( aRelease ), mAcquired( false ), mValid( true )
-	{ 
+	ResourceGuard( std::function< TResource() > aAcquisition, std::function< void(TResource &) > aRelease, bool aAcquire = true )
+		: mAcquisition( aAcquisition )
+		, mRelease( aRelease )
+		, mAcquired( false )
+		, mValid( true )
+	{
 		if ( aAcquire ) {
 			acquire();
 		}
-		
 	}
 
 	ResourceGuard(): mAcquired( false ), mValid( false )
 	{}
-	
+
 	~ResourceGuard()
 	{
 		release();
 	}
-	
+
 	void
 	acquire()
 	{
@@ -84,11 +90,11 @@ public:
 			mAcquired = true;
 		}
 	}
-	
+
 	void
 	release()
 	{
-		
+
 		if( mAcquired ) {
 			/*if( !mValid ) {
 				_THROW_ ErrorHandling::EObjectUnavailable( "Resource guard not valid" );
@@ -100,19 +106,19 @@ public:
 	}
 	TResource &
 	get()
-	{ 
+	{
 		if( !mValid ) {
 			_THROW_ ErrorHandling::EObjectUnavailable( "get() failed. Resource guard not valid" );
 		}
 		if( !mAcquired ) {
 			_THROW_ ErrorHandling::EObjectUnavailable( "Resource not acquired!" );
 		}
-		return mResource; 
+		return mResource;
 	}
 protected:
 
-	boost::function< TResource() > mAcquisition;
-	boost::function< void(TResource &) > mRelease;
+	std::function< TResource() > mAcquisition;
+	std::function< void(TResource &) > mRelease;
 	bool mAcquired;
 	bool mValid;
 
@@ -122,7 +128,7 @@ protected:
 
 template< typename TResource >
 std::shared_ptr< ResourceGuard< TResource > >
-makeResourceGuardPtr( boost::function< TResource() > aAcquisition, boost::function< void(TResource &) > aRelease, bool aAcquire = true )
+makeResourceGuardPtr(std::function< TResource() > aAcquisition, std::function< void(TResource &) > aRelease, bool aAcquire = true)
 {
 	return std::shared_ptr< ResourceGuard< TResource > >( new ResourceGuard< TResource >( aAcquisition, aRelease, aAcquire ) );
 }

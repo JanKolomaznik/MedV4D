@@ -120,7 +120,7 @@ public:
 			M4D::Imaging::Image3DUnsigned32b::Ptr aRegions,
 			M4D::GUI::IDMappingBuffer::Ptr aIDMappingBuffer,
 			std::shared_ptr< ValuesSet > aValues,
-			boost::function<void ()> aUpdateCallback
+			std::function<void ()> aUpdateCallback
 			)
 		: mRegions( aRegions )
 		, mIDMappingBuffer( aIDMappingBuffer )
@@ -172,7 +172,7 @@ protected:
 	M4D::Imaging::Image3DUnsigned32b::Ptr mRegions;
 	M4D::GUI::IDMappingBuffer::Ptr mIDMappingBuffer;
 	std::shared_ptr< ValuesSet > mValues;
-	boost::function<void ()> mUpdateCallback;
+	std::function<void ()> mUpdateCallback;
 };
 
 

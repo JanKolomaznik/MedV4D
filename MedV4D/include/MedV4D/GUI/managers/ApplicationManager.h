@@ -14,7 +14,8 @@
 #include "MedV4D/GUI/widgets/MainWindow.h"
 #include "MedV4D/GUI/utils/ProxyViewerController.h"
 #include "MedV4D/Common/IDGenerator.h"
-#include <boost/thread/future.hpp>
+#include <functional>
+#include <future>
 #endif
 
 #include <QtCore>
@@ -162,16 +163,16 @@ public:
 		mIconsDirName = aIconsDirName;
 	}
 
-	typedef boost::shared_future<void> BackgroundTaskFuture;
+	typedef std::shared_future<void> BackgroundTaskFuture;
 
 	BackgroundTaskFuture
-	executeBackgroundTask( const boost::function< void () > &aFtor, const QString &aDescription );
+	executeBackgroundTask( const std::function< void () > &aFtor, const QString &aDescription );
 
 	template < typename TFunctor >
 	BackgroundTaskFuture
 	executeBackgroundTask( const TFunctor &aFtor, const QString &aDescription )
 	{
-		boost::function< void () > func = aFtor;
+		std::function< void () > func = aFtor;
 		return executeBackgroundTask( func, aDescription );
 	}
 

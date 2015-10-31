@@ -1,7 +1,7 @@
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 #include "MedV4D/DICOMInterface/DcmProvider.h"
 #include <QtWidgets>
-
+#include <future>
 
 namespace M4D {
 
@@ -168,13 +168,13 @@ ApplicationManager::loadIcons()
 
 
 ApplicationManager::BackgroundTaskFuture
-ApplicationManager::executeBackgroundTask( const boost::function< void () > &aFtor, const QString &aDescription )
+ApplicationManager::executeBackgroundTask( const std::function< void () > &aFtor, const QString &aDescription )
 {
-	boost::packaged_task<void> task( aFtor );
-	boost::unique_future<void> uniqueFut = task.get_future();
-	BackgroundTaskFuture fut = boost::move( uniqueFut );
+	std::packaged_task<void()> task(aFtor);
+	std::future<void> uniqueFut = task.get_future();
+	BackgroundTaskFuture fut = std::move(uniqueFut);
 
-	boost::thread backThread( boost::move( task ) ); // launch task on a thread
+	std::thread backThread(std::move( task )); // launch task on a thread
 	//TODO better GUI response
 
 

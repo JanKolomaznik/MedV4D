@@ -13,8 +13,8 @@ public:
 	{}
 
 protected:
-	PositionType aFirstCorner;
-	PositionType aSecondCorner;
+	PositionType mFirstCorner;
+	PositionType mSecondCorner;
 };
 
 /*template< unsigned taDim, typename TCoordType = float32 >

@@ -36,6 +36,8 @@ processCommandLine( int argc, char** argv )
 //#include "AnnotationModule/AnnotationModule.hpp"
 //#include "ShoulderMeasurementModule/ShoulderMeasurementModule.hpp"
 #include "OrganSegmentationModule/OrganSegmentationModule.hpp"
+#include "SelectionModule/SelectionModule.hpp"
+
 #endif
 void
 createModules()
@@ -45,6 +47,7 @@ createModules()
 //	appManager->addModule( createModule< AnnotationModule >() );
 //	appManager->addModule( createModule< ShoulderMeasurementModule >() );
 	appManager->addModule( createModule< OrganSegmentationModule >() );
+	appManager->addModule( createModule< SelectionModule >() );
 #endif
 }
 

@@ -81,7 +81,7 @@ buildGraph(GridCutGraph<TGraphImplementation> &aGraph, const TImage &aImage, con
 					if (nodeCoords[i] > 0) {
 						auto neighborValue = aImage.GetElement(neighborCoords1);
 						int weight = currentValue - neighborValue;
-						weight = std::exp(-(weight * weight) / 200);
+						weight = std::exp(-(weight * weight) / 0.1);
 						aGraph.graph->set_neighbor_cap(
 								node,
 								cOffsets[2*i][0],
