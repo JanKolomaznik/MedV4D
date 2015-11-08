@@ -1,7 +1,7 @@
 #include "MedV4D/GUI/renderers/VolumeRenderer.h"
 
 #include <glm/gtx/component_wise.hpp>
-#include <glm/gtx/verbose_operator.hpp>
+//#include <glm/gtx/verbose_operator.hpp>
 
 namespace M4D
 {

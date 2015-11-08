@@ -478,8 +478,9 @@ GeneralViewer::enableInterpolation( bool aEnable )
 void
 GeneralViewer::cameraOrbit( Vector2f aAngles )
 {
+	STUBBED("Change degrees to radians properly in higher context.");
 	soglu::cameraYawPitchAroundPoint(getViewerState().mVolumeRenderConfig.renderingConfiguration.camera,
-					glm::fvec2(aAngles[0], aAngles[1]),
+					glm::fvec2(glm::radians(aAngles[0]), glm::radians(aAngles[1])),
 					getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition()
 					);
 	//getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.yawPitchAround( aAngles[0], aAngles[1] );
