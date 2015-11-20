@@ -174,11 +174,20 @@ protected:
 	getCombinedStatisticsType1Type2(const TImageType1 &aImage1, const TImageType2 &aImage2);
 
 	DatasetID
+	addNewRecord(ImageRecord aRecord)
+	{
+
+		mImageModel.beginInsertRows(QModelIndex(), mDatasetIDList.size(), mDatasetIDList.size());
+		DatasetID currentID = newID();
+
+		mImages.emplace(currentID, std::move(aRecord));
+		mImageModel.endInsertRows();
+	}
+
+	DatasetID
 	newID()
 	{
-		mImageModel.beginInsertRows(QModelIndex(), mDatasetIDList.size(), mDatasetIDList.size());
 		mDatasetIDList.push_back(++mLastId); //TODO what to do on exception
-		mImageModel.endInsertRows();
 		return mLastId;
 	}
 

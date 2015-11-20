@@ -66,10 +66,9 @@ DatasetManager::loadFromFile()
 		auto image = openFileNonBlocking(fileName.toStdString(), progressDialog.progressNotifier());
 		progressDialog.exec();
 
-		DatasetID currentID = newID();
-		auto & currentRecord = mImages[currentID];
+		ImageRecord currentRecord;
 		currentRecord.assignImage(image.get(), boost::filesystem::path(fileName.toStdString()));
-		return currentID;
+		return addNewRecord(std::move(currentRecord));
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
 		return 0;
@@ -132,10 +131,9 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 DatasetManager::DatasetID
 DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName)
 {
-	DatasetID currentID = newID();
-	auto & currentRecord = mImages[currentID];
+	ImageRecord currentRecord;
 	currentRecord.assignImage(aImage, aName);
-	return currentID;
+	return addNewRecord(std::move(currentRecord));
 }
 
 void
