@@ -14,7 +14,7 @@ namespace Viewer
 ViewerDesktop::ViewerDesktop( QWidget *parent ):
 	QWidget( parent )
 {
-	
+
 }
 
 void
@@ -25,18 +25,27 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 	unsigned viewersSize = mViewers.size();
 	int difference = newSize - viewersSize;
 
-	if ( difference >= 0 )
-	{
-		for ( int i = 0; i < difference; i++ ) 
+	for (auto &info : mViewers) {
+		layout()->removeWidget(info.viewer);
+		//delete info.viewer;
+	}
+	//mViewers.clear();
+	delete layout();
+	/*for (int i = 0; i < newSize; ++i) {
+		ViewerInfo info;
+		info.viewer = createViewer();
+		QObject::connect( info.viewer, SIGNAL( MouseInfoUpdate( const QString & ) ), this, SIGNAL( updateInfo( const QString & ) ) );
+		mViewers.push_back( info );
+	}*/
+	if ( difference >= 0 ) {
+		for ( int i = 0; i < difference; i++ )
 		{
 			ViewerInfo info;
 			info.viewer = createViewer();
 			QObject::connect( info.viewer, SIGNAL( MouseInfoUpdate( const QString & ) ), this, SIGNAL( updateInfo( const QString & ) ) );
 			mViewers.push_back( info );
 		}
-	}
-	else
-	{ //TODO test selected viewer
+	} else { //TODO test selected viewer
 		for ( unsigned i = newSize; i < viewersSize; i++ ) {
 			delete mViewers[i].viewer;
 		}
@@ -56,7 +65,7 @@ ViewerDesktop::setLayoutOrganization( int cols, int rows )
 		splitter->setOpaqueResize( true );
 		splitter->setHandleWidth( 1 );
 		for ( int j = 0; j < cols; j++ )
-		{   
+		{
 			QWidget *widget = mViewers[i * cols + j].viewer;
 			widget->resize( widget->sizeHint() );
 			splitter->addWidget( widget );

@@ -24,7 +24,7 @@ public:
 
 
 	bool
-	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	mouseMoveEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) override
 	{
 		if( mCurrentController && mCurrentController->mouseMoveEvent(aViewerState, aEventInfo)) {
 			return true;
@@ -33,7 +33,7 @@ public:
 	}
 
 	bool
-	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	mouseDoubleClickEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) override
 	{
 		if( mCurrentController && mCurrentController->mouseDoubleClickEvent(aViewerState, aEventInfo)) {
 			return true;
@@ -42,7 +42,7 @@ public:
 	}
 
 	bool
-	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	mousePressEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) override
 	{
 		if( mCurrentController && mCurrentController->mousePressEvent(aViewerState, aEventInfo)) {
 			return true;
@@ -51,7 +51,7 @@ public:
 	}
 
 	bool
-	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
+	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) override
 	{
 		if( mCurrentController && mCurrentController->mouseReleaseEvent(aViewerState, aEventInfo)) {
 			return true;
@@ -60,12 +60,12 @@ public:
 	}
 
 	bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event )
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo ) override
 	{
-		if( mCurrentController && mCurrentController->wheelEvent(aViewerState, event)) {
+		if( mCurrentController && mCurrentController->wheelEvent(aViewerState, aEventInfo)) {
 			return true;
 		}
-		return TPredecessor::wheelEvent ( aViewerState, event );
+		return TPredecessor::wheelEvent ( aViewerState, aEventInfo );
 	}
 
 	void

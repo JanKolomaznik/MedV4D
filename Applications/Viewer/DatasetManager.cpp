@@ -68,7 +68,7 @@ DatasetManager::loadFromFile()
 
 		DatasetID currentID = newID();
 		auto & currentRecord = mImages[currentID];
-		currentRecord.assignImage(image.get(), fileName.toStdString());
+		currentRecord.assignImage(image.get(), boost::filesystem::path(fileName.toStdString()));
 		return currentID;
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
@@ -247,6 +247,8 @@ ImageListModel::data(const QModelIndex &index, int role) const
 			return QVariant(int(mManager.idFromIndex(index.row())));
 		case 1:
 			return QVariant(rec.name().c_str());
+		case 2:
+			return QVariant(rec.path().c_str());
 		}
 	}
 	return QVariant();
@@ -264,6 +266,8 @@ ImageListModel::headerData(int section, Qt::Orientation orientation, int role) c
 		return QVariant("Id");
 	case 1:
 		return QVariant("Name");
+	case 2:
+		return QVariant("Path");
 	}
 
 	return QVariant();

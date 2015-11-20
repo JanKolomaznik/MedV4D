@@ -21,7 +21,7 @@ using namespace M4D::Dicom;
 ///////////////////////////////////////////////////////////////////////
 
 void
-MoveService::GetQuery( 
+MoveService::GetQuery(
 		DcmDataset **query,
 		const std::string *patientID,
 		const std::string *studyID,
@@ -37,15 +37,15 @@ MoveService::GetQuery(
 		DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "IMAGE");
 
 	// patient info
-	DU_putStringDOElement(*query, DCM_PatientID, 
+	DU_putStringDOElement(*query, DCM_PatientID,
 		(patientID == NULL) ? NULL : patientID->c_str());
 
 	// study info
-    DU_putStringDOElement(*query, DCM_StudyInstanceUID, 
+    DU_putStringDOElement(*query, DCM_StudyInstanceUID,
 		(studyID == NULL) ? NULL : studyID->c_str());
 
 	// serie info
-	DU_putStringDOElement(*query, DCM_SeriesInstanceUID, 
+	DU_putStringDOElement(*query, DCM_SeriesInstanceUID,
 		(setID == NULL) ? NULL : setID->c_str());
 
 	// iamge info
@@ -82,12 +82,12 @@ MoveService::~MoveService()
 ///////////////////////////////////////////////////////////////////////
 
 void
-MoveService::MoveImage( 
+MoveService::MoveImage(
 		const std::string &patientID,
 		const std::string &studyID,
 		const std::string &setID,
 		const std::string &imageID,
-		DicomObj &rs) 
+		DicomObj &rs)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -118,7 +118,7 @@ MoveService::MoveImageSet(
 
 void
 MoveService::MoveSupport( DcmDataset *query,
-	void *data, enum eCallType type) 
+	void *data, enum eCallType type)
 {
   try {
 	  // request assoc to server
@@ -138,13 +138,13 @@ MoveService::MoveSupport( DcmDataset *query,
 
     /* figure out which of the accepted presentation contexts should be used */
 	presId = m_assocToServer->FindPresentationCtx();
-	
+
     //MyCallbackInfo      callbackData;
     //callbackData.assoc = assoc;
     //callbackData.presId = presId;
 
     req.MessageID = msgId;
-    strcpy(req.AffectedSOPClassUID, 
+    strcpy(req.AffectedSOPClassUID,
 		m_assocToServer->GetAssocAddress()->transferModel.c_str() );
     req.Priority = DIMSE_PRIORITY_MEDIUM;
     req.DataSetType = DIMSE_DATASET_PRESENT;
@@ -164,7 +164,7 @@ MoveService::MoveSupport( DcmDataset *query,
 		cond = DIMSE_moveUser(
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
-			MoveCallback, NULL, 
+			MoveCallback, NULL,
 			m_mode, FIND_OPER_TIMEOUT,
 			m_net, SubAssocCallback, data,
 			&rsp, &statusDetail, &rspIds, false);
@@ -174,27 +174,27 @@ MoveService::MoveSupport( DcmDataset *query,
 		cond = DIMSE_moveUser(
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
-			MoveCallback, NULL, 
+			MoveCallback, NULL,
 			m_mode, FIND_OPER_TIMEOUT,
 			m_net, SubAssocCallbackWholeSet, data,
 			&rsp, &statusDetail, &rspIds, false);
 		break;
-	}    
+	}
 
-  if (cond == EC_Normal) 
+  if (cond == EC_Normal)
   {
 	  LOG( "Move operation accepted...");
 #ifdef _DEBUG
-    if (rspIds != NULL) 
+    if (rspIds != NULL)
     {
-        D_PRINT("Response Identifiers:\n");
-        rspIds->print(LOUT);
+	D_PRINT("Response Identifiers:\n");
+	rspIds->print(LOUT);
     }
 #endif
   } else {
     LOG("Move operation failed ...");
   }
-  if (statusDetail != NULL) 
+  if (statusDetail != NULL)
   {
     LOG("  Status Detail:\n");
     statusDetail->print(LOUT);
@@ -209,13 +209,13 @@ MoveService::MoveSupport( DcmDataset *query,
 ///////////////////////////////////////////////////////////////////////
 
 void
-MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)	
+MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
 {
 	// this is hardcoded ! Firstly -> no compression or some JPEGs
 	E_TransferSyntax prefferedTransferSyntax = EXS_LittleEndianImplicit;
 
     const char* knownAbstractSyntaxes[] = {
-        UID_VerificationSOPClass
+	UID_VerificationSOPClass
     };
     const char* transferSyntaxes[] = { NULL, NULL, NULL, NULL };
     int numTransferSyntaxes;
@@ -225,106 +225,107 @@ MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
     {
       switch (prefferedTransferSyntax)
       {
-        case EXS_LittleEndianImplicit:
-          /* we only support Little Endian Implicit */
-          transferSyntaxes[0]  = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 1;
-          break;
-        case EXS_LittleEndianExplicit:
-          /* we prefer Little Endian Explicit */
-          transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[2]  = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 3;
-          break;
-        case EXS_BigEndianExplicit:
-          /* we prefer Big Endian Explicit */
-          transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2]  = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 3;
-          break;
-        case EXS_JPEGProcess14SV1TransferSyntax:
-          /* we prefer JPEGLossless:Hierarchical-1stOrderPrediction (default lossless) */
-          transferSyntaxes[0] = UID_JPEGProcess14SV1TransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        case EXS_JPEGProcess1TransferSyntax:
-          /* we prefer JPEGBaseline (default lossy for 8 bit images) */
-          transferSyntaxes[0] = UID_JPEGProcess1TransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        case EXS_JPEGProcess2_4TransferSyntax:
-          /* we prefer JPEGExtended (default lossy for 12 bit images) */
-          transferSyntaxes[0] = UID_JPEGProcess2_4TransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        case EXS_JPEG2000:
-          /* we prefer JPEG2000 Lossy */
-          transferSyntaxes[0] = UID_JPEG2000TransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        case EXS_JPEG2000LosslessOnly:
-          /* we prefer JPEG2000 Lossless */
-          transferSyntaxes[0] = UID_JPEG2000LosslessOnlyTransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        case EXS_RLELossless:
-          /* we prefer RLE Lossless */
-          transferSyntaxes[0] = UID_RLELosslessTransferSyntax;
-          transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
-          transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 4;
-          break;
-        default:
-          /* We prefer explicit transfer syntaxes.
-           * If we are running on a Little Endian machine we prefer
-           * LittleEndianExplicitTransferSyntax to BigEndianTransferSyntax.
-           */
-          if (gLocalByteOrder == EBO_LittleEndian)  /* defined in dcxfer.h */
-          {
-            transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
-            transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
-          } else {
-            transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
-            transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
-          }
-          transferSyntaxes[2] = UID_LittleEndianImplicitTransferSyntax;
-          numTransferSyntaxes = 3;
-          break;
+	case EXS_LittleEndianImplicit:
+	  /* we only support Little Endian Implicit */
+	  transferSyntaxes[0]  = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 1;
+	  break;
+	case EXS_LittleEndianExplicit:
+	  /* we prefer Little Endian Explicit */
+	  transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[2]  = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 3;
+	  break;
+	case EXS_BigEndianExplicit:
+	  /* we prefer Big Endian Explicit */
+	  transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2]  = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 3;
+	  break;
+	/*case EXS_JPEGProcess14SV1TransferSyntax:
+	  // we prefer JPEGLossless:Hierarchical-1stOrderPrediction (default lossless)
+	  transferSyntaxes[0] = UID_JPEGProcess14SV1TransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;
+	case EXS_JPEGProcess1TransferSyntax:
+	  // we prefer JPEGBaseline (default lossy for 8 bit images)
+	  transferSyntaxes[0] = UID_JPEGProcess1TransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;
+	case EXS_JPEGProcess2_4TransferSyntax:
+	  // we prefer JPEGExtended (default lossy for 12 bit images)
+	  transferSyntaxes[0] = UID_JPEGProcess2_4TransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;*/
+	case EXS_JPEG2000:
+	  /* we prefer JPEG2000 Lossy */
+	  transferSyntaxes[0] = UID_JPEG2000TransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;
+	case EXS_JPEG2000LosslessOnly:
+	  /* we prefer JPEG2000 Lossless */
+	  transferSyntaxes[0] = UID_JPEG2000LosslessOnlyTransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;
+	case EXS_RLELossless:
+	  /* we prefer RLE Lossless */
+	  transferSyntaxes[0] = UID_RLELosslessTransferSyntax;
+	  transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  transferSyntaxes[2] = UID_BigEndianExplicitTransferSyntax;
+	  transferSyntaxes[3] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 4;
+	  break;
+	default:
+	  STUBBED("Commented transfer syntax modes.");
+	  /* We prefer explicit transfer syntaxes.
+	   * If we are running on a Little Endian machine we prefer
+	   * LittleEndianExplicitTransferSyntax to BigEndianTransferSyntax.
+	   */
+	  if (gLocalByteOrder == EBO_LittleEndian)  /* defined in dcxfer.h */
+	  {
+	    transferSyntaxes[0] = UID_LittleEndianExplicitTransferSyntax;
+	    transferSyntaxes[1] = UID_BigEndianExplicitTransferSyntax;
+	  } else {
+	    transferSyntaxes[0] = UID_BigEndianExplicitTransferSyntax;
+	    transferSyntaxes[1] = UID_LittleEndianExplicitTransferSyntax;
+	  }
+	  transferSyntaxes[2] = UID_LittleEndianImplicitTransferSyntax;
+	  numTransferSyntaxes = 3;
+	  break;
 
-        }
+	}
 
-        /* accept the Verification SOP Class if presented */
-        cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
-            (*assoc)->params,
-            knownAbstractSyntaxes, DIM_OF(knownAbstractSyntaxes),
-            transferSyntaxes, numTransferSyntaxes);
+	/* accept the Verification SOP Class if presented */
+	cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
+	    (*assoc)->params,
+	    knownAbstractSyntaxes, DIM_OF(knownAbstractSyntaxes),
+	    transferSyntaxes, numTransferSyntaxes);
 
-        if (cond.good())
-        {
-            /* the array of Storage SOP Class UIDs comes from dcuid.h */
-            cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
-                (*assoc)->params,
-                dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs,
-                transferSyntaxes, numTransferSyntaxes);
-        }
+	if (cond.good())
+	{
+	    /* the array of Storage SOP Class UIDs comes from dcuid.h */
+	    cond = ASC_acceptContextsWithPreferredTransferSyntaxes(
+		(*assoc)->params,
+		dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs,
+		transferSyntaxes, numTransferSyntaxes);
+	}
     }
     if (cond.good()) cond = ASC_acknowledgeAssociation(*assoc);
     if (cond.bad()) {
@@ -344,7 +345,7 @@ MoveService::StoreSCPCallback(
     void *callbackData,
     T_DIMSE_StoreProgress *progress,    /* progress state */
     T_DIMSE_C_StoreRQ * /*req*/,             /* original store request */
-    char * /*imageFileName*/, 
+    char * /*imageFileName*/,
 	DcmDataset ** /*imageDataSet*/, /* being received into */
     /* out */
     T_DIMSE_C_StoreRSP * /*rsp*/,            /* final store response */
@@ -352,13 +353,13 @@ MoveService::StoreSCPCallback(
 {
 
     /*if ((opt_abortDuringStore && progress->state != DIMSE_StoreBegin) ||
-        (opt_abortAfterStore && progress->state == DIMSE_StoreEnd)) {
-        if (opt_verbose) {
-            printf("ABORT initiated (due to command line options)\n");
-        }
-        ASC_abortAssociation(((StoreCallbackData*) callbackData)->assoc);
-        rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
-        return;
+	(opt_abortAfterStore && progress->state == DIMSE_StoreEnd)) {
+	if (opt_verbose) {
+	    printf("ABORT initiated (due to command line options)\n");
+	}
+	ASC_abortAssociation(((StoreCallbackData*) callbackData)->assoc);
+	rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
+	return;
     }*/
 
     if (progress->state == DIMSE_StoreEnd)
@@ -380,7 +381,7 @@ typedef union {
 } UDcmDatasetToVoid;
 
 void
-MoveService::SubTransferOperationSCP( T_ASC_Association **subAssoc, void *data, eCallType type ) 
+MoveService::SubTransferOperationSCP( T_ASC_Association **subAssoc, void *data, eCallType type )
 {
 	T_DIMSE_Message     msg;
 	T_ASC_PresentationContextID presID;
@@ -428,19 +429,19 @@ MoveService::SubTransferOperationSCP( T_ASC_Association **subAssoc, void *data, 
 			}
 
 #define WRITE_METAHEADER false
-			UDcmDatasetToVoid uConv; 
+			UDcmDatasetToVoid uConv;
 			uConv.vp = (void **)&result->m_dataset;
 
-			cond = DIMSE_storeProvider( 
-					*subAssoc, 
-					presID, 
-					req, 
-					(char *)NULL, 
-					WRITE_METAHEADER, 
-					uConv.dsp, 
-					StoreSCPCallback, 
-					(void *)result, 
-					m_mode, 
+			cond = DIMSE_storeProvider(
+					*subAssoc,
+					presID,
+					req,
+					(char *)NULL,
+					WRITE_METAHEADER,
+					uConv.dsp,
+					StoreSCPCallback,
+					(void *)result,
+					m_mode,
 					MOVE_OPER_TIMEOUT
 					);
 			break;
@@ -482,7 +483,7 @@ MoveService::SubTransferOperationSCP( T_ASC_Association **subAssoc, void *data, 
  */
 void
 MoveService::SubAssocCallback(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc)
+	T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
 	SubAssocCallbackSupp( subOpCallbackData, aNet,
 		subAssoc, SINGLE_IMAGE);
@@ -496,7 +497,7 @@ MoveService::SubAssocCallback(void *subOpCallbackData,
  */
 void
 MoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc)
+	T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
     SubAssocCallbackSupp( subOpCallbackData, aNet,
 		subAssoc, IMAGE_SET);
@@ -510,16 +511,16 @@ MoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
  */
 void
 MoveService::SubAssocCallbackSupp(void *subOpCallbackData,
-        T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type)
+	T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type)
 {
     if (aNet == NULL) return;   /* help no net ! */
 
     if (*subAssoc == NULL) {
-        /* negotiate association */
-        AcceptSubAssoc(aNet, subAssoc);
+	/* negotiate association */
+	AcceptSubAssoc(aNet, subAssoc);
     } else {
-        /* be a service class provider */
-        SubTransferOperationSCP( subAssoc, subOpCallbackData, type);
+	/* be a service class provider */
+	SubTransferOperationSCP( subAssoc, subOpCallbackData, type);
     }
 }
 

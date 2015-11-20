@@ -79,7 +79,7 @@ public:
 	mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 
 	virtual bool
-	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event ) = 0;
+	wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo ) = 0;
 };
 
 } /*namespace Viewer*/

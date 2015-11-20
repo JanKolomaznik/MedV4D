@@ -465,7 +465,10 @@ protected:
 	finalizeAfterRenderingStep();
 
 	MouseEventInfo
-	getMouseEventInfo( QMouseEvent * event );
+	getMouseEventInfo( QMouseEvent * event ) override;
+
+	MouseEventInfo
+	getMouseEventInfo( QWheelEvent * event ) override;
 
 	void
 	resizeGL ( int width, int height )

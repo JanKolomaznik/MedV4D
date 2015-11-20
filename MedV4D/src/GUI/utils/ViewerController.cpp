@@ -155,10 +155,13 @@ ViewerController::mouseReleaseEvent ( BaseViewerState::Ptr aViewerState, const M
 }
 
 bool
-ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * event )
+ViewerController::wheelEvent (BaseViewerState::Ptr aViewerState, const MouseEventInfo &aEventInfo )
 {
 	ViewerState &state = *(boost::polymorphic_downcast< ViewerState *>( aViewerState.get() ) );
-
+	QWheelEvent *event = aEventInfo.wheelEvent;
+	if (!event) {
+		return false;
+	}
 	//int numDegrees = event->delta() / 8;
 	//int numSteps = numDegrees / 15;
 	if( mInteractionMode == imORBIT_CAMERA || mInteractionMode == imCUT_PLANE ) { //prevent scale jumping during camera orbit
@@ -177,6 +180,7 @@ ViewerController::wheelEvent ( BaseViewerState::Ptr aViewerState, QWheelEvent * 
 	if ( state.viewType == vt2DAlignedSlices ) {
 		state.getViewerWindow< GeneralViewer >().changeCurrentSlice( event->delta() > 0 ? 1: -1 );
 
+		state.getViewerWindow< GeneralViewer >().updateMouseInfo( fromGLM(aEventInfo.point) );
 		event->accept();
 		return true;
 	}

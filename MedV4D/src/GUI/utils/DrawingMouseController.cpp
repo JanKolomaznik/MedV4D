@@ -51,7 +51,7 @@ ADrawingMouseController::mouseReleaseEvent ( M4D::GUI::Viewer::BaseViewerState::
 }
 
 bool
-ADrawingMouseController::wheelEvent ( M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, QWheelEvent * event )
+ADrawingMouseController::wheelEvent (M4D::GUI::Viewer::BaseViewerState::Ptr aViewerState, const M4D::GUI::Viewer::MouseEventInfo &aEventInfo )
 {
 	return false;
 }

@@ -41,14 +41,25 @@ struct MouseEventInfo
 	MouseEventInfo(const soglu::GLViewSetup &aViewSetup, QMouseEvent *aEvent, ViewType aViewType, glm::fvec3 aPoint, glm::fvec3 aDirection )
 		: viewSetup( aViewSetup )
 		, event( aEvent )
+		, wheelEvent(nullptr)
 		, viewType( aViewType )
 		, point( aPoint )
 		, direction( aDirection )
 	{ }
 
+	MouseEventInfo(const soglu::GLViewSetup &aViewSetup, QWheelEvent *aEvent, ViewType aViewType, glm::fvec3 aPoint, glm::fvec3 aDirection )
+		: viewSetup(aViewSetup)
+		, event(nullptr)
+		, wheelEvent(aEvent)
+		, viewType(aViewType)
+		, point(aPoint)
+		, direction(aDirection)
+	{ }
+
 	soglu::GLViewSetup viewSetup;
 
 	QMouseEvent *event;
+	QWheelEvent *wheelEvent;
 	ViewType viewType;
 
 	//2D section
@@ -142,6 +153,8 @@ protected:
 	virtual MouseEventInfo
 	getMouseEventInfo( QMouseEvent * event ) = 0;
 
+	virtual MouseEventInfo
+	getMouseEventInfo( QWheelEvent * event ) = 0;
 //**************************************************************
 	void
 	updateGLViewSetupInfo()

@@ -294,7 +294,8 @@ ViewerWindow::setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aVie
 void
 ViewerWindow::testSlot()
 {
-	LOG( "AAAAA" );
+	mViewerDesktop->setLayoutOrganization( 2, 2 );
+	/*LOG( "AAAAA" );
 	updateGui();
 
 	M4D::GUI::Viewer::AGLViewer *pViewer;
@@ -303,7 +304,7 @@ ViewerWindow::testSlot()
 	if(pViewer != NULL) {
 		//pViewer->toggleFPS();
 		static_cast<M4D::GUI::Viewer::GeneralViewer *>(pViewer)->reloadShaders();
-	}
+	}*/
 }
 
 void ViewerWindow::testSlot2()

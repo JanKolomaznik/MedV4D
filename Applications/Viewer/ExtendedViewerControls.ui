@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>396</width>
+    <height>296</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0">
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -31,7 +31,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="mPrimaryDatasetComboBox"/>
+       <widget class="QComboBox" name="mPrimaryDatasetComboBox">
+        <property name="modelColumn">
+         <number>1</number>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -41,7 +45,11 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="mSecondaryDatasetComboBox"/>
+       <widget class="QComboBox" name="mSecondaryDatasetComboBox">
+        <property name="modelColumn">
+         <number>1</number>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
@@ -51,7 +59,11 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="mMaskComboBox"/>
+       <widget class="QComboBox" name="mMaskComboBox">
+        <property name="modelColumn">
+         <number>1</number>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
        <widget class="QToolButton" name="mResetPrimaryDatasetButton">

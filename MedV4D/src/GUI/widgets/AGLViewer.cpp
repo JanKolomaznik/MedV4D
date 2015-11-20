@@ -271,7 +271,7 @@ AGLViewer::mouseReleaseEvent ( QMouseEvent * event )
 void
 AGLViewer::wheelEvent ( QWheelEvent * event )
 {
-	if ( mViewerController && mViewerController->wheelEvent( mViewerState, event ) ) {
+	if ( mViewerController && mViewerController->wheelEvent( mViewerState, getMouseEventInfo( event ) ) ) {
 		return;
 	}
 }

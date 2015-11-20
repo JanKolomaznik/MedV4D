@@ -79,6 +79,15 @@ public:
 		return mFileName.filename().string();
 	}
 
+	std::string
+	path() const
+	{
+		return mFileName.string();
+	}
+
+
+
+
 //protected:
 	//std::atomic_bool mIsReady;
 	M4D::Imaging::AImage::Ptr mImage;

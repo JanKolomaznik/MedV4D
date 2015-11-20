@@ -309,11 +309,17 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 	}
 	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0].lock() );*/
 	QString result;
-
-	/*try {
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
-			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
-			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
+	if (!mData) {
+		return result;
+	}
+	M4D::Imaging::AImage::ConstPtr image  = mData->primaryImage();
+	if (!image) {
+		return result;
+	}
+	try {
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image<TTYPE, 3> IMAGE_TYPE;
+			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast(image);
 			Vector3f extents = typedImage->GetElementExtents();
 			// HH: previously was 'round', now is floor instead, because round was making errors during outputting correct mouse coordinates
 			Vector3i coords = floor<3>( VectorMemberDivision( aDataCoords, extents ) );
@@ -326,10 +332,10 @@ GeneralViewer::GetVoxelInfo( Vector3f aDataCoords )
 			}
 			);
 
-	} catch (...) {
+	} catch (std::exception &) {
 		result = QString("NONE");
 	}
-	ReleaseAllInputs();*/
+	//ReleaseAllInputs();
 	return result;
 }
 
@@ -950,6 +956,72 @@ GeneralViewer::getMouseEventInfo( QMouseEvent * event )
 			Vector3f slicePoint = fromGLM(getViewerState().mSliceRenderConfig.sliceCenter);
 			glm::dvec3 pom = soglu::getPointFromScreenCoordinates(
 						glm::fvec2(event->localPos().x() - subVPortW * x, mViewerState->glViewSetup.viewport[3] - event->localPos().y() + subVPortH * y),
+						mViewerState->glViewSetup
+						);
+			//LOG( event->localPos().x() << ";  " << event->localPos().y() );
+			Vector3f intersection;
+			/*IntersectionResult res =*/ AxisPlaneIntersection(
+					Vector3f(pom.x, pom.y, pom.z),
+					Vector3f(dir.x, dir.y, dir.z),
+					slicePoint,
+					Vector3f(dir.x, dir.y, dir.z),
+					intersection
+					);
+			//LOG( "Intersection res = " << res << "; " << intersection );
+
+			/*Vector2f pos = GetRealCoordinatesFromScreen(
+				Vector2f( event->localPos().x(), event->localPos().y() ),
+				getViewerState().mWindowSize,
+				getViewerState().mSliceRenderConfig.viewConfig
+				);
+			float32 realSlice = getCurrentRealSlice();*/
+			//Vector3f position = VectorInsertDimension( pos, realSlice, getCurrentViewPlane() );
+			glm::fvec3 position = toGLM(intersection);
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt2DAlignedSlices, position, dir);
+		}
+		break;
+	default:
+		ASSERT( false );
+	}
+	return MouseEventInfo( mViewerState->glViewSetup, NULL, vt3D ); //Shouldn't reach this
+}
+
+MouseEventInfo
+GeneralViewer::getMouseEventInfo( QWheelEvent * event )
+{
+	switch ( getViewerState().viewType ) {
+	case vt3D:
+		{
+			//throw "TODO";
+			glm::fvec3 direction;
+			//LOG( mViewerState->glViewSetup );
+			try{
+				direction = soglu::getDirectionFromScreenCoordinatesAndCameraPosition(
+					glm::fvec2( event->posF().x(), mViewerState->glViewSetup.viewport[3] - event->posF().y() ),
+					mViewerState->glViewSetup,
+					getCameraPosition()
+					);
+			} catch (...){
+				LOG( "Unprojecting of screen coordinates failed" );
+			}
+
+			return MouseEventInfo( mViewerState->glViewSetup, event, vt3D, getCameraPosition(), direction );
+		}
+		break;
+	case vt2DAlignedSlices:
+		{
+			int subVPortW = width() / getViewerState().m2DMultiSliceGrid[1];
+			int subVPortH = height() / getViewerState().m2DMultiSliceGrid[0];
+			glm::fvec3 eye = getViewerState().mSliceRenderConfig.camera.eyePosition();
+			glm::fvec3 target = getViewerState().mSliceRenderConfig.camera.targetPosition();
+			glm::fvec3 dir = target - eye;
+			dir = glm::normalize(dir);
+
+			int x = event->pos().x() / subVPortW;
+			int y = event->pos().y() / subVPortH;
+			Vector3f slicePoint = fromGLM(getViewerState().mSliceRenderConfig.sliceCenter);
+			glm::dvec3 pom = soglu::getPointFromScreenCoordinates(
+						glm::fvec2(event->posF().x() - subVPortW * x, mViewerState->glViewSetup.viewport[3] - event->posF().y() + subVPortH * y),
 						mViewerState->glViewSetup
 						);
 			//LOG( event->localPos().x() << ";  " << event->localPos().y() );
