@@ -6,7 +6,13 @@
 
 #include "tfw/data/AStatistics.hpp"
 
-class ImageStatistics : public tfw::AStatistics
+class ImageStatistics
+{
+public:
+};
+
+
+class TFImageStatisticsWrapper : public tfw::AStatistics
 {
 public:
 	typedef M4D::Imaging::ScatterPlot2D<int, float> ScatterPlot;
@@ -72,5 +78,7 @@ public:
 
 	M4D::Imaging::Histogram1D<int> mHistogram;
 	ScatterPlot mGradientScatterPlot;
+
+	std::weak_ptr<ImageStatistics> mImageStatistics;
 };
 

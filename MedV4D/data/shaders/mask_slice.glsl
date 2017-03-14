@@ -11,8 +11,9 @@ texCoordsFromPosition(vec3 pos, ImageData3D image)
 vec4 
 colorMap(vec3 aPosition, ImageData3D aTextureData)
 {
+	//return vec4(1.0, 0.0, 0.0, 1.0);
 	vec3 coordinates = texCoordsFromPosition( aPosition, aTextureData );
-	float value = texture(aTextureData.data, coordinates);
+	float value = texture(aTextureData.data, coordinates).x;
 		
 	if (value > 0.3) {
 		if (value > 0.8) {

@@ -24,37 +24,8 @@
 
 #include "Statistics.hpp"
 
+typedef int64_t DatasetID;
 class DatasetManager;
-
-class ImageListModel : public QAbstractListModel
-{
-public:
-	friend class DatasetManager;
-
-	ImageListModel(DatasetManager &aManager)
-		: QAbstractListModel(nullptr)
-		, mManager(aManager)
-	{}
-
-	int
-	rowCount(const QModelIndex & parent = QModelIndex()) const override;
-
-	int
-	columnCount(const QModelIndex & parent = QModelIndex()) const override
-	{
-		return 2;
-	}
-
-	QVariant
-	data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-
-	QVariant
-	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-protected:
-
-	DatasetManager &mManager;
-};
-
 
 class ImageRecord {
 public:
@@ -97,14 +68,110 @@ public:
 };
 
 
+class ImageListModel : public QAbstractListModel
+{
+public:
+	friend class DatasetManager;
 
-class DatasetManager {
+	ImageListModel(DatasetManager &aManager)
+		: QAbstractListModel(nullptr)
+		, mManager(aManager)
+	{}
+
+	int
+	rowCount(const QModelIndex & parent = QModelIndex()) const override;
+
+	int
+	columnCount(const QModelIndex & parent = QModelIndex()) const override
+	{
+		return 3;
+	}
+
+	QVariant
+	data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+
+	QVariant
+	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+	int
+	indexFromID(DatasetID aId) const
+	{
+		auto it = std::find(begin(mDatasetIDList), end(mDatasetIDList), aId);
+
+		if (it != end(mDatasetIDList)) {
+			return it - begin(mDatasetIDList);
+		}
+		return -1;
+	}
+
+	DatasetID
+	idFromIndex(int aIndex) const
+	{
+		return mDatasetIDList.at(aIndex);
+	}
+
+	const ImageRecord &
+	getDatasetRecord(DatasetID aId) const
+	{
+		auto it = mImages.find(aId);
+		if (mImages.end() == it) {
+			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
+		}
+		return it->second;
+	}
+
+	ImageRecord &
+	getDatasetRecord(DatasetID aId)
+	{
+		return mImages[aId];
+		/*auto it = mImages.find(aId);
+		if (mImages.end() == it) {
+			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
+		}
+		return it->second;*/
+	}
+
+	void
+	addNewRecord(DatasetID aId, ImageRecord aRecord)
+	{
+		beginInsertRows(QModelIndex(), mDatasetIDList.size(), mDatasetIDList.size());
+		//beginResetModel();
+
+		mDatasetIDList.push_back(aId);
+		mImages.emplace(aId, std::move(aRecord));
+
+		endInsertRows();
+		//mImageModel.endResetModel();
+	}
+
+	void
+	clear()
+	{
+		beginResetModel();
+
+		mDatasetIDList.clear();
+		mImages.clear();
+
+		endResetModel();
+	}
+
+protected:
+	std::unordered_map<DatasetID, ImageRecord> mImages;
+	std::vector<DatasetID> mDatasetIDList;
+
+	DatasetManager &mManager;
+};
+
+
+
+class DatasetManager : public QObject {
+	Q_OBJECT;
 public:
 	friend class ImageListModel;
 
 	DatasetManager();
 
-	typedef int64_t DatasetID;
+	//typedef int64_t DatasetID;
 
 	DatasetID
 	loadFromFile();
@@ -112,7 +179,7 @@ public:
 	ImageRecord &
 	getDatasetRecord(DatasetID aId)
 	{
-		return mImages[aId];
+		return mImageModel.getDatasetRecord(aId);//return mImages[aId];
 		/*auto it = mImages.find(aId);
 		if (mImages.end() == it) {
 			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
@@ -135,17 +202,19 @@ public:
 	int
 	indexFromID(DatasetID aId) const
 	{
-		auto it = std::find(begin(mDatasetIDList), end(mDatasetIDList), aId);
+		return mImageModel.indexFromID(aId);
+		/*auto it = std::find(begin(mDatasetIDList), end(mDatasetIDList), aId);
 
 		if (it != end(mDatasetIDList)) {
 			return it - begin(mDatasetIDList);
 		}
-		return -1;
+		return -1;*/
 	}
 	DatasetID
 	idFromIndex(int aIndex) const
 	{
-		return mDatasetIDList.at(aIndex);
+		return mImageModel.idFromIndex(aIndex);
+		//return mDatasetIDList.at(aIndex);
 	}
 
 	DatasetID
@@ -163,6 +232,10 @@ public:
 
 	void
 	saveDataset(DatasetID aId, boost::filesystem::path aPath);
+
+signals:
+	void registeredNewDataset(DatasetID);
+
 protected:
 
 	template <typename TImageType1>
@@ -177,18 +250,23 @@ protected:
 	addNewRecord(ImageRecord aRecord)
 	{
 
-		mImageModel.beginInsertRows(QModelIndex(), mDatasetIDList.size(), mDatasetIDList.size());
+		//mImageModel.beginInsertRows(QModelIndex(), mDatasetIDList.size(), mDatasetIDList.size());
+		//mImageModel.beginResetModel();
 		DatasetID currentID = newID();
 
-		mImages.emplace(currentID, std::move(aRecord));
-		mImageModel.endInsertRows();
+		mImageModel.addNewRecord(currentID, std::move(aRecord));
+		//mImages.emplace(currentID, std::move(aRecord));
+		//mImageModel.endInsertRows();
+		//mImageModel.endResetModel();
+		return currentID;
 	}
 
 	DatasetID
 	newID()
 	{
-		mDatasetIDList.push_back(++mLastId); //TODO what to do on exception
-		return mLastId;
+		return ++mLastId;
+		//mDatasetIDList.push_back(++mLastId); //TODO what to do on exception
+		//return mLastId;
 	}
 
 	/*ImageRecord &
@@ -200,14 +278,12 @@ protected:
 		return mImages[aId];
 	}*/
 
-	std::unordered_map<DatasetID, ImageRecord> mImages;
 	DatasetID mLastId;
 
-	QFileDialog mFileDialog;
-
-	std::vector<DatasetManager::DatasetID> mDatasetIDList;
 
 	ImageListModel mImageModel;
+
+	QFileDialog mFileDialog;
 };
 
 class ViewerInputDataWithId : public M4D::GUI::Viewer::ViewerInputData
@@ -223,9 +299,9 @@ public:
 
 	ViewerInputDataWithId(
 		M4D::Imaging::AImageDim<3>::ConstPtr aPrimaryImage,
-		DatasetManager::DatasetID aPrimaryImageId,
+		DatasetID aPrimaryImageId,
 		M4D::Imaging::AImageDim<3>::ConstPtr aSecondaryImage = M4D::Imaging::AImageDim<3>::ConstPtr(),
-		DatasetManager::DatasetID aSecondaryImageId = -1
+		DatasetID aSecondaryImageId = -1
 		)
 		: M4D::GUI::Viewer::ViewerInputData(aPrimaryImage, aSecondaryImage)
 		, mPrimaryImageId(aPrimaryImageId)
@@ -235,7 +311,7 @@ public:
 	void
 	assignPrimaryImageWithId(
 		M4D::Imaging::AImageDim<3>::ConstPtr aImage,
-		DatasetManager::DatasetID aImageId
+		DatasetID aImageId
 		)
 	{
 		mPrimaryImage = aImage;
@@ -245,7 +321,7 @@ public:
 	void
 	assignSecondaryImageWithId(
 		M4D::Imaging::AImageDim<3>::ConstPtr aImage,
-		DatasetManager::DatasetID aImageId
+		DatasetID aImageId
 		)
 	{
 		mSecondaryImage = aImage;
@@ -255,34 +331,34 @@ public:
 	void
 	assignMaskWithId(
 		M4D::Imaging::AImageDim<3>::ConstPtr aImage,
-		DatasetManager::DatasetID aImageId
+		DatasetID aImageId
 		)
 	{
 		mMaskImage = aImage;
 		mMaskImageId = aImageId;
 	}
 
-	DatasetManager::DatasetID
+	DatasetID
 	primaryImageId() const
 	{
 		return mPrimaryImageId;
 	}
 
-	DatasetManager::DatasetID
+	DatasetID
 	secondaryImageId() const
 	{
 		return mSecondaryImageId;
 	}
 
-	DatasetManager::DatasetID
+	DatasetID
 	maskId() const
 	{
 		return mMaskImageId;
 	}
 protected:
-	DatasetManager::DatasetID mPrimaryImageId;
-	DatasetManager::DatasetID mSecondaryImageId;
-	DatasetManager::DatasetID mMaskImageId;
+	DatasetID mPrimaryImageId;
+	DatasetID mSecondaryImageId;
+	DatasetID mMaskImageId;
 };
 
 

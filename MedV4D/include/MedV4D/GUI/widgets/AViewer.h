@@ -22,8 +22,8 @@ public:
 		_id = AViewer::_IDGenerator.NewID();
 	}
 
-	virtual 
-	~AViewer() 
+	virtual
+	~AViewer()
 	{}
 
 protected:
@@ -31,6 +31,8 @@ protected:
 	static M4D::Common::IDGenerator	_IDGenerator;
 
 	int32				_id;
+
+	std::string mName;
 private:
 	/**
 	 * Prohibition of copying.

@@ -74,6 +74,36 @@ void OrganSegmentationModule::clearMask()
 		mMask->fill(0);
 		auto & bbox = mMask->SetWholeDirtyBBox();
 		bbox.SetModified();
+		OpenGLManager::getInstance()->getTextureFromImage(*mMask);
+	}
+}
+
+void OrganSegmentationModule::fillMaskBorder(float aRadiusPercentage)
+{
+	if (mMask) {
+		M4D::Imaging::Mask3D::PointType idx;
+		auto minimum = mMask->GetMinimum();
+		auto maximum = mMask->GetMaximum();
+		auto rmin = mMask->GetRealMinimum();
+		auto rmax = mMask->GetRealMaximum();
+		auto extents = mMask->GetElementExtents();
+		auto center = 0.5f * (rmax + rmin);
+		auto size = rmax - rmin;
+		auto limit = 0.01f * aRadiusPercentage * std::max(size[0], std::max(size[1], size[2]));
+
+		for( idx[2] = minimum[2]; idx[2] < maximum[2]; ++idx[2] ) {
+			for( idx[1] = minimum[1]; idx[1] < maximum[1]; ++idx[1] ) {
+				for( idx[0] = minimum[0]; idx[0] < maximum[0]; ++idx[0] ) {
+					Vector3f pos = rmin + VectorMemberProduct<int,float,3>(idx-minimum, extents );
+					auto distance = VectorDistance(center, pos);
+					if (limit < distance) {
+						mMask->GetElement( idx ) = 128;
+					}
+				}
+			}
+		}
+		mMask->SetWholeDirtyBBox().SetModified();
+		OpenGLManager::getInstance()->getTextureFromImage(*mMask);
 	}
 }
 
@@ -226,7 +256,7 @@ OrganSegmentationModule::computeStats()
 	M4D::Imaging::Mask3D::PointType minimum = mImage->GetMinimum();
 	M4D::Imaging::Mask3D::PointType maximum = mImage->GetMaximum();
 	Vector3f rmin = mImage->GetRealMinimum();
-	Vector3f rmax = mImage->GetRealMaximum();
+	//Vector3f rmax = mImage->GetRealMaximum();
 	Vector3f extents = mMask->GetElementExtents();
 	GetPoles( *mMask, north, south );
 	M4D::Imaging::Transformation trans = M4D::Imaging::GetTransformation ( north, south, extents );
@@ -291,6 +321,11 @@ OrganSegmentationModule::updateTimestamp()
 	//DatasetManager::getInstance()->secondaryImageInputConnection().PutDataset( mMask );
 }
 
+void OrganSegmentationModule::setVariance(float aVariance)
+{
+	mVariance = aVariance;
+}
+
 void
 OrganSegmentationModule::startSegmentationMode()
 {
@@ -342,7 +377,7 @@ OrganSegmentationModule::computeSegmentation()
 	auto image = getProcessedImage();
 
 	auto &bbox = mResult->SetWholeDirtyBBox();
-	computeGraphCutSegmentation(*image, *mMask, *mResult);
+	computeGraphCutSegmentation(*image, *mMask, *mResult, mVariance);
 	bbox.SetModified();
 	/*mGraphCutSegmentationWrapper.buildNeighborhoodGraph();
 	mGraphCutSegmentationWrapper.extendGraph();

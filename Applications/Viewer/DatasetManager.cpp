@@ -46,7 +46,7 @@ DatasetManager::DatasetManager()
 
 }
 
-DatasetManager::DatasetID
+DatasetID
 DatasetManager::loadFromFile()
 {
 	QStringList fileNames;
@@ -68,7 +68,9 @@ DatasetManager::loadFromFile()
 
 		ImageRecord currentRecord;
 		currentRecord.assignImage(image.get(), boost::filesystem::path(fileName.toStdString()));
-		return addNewRecord(std::move(currentRecord));
+		DatasetID id = addNewRecord(std::move(currentRecord));
+		emit registeredNewDataset(id); // TODO - single place where to emit this
+		return id;
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
 		return 0;
@@ -97,7 +99,7 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 		M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( aPath, aPath.parent_path(), *dicomObjSet, aProgressNotifier.subTaskNotifier(1));
 		image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 	} else {
-		if ( aPath.extension() == ".dat" || aPath.extension() == ".DAT" ) {
+		if ( aPath.extension() == ".dat" || aPath.extension() == ".DAT" ) { //TODO better extension checking
 			image = loadDataFile(aPath, aProgressNotifier.subTaskNotifier(1));
 		} else {
 			try {
@@ -128,21 +130,20 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 }
 
 
-DatasetManager::DatasetID
+DatasetID
 DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName)
 {
 	ImageRecord currentRecord;
 	currentRecord.assignImage(aImage, aName);
-	return addNewRecord(std::move(currentRecord));
+	DatasetID id = addNewRecord(std::move(currentRecord));
+	emit registeredNewDataset(id);
+	return id;
 }
 
 void
 DatasetManager::closeAll()
 {
-	mImageModel.beginRemoveRows(QModelIndex(), 0, mImageModel.rowCount());
-	mImages.clear();
-	mDatasetIDList.clear();
-	mImageModel.endRemoveRows();
+	mImageModel.clear();
 }
 
 std::shared_ptr<ImageStatistics>
@@ -150,20 +151,20 @@ DatasetManager::getImageStatistics(DatasetID aId)
 {
 	auto & rec = getDatasetRecord(aId);
 
-	if (!rec.mStatistics) {
+	/*if (!rec.mStatistics) {
 		M4D::Imaging::Histogram1D<int> histogram1D;
 		ImageStatistics::ScatterPlot gradientScatterPlot;
 		IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( rec.mImage,
 			histogram1D = M4D::Imaging::createHistogramForImageRegion2<M4D::Imaging::Histogram1D<int>, IMAGE_TYPE >( IMAGE_TYPE::Cast(*rec.mImage));
-			/*gradientScatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegion<
-				ImageStatistics::ScatterPlot,
-				IMAGE_TYPE::SubRegion>(IMAGE_TYPE::Cast( *rec.mImage ).GetRegion());*/
+			//gradientScatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegion<
+			//	ImageStatistics::ScatterPlot,
+			//	IMAGE_TYPE::SubRegion>(IMAGE_TYPE::Cast( *rec.mImage ).GetRegion());
 		);
 		auto statistics = std::make_shared<ImageStatistics>();
 		statistics->mHistogram = std::move(histogram1D);
 		statistics->mGradientScatterPlot = std::move(gradientScatterPlot);
 		rec.mStatistics = statistics;
-	}
+	}*/
 	return rec.mStatistics;
 }
 
@@ -171,13 +172,13 @@ template <typename TImageType1, typename TImageType2>
 std::shared_ptr<ImageStatistics>
 DatasetManager::getCombinedStatisticsType1Type2(const TImageType1 &aImage1, const TImageType2 &aImage2)
 {
-	auto scatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegionPair<
+	/*auto scatterPlot = M4D::Imaging::createGradientScatterPlotForImageRegionPair<
 			ImageStatistics::ScatterPlot,
 			typename TImageType1::SubRegion,
 			typename TImageType2::SubRegion>(aImage1.GetRegion(), aImage2.GetRegion());
-
+*/
 	auto statistics = std::make_shared<ImageStatistics>();
-	statistics->mGradientScatterPlot = std::move(scatterPlot);
+	//statistics->mGradientScatterPlot = std::move(scatterPlot);
 	return statistics;
 }
 
@@ -186,8 +187,9 @@ std::shared_ptr<ImageStatistics>
 DatasetManager::getCombinedStatisticsType1(const TImageType1 &aImage1, const M4D::Imaging::AImage &aImage2)
 {
 	IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO_3D(aImage2,
-		return getCombinedStatisticsType1Type2(aImage1, IMAGE_TYPE::Cast(aImage2));
+		return getCombinedStatisticsType1Type2(aImage1, IMAGE);
 	);
+	return std::shared_ptr<ImageStatistics>();
 }
 
 std::shared_ptr<ImageStatistics>
@@ -197,11 +199,12 @@ DatasetManager::getCombinedStatistics(DatasetID aPrimaryId, DatasetID aSecondary
 	auto &rec1 = getDatasetRecord(aPrimaryId);
 	auto &rec2 = getDatasetRecord(aSecondaryId);
 	IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO_3D(*rec1.mImage,
-		return getCombinedStatisticsType1<IMAGE_TYPE>(IMAGE_TYPE::Cast(*rec1.mImage), *rec2.mImage);
+		return getCombinedStatisticsType1<IMAGE_TYPE>(IMAGE, *rec2.mImage);
 			);
+	return std::shared_ptr<ImageStatistics>();
 }
 
-void DatasetManager::saveDataset(DatasetManager::DatasetID aId, boost::filesystem::path aPath)
+void DatasetManager::saveDataset(DatasetID aId, boost::filesystem::path aPath)
 {
 	try {
 		prognot::qt::ProgressDialog progressDialog(QApplication::activeWindow());
@@ -229,7 +232,7 @@ void DatasetManager::saveDataset(DatasetManager::DatasetID aId, boost::filesyste
 
 int ImageListModel::rowCount(const QModelIndex &parent) const
 {
-	return int(mManager.mDatasetIDList.size());
+	return int(mDatasetIDList.size());
 }
 
 QVariant
@@ -238,11 +241,11 @@ ImageListModel::data(const QModelIndex &index, int role) const
 	if (role != Qt::DisplayRole) {
 		return QVariant();
 	}
-	if (index.row() < int(mManager.mDatasetIDList.size())) {
-		const auto &rec = mManager.getDatasetRecord(mManager.mDatasetIDList[index.row()]);
+	if (index.row() < int(mDatasetIDList.size())) {
+		const auto &rec = getDatasetRecord(mDatasetIDList[index.row()]);
 		switch (index.column()) {
 		case 0:
-			return QVariant(int(mManager.idFromIndex(index.row())));
+			return QVariant(int(idFromIndex(index.row())));
 		case 1:
 			return QVariant(rec.name().c_str());
 		case 2:

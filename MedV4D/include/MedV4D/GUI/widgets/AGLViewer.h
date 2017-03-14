@@ -100,6 +100,17 @@ public:
 	QImage
 	getCurrentViewImage();
 
+	void setName(std::string aName)
+	{
+		mName = aName;
+	}
+
+	std::string name() const
+	{
+		return mName;
+	}
+
+
 public slots:
 	void
 	select();
@@ -211,6 +222,7 @@ protected:
 	QLabel *mFPSLabel;
 
 
+	std::string mName;
 
 	//M4D::PickManager mPickManager;
 	int tmpX,tmpY;

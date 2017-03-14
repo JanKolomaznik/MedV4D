@@ -16,9 +16,9 @@ Editor::Editor(AbstractModifier::Ptr modifier,
 	toolsDock_(NULL),
 	writer_(new TF::QtXmlWriter),
 	modifier_(modifier),
-	index_(0),
-	name_(name),
 	structure_(structure),
+	name_(name),
+	index_(0),
 	attributes_(attributes)
 {
 }

@@ -490,6 +490,8 @@ GeneralViewer::cameraOrbit( Vector2f aAngles )
 					getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition()
 					);
 	//getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.yawPitchAround( aAngles[0], aAngles[1] );
+
+	emit cameraPositionUpdated();
 	update();
 }
 
@@ -505,6 +507,7 @@ GeneralViewer::cameraDolly(float aDollyRatio)
 {
 	glm::fvec3 moveVector = (1.0f - aDollyRatio) * (getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.targetPosition() - getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.eyePosition());
 	soglu::dollyCamera(getViewerState().mVolumeRenderConfig.renderingConfiguration.camera, moveVector);
+	emit cameraPositionUpdated();
 	update();
 }
 
@@ -1070,7 +1073,7 @@ GeneralViewer::IsDataPrepared()
 }
 
 bool
-GeneralViewer::PrepareData()
+GeneralViewer::PrepareData(bool aResetView)
 {
 	D_BLOCK_COMMENT( "Entering PrepareData() method", "Leaving PrepareData() method" );
 	/*try {
@@ -1105,7 +1108,10 @@ GeneralViewer::PrepareData()
 	}
 	//ReleaseAllInputs();
 
-	getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
+	if (aResetView) {
+		STUBBED( "TODO - handle properly when if different image sizes" );
+		getViewerState().mSliceRenderConfig.currentSlice = toGLM(getViewerState().mPrimaryImageExtents.minimum);
+	}
 	getViewerState().mSliceRenderConfig.primaryImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mPrimaryImageTexture );
 	getViewerState().mVolumeRenderConfig.primaryImageData = soglu::GLTextureGetDimensionedInterfaceWPtr<3>( getViewerState().mPrimaryImageTexture );
 	if ( getViewerState().mSecondaryImageTexture.lock() ) {
@@ -1125,15 +1131,18 @@ GeneralViewer::PrepareData()
 		getViewerState().mSliceRenderConfig.maskImageData.reset();
 		getViewerState().mVolumeRenderConfig.maskImageData.reset();
 	}
-
-	Vector3f tmp = getViewerState().getRealCenter();
-	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
-	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setFieldOfView( 45.0f );
-	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.moveTo(glm::fvec3( 0.0f, 0.0f, 750.0f ));
-	resetView();
-
 	_prepared = true;
-	zoomFit(); //TODO remove
+
+	if (aResetView) {
+		Vector3f tmp = getViewerState().getRealCenter();
+		getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setTargetPosition(glm::fvec3(tmp[0], tmp[1], tmp[2]));
+		getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.setFieldOfView( 45.0f );
+		getViewerState().mVolumeRenderConfig.renderingConfiguration.camera.moveTo(glm::fvec3( 0.0f, 0.0f, 750.0f ));
+		resetView();
+
+		zoomFit(); //TODO remove
+	}
+	update();
 	return true;
 }
 
@@ -1189,10 +1198,10 @@ GeneralViewer::getZoomValueName()const
 	//return QString();
 }
 
-void GeneralViewer::setInputData(ViewerInputData::ConstPtr aData)
+void GeneralViewer::setInputData(ViewerInputData::ConstPtr aData, bool aResetView)
 {
 	mData = aData;
-	PrepareData();
+	PrepareData(aResetView);
 	notifyAboutSettingsChange();
 }
 
@@ -1222,6 +1231,29 @@ GeneralViewer::reloadShaders()
 	getViewerState().mVolumeRenderer.reloadShaders();
 	getViewerState().mSliceRenderer.reloadShaders();
 	doneCurrent();
+}
+
+void GeneralViewer::followViewer(GeneralViewer *aViewer)
+{
+	if (mMasterViewer) {
+		QObject::disconnect(mMasterViewer, &GeneralViewer::cameraPositionUpdated, this, &GeneralViewer::updateCameraToMasterViewer);
+		mMasterViewer = nullptr;
+	}
+	if (aViewer == nullptr) {
+		return;
+	}
+	mMasterViewer = aViewer;
+	QObject::connect(mMasterViewer, &GeneralViewer::cameraPositionUpdated, this, &GeneralViewer::updateCameraToMasterViewer, Qt::QueuedConnection);
+}
+
+void GeneralViewer::updateCameraToMasterViewer()
+{
+	if (mMasterViewer == nullptr) {
+		return;
+	}
+	getViewerState().mVolumeRenderConfig.renderingConfiguration.camera = mMasterViewer->getViewerState().mVolumeRenderConfig.renderingConfiguration.camera;
+	update();
+
 }
 
 } /*namespace Viewer*/

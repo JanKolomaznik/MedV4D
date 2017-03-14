@@ -22,6 +22,7 @@ public:
 	friend class OrganSegmentationWidget;
 	OrganSegmentationModule()
 		: ViewerModule( "Organ Segmentation Module" )
+		, mVariance(1.0f)
 		, mDatasetManager(nullptr)
 	{}
 
@@ -70,6 +71,9 @@ protected:
 	clearMask();
 
 	void
+	fillMaskBorder(float aRadiusPercentage);
+
+	void
 	loadMask();
 
 	void
@@ -83,6 +87,9 @@ protected:
 
 	void
 	updateTimestamp();
+
+	void
+	setVariance(float aVariance);
 
 	void
 	prepareMask( M4D::Imaging::Mask3D::Ptr aMask );
@@ -99,6 +106,8 @@ protected:
 	M4D::Imaging::Mask3D::Ptr	mMask;
 	M4D::Imaging::Mask3D::Ptr	mResult;
 	Image16_3D::Ptr mImage;
+
+	float mVariance;
 
 	GraphCutSegmentationWrapper	mGraphCutSegmentationWrapper;
 

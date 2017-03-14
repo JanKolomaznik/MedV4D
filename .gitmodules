@@ -13,3 +13,6 @@
 [submodule "extern/prognot"]
 	path = extern/prognot
 	url = git@github.com:JanKolomaznik/prognot.git
+[submodule "extern/qtwidgets"]
+	path = extern/qtwidgets
+	url = git@github.com:JanKolomaznik/qtwidgets.git

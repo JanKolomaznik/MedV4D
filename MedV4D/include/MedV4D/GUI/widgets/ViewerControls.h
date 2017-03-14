@@ -107,6 +107,7 @@ public slots:
 			mViewTypeTabWidget->setCurrentIndex(0);
 		}
 
+		mViewerNameLineEdit->setText(mCurrentViewer->name().c_str());
 		glm::fvec2 win = mCurrentViewer->getLUTWindow();
 		windowCenterSpinBox->setValue( win[0] );
 		windowWidthSpinBox->setValue( win[1] );

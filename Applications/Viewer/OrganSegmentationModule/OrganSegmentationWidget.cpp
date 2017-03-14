@@ -25,6 +25,11 @@ void OrganSegmentationWidget::clearMask()
 	mModule.clearMask();
 }
 
+void OrganSegmentationWidget::fillMaskBorder()
+{
+	mModule.fillMaskBorder(mRadiusPercentageSpinBox->value());
+}
+
 void
 OrganSegmentationWidget::loadMask()
 {
@@ -91,6 +96,11 @@ OrganSegmentationWidget::runSegmentation()
 void OrganSegmentationWidget::brushChanged()
 {
 	mController->mMaskDrawingController->setBrush(mBrushSettings->brush());
+}
+
+void OrganSegmentationWidget::varianceUpdated()
+{
+	mModule.setVariance(float(mVarianceSpinBox->value()));
 }
 
 void

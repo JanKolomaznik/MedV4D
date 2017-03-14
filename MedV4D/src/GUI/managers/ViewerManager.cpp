@@ -4,6 +4,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/bind/bind.hpp>
+#include <algorithm>
 
 #include "MedV4D/GUI/managers/ApplicationManager.h"
 
@@ -18,6 +19,9 @@ struct ViewerManagerPimpl
 
 	ViewerActionSet mViewerActions;
 	bool mViewerActionsCreated;
+
+	std::vector<M4D::GUI::Viewer::AGLViewer*> mRegisteredViewers;
+	ViewerListModel mRegisteredViewersModel;
 };
 
 
@@ -97,6 +101,22 @@ ViewerManager::deselectViewer( M4D::GUI::Viewer::AGLViewer *aViewer )
 	viewerSelectionChangedHelper();
 }
 
+void ViewerManager::registerViewer(M4D::GUI::Viewer::AGLViewer *aViewer)
+{
+	//TODO - is locking needed?
+	mPimpl->mRegisteredViewers.push_back(aViewer);
+}
+
+void ViewerManager::unregisterViewer(M4D::GUI::Viewer::AGLViewer *aViewer)
+{
+	mPimpl->mRegisteredViewers.erase(
+		std::remove(
+			std::begin(mPimpl->mRegisteredViewers),
+			std::end(mPimpl->mRegisteredViewers),
+			aViewer),
+		std::end(mPimpl->mRegisteredViewers));
+}
+
 ViewerActionSet &
 ViewerManager::getViewerActionSet()
 {
@@ -105,6 +125,34 @@ ViewerManager::getViewerActionSet()
 		createViewerActions();
 	}
 	return mPimpl->mViewerActions;
+}
+
+M4D::GUI::Viewer::AGLViewer *ViewerManager::getViewer(int aIndex)
+{
+	if (aIndex < 0 || aIndex >= mPimpl->mRegisteredViewers.size()) {
+		return nullptr;
+	}
+
+	return mPimpl->mRegisteredViewers[aIndex];
+}
+
+int ViewerManager::getViewerIndex(M4D::GUI::Viewer::AGLViewer *aViewer)
+{
+	if (aViewer == nullptr) {
+		return -1;
+	}
+	for (int i = 0; i < mPimpl->mRegisteredViewers.size(); ++i) {
+		if (mPimpl->mRegisteredViewers[i] == aViewer) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+ViewerListModel *
+ViewerManager::registeredViewers() const
+{
+	return &(mPimpl->mRegisteredViewersModel);
 }
 
 void
@@ -314,4 +362,32 @@ ViewerManager::createViewerActions()
 	mPimpl->mViewerActions.addSeparator();
 
 	mPimpl->mViewerActionsCreated = true;
+}
+
+
+int
+ViewerListModel::rowCount(const QModelIndex & parent) const
+{
+	return ViewerManager::getInstance()->mPimpl->mRegisteredViewers.size();
+}
+
+QVariant
+ViewerListModel::data(const QModelIndex & index, int role) const
+{
+	if (role != Qt::DisplayRole) {
+		return QVariant();
+	}
+	if (index.row() >= 0 && index.row() < rowCount()) {
+		return QVariant(ViewerManager::getInstance()->mPimpl->mRegisteredViewers[index.row()]->name().c_str());
+	}
+	return QVariant();
+}
+
+QVariant
+ViewerListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (role != Qt::DisplayRole || orientation != Qt::Horizontal) {
+		return QVariant();
+	}
+	return QVariant();
 }

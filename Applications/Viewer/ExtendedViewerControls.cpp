@@ -12,6 +12,20 @@ ExtendedViewerControls::ExtendedViewerControls(DatasetManager &aManager, QWidget
 	ui->mPrimaryDatasetComboBox->setModel(&mManager.imageModel());
 	ui->mSecondaryDatasetComboBox->setModel(&mManager.imageModel());
 	ui->mMaskComboBox->setModel(&mManager.imageModel());
+
+	ui->mPrimaryDatasetComboBox->setModelColumn(1);
+	ui->mSecondaryDatasetComboBox->setModelColumn(1);
+	ui->mMaskComboBox->setModelColumn(1);
+
+	ui->mReferencedViewer->setModel(ViewerManager::getInstance()->registeredViewers());
+
+	/*QObject::connect(
+			ui->mPrimaryDatasetComboBox->model(),
+			&QAbstractItemModel::modelReset,
+				[this]() {
+					QMessageBox::information(nullptr, "My Application", "reset item list");
+					ui->mPrimaryDatasetComboBox->setModel(&mManager.imageModel());
+			});*/
 }
 
 ExtendedViewerControls::~ExtendedViewerControls()
@@ -30,6 +44,38 @@ ExtendedViewerControls::setViewer(M4D::GUI::Viewer::GeneralViewer *aViewer)
 {
 	viewerControls().setViewer(aViewer);
 	updateAssignedDatasets();
+	updateViewerConnection();
+}
+
+void ExtendedViewerControls::updateViewerConnection()
+{
+	if (mIsUpdating) {
+		return;
+	}
+	if (!viewerControls().viewer()) {
+		return;
+	}
+	auto masterViewer = viewerControls().viewer()->mMasterViewer;
+	ui->mReferencedViewer->setCurrentIndex(ViewerManager::getInstance()->getViewerIndex(masterViewer));
+}
+
+void ExtendedViewerControls::setViewerConnection()
+{
+	if (!viewerControls().viewer()) {
+		return;
+	}
+	viewerControls().viewer()->followViewer(getSelectedMasterViewer());
+}
+
+M4D::GUI::Viewer::GeneralViewer *
+ExtendedViewerControls::getSelectedMasterViewer()
+{
+	return static_cast<M4D::GUI::Viewer::GeneralViewer *>(ViewerManager::getInstance()->getViewer(ui->mReferencedViewer->currentIndex()));
+}
+
+void ExtendedViewerControls::clearViewerConnection()
+{
+	ui->mReferencedViewer->setCurrentIndex(-1);
 }
 
 void
@@ -37,6 +83,7 @@ ExtendedViewerControls::updateControls()
 {
 	updateAssignedDatasets();
 	viewerControls().updateControls();
+	updateViewerConnection();
 }
 
 void
@@ -57,9 +104,9 @@ ExtendedViewerControls::updateAssignedDatasets()
 	mIsUpdating = true;
 	ViewerInputDataWithId::ConstPtr inputWithId = std::static_pointer_cast<const ViewerInputDataWithId>(input);
 
-	DatasetManager::DatasetID primaryID = inputWithId->primaryImageId();
-	DatasetManager::DatasetID secondaryID = inputWithId->secondaryImageId();
-	DatasetManager::DatasetID maskID = inputWithId->maskId();
+	DatasetID primaryID = inputWithId->primaryImageId();
+	DatasetID secondaryID = inputWithId->secondaryImageId();
+	DatasetID maskID = inputWithId->maskId();
 
 	int primaryIndex = mManager.indexFromID(primaryID);
 	int secondaryIndex = mManager.indexFromID(secondaryID);
@@ -117,7 +164,7 @@ void ExtendedViewerControls::assignDatasets()
 		}
 	}
 
-	viewerControls().viewer()->setInputData(inputData);
+	viewerControls().viewer()->setInputData(inputData, ui->mResetView->isChecked());
 }
 
 void ExtendedViewerControls::resetPrimaryDataset()

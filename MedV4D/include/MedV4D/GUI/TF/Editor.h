@@ -112,6 +112,8 @@ protected:
 
 	TF::XmlWriterInterface* writer_;
 
+	AbstractModifier::Ptr modifier_;
+
 	TF::Types::Structure structure_;
 	QString fileName_;
 	QString fileNameFunction_;
@@ -122,8 +124,6 @@ protected:
 	M4D::Common::TimeStamp lastSave_;
 	M4D::Common::TimeStamp lastChange_;
 	bool active_;
-
-	AbstractModifier::Ptr modifier_;
 
 	virtual void saveSettings_(TF::XmlWriterInterface* writer);
 

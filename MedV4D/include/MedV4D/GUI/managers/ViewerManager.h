@@ -20,10 +20,39 @@ class ViewerActionSet;
 
 struct ViewerManagerPimpl;
 
+class ViewerListModel : public QAbstractListModel
+{
+public:
+	friend class ViewerManager;
+
+	ViewerListModel()
+		: QAbstractListModel(nullptr)
+	{}
+
+	int
+	rowCount(const QModelIndex & parent = QModelIndex()) const override;
+
+	int
+	columnCount(const QModelIndex & parent = QModelIndex()) const override
+	{
+		return 1;
+	}
+
+	QVariant
+	data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+
+	QVariant
+	headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+protected:
+};
+
+
+
 class ViewerManager
 {
 public:
-	
+	friend class ViewerListModel;
 
 	static ViewerManager *
 	getInstance();
@@ -34,7 +63,7 @@ public:
 	virtual void
 	finalize();
 
-	virtual 
+	virtual
 	~ViewerManager();
 
 	M4D::GUI::Viewer::AGLViewer*
@@ -49,15 +78,30 @@ public:
 	virtual void
 	deselectViewer( M4D::GUI::Viewer::AGLViewer *aViewer );
 
+	virtual void
+	registerViewer( M4D::GUI::Viewer::AGLViewer *aViewer );
+
+	virtual void
+	unregisterViewer( M4D::GUI::Viewer::AGLViewer *aViewer );
+
+
 	ViewerActionSet &
 	getViewerActionSet();
 
 	virtual void
 	notifyAboutChangedViewerSettings()=0;
+
+	M4D::GUI::Viewer::AGLViewer *getViewer(int aIndex);
+
+	int
+	getViewerIndex(M4D::GUI::Viewer::AGLViewer *aViewer);
+
+	ViewerListModel *
+	registeredViewers() const;
 protected:
 	virtual void
 	viewerSelectionChangedHelper() = 0;
-	
+
 	virtual void
 	createViewerActions();
 
@@ -67,6 +111,7 @@ protected:
 	ViewerManagerPimpl *mPimpl;
 
 };
+
 
 
 #endif /*VIEWER_MANAGER_H*/

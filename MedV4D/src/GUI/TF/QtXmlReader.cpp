@@ -25,7 +25,7 @@ bool QtXmlReader::begin(const std::string& file){
 		errorMsg_ = "Empty file name.";
 		return false;
 	}
-	
+
 	qFile_.setFileName(file.c_str());
 	if (!qFile_.open(QFile::ReadOnly | QFile::Text))
 	{
@@ -61,10 +61,10 @@ bool QtXmlReader::readElement(const std::string& element){
 
 	while(!qReader_.atEnd())
 	{
-		qReader_.readNext(); 
+		qReader_.readNext();
 
 		if (qReader_.isStartElement() &&
-			(qReader_.name().toString().toLocal8Bit().data() == element)) 
+			(qReader_.name().toString().toLocal8Bit().data() == element))
 		{
 			return true;
 		}
@@ -79,7 +79,7 @@ bool QtXmlReader::readElement(const std::string& element){
 
 std::string QtXmlReader::readAttribute(const std::string& attribute){
 
-	if(fileError_) return false;
+	if(fileError_) return "";//false;
 
 	QStringRef value = qReader_.attributes().value(attribute.c_str());
 

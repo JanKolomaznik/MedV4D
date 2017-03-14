@@ -369,7 +369,7 @@ public:
 	}*/
 
 	void
-	setInputData(ViewerInputData::ConstPtr aData);
+	setInputData(ViewerInputData::ConstPtr aData, bool aResetView=true);
 
 	ViewerInputData::ConstPtr
 	inputData() const
@@ -435,6 +435,12 @@ public:
 	void
 	reloadShaders();
 
+	void
+	followViewer(GeneralViewer *aViewer);
+
+	void
+	updateCameraToMasterViewer();
+
 signals:
 	void
 	settingsChanged();
@@ -444,6 +450,11 @@ signals:
 
 	void
 	ColorTransformTypeChanged( int aColorTransform );
+
+	void
+	cameraPositionUpdated();
+public:
+	GeneralViewer *mMasterViewer = nullptr;
 
 protected:
 	void
@@ -482,7 +493,7 @@ protected:
 	IsDataPrepared();
 
 	bool
-	PrepareData();
+	PrepareData(bool aResetView=true);
 
 
 
@@ -508,6 +519,7 @@ private:
 		ASSERT( mViewerState );
 		return *(boost::polymorphic_downcast< const ViewerState *>( mViewerState.get() ) );
 	}
+
 };
 
 } /*namespace Viewer*/

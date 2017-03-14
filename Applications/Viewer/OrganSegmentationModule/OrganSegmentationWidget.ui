@@ -53,7 +53,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
+      <item row="0" column="4">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -66,8 +66,28 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="1" colspan="2">
+      <item row="1" column="1" colspan="4">
        <widget class="FilePathComboBox" name="widget" native="true"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Fill border</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QDoubleSpinBox" name="mRadiusPercentageSpinBox">
+        <property name="suffix">
+         <string>%</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <double>50.000000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -196,7 +216,7 @@
           <item>
            <widget class="QRadioButton" name="mBackgroundRadioButton">
             <property name="text">
-             <string>Background</string>
+             <string>Bac&amp;kground</string>
             </property>
            </widget>
           </item>
@@ -226,8 +246,27 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="BrushSettingsForm" name="mBrushSettings" native="true"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QDoubleSpinBox" name="mVarianceSpinBox">
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>0.001000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>99999999.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.001000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -317,8 +356,8 @@
    <slot>createMask()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>580</y>
+     <x>97</x>
+     <y>575</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -445,8 +484,8 @@
    <slot>changedMarkerType()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>461</x>
-     <y>95</y>
+     <x>466</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
@@ -477,8 +516,8 @@
    <slot>runSegmentation()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>120</y>
+     <x>75</x>
+     <y>147</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -518,6 +557,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mVarianceSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>varianceUpdated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>134</x>
+     <y>181</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>488</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>fillMaskBorder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>552</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
@@ -533,5 +604,7 @@
   <slot>toggleRegionMarking(bool)</slot>
   <slot>runSegmentation()</slot>
   <slot>clearMask()</slot>
+  <slot>varianceUpdated()</slot>
+  <slot>fillMaskBorder()</slot>
  </slots>
 </ui>

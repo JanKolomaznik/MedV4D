@@ -26,6 +26,12 @@ public:
 
 public slots:
 	void
+	updateViewerConnection();
+
+	void
+	clearViewerConnection();
+
+	void
 	updateControls();
 
 	void
@@ -38,9 +44,18 @@ public slots:
 	resetPrimaryDataset();
 	void
 	resetSecondaryDataset();
+
 	void
 	resetMaskDataset();
+
+	void
+	setViewerConnection();
 private:
+
+	M4D::GUI::Viewer::GeneralViewer *
+	getSelectedMasterViewer();
+
+
 	Ui::ExtendedViewerControls *ui;
 
 	DatasetManager &mManager;

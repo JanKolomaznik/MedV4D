@@ -20,6 +20,10 @@ public slots:
 	createMask();
 	void
 	clearMask();
+
+	void
+	fillMaskBorder();
+
 	void
 	loadMask();
 	void
@@ -45,6 +49,9 @@ public slots:
 
 	void
 	brushChanged();
+
+	void
+	varianceUpdated();
 protected:
 	OrganSegmentationController::Ptr mController;
 	OrganSegmentationModule &mModule;

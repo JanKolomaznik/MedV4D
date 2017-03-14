@@ -50,6 +50,10 @@ public:
 	createViewer()
 	{
 		GeneralViewer *viewer = new GeneralViewer();
+		ViewerManager::getInstance()->registerViewer(viewer);
+		//TODO - better id assignment, fix - AViewer not a base class
+		viewer->setName(std::string("Viewer ") + std::to_string(++mViewerCounter));
+
 		if( mRenderingExtension ) {
 			viewer->setRenderingExtension( mRenderingExtension );
 		}
@@ -70,7 +74,8 @@ public:
 
 		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );
 
-		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
+		//Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
+		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 1.0, 1.0, 1.0, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
 		//viewer->setBackgroundColor(QColor( 255, 255, 255));
 		return viewer;
@@ -89,6 +94,8 @@ public:
 protected:
 	RenderingExtension::Ptr mRenderingExtension;
 	AViewerController::Ptr	mViewerController;
+
+	int mViewerCounter = 0;
 };
 
 } /*namespace Viewer*/
@@ -227,6 +234,7 @@ ViewerWindow::initialize()
 	mOpenDialog->setFileMode(QFileDialog::ExistingFile);
 	//mOpenDialog->setOption(QFileDialog::DontUseNativeDialog, false);
 
+	QObject::connect(&mDatasetManager, &DatasetManager::registeredNewDataset, this, &ViewerWindow::dataLoaded, Qt::QueuedConnection);
 }
 
 void
@@ -294,8 +302,8 @@ ViewerWindow::setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aVie
 void
 ViewerWindow::testSlot()
 {
-	mViewerDesktop->setLayoutOrganization( 2, 2 );
-	/*LOG( "AAAAA" );
+	//mViewerDesktop->setLayoutOrganization( 2, 2 );
+	LOG( "AAAAA" );
 	updateGui();
 
 	M4D::GUI::Viewer::AGLViewer *pViewer;
@@ -304,12 +312,12 @@ ViewerWindow::testSlot()
 	if(pViewer != NULL) {
 		//pViewer->toggleFPS();
 		static_cast<M4D::GUI::Viewer::GeneralViewer *>(pViewer)->reloadShaders();
-	}*/
+	}
 }
 
 void ViewerWindow::testSlot2()
 {
-	auto id1 = mDatasetManager.idFromIndex(0);
+/*	auto id1 = mDatasetManager.idFromIndex(0);
 	auto id2 = mDatasetManager.idFromIndex(1);
 
 	statusbar->showMessage("Computing combined stats...");
@@ -318,7 +326,7 @@ void ViewerWindow::testSlot2()
 	};
 	auto stats = mDatasetManager.getCombinedStatistics(id1, id2);
 
-	mTFPaletteWidget->setStatistics(stats);
+	mTFPaletteWidget->setStatistics(stats);*/
 }
 
 void
@@ -624,7 +632,7 @@ ViewerWindow::openFile()
 	if (!id) {
 		return;
 	}
-	dataLoaded(id);
+	//dataLoaded(id);
 }
 
 void ViewerWindow::closeAllFiles()
@@ -641,7 +649,7 @@ void ViewerWindow::closeAllFiles()
 }
 
 void
-ViewerWindow::dataLoaded(DatasetManager::DatasetID aId)
+ViewerWindow::dataLoaded(DatasetID aId)
 {
 	//M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
 	D_PRINT( "Loaded dataset ID = " << aId );
@@ -670,7 +678,7 @@ void ViewerWindow::processModule(AModule &aModule)
 }
 
 void
-ViewerWindow::computeHistogram(DatasetManager::DatasetID aId/* M4D::Imaging::AImage::Ptr aImage */)
+ViewerWindow::computeHistogram(DatasetID aId/* M4D::Imaging::AImage::Ptr aImage */)
 {
 	using namespace M4D::Imaging;
 	/*if( !aImage ) {
@@ -695,7 +703,8 @@ ViewerWindow::computeHistogram(DatasetManager::DatasetID aId/* M4D::Imaging::AIm
 	statistics->mHistogram = std::move(histogram1D);
 	//statistics->mGradientScatterPlot = std::move(gradientScatterPlot);*/
 	//mTFPaletteWidget->setStatistics(statistics);
-	mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
+
+	//mTFPaletteWidget->setStatistics(mDatasetManager.getImageStatistics(aId));
 
 	//LOG( "Histogram computed in " << clock.SecondsPassed() );
 

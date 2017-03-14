@@ -61,12 +61,12 @@ public:
 	setViewerController( M4D::GUI::Viewer::AViewerController::Ptr aViewerController );
 
 	void
-	dataLoaded(DatasetManager::DatasetID aId);
-
-	void
 	processModule(AModule &aModule);
 
 public slots:
+
+	void
+	dataLoaded(DatasetID aId);
 
 	void
 	testSlot();
@@ -121,7 +121,7 @@ public slots:
 	updateInfoInStatusBar( const QString &aInfo );
 
 	void
-	computeHistogram(DatasetManager::DatasetID aId/*M4D::Imaging::AImage::Ptr aImage*/);
+	computeHistogram(DatasetID aId/*M4D::Imaging::AImage::Ptr aImage*/);
 
 	//TMP
 	void
