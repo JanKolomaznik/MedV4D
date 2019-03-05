@@ -24,6 +24,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets)
+set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_FEATURES "")
 
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/Functions.cmake" )
 

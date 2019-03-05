@@ -60,6 +60,12 @@ public:
 	virtual soglu::GLTextureImage::Ptr
 	getTextureFromImage( const M4D::Imaging::AImage &aImage );
 
+	virtual void
+	purgeTextureForImage( const M4D::Imaging::AImage &aImage );
+
+	virtual bool
+	existsTextureForImage( const M4D::Imaging::AImage &aImage );
+
 	template< typename TFtor >
 	TFtor
 	doGL( TFtor ftor )

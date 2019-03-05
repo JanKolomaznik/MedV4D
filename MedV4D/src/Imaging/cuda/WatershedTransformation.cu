@@ -2,7 +2,7 @@
 #include "MedV4D/Imaging/ImageRegion.h"
 
 __device__ uint64 foundZero;
-
+/*
 __global__ void 
 isNonzeroKernel( Buffer3D< uint32 > buffer, int3 blockResolution )
 {
@@ -20,7 +20,7 @@ isNonzeroKernel( Buffer3D< uint32 > buffer, int3 blockResolution )
 		}
 	}
 }
-
+*/
 
 uint64
 isNonzero( Buffer3D< uint32 > buffer )
@@ -33,7 +33,8 @@ isNonzero( Buffer3D< uint32 > buffer )
 	int3 blockResolution = GetBlockResolution( buffer.mSize, blockSize, make_int3(0,0,0) );
 	dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
 
-	isNonzeroKernel<<< gridSize, blockSize >>>( buffer, blockResolution );
+	assert(false);
+	//isNonzeroKernel<<< gridSize, blockSize >>>( buffer, blockResolution );
 	cudaThreadSynchronize();
 	cudaMemcpyFromSymbol( &foundZero, "foundZero", sizeof(uint64), 0, cudaMemcpyDeviceToHost );
 

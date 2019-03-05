@@ -25,6 +25,12 @@ void OrganSegmentationWidget::clearMask()
 	mModule.clearMask();
 }
 
+void OrganSegmentationWidget::watershedTransformation()
+{
+	mModule.watershedTransformation();
+}
+
+
 void OrganSegmentationWidget::fillMaskBorder()
 {
 	mModule.fillMaskBorder(mRadiusPercentageSpinBox->value());
@@ -103,18 +109,18 @@ void OrganSegmentationWidget::varianceUpdated()
 	mModule.setVariance(float(mVarianceSpinBox->value()));
 }
 
-void
+/*void
 OrganSegmentationWidget::buttonPressed()
 {
 	STUBBED("Remove (probably)");
-	/*QObject * obj = sender();
-	if (obj == buttonComputeWatersheds) {
-		mModule.computeWatershedTransformation();
-		return;
-	}
-	if (obj == buttonRunSegmentation) {
-		mModule.computeSegmentation();
-		return;
-	}*/
+	//QObject * obj = sender();
+	//if (obj == buttonComputeWatersheds) {
+	//	mModule.computeWatershedTransformation();
+	//	return;
+	//}
+	//if (obj == buttonRunSegmentation) {
+	//	mModule.computeSegmentation();
+	//	return;
+	//}
 
-}
+}*/

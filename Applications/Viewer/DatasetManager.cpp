@@ -6,7 +6,10 @@
 #include <memory>
 
 #include "MedV4D/Imaging/ImageFactory.h"
+
+#ifdef USE_DCMTK
 #include "MedV4D/DICOMInterface/DcmProvider.h"
+#endif //USE_DCMTK
 
 #include <prognot/Qt/ProgressDialog.hpp>
 
@@ -47,7 +50,7 @@ DatasetManager::DatasetManager()
 }
 
 DatasetID
-DatasetManager::loadFromFile()
+DatasetManager::loadFromFile(bool aQuiet)
 {
 	QStringList fileNames;
 	QString fileName;
@@ -69,7 +72,7 @@ DatasetManager::loadFromFile()
 		ImageRecord currentRecord;
 		currentRecord.assignImage(image.get(), boost::filesystem::path(fileName.toStdString()));
 		DatasetID id = addNewRecord(std::move(currentRecord));
-		emit registeredNewDataset(id); // TODO - single place where to emit this
+		emit registeredNewDataset(id, aQuiet); // TODO - single place where to emit this
 		return id;
 	} catch ( std::exception &e ) {
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
@@ -95,9 +98,13 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 	aProgressNotifier.setStepCount(3);
 	M4D::Imaging::AImage::Ptr image;
 	if ( aPath.extension() == ".dcm" || aPath.extension() == ".DCM" ) {
+		#ifdef USE_DCMTK
 		M4D::Dicom::DicomObjSetPtr dicomObjSet = M4D::Dicom::DicomObjSetPtr( new M4D::Dicom::DicomObjSet() );
 		M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( aPath, aPath.parent_path(), *dicomObjSet, aProgressNotifier.subTaskNotifier(1));
 		image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+		#else
+			throw "NO DCMTK";
+		#endif //USE_DCMTK
 	} else {
 		if ( aPath.extension() == ".dat" || aPath.extension() == ".DAT" ) { //TODO better extension checking
 			image = loadDataFile(aPath, aProgressNotifier.subTaskNotifier(1));
@@ -131,12 +138,12 @@ DatasetManager::openFileBlocking(boost::filesystem::path aPath, prognot::Progres
 
 
 DatasetID
-DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName)
+DatasetManager::registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName, bool aQuiet)
 {
 	ImageRecord currentRecord;
 	currentRecord.assignImage(aImage, aName);
 	DatasetID id = addNewRecord(std::move(currentRecord));
-	emit registeredNewDataset(id);
+	emit registeredNewDataset(id, aQuiet);
 	return id;
 }
 
@@ -230,6 +237,17 @@ void DatasetManager::saveDataset(DatasetID aId, boost::filesystem::path aPath)
 
 }
 
+void DatasetManager::purgeFromGPU(DatasetID aId)
+{
+	getDatasetRecord(aId).purgeFromGPU();
+	mImageModel.recordUpdate(aId);
+}
+
+bool DatasetManager::isOnGPU(DatasetID aId) const
+{
+	return getDatasetRecord(aId).isOnGPU();
+}
+
 int ImageListModel::rowCount(const QModelIndex &parent) const
 {
 	return int(mDatasetIDList.size());
@@ -238,6 +256,7 @@ int ImageListModel::rowCount(const QModelIndex &parent) const
 QVariant
 ImageListModel::data(const QModelIndex &index, int role) const
 {
+	using std::to_string;
 	if (role != Qt::DisplayRole) {
 		return QVariant();
 	}
@@ -250,6 +269,10 @@ ImageListModel::data(const QModelIndex &index, int role) const
 			return QVariant(rec.name().c_str());
 		case 2:
 			return QVariant(rec.path().c_str());
+		case 3:
+			return QVariant(rec.sizeString().c_str());
+		case 4:
+			return QVariant(rec.isOnGPU());
 		}
 	}
 	return QVariant();
@@ -269,6 +292,10 @@ ImageListModel::headerData(int section, Qt::Orientation orientation, int role) c
 		return QVariant("Name");
 	case 2:
 		return QVariant("Path");
+	case 3:
+		return QVariant("Size");
+	case 4:
+		return QVariant("On GPU");
 	}
 
 	return QVariant();

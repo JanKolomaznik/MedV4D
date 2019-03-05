@@ -161,7 +161,7 @@
       <attribute name="title">
        <string>Graph cut</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
+      <layout class="QGridLayout" name="gridLayout_2" columnstretch="2,1,1">
        <item row="0" column="0">
         <widget class="QPushButton" name="mBimaskDrawToggleButton">
          <property name="minimumSize">
@@ -191,7 +191,49 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" rowspan="3">
+       <item row="2" column="0">
+        <widget class="QPushButton" name="mRunSegmentationButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Segmentation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="BrushSettingsForm" name="mBrushSettings" native="true"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Brush radius</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QDoubleSpinBox" name="mVarianceSpinBox">
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>0.001000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>99999999.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.001000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" rowspan="3" colspan="2">
         <widget class="QGroupBox" name="groupBox">
          <property name="minimumSize">
           <size>
@@ -223,7 +265,7 @@
           <item>
            <widget class="QRadioButton" name="mEraseRadioButton">
             <property name="text">
-             <string>Erase</string>
+             <string>E&amp;rase</string>
             </property>
             <property name="checked">
              <bool>false</bool>
@@ -231,41 +273,6 @@
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QPushButton" name="mRunSegmentationButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Segmentation</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="BrushSettingsForm" name="mBrushSettings" native="true"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QDoubleSpinBox" name="mVarianceSpinBox">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="minimum">
-          <double>0.001000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>99999999.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.001000000000000</double>
-         </property>
-         <property name="value">
-          <double>1.000000000000000</double>
-         </property>
         </widget>
        </item>
       </layout>
@@ -494,22 +501,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonComputeWatersheds</sender>
-   <signal>clicked()</signal>
-   <receiver>OrganSegmentationWidget</receiver>
-   <slot>buttonPressed()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>92</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>0</x>
-     <y>180</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>mRunSegmentationButton</sender>
    <signal>clicked()</signal>
    <receiver>OrganSegmentationWidget</receiver>
@@ -564,8 +555,8 @@
    <slot>varianceUpdated()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>181</y>
+     <x>428</x>
+     <y>182</y>
     </hint>
     <hint type="destinationlabel">
      <x>488</x>
@@ -589,6 +580,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>buttonComputeWatersheds</sender>
+   <signal>clicked()</signal>
+   <receiver>OrganSegmentationWidget</receiver>
+   <slot>watershedTransformation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>57</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>createMask()</slot>
@@ -606,5 +613,6 @@
   <slot>clearMask()</slot>
   <slot>varianceUpdated()</slot>
   <slot>fillMaskBorder()</slot>
+  <slot>watershedTransformation()</slot>
  </slots>
 </ui>

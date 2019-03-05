@@ -288,6 +288,18 @@ struct TypeTraits< Vector<NumType, Dim> >
 	}
 };
 
+template< typename CoordType, size_t Dim >
+std::string to_string(const Vector<CoordType, Dim> &aVector)
+{
+	using std::to_string;
+	std::string result = "[" + to_string(aVector[0]);
+	for (int i = 1; i < Dim; ++i) {
+		result += ", ";
+		result += to_string(aVector[i]);
+	}
+	result += "]";
+	return result;
+}
 
 template< typename CoordType, size_t Dim >
 bool

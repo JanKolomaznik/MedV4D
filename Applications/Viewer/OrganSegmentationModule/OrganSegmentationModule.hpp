@@ -71,6 +71,9 @@ protected:
 	clearMask();
 
 	void
+	watershedTransformation();
+
+	void
 	fillMaskBorder(float aRadiusPercentage);
 
 	void
@@ -100,12 +103,16 @@ protected:
 	void
 	computeSegmentation();
 
+	typedef M4D::Imaging::Image<int32_t, 3> WShedImage;
+
 	OrganSegmentationController::Ptr mViewerController;
 	M4D::Common::IDNumber mModeId;
-
+	//TODO - only weak ptr used here
 	M4D::Imaging::Mask3D::Ptr	mMask;
 	M4D::Imaging::Mask3D::Ptr	mResult;
 	Image16_3D::Ptr mImage;
+
+	WShedImage::Ptr mWShedImage;
 
 	float mVariance;
 

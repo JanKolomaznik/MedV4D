@@ -36,10 +36,12 @@ DatasetManagerWidget::datasetViewContextMenu(const QPoint &pos)
 
 	QMenu menuForItem;
 	QAction* actionExport = menuForItem.addAction("Export...");
+	QAction* purgeFromGPUExport = menuForItem.addAction("Purge from GPU");
 
 	QModelIndex pointedIndex = ui->mDatasetView->indexAt(pos);
 	auto datasetId = mManager.idFromIndex(pointedIndex.row());
 
+	purgeFromGPUExport->setEnabled(mManager.isOnGPU(datasetId));
 	QAction* selectedAction;
 	/*if(!pointedItem) {
 		selectedAction = menuBeyondItem.exec(globalpos);
@@ -60,6 +62,9 @@ DatasetManagerWidget::datasetViewContextMenu(const QPoint &pos)
 						mManager.saveDataset(datasetId, path);
 					}
 				}
+			}
+			if (selectedAction == purgeFromGPUExport) {
+				mManager.purgeFromGPU(datasetId);
 			}
 		}
 	}

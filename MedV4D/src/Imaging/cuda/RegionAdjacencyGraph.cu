@@ -19,6 +19,7 @@
 #include <thrust/extrema.h>
 #include <thrust/iterator/zip_iterator.h>
 
+#if 0
 __device__ int edgeInsertions;
 
 __global__ void 
@@ -549,3 +550,5 @@ template void createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabe
 template void createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< float, 3 > aInput, size_t aRegionCount );
 template void createAdjacencyGraph( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< double, 3 > aInput, size_t aRegionCount );
 */
+
+#endif

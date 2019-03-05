@@ -114,6 +114,31 @@ OpenGLManager::getTextureFromImage( const M4D::Imaging::AImage &aImage )
 	return createNewTextureFromImage( aImage );
 }
 
+void OpenGLManager::purgeTextureForImage(const M4D::Imaging::AImage &aImage)
+{
+	boost::unique_lock< boost::recursive_mutex > lock( mPimpl->mTextureMutex );
+
+	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
+	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
+
+	TextureStorage::iterator it = mPimpl->textureStorage.find( id );
+	if ( it != mPimpl->textureStorage.end() ) {
+		it->second.texture.reset();
+		mPimpl->textureStorage.erase(it);
+	}
+}
+
+bool OpenGLManager::existsTextureForImage(const M4D::Imaging::AImage &aImage)
+{
+	boost::unique_lock< boost::recursive_mutex > lock( mPimpl->mTextureMutex );
+
+	M4D::Common::TimeStamp structTimestamp( aImage.GetStructureTimestamp() );
+	M4D::Common::TimeStamp::IDType id = structTimestamp.getID();
+
+	TextureStorage::iterator it = mPimpl->textureStorage.find( id );
+	return it != mPimpl->textureStorage.end();
+}
+
 soglu::GLTextureImage::Ptr
 OpenGLManager::getActualizedTextureFromImage( const M4D::Imaging::AImage &aImage )
 {

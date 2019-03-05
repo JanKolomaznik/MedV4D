@@ -74,8 +74,8 @@ public:
 
 		viewer->enableBoundingBox( GET_SETTINGS( "gui.viewer.volume_rendering.bounding_box_enabled", bool, true ) );
 
-		//Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
-		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 1.0, 1.0, 1.0, 1.0 ) );
+		Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 0.0, 0.0, 0.0, 1.0 ) );
+		//Vector4d color = GET_SETTINGS( "gui.viewer.background_color", Vector4d, Vector4d( 1.0, 1.0, 1.0, 1.0 ) );
 		viewer->setBackgroundColor( QColor::fromRgbF( color[0], color[1], color[2], color[3] ) );
 		//viewer->setBackgroundColor(QColor( 255, 255, 255));
 		return viewer;
@@ -253,7 +253,7 @@ ViewerWindow::denoiseImage()
 			IMAGE_TYPE::Ptr outputImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 
 			median3D( typedImage->GetRegion(), outputImage->GetRegion(), 2 );
-			DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );
+			M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( outputImage );
 			rec->image = outputImage;
 		);
 	#endif
@@ -649,7 +649,7 @@ void ViewerWindow::closeAllFiles()
 }
 
 void
-ViewerWindow::dataLoaded(DatasetID aId)
+ViewerWindow::dataLoaded(DatasetID aId, bool aQuiet)
 {
 	//M4D::Imaging::AImage::Ptr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( mDicomObjSet );
 	D_PRINT( "Loaded dataset ID = " << aId );
@@ -658,13 +658,15 @@ ViewerWindow::dataLoaded(DatasetID aId)
 
 	auto inputData = ViewerInputDataWithId::Ptr(new ViewerInputDataWithId(std::static_pointer_cast<M4D::Imaging::AImageDim<3>>(image), aId));
 
-	mViewerDesktop->forEachViewer(
-		[inputData](M4D::GUI::Viewer::AGLViewer * aViewer) {
-			M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
-			if (viewer) {
-				viewer->setInputData(inputData);
-			}
-		});
+	if (!aQuiet) {
+		mViewerDesktop->forEachViewer(
+			[inputData](M4D::GUI::Viewer::AGLViewer * aViewer) {
+				M4D::GUI::Viewer::GeneralViewer * viewer = dynamic_cast< M4D::GUI::Viewer::GeneralViewer * >( aViewer );
+				if (viewer) {
+					viewer->setInputData(inputData);
+				}
+			});
+	}
 	//M4D::DatasetManager::getInstance()->primaryImageInputConnection().PutDataset( image );
 
 	computeHistogram(aId/* image */);

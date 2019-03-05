@@ -19,6 +19,15 @@
 
 #include <memory>
 
+#include <cugip/host_image_view.hpp>
+
+//TODO move to header
+template<typename TType>
+void computeWatershedTransformation(
+	cugip::const_host_image_view<const TType, 3> aInput,
+	cugip::host_image_view<int32_t, 3> aOutput){};
+
+
 void
 OrganSegmentationModule::loadModule()
 {
@@ -63,10 +72,31 @@ OrganSegmentationModule::createMask()
 		M4D::Imaging::Mask3D::Ptr tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >(image->GetImageExtentsRecord());
 		prepareMask( tmpMask );
 		tmpMask = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< typename M4D::Imaging::Mask3D::Element, 3 >(image->GetImageExtentsRecord());
-		mDatasetManager->registerDataset(tmpMask, std::string("ResultMask"));
+		mDatasetManager->registerDataset(tmpMask, std::string("ResultMask"), true);
 		mResult = tmpMask;
 	}
 }
+
+void
+OrganSegmentationModule::watershedTransformation()
+{
+	auto image = getProcessedImage();
+	if(image) {
+		WShedImage::Ptr tmpImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< int32_t, 3 >(image->GetImageExtentsRecord());
+
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(image->GetElementTypeID(),
+			typedef const M4D::Imaging::Image<TTYPE, 3> ConstImageType;
+			ConstImageType &castedImage = static_cast<ConstImageType &>(*image);
+			::computeWatershedTransformation(
+				cugip::makeConstHostImageView(castedImage.GetPointer(), cugip::vect3i_t(castedImage.GetSizeP())),
+				cugip::makeHostImageView(tmpImage->GetPointer(), cugip::vect3i_t(tmpImage->GetSizeP())));
+		);
+
+		mDatasetManager->registerDataset(tmpImage, std::string("Watershed transformation"), true);
+		mWShedImage = tmpImage;
+	}
+}
+
 
 void OrganSegmentationModule::clearMask()
 {
@@ -112,7 +142,7 @@ OrganSegmentationModule::prepareMask( M4D::Imaging::Mask3D::Ptr aMask )
 {
 	STUBBED("Prepare mask");
 	aMask->fill(0);
-	mDatasetManager->registerDataset(aMask, std::string("Mask"));
+	mDatasetManager->registerDataset(aMask, std::string("Mask"), true);
 	mMask = aMask;
 	mViewerController->mMask = mMask;
 }

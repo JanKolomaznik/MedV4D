@@ -28,7 +28,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 IF( MEDV4D_CUDA_ENABLED )
 	FIND_PACKAGE(CUDA REQUIRED)
-	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_13;-code=compute_13;--use_fast_math )
+	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_61;-code=compute_61;--use_fast_math )
 ENDIF( MEDV4D_CUDA_ENABLED )
 #***************************************************************************
 
@@ -104,8 +104,13 @@ MESSAGE( STATUS "DevIL libs: ${DEVIL_LIBRARIES}")
 MESSAGE( STATUS "Python libs: ${PYTHON_LIBRARIES} ${PYTHON_DEBUG_LIBRARIES}" )
 MESSAGE( STATUS "Additional libs: ${ADDITIONAL_LIBRARIES} ")
 
+IF(MEDV4D_USE_DCMTK)
+	SET(DICOMInterfaceLib DICOMInterface )
+ENDIF(MEDV4D_USE_DCMTK)
+
+
 SET( MEDV4D_LIB_DIRS ${LIBRARY_OUTPUT_PATH} )
-SET( MEDV4D_LIB_TARGETS GUI DICOMInterface Imaging Common)
+SET( MEDV4D_LIB_TARGETS GUI ${DICOMInterfaceLib} Imaging Common)
 
 IF( ${VTK_ENABLED} MATCHES "ON" )
 	SET( MEDV4D_LIB_TARGETS vtkIntegration ${MEDV4D_LIB_TARGETS})

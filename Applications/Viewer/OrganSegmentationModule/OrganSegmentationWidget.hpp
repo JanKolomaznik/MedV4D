@@ -41,8 +41,8 @@ public slots:
 	void
 	updateTimestamp();
 
-	void
-	buttonPressed();
+	//void
+	//buttonPressed();
 
 	void
 	runSegmentation();
@@ -52,6 +52,9 @@ public slots:
 
 	void
 	varianceUpdated();
+
+	void
+	watershedTransformation();
 protected:
 	OrganSegmentationController::Ptr mController;
 	OrganSegmentationModule &mModule;

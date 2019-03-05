@@ -66,7 +66,7 @@ public:
 public slots:
 
 	void
-	dataLoaded(DatasetID aId);
+	dataLoaded(DatasetID aId, bool aQuiet = false);
 
 	void
 	testSlot();

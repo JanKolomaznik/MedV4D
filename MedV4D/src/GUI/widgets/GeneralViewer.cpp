@@ -759,10 +759,12 @@ GeneralViewer::prepareForRenderingStep()
 			Vector2f size = VectorPurgeDimension( getViewerState().getRealSize(), plane );
 			float zoom = M4D::min( float(subVPortW) / size[0], float(subVPortH) / size[1] );
 
+			auto locked_primary_image = getViewerState().mSliceRenderConfig.primaryImageData.lock();
+
 			getViewerState().mSliceRenderConfig.camera.setWindow( subVPortW / zoom, subVPortH / zoom );
 			getViewerState().mSliceRenderConfig.camera.setTargetPosition( glm::fvec3(getViewerState().getRealCenter()[0], getViewerState().getRealCenter()[1], getViewerState().getRealCenter()[2]) );
 			getViewerState().mSliceRenderConfig.sliceCenter = toGLM(getViewerState().getRealCenter());
-			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * getViewerState().mSliceRenderConfig.primaryImageData.lock()->getExtents().elementExtents[plane];
+			getViewerState().mSliceRenderConfig.sliceCenter[plane] = float32(getViewerState().mSliceRenderConfig.currentSlice[ plane ]+0.5f) * locked_primary_image->getExtents().elementExtents[plane];
 			glm::vec3 eye = getViewerState().mSliceRenderConfig.camera.targetPosition();
 			glm::vec3 up;
 			switch ( plane ) {

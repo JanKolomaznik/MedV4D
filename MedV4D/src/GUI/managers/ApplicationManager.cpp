@@ -1,5 +1,9 @@
 #include "MedV4D/GUI/managers/ApplicationManager.h"
+
+#ifdef USE_DCMTK
 #include "MedV4D/DICOMInterface/DcmProvider.h"
+#endif //USE_DCMTK
+
 #include <QtWidgets>
 #include <future>
 
@@ -72,7 +76,9 @@ ApplicationManager::initialize(int &argc, char** argv)
 	loadIcons();
 
 
+#ifdef USE_DCMTK
 	M4D::Dicom::DcmProvider::Init();
+#endif //USE_DCMTK
 
 	OpenGLManager::initialize();
 	ViewerManager::initialize();
@@ -89,7 +95,9 @@ ApplicationManager::finalize()
 	ViewerManager::finalize();
 	OpenGLManager::finalize();
 
+#ifdef USE_DCMTK
 	M4D::Dicom::DcmProvider::Shutdown();
+#endif //USE_DCMTK
 
 	mModes.clear();
 	mModules.clear();

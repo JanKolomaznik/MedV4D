@@ -21,10 +21,13 @@
 
 #include "MedV4D/Imaging/Imaging.h"
 #include "MedV4D/GUI/widgets/GeneralViewer.h"
+#include "MedV4D/GUI/managers/OpenGLManager.h"
 
 #include "Statistics.hpp"
 
 typedef int64_t DatasetID;
+constexpr int64_t cInvalidDatasetID = -1;
+
 class DatasetManager;
 
 class ImageRecord {
@@ -56,8 +59,33 @@ public:
 		return mFileName.string();
 	}
 
+	std::string
+	sizeString() const
+	{
+		using std::to_string;
+		switch (mImage->GetDimension()) {
+		case 2: {
+			return to_string(M4D::Imaging::AImageDim<2>::Cast(*mImage).GetSize());
+		}
+		case 3: {
+			return to_string(M4D::Imaging::AImageDim<3>::Cast(*mImage).GetSize());
+		}
+		}
 
+		return std::string("[]");
+	}
 
+	bool
+	isOnGPU() const
+	{
+		return OpenGLManager::getInstance()->existsTextureForImage(*mImage);
+	}
+
+	void
+	purgeFromGPU()
+	{
+		return OpenGLManager::getInstance()->purgeTextureForImage(*mImage);
+	}
 
 //protected:
 	//std::atomic_bool mIsReady;
@@ -84,7 +112,7 @@ public:
 	int
 	columnCount(const QModelIndex & parent = QModelIndex()) const override
 	{
-		return 3;
+		return 5;
 	}
 
 	QVariant
@@ -107,6 +135,9 @@ public:
 	DatasetID
 	idFromIndex(int aIndex) const
 	{
+		if (aIndex < 0 || aIndex >= mDatasetIDList.size()) {
+			return cInvalidDatasetID;
+		}
 		return mDatasetIDList.at(aIndex);
 	}
 
@@ -123,12 +154,23 @@ public:
 	ImageRecord &
 	getDatasetRecord(DatasetID aId)
 	{
-		return mImages[aId];
+		auto it = mImages.find(aId);
+		if (mImages.end() == it) {
+			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
+		}
+		return it->second;
+		//return mImages[aId];
 		/*auto it = mImages.find(aId);
 		if (mImages.end() == it) {
 			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
 		}
 		return it->second;*/
+	}
+
+	void
+	recordUpdate(DatasetID aId)
+	{
+		dataChanged(index(indexFromID(aId), 0), index(indexFromID(aId), columnCount()));
 	}
 
 	void
@@ -163,6 +205,7 @@ protected:
 };
 
 
+struct InvalidDatasetId: M4D::ErrorHandling::exception_base {};
 
 class DatasetManager : public QObject {
 	Q_OBJECT;
@@ -174,17 +217,18 @@ public:
 	//typedef int64_t DatasetID;
 
 	DatasetID
-	loadFromFile();
+	loadFromFile(bool aQuiet = false);
+
+	const ImageRecord &
+	getDatasetRecord(DatasetID aId) const
+	{
+		return mImageModel.getDatasetRecord(aId);
+	}
 
 	ImageRecord &
 	getDatasetRecord(DatasetID aId)
 	{
-		return mImageModel.getDatasetRecord(aId);//return mImages[aId];
-		/*auto it = mImages.find(aId);
-		if (mImages.end() == it) {
-			M4D_THROW(EItemNotFound() << EInfoItemIndex(aId));
-		}
-		return it->second;*/
+		return mImageModel.getDatasetRecord(aId);
 	}
 
 	std::future<M4D::Imaging::AImage::Ptr>
@@ -218,7 +262,7 @@ public:
 	}
 
 	DatasetID
-	registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName);
+	registerDataset(M4D::Imaging::AImage::Ptr aImage, const std::string &aName, bool aQuiet = false);
 
 	void
 	closeAll();
@@ -233,8 +277,14 @@ public:
 	void
 	saveDataset(DatasetID aId, boost::filesystem::path aPath);
 
+	void
+	purgeFromGPU(DatasetID aId);
+
+	bool
+	isOnGPU(DatasetID aId) const;
+
 signals:
-	void registeredNewDataset(DatasetID);
+	void registeredNewDataset(DatasetID, bool aQuiet);
 
 protected:
 
